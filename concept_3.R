@@ -4,9 +4,29 @@ setClass("trajectory", representation(name = "character", trajectory = "data.fra
 
 
 
+
+
+Monitor <- setRefClass("Monitor",
+                       fields = list(
+                         data = "data.frame")
+)
+
+
+Monitor$methods(initialize = function(...){
+  callSuper(...)
+  .self$data <- data.frame(t=0, active=0)
+  .self
+})
+
+Monitor$methods(record = function(t, active){
+  data<<-rbind(data, data.frame(t, active))
+})
+
+
 Event <- setRefClass("Event", fields = list(description = "character",
                                             event_id = "character",
                                             entity_name = "character",
+                                            entity_index = "numeric",
                                             early_start = "numeric",
                                             start_time = "numeric",
                                             end_time = "numeric",
@@ -14,6 +34,8 @@ Event <- setRefClass("Event", fields = list(description = "character",
                                             amount = "numeric",
                                             successor = "character",
                                             duration = "numeric"))
+
+
 ## Event init method (inits monitor data.frame)
 Event$methods(initialize = function(...){
   callSuper(...)
@@ -23,15 +45,15 @@ Event$methods(initialize = function(...){
 })
 
 
-
-
-
 Entity <- setRefClass("Entity", 
                       fields = list(
                         name = "character",
+                        entity_index = "numeric",
                         trajectory = "character",
+                        trajectory_index = "numeric",
                         early_start_time="numeric",
-                        current_event = "Event")
+                        current_event = "Event",
+                        monitor = "Monitor")
 )
 
 
@@ -39,9 +61,6 @@ Entity <- setRefClass("Entity",
 
 
 
-setMethod("as.character", "Event",
-          function(x, ...) paste(x@description,'|',x@event_id)
-)
 
 
 ### SIMULATOR CLASS
@@ -61,8 +80,15 @@ Simulator$methods(now = function() current_time)
 Simulator$methods(goto_time = function(t) current_time <<- t)
 
 Simulator$methods(add_entity = function(name, trajectory, start_time=0){
+  
+  new_entity<-
+    Entity(name=name, 
+           early_start_time=start_time, 
+           trajectory=trajectory, 
+           trajectory_index = .self$get_trajectory_index(trajectory), 
+           entity_index = length(entities)+1)
   entities<<-push(entities, 
-                  Entity$new(name=name, early_start_time=start_time, trajectory=trajectory))
+                  new_entity)
 })
 
 Simulator$methods(add_trajectory = function(name, trajectory){
@@ -75,6 +101,16 @@ Simulator$methods(get_trajectory = function(name){
   get_objects_by_filter(trajectories, "name", name)[[1]]
 })
 
+Simulator$methods(get_trajectory_index = function(name){
+  trajectory_names <-
+    do.call(c, 
+            lapply(.self$trajectories, function(obj) return(obj@name)
+            ))
+  match(name, trajectory_names)
+  
+})
+
+
 Simulator$methods(get_resource = function(name){
   get_objects_by_filter(resources, "name", name, sep="$")[[1]]
 })
@@ -84,18 +120,25 @@ Simulator$methods(order_events = function() {
   events <<- order_objects_by_slot_value(events, "early_start")
 })
 
-Simulator$methods(get_next_event_data = function(entity) {
-#   print(entity)
-  trajectory <- get_objects_by_filter(vector_obj = .self$trajectories,slot = "name",filter = entity$trajectory)[[1]]@trajectory
-#   print(trajectory)
-  if(length(entity$current_event$start_time)>0){ # there is already a step running / has runned
-    successor_id <- trajectory[trajectory$event_id == entity$current_event$event_id, "successor"]
-    if(is.na(successor_id)) {
+
+
+Simulator$methods(get_next_event_data = function(entity_index) {
+  
+  trajectory <- .self$trajectories[[.self$entities[[entity_index]]$trajectory_index]]@trajectory
+  
+  if(length(.self$entities[[entity_index]]$current_event$start_time)>0){ # there is already a step running / has runned
+    successor_id <- trajectory[trajectory$event_id == .self$entities[[entity_index]]$current_event$event_id, "successor"]
+    successor_id_evaluated<-
+      as.character(eval(parse(text=as.character(successor_id))))
+#     print(successor_id_evaluated)
+    if(is.na(successor_id_evaluated)) {
       return(NULL)
     } else {
-      next_event_data <-  trajectory[trajectory$event_id == successor_id, ]  
+      next_event_data <-  trajectory[trajectory$event_id == successor_id_evaluated, ]  
+      return(next_event_data)
     }
   } else { # first event of entity still has to start
+    
     next_event_data<-trajectory[1,]
   }
   return(next_event_data)
@@ -127,9 +170,12 @@ Simulator$methods(check_resource_availability = function(event_data){
   
 })
 
-Simulator$methods(create_next_event = function(entity){  ## wel direct aanmaken en in eventlist zetten, daarna pas kijken of ook gestart kan worden
-  next_event = .self$get_next_event_data(entity)
-#   print(next_event)
+Simulator$methods(create_next_event = function(entity_index){ 
+  next_event <- .self$get_next_event_data(entity_index)
+  entity <- .self$entities[[entity_index]]
+  
+    print(next_event)
+  
   if(is.null(next_event)==FALSE){ ## if FALSE, end of trajectory is reached
     duration_evaluated <-
       floor(eval(parse(text=as.character(next_event$duration[[1]]))))
@@ -138,6 +184,7 @@ Simulator$methods(create_next_event = function(entity){  ## wel direct aanmaken 
     
     new_evt = Event(event_id=as.character(next_event$event_id), 
                     entity_name = entity$name,
+                    entity_index = entity_index,
                     description=paste0(as.character(next_event$description), "__", entity$name), 
                     resource=as.character(next_event$resource), 
                     amount=next_event$amount, 
@@ -148,7 +195,8 @@ Simulator$methods(create_next_event = function(entity){  ## wel direct aanmaken 
     events <<- push(events, new_evt)
     if(length(entity$current_event$early_start)>0){
       events <<- order_objects_by_slot_value(events, slot = "early_start")
-      events <<- get_objects_by_NOTfilter(events, "description", entity$current_event$description)
+      entity$monitor$record(now(), 0) # record stop of processing of event
+      events <<- get_objects_by_NOTfilter(events, "description", entity$current_event$description, sep="$")
     }
     
     
@@ -158,8 +206,11 @@ Simulator$methods(create_next_event = function(entity){  ## wel direct aanmaken 
     .self$start_if_possible(new_evt)
     
     
+  } else { # record stop of current event
+    
+    entity$monitor$record(now(), 0) # record stop of processing of event
   }
-  return(FALSE)
+  
   
 })
 
@@ -167,6 +218,7 @@ Simulator$methods(start_if_possible = function(evt){
   if(.self$now() >= evt$early_start){
     evt$start_time <- .self$now()
     evt$end_time <- evt$start_time + evt$duration
+    .self$entities[[evt$entity_index]]$monitor$record(now(), 1) # record start of processing of event
   }
 })
 
@@ -284,37 +336,7 @@ order_objects_by_slot_value<-function(vector_obj, slot){
   vector_obj[order(values)]
 }
 
-# get_objects_by_filter(sim@trajectories, "name", "t1")
 
-# parameter="name"
-# filter="t1"
-# for(x in sim@trajectories){
-#   print(eval(parse(text=paste0("x@",parameter))))
-#   print(eval(paste0("x@",parameter)) == filter)
-# }
-
-
-
-# check_resources_available<-function(sim_obj, resource_name, amount_required=1){
-#   resource<-get_objects_by_filter(sim_obj@resources, "name", resource_name)[[1]]
-#   if(length(resource)>0){
-#     # check if resource available
-#     if(resource@amount >= amount_required & (length(resource@monitor) == 0 || resource@amount - resource@monitor[nrow(resource@monitor),"in_use"] >= amount_required)){
-#       message("resources available")
-#       return(TRUE)
-#     } else {
-#       message("resources NOT available")
-#       return(FALSE)
-#     } 
-#   } else stop("requested resource not available in system")
-# }
-
-# seize_resources<-function(sim_obj, resource_name, amount_required  = 1){
-#   resource<-get_objects_by_filter(sim_obj@resources, "name", resource_name)[[1]]
-#   current_in_use <- ifelse(length(resource@monitor)>0, resource@monitor[nrow(resource@monitor),"in_use"], 0)
-#   print(resource@monitor)
-#   resource@monitor<-rbind(resource@monitor, data.frame(t=sim_obj@current_time, in_use=amount_required + current_in_use))
-# }
 
 add_trajectory<-function(sim_obj, name, trajectory){
   sim_obj$add_trajectory(name=name, trajectory=trajectory)
@@ -326,35 +348,35 @@ add_trajectory<-function(sim_obj, name, trajectory){
 
 simmer <- function(sim_obj, until=Inf){
   # create first event for all entities
-  for(ent in sim_obj$entities){
-    sim_obj$create_next_event(ent)
+  for(ent_index in 1:length(sim_obj$entities)){
+    sim_obj$create_next_event(ent_index)
   }
   
   
   ## loop over event list
-  while(sim_obj$now() < until || length(sim_obj$events)!=0){
+  while(sim_obj$now() < until && length(sim_obj$events)!=0){
     
     for(evt in sim_obj$events){
       
       if(sim_obj$now() >= evt$end_time){ ## event has ended, start next event
         
-        evt_entity<-
-          get_objects_by_filter(sim_obj$entities, "name", evt$entity_name, sep="$")[[1]]
+        #         evt_entity<- .self$entities[[evt$entity_index]]
         
-        sim_obj$create_next_event(evt_entity)  ## also deletes finished event from event list and starts new event if possible
-      } 
-#       else if (sim_obj$now() >= evt$early_start && is.finite(evt$end_time)){ ## event is waiting to start: check if event can start
-#         sim_obj$start_if_possible(evt)
-#       }
+        
+        sim_obj$create_next_event(evt$entity_index)  ## also deletes finished event from event list and starts new event if possible
+        
+      } else if (sim_obj$now() >= evt$early_start && is.infinite(evt$end_time)){ ## event is waiting to start: check if event can start
+        sim_obj$start_if_possible(evt)
+      }
     }
     
     
-
+    message(paste("current time:", sim_obj$now()))
     sim_obj$goto_time(sim_obj$now()+1)    
-   
+    
     
   }
-
+  
   
   
   return(sim_obj)
@@ -389,10 +411,11 @@ sim<-
   add_resource("vpk", 2) %>%
   add_resource("logistieke", 2) %>%
   add_resource("arts", 2) %>%
-  add_entities_with_interval(15, "test", "t1", 5) %>%
-  add_trajectory("t1",traj1) 
+  add_trajectory("t1",traj1) %>%
+  add_entities_with_interval(1, "test", "t1", 5) 
+
 # %>%
 #   simmer()
 
-simmer(sim, 11)
+simmer(sim, 120)
 
