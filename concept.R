@@ -25,7 +25,7 @@ setClass("event", representation(description = "character",
                                  event_id = "character",
                                  early_start = "numeric",
                                  start_time = "numeric",
-                                 origin="character",
+                                 entity="Entity",
                                  resource="character",
                                  amount = "numeric",
                                  successor = "character",
@@ -63,11 +63,11 @@ Simulator<-setRefClass("Simulator",
                            get_objects_by_filter(trajectories, "name", name)
                          },
                          
-                         create_event = function(origin, event_id, description, resource, amount, duration, early_start, successor){
+                         create_event = function(entity, event_id, description, resource, amount, duration, early_start, successor){
                            
                            events<<-push(events, 
                                          new("event", 
-                                             origin=origin, 
+                                             entity=entity, 
                                              event_id=event_id, 
                                              description=description, 
                                              resource=resource, 
@@ -81,9 +81,22 @@ Simulator<-setRefClass("Simulator",
                          
                          order_events = function() {
                            events <<- order_objects_by_slot_value(events, "early_start")
+                         },
+                         
+                         start_next_event = function(event) {
+                           print(event@entity$trajectory)
+                           
                          }
                        )
 )
+
+get_next_event_data <- function(sim, event){
+  trajectory <- get_objects_by_filter(vector_obj = sim$trajectories,slot = "name",filter = event@entity$trajectory)@trajectory
+  
+  next_event_data <- trajectory[trajectory$event_id == event@event_id,]
+
+  
+}
 
 Resource<-setRefClass("Resource", 
                       fields = list(
@@ -246,7 +259,7 @@ simmer <- function(sim_obj){
     early_start = ifelse(sim_obj$current_time >= ent$start_time, sim_obj$current_time, ent$start_time)
     
     sim_obj$create_event(
-      origin = ent$name, 
+      entity = ent, 
       event_id = as.character(entity_step["event_id"][[1]]), 
       description = as.character(entity_step["description"][[1]]), 
       resource = as.character(entity_step["resource"][[1]]), 
