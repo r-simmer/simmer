@@ -333,9 +333,10 @@ simmer <- function(sim_obj, until=Inf){
       
       if(sim_obj$now() >= evt$end_time){ ## event has ended, start next event
         sim_obj$create_next_event(evt$entity)  ## also deletes current event from event list and starts it if possible
-      } else if (sim_obj$now() >= evt$early_start){ ## check if event can start
-        sim_obj$start_if_possible(evt)
-      }
+      } 
+#       else if (sim_obj$now() >= evt$early_start && is.finite(evt$end_time)){ ## event is waiting to start: check if event can start
+#         sim_obj$start_if_possible(evt)
+#       }
     }
     
     
