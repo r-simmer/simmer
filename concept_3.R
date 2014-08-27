@@ -1,3 +1,7 @@
+## TODOs 
+## resource seizing blokkerend maken
+## multiple resource seizing mogelijk maken
+
 
 
 setClass("trajectory", representation(name = "character", trajectory = "data.frame"))
@@ -14,22 +18,18 @@ Monitor <- setRefClass("Monitor",
 
 Monitor$methods(initialize = function(...){
   callSuper(...)
-  .self$data <- data.frame(t=0, active=0)
+  .self$data <- data.frame(t=0, v=0)
   .self
 })
 
-Monitor$methods(record = function(t, active){
-  data<<-rbind(data, data.frame(t, active))
+Monitor$methods(record = function(t, v){
+  data<<-rbind(data, data.frame(t, v))
 })
 
-ResourceRequirement <- setRefClass("ResourceRequirement", field = list(name = "character",
-                                                                       amount = "numeric",
-                                                                       fulfilled = "logical"))
-ResourceRequirement$methods(initialize = function(...){
-  callSuper(...)
-  .self$amount <- 1
-  .self$fulfilled <- FALSE
+Monitor$methods(get_last_value = function(t, v){
+  return(data[nrow(data),"v"])
 })
+
 
 # TODO: vector of resourcerequirements toevoegen
 Event <- setRefClass("Event", fields = list(description = "character",
@@ -39,7 +39,7 @@ Event <- setRefClass("Event", fields = list(description = "character",
                                             early_start = "numeric",
                                             start_time = "numeric",
                                             end_time = "numeric",
-                                            required_resources ="vector",
+                                            required_resources ="list",
                                             amount = "numeric",
                                             successor = "character",
                                             duration = "numeric"))
@@ -93,6 +93,26 @@ Simulator$methods(initialize = function(...){
 })
 
 Simulator$methods(now = function() current_time)
+
+Simulator$methods(seize_resources = function(evt){
+  for(req in evt$required_resources){
+    in_use <- req$resource_obj$monitor$get_last_value()
+    if(in_use + req$amount <= req$resource_obj$capacity + BIG_M){
+      req$resource_obj$monitor$record(now(), in_use + req$amount)
+    }
+}
+})
+
+Simulator$methods(release_resources = function(evt){
+  for(req in evt$required_resources){
+    in_use <- req$resource_obj$monitor$get_last_value()
+    
+      req$resource_obj$monitor$record(now(), in_use - req$amount)
+    
+  }
+})
+
+
 
 Simulator$methods(goto_time = function(t) current_time <<- t)
 
@@ -207,15 +227,15 @@ Simulator$methods(create_next_event = function(entity_index){
       as.character(eval(parse(text=as.character(next_event$successor[[1]]))))
     
     
-    resources <- unlist(strsplit(as.character(next_event$resource),"/"))
+    res <- unlist(strsplit(as.character(next_event$resource),"/"))
     amounts <- unlist(strsplit(as.character(next_event$amount),"/"))
     
     
     res_reqs <- 
       mapply(function(r,a){
-        ResourceRequirement(name = r, amount = as.numeric(a))
-      }, resources, amounts, SIMPLIFY = F, USE.NAMES = F)
-    
+        ResourceRequirement(name = r, amount = as.numeric(a), resource_obj = .self$get_resource(r))
+      }, res, amounts, SIMPLIFY = T, USE.NAMES = F)
+#     , mode = "any")
     
     
     new_evt = Event(event_id=as.character(next_event$event_id), 
@@ -223,7 +243,7 @@ Simulator$methods(create_next_event = function(entity_index){
                     entity_index = entity_index,
                     description=paste0(as.character(next_event$description), "__", entity$name), 
                     required_resources = res_reqs, 
-                    amount=as.numeric(as.character(next_event$amount)),  # niet meer nodig?
+#                     amount=as.numeric(as.character(next_event$amount)),  # niet meer nodig?
                     duration=duration_evaluated,
                     early_start = .self$now() + entity$early_start_time,
                     successor=successor_evaluated)
@@ -251,13 +271,17 @@ Simulator$methods(create_next_event = function(entity_index){
   
 })
 
-Simulator$methods(start_if_possible = function(evt){
+Simulator$methods(start_if_possible = function(evt){ #rename naar start_event
   if(.self$now() >= evt$early_start){
     evt$start_time <- .self$now()
     evt$end_time <- evt$start_time + evt$duration
     .self$entities[[evt$entity_index]]$monitor$record(now(), 1) # record start of processing of event
+    .self$seize_resources(evt)
   }
 })
+
+
+
 
 Simulator$methods(stop_event = function(evt){
   evt_filter<-
@@ -265,7 +289,7 @@ Simulator$methods(stop_event = function(evt){
       !identical(obj, evt)
     }))
   
-  
+  .self$release_resources(evt)
   
   events <<- .self$events[evt_filter]
   
@@ -291,19 +315,31 @@ setMethod("show", "Simulator",
 Resource<-setRefClass("Resource", 
                       fields = list(
                         name = "character",
-                        amount = "numeric",
-                        monitor = "data.frame"),
-                      methods = list(
-                        check_availability = function(amount_requested = 1) 0
-                      )
+                        capacity = "numeric",
+                        monitor = "Monitor"),
+#                       methods = list(
+#                         check_availability = function(amount_requested = 1) 0
+#                       )
 )
 
-## Resource init method (inits monitor data.frame)
-Resource$methods(initialize = function(...){
+# ## Resource init method (inits monitor data.frame)
+# Resource$methods(initialize = function(...){
+#   callSuper(...)
+#   .self$monitor <- data.frame(t=0,in_use=0)
+#   .self
+#   
+# })
+
+
+
+ResourceRequirement <- setRefClass("ResourceRequirement", field = list(name = "character",
+                                                                       amount = "numeric",
+                                                                       fulfilled = "logical",
+                                                                       resource_obj = "Resource"))
+ResourceRequirement$methods(initialize = function(...){
   callSuper(...)
-  .self$monitor <- data.frame(t=0,in_use=0)
-  .self
-  
+  .self$amount <- 1
+  .self$fulfilled <- FALSE
 })
 
 
@@ -326,9 +362,9 @@ create_simulator<-function(name = "anonymous"){
   Simulator$new(name=name, current_time=0)
 }
 
-add_resource<-function(sim_obj, name, amount=1){
+add_resource<-function(sim_obj, name, capacity=1){
   sim_obj$resources<-push(sim_obj$resources,
-                          Resource$new(name=name, amount=amount)
+                          Resource$new(name=name, capacity=capacity)
   )
   return(sim_obj)
 }
