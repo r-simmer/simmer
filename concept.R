@@ -14,7 +14,7 @@ setClass("event", representation(description = "character",
                                  early_start = "numeric",
                                  start_time = "numeric",
                                  end_time = "numeric",
-                                 resource="character",
+                                 resource="vector",
                                  amount = "numeric",
                                  successor = "character",
                                  duration = "numeric"))
@@ -72,6 +72,11 @@ Simulator$methods(get_trajectory = function(name){
 
 Simulator$methods(get_resource = function(name){
   get_objects_by_filter(resources, "name", name, sep="$")[[1]]
+})
+
+Simulator$methods(seize_resources = function(evt){
+  
+  
 })
 
 # Simulator$methods(create_event = function(entity, event_id, description, resource, amount, duration, early_start, successor){
