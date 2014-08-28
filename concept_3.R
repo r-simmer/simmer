@@ -1,7 +1,10 @@
 ## TODOs 
-## resource seizing blokkerend maken
-## multiple resource seizing mogelijk maken
-
+## resource seizing blokkerend maken - DONE
+## multiple resource seizing mogelijk maken - DONE
+## simmer functie --> moet method van Simulator worden
+## next_step beter/goed bepalen
+## plot functies toevoegen
+## simcontainer toevoegen : replications mogelijk maken + variations
 
 
 setClass("trajectory", representation(name = "character", trajectory = "data.frame"))
@@ -55,6 +58,14 @@ Event$methods(initialize = function(...){
   
 })
 
+Event$methods(has_started = function(){
+  if(length(.self$start_time)>0){
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
+})
+
 
 Entity <- setRefClass("Entity", 
                       fields = list(
@@ -97,17 +108,23 @@ Simulator$methods(now = function() current_time)
 Simulator$methods(seize_resources = function(evt){
   for(req in evt$required_resources){
     in_use <- req$resource_obj$monitor$get_last_value()
-    if(in_use + req$amount <= req$resource_obj$capacity + BIG_M){
+    if(in_use + req$amount <= req$resource_obj$capacity && req$fulfilled == FALSE){
       req$resource_obj$monitor$record(now(), in_use + req$amount)
+      req$fulfilled<-TRUE
     }
-}
+  }
+  # return whether all resource requirements are fullfilled or not
+  all(
+    sapply(evt$required_resources, function(req) req$fulfilled)
+  )
+  
 })
 
 Simulator$methods(release_resources = function(evt){
   for(req in evt$required_resources){
     in_use <- req$resource_obj$monitor$get_last_value()
     
-      req$resource_obj$monitor$record(now(), in_use - req$amount)
+    req$resource_obj$monitor$record(now(), in_use - req$amount)
     
   }
 })
@@ -235,7 +252,7 @@ Simulator$methods(create_next_event = function(entity_index){
       mapply(function(r,a){
         ResourceRequirement(name = r, amount = as.numeric(a), resource_obj = .self$get_resource(r))
       }, res, amounts, SIMPLIFY = T, USE.NAMES = F)
-#     , mode = "any")
+    #     , mode = "any")
     
     
     new_evt = Event(event_id=as.character(next_event$event_id), 
@@ -243,7 +260,7 @@ Simulator$methods(create_next_event = function(entity_index){
                     entity_index = entity_index,
                     description=paste0(as.character(next_event$description), "__", entity$name), 
                     required_resources = res_reqs, 
-#                     amount=as.numeric(as.character(next_event$amount)),  # niet meer nodig?
+                    #                     amount=as.numeric(as.character(next_event$amount)),  # niet meer nodig?
                     duration=duration_evaluated,
                     early_start = .self$now() + entity$early_start_time,
                     successor=successor_evaluated)
@@ -260,28 +277,70 @@ Simulator$methods(create_next_event = function(entity_index){
     
     entity$current_event <- new_evt
     
-    .self$start_if_possible(new_evt)
+    .self$start_event(new_evt)
     
-    
+    return(new_evt)  
   } else { # record stop of current event
     .self$stop_event(entity$current_event)
     
   }
   
+  return(NULL)
   
 })
 
-Simulator$methods(start_if_possible = function(evt){ #rename naar start_event
-  if(.self$now() >= evt$early_start){
-    evt$start_time <- .self$now()
-    evt$end_time <- evt$start_time + evt$duration
-    .self$entities[[evt$entity_index]]$monitor$record(now(), 1) # record start of processing of event
-    .self$seize_resources(evt)
+Simulator$methods(next_step = function (){
+  if(length(.self$events)>0){
+    min(
+      sapply(.self$events, function(obj){
+        if(obj$has_started()) {
+          return(obj$end_time)
+        } else {
+          return(max(obj$early_start, now() + 1))
+        }
+      }
+      )
+    )
+  } else {
+    now()
   }
 })
 
+Simulator$methods(start_event = function(evt){ #rename naar start_event
+  if(.self$now() >= evt$early_start){
+    
+    # if all required resources are seized, start
+    if(.self$seize_resources(evt)){
+      
+      evt$start_time <- .self$now()
+      evt$end_time <- evt$start_time + evt$duration
+      .self$entities[[evt$entity_index]]$monitor$record(now(), 1) # record start of processing of event
+      return(TRUE)
+    }
+  }
+  return(FALSE)
+})
 
 
+Simulator$methods(plot_resource_usage = function(res_name) {
+  require(ggplot2)
+  require(dplyr)
+  
+  res<-.self$get_resource(res_name)
+  
+  plotset<-
+    res$monitor$data%>%
+    group_by(t) %>%
+    summarise(v = max(v))
+  
+  ggplot(plotset)+
+    aes(x=t, y=v) +
+    geom_line()+
+    geom_point() + 
+    geom_hline(y=res$capacity, lty=2, color="red") +
+    ggtitle(paste("Resource usage:", res$name))
+  
+})
 
 Simulator$methods(stop_event = function(evt){
   evt_filter<-
@@ -317,9 +376,9 @@ Resource<-setRefClass("Resource",
                         name = "character",
                         capacity = "numeric",
                         monitor = "Monitor"),
-#                       methods = list(
-#                         check_availability = function(amount_requested = 1) 0
-#                       )
+                      #                       methods = list(
+                      #                         check_availability = function(amount_requested = 1) 0
+                      #                       )
 )
 
 # ## Resource init method (inits monitor data.frame)
@@ -445,26 +504,28 @@ simmer <- function(sim_obj, until=Inf, verbose = FALSE){
   
   
   ## loop over event list
+  
   while(sim_obj$now() < until && length(sim_obj$events)!=0){
     
     for(evt in sim_obj$events){
       
       if(sim_obj$now() >= evt$end_time){ ## event has ended, start next event
         
-        #         evt_entity<- .self$entities[[evt$entity_index]]
         
         
-        sim_obj$create_next_event(evt$entity_index)  ## also deletes finished event from event list and starts new event if possible
+        new_evt<-sim_obj$create_next_event(evt$entity_index)  ## also deletes finished event from event list and starts new event if possible
         
-      } else if (sim_obj$now() >= evt$early_start && is.infinite(evt$end_time)){ ## event is waiting to start: check if event can start
-        sim_obj$start_if_possible(evt)
+      } else if (sim_obj$now() >= evt$early_start && !evt$has_started()){ ## event is waiting to start: check if event can start
+        sim_obj$start_event(evt)
+        
       }
     }
+
     
     
     if(verbose) message(paste("current time:", sim_obj$now()))
-    sim_obj$goto_time(sim_obj$now()+1)    
-    
+    #     sim_obj$goto_time(sim_obj$now()+1)    
+    sim_obj$goto_time(sim_obj$next_step())    
     
   }
   
@@ -499,7 +560,7 @@ library(magrittr)
 sim<-
   create_simulator(name = "SuperDuperSim") %>%
   #   add_entity("test","r4e5rea4") 
-  add_resource("vpk", 2) %>%
+  add_resource("vpk", 1) %>%
   add_resource("logistieke", 2) %>%
   add_resource("arts", 2) %>%
   add_trajectory("t1",t2) %>%
@@ -508,5 +569,5 @@ sim<-
 # %>%
 #   simmer()
 
-simmer(sim, until = 120, verbose = TRUE)
+simmer(sim, until = 240, verbose = TRUE)
 
