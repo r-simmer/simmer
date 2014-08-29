@@ -23,13 +23,13 @@ ReplicationContainer$methods(plot_resource_usage = function(resource_name){
   res<-simulators[[1]]$get_resource(resource_name)
   
   dataset<-
-  do.call(rbind,
-          mapply(function(sim_obj, rep) { 
-            dataset<- sim_obj$get_resource(resource_name)$monitor$data
-            dataset$rep<-rep
-            dataset
-          }, simulators, 1:length(simulators), SIMPLIFY=F)
-  ) %>%
+    do.call(rbind,
+            mapply(function(sim_obj, rep) { 
+              dataset<- sim_obj$get_resource(resource_name)$monitor$data
+              dataset$rep<-rep
+              dataset
+            }, simulators, 1:length(simulators), SIMPLIFY=F)
+    ) %>%
     group_by(t, rep) %>%
     summarise(v = max(v))
   
@@ -40,31 +40,64 @@ ReplicationContainer$methods(plot_resource_usage = function(resource_name){
     geom_hline(y=res$capacity, lty=2, color="red") +
     ggtitle(paste("Resource usage:", res$name))
 })
-# 
-# ReplicationContainer$methods(plot_resources_utilization = function(resource_name){
-#   require(ggplot2)
-#   require(dplyr)
-#   
-#   resources_names<-sapply(simulators[[1]]$resources, function(obj) obj$name)
-#   
-#   dataset<-
-#     do.call(rbind,
-#             mapply(function(sim_obj, rep) { 
-#               dataset<- sim_obj$get_resource(resource_name)$monitor$data
-#               dataset$rep<-rep
-#               dataset
-#             }, simulators, 1:length(simulators), resources_names, SIMPLIFY=F)
-#     ) %>%
-#     group_by(t, rep) %>%
-#     summarise(v = max(v))
-#   
-#   ggplot(dataset) +
-#     aes(x=t, y=v) + 
-#     geom_line(aes(group=rep))+
-#     stat_smooth()+
-#     geom_hline(y=res$capacity, lty=2, color="red") +
-#     ggtitle(paste("Resource usage:", res$name))
-# })
+
+ReplicationContainer$methods(plot_resource_utilization = function(resource_name){
+  require(ggplot2)
+  require(scales)
+  require(dplyr)
+  
+  
+  run_times<-sapply(simulators, function(sim_obj) sim_obj$now())
+  resources_names<-sapply(simulators[[1]]$resources, function(obj) obj$name)
+  resources_capacity<-sapply(simulators[[1]]$resources, function(obj) obj$capacity)
+  
+  
+  dataset<-
+    do.call(rbind,
+            mapply(function(sim_obj, rep, runtime) { 
+              dataset<-
+                do.call(rbind,
+                        mapply(function(resource_name, resource_capacity){
+                          dataset<- sim_obj$get_resource(resource_name)$monitor$data
+                          dataset$resource<-resource_name
+                          dataset$capacity<-resource_capacity
+                          dataset
+                        }, resources_names, resources_capacity, SIMPLIFY=F))  
+              
+              dataset$rep<-rep
+              dataset$runtime<-runtime
+              dataset
+            }, simulators, 1:length(simulators),run_times, SIMPLIFY=F)
+    )
+  
+  dataset<-
+  dataset %>%
+    group_by(resource, rep, capacity, runtime, t) %>%
+    summarise(v=max(v)) %>%
+    ungroup() %>%
+    group_by(resource, rep, capacity, runtime) %>%
+    mutate(in_use = (t-lag(t)) * lag(v)) %>%
+    group_by(resource, rep, capacity, runtime) %>%
+    summarise(in_use = sum(in_use, na.rm=T)) %>%
+    ungroup() %>%
+    mutate(utilization = in_use / runtime) %>%
+    group_by(resource, capacity) %>%
+    summarise(Q25 = quantile(utilization, .25),
+              Q50 = quantile(utilization, .5),
+              Q75 = quantile(utilization, .75))
+  
+  
+  
+  
+  
+  ggplot(dataset) +
+    aes(x=resource, y=Q50, ymin=Q25, ymax=Q75) + 
+    geom_bar(stat="identity") + 
+    geom_errorbar(width=.25, color="black") +
+    ggtitle("Resource utilization") +
+    scale_y_continuous(labels=percent, limits=c(0,1), breaks=seq(0,2,.2)) +
+    ylab("utilization")
+})
 
 
 
@@ -95,3 +128,7 @@ plot_resource_usage<-function(replication_obj, ...){
   replication_obj$plot_resource_usage(...)
 }
 
+#' @export
+plot_resource_utilization<-function(replication_obj, ...){
+  replication_obj$plot_resource_utilization(...)
+}

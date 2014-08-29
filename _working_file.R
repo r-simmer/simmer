@@ -37,6 +37,7 @@ t2<-
   )
 
 library(magrittr)
+library(simmer)
 sim<-
   create_simulator(name = "SuperDuperSim") %>%
   #   add_entity("test","r4e5rea4") 
@@ -50,7 +51,7 @@ sim<-
 # %>%
 #   simmer()
 
-simmer(sim, until = 240, verbose = TRUE)
+simmer(sim, until = 240)
 
 
 
@@ -77,4 +78,43 @@ sim$plot_resource_usage("arts")
 # 
 # x1$tcp_vector[[1]]$name # also equals "test2"??
 
+
+run_times<-sapply(sim$simulators, function(sim_obj) sim_obj$now())
+resources_names<-sapply(sim$simulators[[1]]$resources, function(obj) obj$name)
+resources_capacity<-sapply(sim$simulators[[1]]$resources, function(obj) obj$capacity)
+
+
+dataset<-
+do.call(rbind,
+        mapply(function(sim_obj, rep, runtime) { 
+          dataset<-
+            do.call(rbind,
+                    mapply(function(resource_name, resource_capacity){
+                      dataset<- sim_obj$get_resource(resource_name)$monitor$data
+                      dataset$resource<-resource_name
+                      dataset$capacity<-resource_capacity
+                      dataset
+                    }, resources_names, resources_capacity, SIMPLIFY=F))  
+          
+          dataset$rep<-rep
+          dataset$runtime<-runtime
+          dataset
+        }, sim$simulators, 1:length(sim$simulators),run_times, SIMPLIFY=F)
+)
+
+
+dataset %>%
+  group_by(resource, rep, capacity, runtime, t) %>%
+  summarise(v=max(v)) %>%
+  ungroup() %>%
+  group_by(resource, rep, capacity, runtime) %>%
+  mutate(in_use = (t-lag(t)) * lag(v)) %>%
+  group_by(resource, rep, capacity, runtime) %>%
+  summarise(in_use = sum(in_use, na.rm=T)) %>%
+  ungroup() %>%
+  mutate(utilization = in_use / runtime) %>%
+  group_by(resource, capacity) %>%
+  summarise(Q25 = quantile(utilization, .25),
+            Q50 = quantile(utilization, .5),
+            Q75 = quantile(utilization, .75))
 

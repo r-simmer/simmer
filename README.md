@@ -5,6 +5,9 @@ __*simmer* is under heavy development and its internals and syntax can still cha
 
 *simmer* is a discrete event package for the R language. It is developed with my own specific requirements for simulating day-to-day hospital proceses and thus might not be suited for everyone. It is designed to be as simple to use as possible and tries to be compatible with the piping features of [magrittr](https://github.com/smbache/magrittr). 
 
+
+
+
 ## Installation
 
 The installation requires the [devtools](https://github.com/hadley/devtools) package to be installed.
@@ -23,6 +26,10 @@ First load the package.
 library(simmer)
 ```
 
+```
+## Loading required package: magrittr
+```
+
 Set-up a simple trajectory (the column names are important!).
 
 
@@ -30,7 +37,7 @@ Set-up a simple trajectory (the column names are important!).
 t1<-
   read.table(header=T, text=
                "event_id  description   resource        amount  duration      successor
-                1         intake        nurse           1       10            2
+                1         intake        nurse           1       15            2
                 2         consultation  doctor          1       20            3
                 3         planning      administration  1       5             NA"  )
 ```
@@ -42,7 +49,7 @@ The ```successor``` describes which event is started next. An ```successor``` va
 t2<-
   read.table(header=T, text=
                "event_id  description   resource        amount  duration      successor
-                1         intake        nurse           1       rnorm(1,10)   2
+                1         intake        nurse           1       rnorm(1,15)   2
                 2         consultation  doctor          1       rnorm(1,20)   sample(c(NA,3),1)
                 3         planning      administration  1       rnorm(1,5)    NA"  )
 ```
@@ -81,25 +88,34 @@ sim<-
   replicator(10)
 ```
 
-The simulation is now ready for a test run; just let it ```simmer``` for a bit.
+The simulation is now ready for a test run; just let it ```simmer``` for a bit (of for 240 time units to be precisely).
 
 
 ```r
 sim <-
   sim %>%
-  simmer()
+  simmer(until = 240)
 ```
 
-After some simmering, we can have a look at the simulation results. Here's a look at the usage of the *nurse* resource across the simulation timespan.
+After some simmering, we can have a look at the overall resource utilization. The top and bottom of the error bars show respectively the 25th and 75th percentile of the utilization across all the replications. The top of the bar shows the median utilization.
 
 
 ```r
-plot_resource_usage(sim, "nurse")
+plot_resource_utilization(sim)
 ```
 
 ![plot of chunk unnamed-chunk-9](./README_files/figure-html/unnamed-chunk-9.png) 
 
+
 **DOCUMENTATION TO BE CONTINUED**
+
+## Contact
+
+For bugs and/or issues: create a new issue on GitHub.
+
+For other questions and comments: bart.smeets@gmail.com
+
+
 
 
 
