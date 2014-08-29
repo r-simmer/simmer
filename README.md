@@ -1,5 +1,7 @@
 # simmer
-by Bart Smeets  
+*by Bart Smeets -- bartsmeets86@gmail.com*
+
+__*simmer* is under heavy development and its internals and syntax can still change extensively over the coming time__
 
 *simmer* is a discrete event package for the R language. It is developed with my own specific requirements for simulating day-to-day hospital proceses and thus might not be suited for everyone. It is designed to be as simple to use as possible and tries to be compatible with the piping features of [magrittr](https://github.com/smbache/magrittr). 
 
@@ -93,23 +95,6 @@ After some simmering, we can have a look at the simulation results. Here's a loo
 
 ```r
 plot_resource_usage(sim, "nurse")
-```
-
-```
-## Loading required package: ggplot2
-## Loading required package: dplyr
-## 
-## Attaching package: 'dplyr'
-## 
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-## 
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-## 
-## geom_smooth: method="auto" and size of largest group is <1000, so using loess. Use 'method = x' to change the smoothing method.
 ```
 
 ![plot of chunk unnamed-chunk-9](./README_files/figure-html/unnamed-chunk-9.png) 

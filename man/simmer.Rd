@@ -3,7 +3,7 @@
 \alias{simmer}
 \title{the simmer function}
 \usage{
-simmer(sim_obj, until = Inf, verbose = FALSE)
+simmer(sim_obj, until = Inf)
 }
 \arguments{
 \item{sim_obj}{input simboject}

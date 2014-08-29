@@ -8,9 +8,9 @@ ReplicationContainer$methods(build_container = function(sim_obj, n_replications 
 })
 
 
-ReplicationContainer$methods(simmer = function(until = BIG_M, verbose = FALSE){
+ReplicationContainer$methods(simmer = function(until = BIG_M){
   for(sim in .self$simulators){
-    sim$simmer(until,verbose)
+    sim$simmer(until)
   }
   
   return(.self)
@@ -40,6 +40,33 @@ ReplicationContainer$methods(plot_resource_usage = function(resource_name){
     geom_hline(y=res$capacity, lty=2, color="red") +
     ggtitle(paste("Resource usage:", res$name))
 })
+# 
+# ReplicationContainer$methods(plot_resources_utilization = function(resource_name){
+#   require(ggplot2)
+#   require(dplyr)
+#   
+#   resources_names<-sapply(simulators[[1]]$resources, function(obj) obj$name)
+#   
+#   dataset<-
+#     do.call(rbind,
+#             mapply(function(sim_obj, rep) { 
+#               dataset<- sim_obj$get_resource(resource_name)$monitor$data
+#               dataset$rep<-rep
+#               dataset
+#             }, simulators, 1:length(simulators), resources_names, SIMPLIFY=F)
+#     ) %>%
+#     group_by(t, rep) %>%
+#     summarise(v = max(v))
+#   
+#   ggplot(dataset) +
+#     aes(x=t, y=v) + 
+#     geom_line(aes(group=rep))+
+#     stat_smooth()+
+#     geom_hline(y=res$capacity, lty=2, color="red") +
+#     ggtitle(paste("Resource usage:", res$name))
+# })
+
+
 
 
 #' @export

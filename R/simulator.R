@@ -4,7 +4,6 @@
 Simulator<-setRefClass("Simulator",
                        fields = list(
                          name = "character",
-                         verbose = "logical",
                          entities = "vector",
                          current_time = "numeric",
                          resources = "vector",
@@ -13,7 +12,6 @@ Simulator<-setRefClass("Simulator",
 
 Simulator$methods(initialize = function(...){
   callSuper(...)
-  .self$verbose <- FALSE
   .self$events <- vector()
   .self
 })
@@ -139,12 +137,7 @@ Simulator$methods(get_next_event_data = function(entity_index) {
 #   
 # })
 
-Simulator$methods(is_verbose = function(v){
-  if(!v %in% c(TRUE, FALSE)) error("Valid options are TRUE or FALSE")
-  
-  verbose <<- v
-  
-})
+
 
 Simulator$methods(create_next_event = function(entity_index){ 
   next_event <- .self$get_next_event_data(entity_index)
@@ -276,10 +269,7 @@ Simulator$methods(stop_event = function(evt){
 
 
 
-Simulator$methods(simmer = function(until=Inf, verbose = FALSE){
-  # set verbosity
-  .self$is_verbose(verbose)
-  
+Simulator$methods(simmer = function(until=Inf){  
   
   # create first event for all entities
   for(ent_index in 1:length(.self$entities)){
@@ -307,7 +297,7 @@ Simulator$methods(simmer = function(until=Inf, verbose = FALSE){
     
     
     
-    if(verbose) message(paste("current time:", .self$now()))
+    if(getOption("verbose")) message(paste("current time:", .self$now()))
     
     .self$goto_time(.self$next_step())    
     

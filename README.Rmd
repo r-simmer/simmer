@@ -1,10 +1,12 @@
 ---
 title: "simmer"
-author: "by Bart Smeets"
 output: 
   html_document:
     keep_md: true
 ---
+*by Bart Smeets -- bartsmeets86@gmail.com*
+
+__*simmer* is under heavy development and its internals and syntax can still change extensively over the coming time__
 
 *simmer* is a discrete event package for the R language. It is developed with my own specific requirements for simulating day-to-day hospital proceses and thus might not be suited for everyone. It is designed to be as simple to use as possible and tries to be compatible with the piping features of [magrittr](https://github.com/smbache/magrittr). 
 
@@ -94,7 +96,7 @@ sim <-
 
 After some simmering, we can have a look at the simulation results. Here's a look at the usage of the *nurse* resource across the simulation timespan.
 
-```{r}
+```{r, message=FALSE}
 plot_resource_usage(sim, "nurse")
 ```
 

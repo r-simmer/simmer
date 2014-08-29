@@ -94,9 +94,9 @@ add_trajectory<-function(sim_obj, name, trajectory){
 #' the simmer function
 #' @param sim_obj input simboject
 #' @export
-simmer <- function(sim_obj, until=Inf, verbose = FALSE){
+simmer <- function(sim_obj, until=Inf){
   
-  sim_obj$simmer(until = until, verbose = verbose)
+  sim_obj$simmer(until = until)
 }
 
 

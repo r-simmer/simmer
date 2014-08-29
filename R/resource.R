@@ -4,10 +4,7 @@ Resource<-setRefClass("Resource",
                       fields = list(
                         name = "character",
                         capacity = "numeric",
-                        monitor = "Monitor"),
-                      #                       methods = list(
-                      #                         check_availability = function(amount_requested = 1) 0
-                      #                       )
+                        monitor = "Monitor")
 )
 
 
