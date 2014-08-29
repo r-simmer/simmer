@@ -68,7 +68,6 @@ ReplicationContainer$methods(plot_resource_usage = function(resource_name){
 
 
 
-
 #' @export
 replicator<-function(sim_obj, n_replications){
   replication_container<-ReplicationContainer()
