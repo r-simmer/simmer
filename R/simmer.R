@@ -1,10 +1,4 @@
 
-
-# pop function
-pop<-function(v){
-  v[1:length(v)-1]
-}
-
 # push function
 push<-function(v, obj){
   c(v, obj)
@@ -28,12 +22,6 @@ add_resource<-function(sim_obj, name, capacity=1){
 }
 
 
-
-
-
-
-
-
 #' @export
 add_entities_with_interval<-function(sim_obj, n, name_prefix, trajectory, interval, start_time=0){
   time <- start_time
@@ -55,7 +43,7 @@ get_objects_by_filter<-function(vector_obj, slot, filter, sep="@"){
   results<-vector()
   for(obj in vector_obj){
     if(eval(parse(text=paste0("obj",sep,slot))) == filter){
-      results<-push(results,obj)
+      results<-c(results,obj)
     }
   }
   return(results)
@@ -67,7 +55,7 @@ get_objects_by_NOTfilter<-function(vector_obj, slot, filter, sep="@"){
   results<-vector()
   for(obj in vector_obj){
     if(eval(parse(text=paste0("obj",sep,slot))) != filter){
-      results<-push(results,obj)
+      results<-c(results,obj)
     }
   }
   return(results)

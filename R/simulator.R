@@ -44,7 +44,7 @@ Simulator$methods(release_resources = function(evt){
 
 
 
-Simulator$methods(goto_time = function(t) current_time <<- t)
+
 
 Simulator$methods(add_entity = function(name, trajectory, start_time=0){
   
@@ -54,12 +54,12 @@ Simulator$methods(add_entity = function(name, trajectory, start_time=0){
            trajectory=trajectory, 
            trajectory_index = .self$get_trajectory_index(trajectory), 
            entity_index = length(entities)+1)
-  entities<<-push(entities, 
+  entities<<-c(entities, 
                   new_entity)
 })
 
 Simulator$methods(add_trajectory = function(name, trajectory){
-  trajectories<<-push(trajectories,
+  trajectories<<-c(trajectories,
                       new("trajectory", name=name, trajectory=trajectory)
   )
 })
@@ -112,38 +112,10 @@ Simulator$methods(get_next_event_data = function(entity_index) {
 }
 )
 
-# Simulator$methods(check_resource_availability = function(event_data){
-#   #   print(event_data[1,"resource"])
-#   resources<-unlist(strsplit(as.character(event_data[1,"resource"]),"/"))
-#   amount_req<-as.numeric(unlist(strsplit(as.character(event_data[1,"amount"]),"/")))
-#   #   print(amounts)
-#   
-#   result = c()
-#   #   print(resources)
-#   for(i in 1:length(resources)){
-#     #     print(resources[i])
-#     res<-.self$get_resource(resources[i])
-#     #     print(tail(res$monitor,1))
-#     if(tail(res$monitor,1)$in_use + amount_req[i] <= res$amount){
-#       #       print(3)
-#       result <- push(result, TRUE)
-#     } else {
-#       result <- push(result, FALSE)
-#     }
-#     
-#   }
-#   
-#   return(result)
-#   
-# })
-
-
 
 Simulator$methods(create_next_event = function(entity_index){ 
   next_event <- .self$get_next_event_data(entity_index)
   entity <- .self$entities[[entity_index]]
-  
-  #   print(next_event)
   
   if(!is.null(next_event)){ ## if FALSE, end of trajectory is reached
     duration_evaluated <-
@@ -160,7 +132,7 @@ Simulator$methods(create_next_event = function(entity_index){
       mapply(function(r,a){
         ResourceRequirement(name = r, amount = as.numeric(a), resource_obj = .self$get_resource(r))
       }, res, amounts, SIMPLIFY = T, USE.NAMES = F)
-    #     , mode = "any")
+
     
     
     new_evt = Event(event_id=as.character(next_event$event_id), 
@@ -168,12 +140,11 @@ Simulator$methods(create_next_event = function(entity_index){
                     entity_index = entity_index,
                     description=paste0(as.character(next_event$description), "__", entity$name), 
                     required_resources = res_reqs, 
-                    #                     amount=as.numeric(as.character(next_event$amount)),  # niet meer nodig?
                     duration=duration_evaluated,
                     early_start = .self$now() + entity$early_start_time,
                     successor=successor_evaluated)
     
-    events <<- push(events, new_evt)
+    events <<- c(events, new_evt)
     events <<- order_objects_by_slot_value(events, slot = "early_start")
     
     if(length(entity$current_event$early_start)>0){ # if current_event is not none
@@ -197,21 +168,20 @@ Simulator$methods(create_next_event = function(entity_index){
   
 })
 
-Simulator$methods(next_step = function (){
+Simulator$methods(goto_next_step = function (){
   if(length(.self$events)>0){
-    min(
+    current_time <<- min(
       sapply(.self$events, function(obj){
         if(obj$has_started()) {
           return(obj$end_time)
         } else {
-          return(max(obj$early_start, now() + 1))
+          return(ifelse(obj$early_start>now(), obj$early_start, Inf))
         }
       }
       )
     )
-  } else {
-    now()
   }
+  
 })
 
 Simulator$methods(start_event = function(evt){ #rename naar start_event
@@ -299,7 +269,7 @@ Simulator$methods(simmer = function(until=Inf){
     
     if(getOption("verbose")) message(paste("current time:", .self$now()))
     
-    .self$goto_time(.self$next_step())    
+    .self$goto_next_step()    
     
   }
   

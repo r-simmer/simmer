@@ -8,7 +8,7 @@
 ## verbose: global options gebruiken
 
 
-
+options(verbose = T)
 
 library(ggthemr)
 ggthemr('fresh', layout="scientific")
@@ -53,7 +53,7 @@ sim<-
 
 simmer(sim, until = 240)
 
-
+plot_resource_utilization(sim)
 
 sim$plot_resource_usage("arts")
 

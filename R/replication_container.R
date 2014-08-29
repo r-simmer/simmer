@@ -80,7 +80,7 @@ ReplicationContainer$methods(plot_resource_utilization = function(resource_name)
     group_by(resource, rep, capacity, runtime) %>%
     summarise(in_use = sum(in_use, na.rm=T)) %>%
     ungroup() %>%
-    mutate(utilization = in_use / runtime) %>%
+    mutate(utilization = in_use / capacity / runtime) %>%
     group_by(resource, capacity) %>%
     summarise(Q25 = quantile(utilization, .25),
               Q50 = quantile(utilization, .5),
