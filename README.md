@@ -102,6 +102,24 @@ plot_resource_utilization(sim)
 
 ![plot of chunk unnamed-chunk-9](./README_files/figure-html/unnamed-chunk-9.png) 
 
+It is also possible to have a look at a specific resource and its activity during the simulation.
+
+
+```r
+plot_resource_usage(sim, "doctor")
+```
+
+![plot of chunk unnamed-chunk-10](./README_files/figure-html/unnamed-chunk-10.png) 
+
+In the above graph, the individual lines are all seperate replications. A smooth line is drawn over them to get a sense of the *'average'* utilization. It is also possible to get a graph about a specific replication by simply specifying the replication number. In the example below the 6th replication is shown.
+
+
+```r
+plot_resource_usage(sim, "doctor", 6)
+```
+
+![plot of chunk unnamed-chunk-11](./README_files/figure-html/unnamed-chunk-11.png) 
+
 
 **DOCUMENTATION TO BE CONTINUED**
 

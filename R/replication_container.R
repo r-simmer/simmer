@@ -16,9 +16,15 @@ ReplicationContainer$methods(simmer = function(until = BIG_M){
   return(.self)
 })
 
-ReplicationContainer$methods(plot_resource_usage = function(resource_name){
+ReplicationContainer$methods(plot_resource_usage = function(resource_name, ...){
   require(ggplot2)
   require(dplyr)
+
+  if(length(list(...))>0){
+    return(
+      simulators[[list(...)[[1]]]]$plot_resource_usage(resource_name)
+    )
+  }
   
   res<-simulators[[1]]$get_resource(resource_name)
   
@@ -35,10 +41,13 @@ ReplicationContainer$methods(plot_resource_usage = function(resource_name){
   
   ggplot(dataset) +
     aes(x=t, y=v) + 
-    geom_line(aes(group=rep))+
+    geom_step(aes(group=rep), alpha=.2)+
     stat_smooth()+
     geom_hline(y=res$capacity, lty=2, color="red") +
-    ggtitle(paste("Resource usage:", res$name))
+    ggtitle(paste("Resource usage:", res$name)) +
+    scale_y_continuous(breaks=seq(0,1000,1)) +
+    ylab("in use") +
+    xlab("time")
 })
 
 ReplicationContainer$methods(plot_resource_utilization = function(resource_name){

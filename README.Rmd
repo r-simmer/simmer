@@ -105,6 +105,18 @@ After you've left it simmering for a bit (pun intended), we can have a look at t
 plot_resource_utilization(sim)
 ```
 
+It is also possible to have a look at a specific resource and its activity during the simulation.
+
+```{r, message=FALSE}
+plot_resource_usage(sim, "doctor")
+```
+
+In the above graph, the individual lines are all seperate replications. A smooth line is drawn over them to get a sense of the *'average'* utilization. It is also possible to get a graph about a specific replication by simply specifying the replication number. In the example below the 6th replication is shown.
+
+```{r, message=FALSE}
+plot_resource_usage(sim, "doctor", 6)
+```
+
 
 **DOCUMENTATION TO BE CONTINUED**
 

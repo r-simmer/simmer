@@ -55,12 +55,12 @@ Simulator$methods(add_entity = function(name, trajectory, start_time=0){
            trajectory_index = .self$get_trajectory_index(trajectory), 
            entity_index = length(entities)+1)
   entities<<-c(entities, 
-                  new_entity)
+               new_entity)
 })
 
 Simulator$methods(add_trajectory = function(name, trajectory){
   trajectories<<-c(trajectories,
-                      new("trajectory", name=name, trajectory=trajectory)
+                   new("trajectory", name=name, trajectory=trajectory)
   )
 })
 
@@ -132,7 +132,7 @@ Simulator$methods(create_next_event = function(entity_index){
       mapply(function(r,a){
         ResourceRequirement(name = r, amount = as.numeric(a), resource_obj = .self$get_resource(r))
       }, res, amounts, SIMPLIFY = T, USE.NAMES = F)
-
+    
     
     
     new_evt = Event(event_id=as.character(next_event$event_id), 
@@ -200,11 +200,11 @@ Simulator$methods(start_event = function(evt){ #rename naar start_event
 })
 
 
-Simulator$methods(plot_resource_usage = function(res_name) {
+Simulator$methods(plot_resource_usage = function(resource_name) {
   require(ggplot2)
   require(dplyr)
   
-  res<-.self$get_resource(res_name)
+  res<-.self$get_resource(resource_name)
   
   plotset<-
     res$monitor$data%>%
@@ -213,10 +213,12 @@ Simulator$methods(plot_resource_usage = function(res_name) {
   
   ggplot(plotset)+
     aes(x=t, y=v) +
-    geom_line()+
-    geom_point() + 
+    geom_step()+
     geom_hline(y=res$capacity, lty=2, color="red") +
-    ggtitle(paste("Resource usage:", res$name))
+    ggtitle(paste("Resource usage:", res$name)) +
+    scale_y_continuous(breaks=seq(0,1000,1)) +
+    ylab("in use") +
+    xlab("time")
   
 })
 
@@ -288,3 +290,8 @@ setMethod("show", "Simulator",
                                      "\ntime:", object$now(),
                                      "\n# events remaining:", length(object$events)))
 )
+
+#' @export
+plot_resource_usage<-function(sim_obj, resource_name, ...){
+  sim_obj$plot_resource_usage(resource_name, ...)
+}

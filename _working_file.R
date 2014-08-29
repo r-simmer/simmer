@@ -55,7 +55,10 @@ simmer(sim, until = 240)
 
 plot_resource_utilization(sim)
 
-sim$plot_resource_usage("arts")
+plot_resource_usage(sim, "vpk", 2)
+plot_resource_usage(sim, "vpk")
+sim$simulators[[2]]$get_resource("arts")
+
 
 # 
 # 
@@ -118,3 +121,9 @@ dataset %>%
             Q50 = quantile(utilization, .5),
             Q75 = quantile(utilization, .75))
 
+
+test<-function(...){
+  print(list(...))
+}
+
+test(3,4,8, 9)
