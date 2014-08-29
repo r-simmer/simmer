@@ -95,43 +95,8 @@ add_trajectory<-function(sim_obj, name, trajectory){
 #' @param sim_obj input simboject
 #' @export
 simmer <- function(sim_obj, until=Inf, verbose = FALSE){
-  # set verbosity
-  sim_obj$is_verbose(verbose)
   
-  
-  # create first event for all entities
-  for(ent_index in 1:length(sim_obj$entities)){
-    sim_obj$create_next_event(ent_index)
-  }
-  
-  
-  ## loop over event list
-  
-  while(sim_obj$now() < until && length(sim_obj$events)!=0){
-    
-    for(evt in sim_obj$events){
-      
-      if(sim_obj$now() >= evt$end_time){ ## event has ended, start next event
-        
-        
-        
-        new_evt<-sim_obj$create_next_event(evt$entity_index)  ## also deletes finished event from event list and starts new event if possible
-        
-      } else if (sim_obj$now() >= evt$early_start && !evt$has_started()){ ## event is waiting to start: check if event can start
-        sim_obj$start_event(evt)
-        
-      }
-    }
-    
-    
-    
-    if(verbose) message(paste("current time:", sim_obj$now()))
-    #     sim_obj$goto_time(sim_obj$now()+1)    
-    sim_obj$goto_time(sim_obj$next_step())    
-    
-  }
-  
-  
-  
-  return(sim_obj)
+  sim_obj$simmer(until = until, verbose = verbose)
 }
+
+

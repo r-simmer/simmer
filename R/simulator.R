@@ -14,6 +14,7 @@ Simulator<-setRefClass("Simulator",
 Simulator$methods(initialize = function(...){
   callSuper(...)
   .self$verbose <- FALSE
+  .self$events <- vector()
   .self
 })
 
@@ -271,6 +272,51 @@ Simulator$methods(stop_event = function(evt){
   
 }                 
 )
+
+
+
+
+Simulator$methods(simmer = function(until=Inf, verbose = FALSE){
+  # set verbosity
+  .self$is_verbose(verbose)
+  
+  
+  # create first event for all entities
+  for(ent_index in 1:length(.self$entities)){
+    .self$create_next_event(ent_index)
+  }
+  
+  
+  ## loop over event list
+  
+  while(.self$now() < until && length(.self$events)!=0){
+    
+    for(evt in .self$events){
+      
+      if(.self$now() >= evt$end_time){ ## event has ended, start next event
+        
+        
+        
+        new_evt<-.self$create_next_event(evt$entity_index)  ## also deletes finished event from event list and starts new event if possible
+        
+      } else if (.self$now() >= evt$early_start && !evt$has_started()){ ## event is waiting to start: check if event can start
+        .self$start_event(evt)
+        
+      }
+    }
+    
+    
+    
+    if(verbose) message(paste("current time:", .self$now()))
+    
+    .self$goto_time(.self$next_step())    
+    
+  }
+  
+  
+  
+  return(.self)
+})
 
 setMethod("show", "Simulator",
           function(object) cat(paste("Simulator object",
