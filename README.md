@@ -26,10 +26,6 @@ First load the package.
 library(simmer)
 ```
 
-```
-## Loading required package: magrittr
-```
-
 Set-up a simple trajectory (the column names are important!).
 
 
@@ -88,7 +84,7 @@ sim<-
   replicator(10)
 ```
 
-The simulation is now ready for a test run; just let it ```simmer``` for a bit (of for 240 time units to be precisely).
+The simulation is now ready for a test run; just let it ```simmer``` for a bit (or for 240 time units to be precisely).
 
 
 ```r
@@ -97,7 +93,7 @@ sim <-
   simmer(until = 240)
 ```
 
-After some simmering, we can have a look at the overall resource utilization. The top and bottom of the error bars show respectively the 25th and 75th percentile of the utilization across all the replications. The top of the bar shows the median utilization.
+After you've left it simmering for a bit (pun intended), we can have a look at the overall resource utilization. The top and bottom of the error bars show respectively the 25th and 75th percentile of the utilization across all the replications. The top of the bar shows the median utilization.
 
 
 ```r
@@ -113,7 +109,7 @@ plot_resource_utilization(sim)
 
 For bugs and/or issues: create a new issue on GitHub.
 
-For other questions and comments: bart.smeets@gmail.com
+Other questions or comments: bartsmeets86@gmail.com
 
 
 
