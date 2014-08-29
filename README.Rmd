@@ -1,7 +1,9 @@
 ---
 title: "simmer"
 author: "by Bart Smeets"
-output: html_document
+output: 
+  html_document:
+    keep_md: true
 ---
 
 *simmer* is a discrete event package for the R language. It is developed with my own specific requirements for simulating day-to-day hospital proceses and thus might not be suited for everyone. It is designed to be as simple to use as possible and tries to be compatible with the piping features of [magrittr](https://github.com/smbache/magrittr). 
