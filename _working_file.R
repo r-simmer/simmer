@@ -1,14 +1,10 @@
 ## TODOs 
-## resource seizing blokkerend maken - DONE
-## multiple resource seizing mogelijk maken - DONE
-## simmer functie --> moet method van Simulator worden
-## next_step beter/goed bepalen
-## plot functies toevoegen
-## simcontainer toevoegen : replications mogelijk maken + variations
-## verbose: global options gebruiken
+## plot functions to different file --> decouple from refclasses --> to regular functions
+## convenience function to different file
+## BUG: readme example crashed with until of 120
 
 
-options(verbose = T)
+options(verbose = F)
 
 library(ggthemr)
 ggthemr('fresh', layout="scientific")
@@ -41,9 +37,9 @@ library(simmer)
 sim<-
   create_simulator(name = "SuperDuperSim") %>%
   #   add_entity("test","r4e5rea4") 
-  add_resource("vpk", 1) %>%
-  add_resource("logistieke", 2) %>%
-  add_resource("arts", 2) %>%
+  add_resource("vpk", 4) %>%
+  add_resource("logistieke", 4) %>%
+  add_resource("arts", 4) %>%
   add_trajectory("t1",t1) %>%
   add_entities_with_interval(10, "test", "t1", 5) %>%
   replicator(10)
@@ -54,10 +50,29 @@ sim<-
 simmer(sim, until = 240)
 
 plot_resource_utilization(sim)
+plot_evolution_entity_times(sim, type="flow_time")
 
 plot_resource_usage(sim, "vpk", 2)
 plot_resource_usage(sim, "vpk")
 sim$simulators[[2]]$get_resource("arts")
+
+
+library(dplyr)
+
+entity_data<-sim$entities[[3]]$time_value_monitor$data
+
+activity_data<-
+  entity_data %>%
+  group_by(t) %>%
+  summarise(v=max(v)) %>%
+  mutate(activity_time = (t-lag(t)) * lag(v)) %>%
+  ungroup() %>%
+  summarise(activity_time = sum(activity_time, na.rm=T)) %>%
+  data.frame(activity_time = ., 
+             start_time = min(subset(entity_data, v>0, select="t")),
+             end_time = entity_data[nrow(entity_data),"t"]) %>%
+  mutate(flow_time = end_time - start_time,
+         waiting_time = flow_time - activity_time)
 
 
 # 
@@ -88,22 +103,22 @@ resources_capacity<-sapply(sim$simulators[[1]]$resources, function(obj) obj$capa
 
 
 dataset<-
-do.call(rbind,
-        mapply(function(sim_obj, rep, runtime) { 
-          dataset<-
-            do.call(rbind,
-                    mapply(function(resource_name, resource_capacity){
-                      dataset<- sim_obj$get_resource(resource_name)$monitor$data
-                      dataset$resource<-resource_name
-                      dataset$capacity<-resource_capacity
-                      dataset
-                    }, resources_names, resources_capacity, SIMPLIFY=F))  
-          
-          dataset$rep<-rep
-          dataset$runtime<-runtime
-          dataset
-        }, sim$simulators, 1:length(sim$simulators),run_times, SIMPLIFY=F)
-)
+  do.call(rbind,
+          mapply(function(sim_obj, rep, runtime) { 
+            dataset<-
+              do.call(rbind,
+                      mapply(function(resource_name, resource_capacity){
+                        dataset<- sim_obj$get_resource(resource_name)$monitor$data
+                        dataset$resource<-resource_name
+                        dataset$capacity<-resource_capacity
+                        dataset
+                      }, resources_names, resources_capacity, SIMPLIFY=F))  
+            
+            dataset$rep<-rep
+            dataset$runtime<-runtime
+            dataset
+          }, sim$simulators, 1:length(sim$simulators),run_times, SIMPLIFY=F)
+  )
 
 
 dataset %>%

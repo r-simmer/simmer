@@ -24,7 +24,7 @@ TimeValueMonitor$methods(get_last_value = function(t, v){
 
 #' KeyValueMonitor class.
 #' 
-#' Holds data not related to specific point in simulation time. E.g. holds values for keys suchs as "flow_time", "activity_time".
+#' Holds data not related to specific point in simulation time. E.g. holds values for keys suchs as "flow_time", "activity_time". NOT USED AT THE MOMENT
 KeyValueMonitor<-setRefClass("KeyValueMonitor", 
                              fields = list(
                                data = "list"))

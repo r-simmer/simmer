@@ -141,7 +141,7 @@ Simulator$methods(create_next_event = function(entity_index){
                     description=paste0(as.character(next_event$description), "__", entity$name), 
                     required_resources = res_reqs, 
                     duration=duration_evaluated,
-                    early_start = .self$now() + entity$early_start_time,
+                    early_start = ifelse(entity$early_start_time > .self$now(), entity$early_start_time, .self$now()),
                     successor=successor_evaluated)
     
     events <<- c(events, new_evt)
@@ -193,7 +193,6 @@ Simulator$methods(start_event = function(evt){ #rename naar start_event
       evt$start_time <- .self$now()
       evt$end_time <- evt$start_time + evt$duration
       .self$entities[[evt$entity_index]]$time_value_monitor$record(now(), 1) # record start of processing of event
-      .self$entities[[evt$entity_index]]$key_value_monitor$record_increment("activity_time", evt$duration)
       return(TRUE)
     }
   }

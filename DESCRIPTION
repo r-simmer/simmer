@@ -17,3 +17,4 @@ Collate:
   'simulator.R'
   'simmer.R'
   'replication_container.R'
+  'plot.R'

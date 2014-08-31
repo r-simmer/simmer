@@ -19,7 +19,7 @@ ReplicationContainer$methods(simmer = function(until = BIG_M){
 ReplicationContainer$methods(plot_resource_usage = function(resource_name, ...){
   require(ggplot2)
   require(dplyr)
-
+  
   if(length(list(...))>0){
     return(
       simulators[[list(...)[[1]]]]$plot_resource_usage(resource_name)
@@ -80,7 +80,7 @@ ReplicationContainer$methods(plot_resource_utilization = function(resource_name)
     )
   
   dataset<-
-  dataset %>%
+    dataset %>%
     group_by(resource, rep, capacity, runtime, t) %>%
     summarise(v=max(v)) %>%
     ungroup() %>%
@@ -109,6 +109,66 @@ ReplicationContainer$methods(plot_resource_utilization = function(resource_name)
 })
 
 
+ReplicationContainer$methods(plot_evolution_entity_times = function(type=c("flow_time","activity_time","waiting_time")){
+  require(dplyr)
+  #   simulators<-sim$simulators
+  dataset<-
+    do.call(rbind, 
+            mapply(function(sim_obj, rep){
+              do.call(rbind,
+                      lapply(sim_obj$entities, function(ent){
+                        
+                        entity_data<-ent$time_value_monitor$data
+                        
+                        activity_data<-
+                          entity_data %>%
+                          group_by(t) %>%
+                          summarise(v=max(v)) %>%
+                          mutate(activity_time = (t-lag(t)) * lag(v)) %>%
+                          ungroup() %>%
+                          summarise(activity_time = sum(activity_time, na.rm=T)) %>%
+                          data.frame(activity_time = ., 
+                                     start_time = min(subset(entity_data, v>0, select="t")),
+                                     end_time = entity_data[nrow(entity_data),"t"]) %>%
+                          mutate(flow_time = end_time - start_time,
+                                 waiting_time = flow_time - activity_time,
+                                 replication = rep)
+                        
+                        activity_data
+                        
+                      })
+              )
+            }, simulators, 1:length(simulators), SIMPLIFY=F)
+    ) %>%
+    arrange(replication, flow_time)
+  
+  if(type=="flow_time"){
+    ggplot(dataset) +
+    aes(x=end_time, y=flow_time) +
+    geom_line(alpha=.4, aes(group=replication)) +
+    stat_smooth() +
+    xlab("simulation time") +
+    ylab("flow time") +
+    ggtitle("Flow time evolution")
+  } else if(type=="waiting_time"){
+    ggplot(dataset) +
+    aes(x=end_time, y=waiting_time) +
+    geom_line(alpha=.4, aes(group=replication)) +
+    stat_smooth() +
+    xlab("simulation time") +
+    ylab("waiting time") +
+    ggtitle("Waiting time evolution")
+  } else if(type=="activity_time"){
+    ggplot(dataset) +
+    aes(x=end_time, y=activity_time) +
+    geom_line(alpha=.4, aes(group=replication)) +
+    stat_smooth() +
+    xlab("simulation time") +
+    ylab("activity time") +
+    ggtitle("Activity time evolution")
+  }
+  
+})
 
 #' @export
 replicator<-function(sim_obj, n_replications){
@@ -132,6 +192,13 @@ deep_copy_simulator<-function(sim_obj){
   obj_copy
 }
 
+
+#' @export
+plot_evolution_entity_times<-function(replication_obj, ...){
+  replication_obj$plot_evolution_entity_times(...)
+}
+
+
 #' @export
 plot_resource_usage<-function(replication_obj, ...){
   replication_obj$plot_resource_usage(...)
@@ -141,3 +208,5 @@ plot_resource_usage<-function(replication_obj, ...){
 plot_resource_utilization<-function(replication_obj, ...){
   replication_obj$plot_resource_utilization(...)
 }
+
+

@@ -6,8 +6,8 @@ Entity <- setRefClass("Entity",
                         trajectory_index = "numeric",
                         early_start_time="numeric",
                         current_event = "Event",
-                        time_value_monitor = "TimeValueMonitor",
-                        key_value_monitor = "KeyValueMonitor")
+                        time_value_monitor = "TimeValueMonitor"
+                      )
 )
 
 

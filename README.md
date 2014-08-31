@@ -52,7 +52,7 @@ t2<-
 
 In the above trajectory the ```duration``` is drawn from a normal distribution with a given mean. The ```successor``` of event 2 is either ```NA``` (end of trajectory) or event 3.
 
-When the trajectory is know, a simulator object can be build. In the below example, a simulator is instantiated and three types of resources are added (each with a capacity of 1).
+When the trajectory is know, a simulator object can be build. In the below example, a simulator is instantiated and three types of resources are added. The*nurse* and *administration* with a capacity of 1 and the *doctor* resource with a capacity of 2.
 
 
 ```r
@@ -61,7 +61,7 @@ library(magrittr)
 sim<-
   create_simulator(name = "SuperDuperSim") %>%
   add_resource("nurse", 1) %>%
-  add_resource("doctor", 1) %>%
+  add_resource("doctor", 2) %>%
   add_resource("administration", 1)
 ```
 
@@ -84,7 +84,7 @@ sim<-
   replicator(10)
 ```
 
-The simulation is now ready for a test run; just let it ```simmer``` for a bit (or for 240 time units to be precisely).
+The simulation is now ready for a test run; just let it ```simmer``` for a bit (or for 120 time units to be precise).
 
 
 ```r
@@ -92,6 +92,8 @@ sim <-
   sim %>%
   simmer(until = 240)
 ```
+
+### Resource utilization
 
 After you've left it simmering for a bit (pun intended), we can have a look at the overall resource utilization. The top and bottom of the error bars show respectively the 25th and 75th percentile of the utilization across all the replications. The top of the bar shows the median utilization.
 
@@ -120,6 +122,18 @@ plot_resource_usage(sim, "doctor", 6)
 
 ![plot of chunk unnamed-chunk-11](./README_files/figure-html/unnamed-chunk-11.png) 
 
+### Flowtime
+
+We can also have a look at the evolution of the entities' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them.
+
+
+```r
+plot_evolution_entity_times(sim, "flow_time")
+```
+
+![plot of chunk unnamed-chunk-12](./README_files/figure-html/unnamed-chunk-12.png) 
+
+Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
 
 **DOCUMENTATION TO BE CONTINUED**
 
