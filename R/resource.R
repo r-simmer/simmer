@@ -4,7 +4,8 @@ Resource<-setRefClass("Resource",
                       fields = list(
                         name = "character",
                         capacity = "numeric",
-                        monitor = "Monitor")
+                        monitor = "TimeValueMonitor"
+                        )
 )
 
 

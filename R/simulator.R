@@ -192,7 +192,8 @@ Simulator$methods(start_event = function(evt){ #rename naar start_event
       
       evt$start_time <- .self$now()
       evt$end_time <- evt$start_time + evt$duration
-      .self$entities[[evt$entity_index]]$monitor$record(now(), 1) # record start of processing of event
+      .self$entities[[evt$entity_index]]$time_value_monitor$record(now(), 1) # record start of processing of event
+      .self$entities[[evt$entity_index]]$key_value_monitor$record_increment("activity_time", evt$duration)
       return(TRUE)
     }
   }
@@ -233,7 +234,7 @@ Simulator$methods(stop_event = function(evt){
   events <<- .self$events[evt_filter]
   
   # register stop of event for entity
-  .self$entities[[evt$entity_index]]$monitor$record(now(), 0)
+  .self$entities[[evt$entity_index]]$time_value_monitor$record(now(), 0)
   
 }                 
 )
