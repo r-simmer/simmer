@@ -175,7 +175,7 @@ Simulator$methods(goto_next_step = function (){
         if(obj$has_started()) {
           return(obj$end_time)
         } else {
-          return(ifelse(obj$early_start>now(), obj$early_start, Inf)) # klopt iets niet...
+          return(ifelse(obj$early_start>now(), obj$early_start, now()+1))
         }
       }
       )
@@ -275,9 +275,16 @@ Simulator$methods(simmer = function(until=Inf){
     
   }
   
-  
+  .self$stop_running_events()  
   
   return(.self)
+})
+
+# 
+Simulator$methods(stop_running_events = function(){
+  for(evt in .self$events){
+    entities[[evt$entity_index]]$time_value_monitor$record(now(), NA)
+  }
 })
 
 setMethod("show", "Simulator",

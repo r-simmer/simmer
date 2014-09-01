@@ -1,3 +1,9 @@
+#' plot utilization of a resource over time
+#' 
+#' plot the usage of a resource over the simulation time frame
+#' @param sim_obj the simulation object
+#' @param resource_name the name of the resource (character value)
+#' @param replication specify to plot only a specific replication (default=FALSE)
 #' @export
 plot_resource_usage <- function(sim_obj, resource_name, replication=FALSE){
   
@@ -35,7 +41,8 @@ plot_resource_usage <- function(sim_obj, resource_name, replication=FALSE){
     ggtitle(paste("Resource usage:", res$name)) +
     scale_y_continuous(breaks=seq(0,1000,1)) +
     ylab("in use") +
-    xlab("time")
+    xlab("time") +
+    expand_limits(y=0)
   
   if(replication==F){
     plot_obj +
@@ -43,6 +50,10 @@ plot_resource_usage <- function(sim_obj, resource_name, replication=FALSE){
   } else plot_obj
 }
 
+#' plot utilization of resources
+#' 
+#' plot the utilization of all resources in the simulation
+#' @param sim_obj the simulation object
 #' @export
 plot_resource_utilization <- function(sim_obj){
   require(ggplot2)
@@ -129,6 +140,10 @@ plot_evolution_entity_times <- function(sim_obj, type=c("flow_time","activity_ti
                         
                         entity_data<-ent$time_value_monitor$data
                         
+                        if(is.na(entity_data[nrow(entity_data),"v"])) {
+                          return(data.frame())
+                        } else {
+                        
                         activity_data<-
                           entity_data %>%
                           group_by(t) %>%
@@ -138,19 +153,18 @@ plot_evolution_entity_times <- function(sim_obj, type=c("flow_time","activity_ti
                           summarise(activity_time = sum(activity_time, na.rm=T)) %>%
                           data.frame(activity_time = ., 
                                      start_time = min(subset(entity_data, v>0, select="t")),
-                                     end_time = entity_data[nrow(entity_data),"t"]) %>%
+                                     end_time = entity_data[nrow(entity_data),"t"], entity=ent$name) %>%
                           mutate(flow_time = end_time - start_time,
                                  waiting_time = flow_time - activity_time,
                                  replication = rep)
-                        
-                        activity_data
+                        return(activity_data)
+                        }
                         
                       })
               )
             }, simulators, 1:length(simulators), SIMPLIFY=F)
     ) %>%
     arrange(replication, flow_time)
-  print(dataset)
   
   if(type=="flow_time"){
     ggplot(dataset) +
@@ -159,7 +173,8 @@ plot_evolution_entity_times <- function(sim_obj, type=c("flow_time","activity_ti
       stat_smooth() +
       xlab("simulation time") +
       ylab("flow time") +
-      ggtitle("Flow time evolution")
+      ggtitle("Flow time evolution") +
+      expand_limits(y=0)
   } else if(type=="waiting_time"){
     ggplot(dataset) +
       aes(x=end_time, y=waiting_time) +
@@ -167,7 +182,8 @@ plot_evolution_entity_times <- function(sim_obj, type=c("flow_time","activity_ti
       stat_smooth() +
       xlab("simulation time") +
       ylab("waiting time") +
-      ggtitle("Waiting time evolution")
+      ggtitle("Waiting time evolution") +
+      expand_limits(y=0)
   } else if(type=="activity_time"){
     ggplot(dataset) +
       aes(x=end_time, y=activity_time) +
@@ -175,7 +191,8 @@ plot_evolution_entity_times <- function(sim_obj, type=c("flow_time","activity_ti
       stat_smooth() +
       xlab("simulation time") +
       ylab("activity time") +
-      ggtitle("Activity time evolution")
+      ggtitle("Activity time evolution") +
+      expand_limits(y=0)
   }
   
 }

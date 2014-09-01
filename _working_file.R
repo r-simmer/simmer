@@ -4,7 +4,7 @@
 ## BUG: readme example crashed with until of 120
 
 
-options(verbose = F)
+options(verbose = T)
 
 library(ggthemr)
 ggthemr('fresh', layout="scientific")
@@ -47,9 +47,9 @@ sim<-
 # %>%
 #   simmer()
 
-simmer(sim, until = 30)
+simmer(sim, until = 120)
 # 
-plot_resource_utilization(sim)
+# plot_resource_utilization(sim)
 plot_evolution_entity_times(sim, type="flow_time")
 # 
 # plot_resource_usage(sim, "vpk", 2)

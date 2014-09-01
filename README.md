@@ -14,7 +14,7 @@ The installation requires the [devtools](https://github.com/hadley/devtools) pac
 
 
 ```r
-devtools$install_github("Bart6114/simmer")
+devtools::install_github("Bart6114/simmer")
 ```
 
 ## Using simmer
@@ -84,13 +84,13 @@ sim<-
   replicator(10)
 ```
 
-The simulation is now ready for a test run; just let it ```simmer``` for a bit (or for 240 time units to be precise).
+The simulation is now ready for a test run; just let it ```simmer``` for a bit (or for 120 time units to be precise).
 
 
 ```r
 sim <-
   sim %>%
-  simmer(until = 240)
+  simmer(until = 120)
 ```
 
 ### Resource utilization
@@ -113,7 +113,7 @@ plot_resource_usage(sim, "doctor")
 
 ![plot of chunk unnamed-chunk-10](./README_files/figure-html/unnamed-chunk-10.png) 
 
-In the above graph, the individual lines are all seperate replications. A smooth line is drawn over them to get a sense of the *'average'* utilization. It is also possible to get a graph about a specific replication by simply specifying the replication number. In the example below the 6th replication is shown.
+In the above graph, the individual lines are all seperate replications. A smooth line is drawn over them to get a sense of the *'average'* utilization. You can also see here that the ```until``` time of 120 was most likely lower than the unrestricted run time of the simulation. It is also possible to get a graph about a specific replication by simply specifying the replication number. In the example below the 6th replication is shown.
 
 
 ```r
@@ -142,11 +142,3 @@ Similarly one can have a look at the evolution of the activity times with ```typ
 For bugs and/or issues: create a new issue on GitHub.
 
 Other questions or comments: bartsmeets86@gmail.com
-
-
-
-
-
-
-
-

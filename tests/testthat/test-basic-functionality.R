@@ -33,6 +33,28 @@ test_that("basic scenario can be simulated with one replication", {
   
 })
 
+test_that("basic scenario can be simulated with one replication & until < regular runtime", {
+  # set-up simulation
+  sim <-
+    create_simulator() %>%
+    add_resource("nurse", 1) %>%
+    add_resource("doctor", 1) %>%
+    add_resource("admin", 1) %>%
+    add_trajectory("basic_track", t1) %>%
+    add_entities_with_interval(10, "test", "basic_track", 5)
+  
+  expect_that(sim, is_a("Simulator"))
+  
+  # run the simulation
+  sim<-
+    sim %>%
+    simmer(20)
+  
+  expect_that(sim, is_a("Simulator"))
+  expect_that(sim$now(), is_more_than(0))
+  
+})
+
 
 test_that("basic scenario can be simulated with 10 replications", {
   # set-up simulation

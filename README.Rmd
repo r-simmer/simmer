@@ -21,7 +21,7 @@ ggthemr('fresh', layout="scientific")
 The installation requires the [devtools](https://github.com/hadley/devtools) package to be installed.
 
 ```{r, eval=FALSE}
-devtools$install_github("Bart6114/simmer")
+devtools::install_github("Bart6114/simmer")
 ```
 
 ## Using simmer
@@ -91,12 +91,12 @@ sim<-
   replicator(10)
 ```
 
-The simulation is now ready for a test run; just let it ```simmer``` for a bit (or for 240 time units to be precise).
+The simulation is now ready for a test run; just let it ```simmer``` for a bit (or for 120 time units to be precise).
 
 ```{r, message=FALSE}
 sim <-
   sim %>%
-  simmer(until = 240)
+  simmer(until = 120)
 ```
 
 ### Resource utilization
@@ -113,7 +113,7 @@ It is also possible to have a look at a specific resource and its activity durin
 plot_resource_usage(sim, "doctor")
 ```
 
-In the above graph, the individual lines are all seperate replications. A smooth line is drawn over them to get a sense of the *'average'* utilization. It is also possible to get a graph about a specific replication by simply specifying the replication number. In the example below the 6th replication is shown.
+In the above graph, the individual lines are all seperate replications. A smooth line is drawn over them to get a sense of the *'average'* utilization. You can also see here that the ```until``` time of 120 was most likely lower than the unrestricted run time of the simulation. It is also possible to get a graph about a specific replication by simply specifying the replication number. In the example below the 6th replication is shown.
 
 ```{r, message=FALSE}
 plot_resource_usage(sim, "doctor", 6)
@@ -136,11 +136,3 @@ Similarly one can have a look at the evolution of the activity times with ```typ
 For bugs and/or issues: create a new issue on GitHub.
 
 Other questions or comments: bartsmeets86@gmail.com
-
-
-
-
-
-
-
-
