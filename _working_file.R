@@ -4,7 +4,7 @@
 ## BUG: readme example crashed with until of 120
 
 
-options(verbose = T)
+# options(verbose = T)
 
 library(ggthemr)
 ggthemr('fresh', layout="scientific")

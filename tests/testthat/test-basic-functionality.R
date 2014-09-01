@@ -56,7 +56,7 @@ test_that("basic scenario can be simulated with one replication & until < regula
 })
 
 
-test_that("basic scenario can be simulated with 10 replications", {
+test_that("basic scenario can be simulated with >1 replication", {
   # set-up simulation
   sim <-
     create_simulator() %>%
@@ -65,7 +65,7 @@ test_that("basic scenario can be simulated with 10 replications", {
     add_resource("admin", 1) %>%
     add_trajectory("basic_track", t1) %>%
     add_entities_with_interval(10, "test", "basic_track", 5) %>%
-    replicator(10)
+    replicator(2)
   
   expect_that(sim, is_a("ReplicationContainer"))
   

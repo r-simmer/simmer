@@ -64,27 +64,16 @@ Simulator$methods(add_trajectory = function(name, trajectory){
   )
 })
 
-Simulator$methods(get_trajectory = function(name){
-  get_objects_by_filter(trajectories, "name", name)[[1]]
-})
 
 Simulator$methods(get_trajectory_index = function(name){
-  trajectory_names <-
-    do.call(c, 
-            lapply(.self$trajectories, function(obj) return(obj@name)
-            ))
-  match(name, trajectory_names)
+  Position(function(tr) tr@name == name, trajectories)
+
   
 })
 
 
 Simulator$methods(get_resource = function(name){
-  get_objects_by_filter(resources, "name", name, sep="$")[[1]]
-})
-
-
-Simulator$methods(order_events = function() {
-  events <<- order_objects_by_slot_value(events, "early_start")
+    Filter(function(res) res$name == name, resources)[[1]]
 })
 
 
