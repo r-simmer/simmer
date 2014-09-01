@@ -52,7 +52,7 @@ t2<-
 
 In the above trajectory the ```duration``` is drawn from a normal distribution with a given mean. The ```successor``` of event 2 is either ```NA``` (end of trajectory) or event 3.
 
-When the trajectory is know, a simulator object can be build. In the below example, a simulator is instantiated and three types of resources are added. The*nurse* and *administration* with a capacity of 1 and the *doctor* resource with a capacity of 2.
+When the trajectory is know, a simulator object can be build. In the below example, a simulator is instantiated and three types of resources are added. The *nurse* and *administration* with a capacity of 1 and the *doctor* resource with a capacity of 2.
 
 
 ```r
@@ -84,7 +84,7 @@ sim<-
   replicator(10)
 ```
 
-The simulation is now ready for a test run; just let it ```simmer``` for a bit (or for 120 time units to be precise).
+The simulation is now ready for a test run; just let it ```simmer``` for a bit (or for 240 time units to be precise).
 
 
 ```r

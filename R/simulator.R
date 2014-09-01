@@ -175,7 +175,7 @@ Simulator$methods(goto_next_step = function (){
         if(obj$has_started()) {
           return(obj$end_time)
         } else {
-          return(ifelse(obj$early_start>now(), obj$early_start, Inf))
+          return(ifelse(obj$early_start>now(), obj$early_start, Inf)) # klopt iets niet...
         }
       }
       )
