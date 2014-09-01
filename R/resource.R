@@ -1,5 +1,5 @@
 
-
+#' @export
 Resource<-setRefClass("Resource", 
                       fields = list(
                         name = "character",

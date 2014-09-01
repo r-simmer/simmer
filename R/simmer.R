@@ -1,19 +1,19 @@
 
 BIG_M = exp(999)
 
-#' @export
-create_simulator<-function(name = "anonymous"){
-  Simulator$new(name=name, current_time=0)
-}
+# #' @export
+# create_simulator<-function(name = "anonymous"){
+#   Simulator$new(name=name, current_time=0)
+# }
 
-
-#' @export
-add_resource<-function(sim_obj, name, capacity=1){
-  sim_obj$resources<-c(sim_obj$resources,
-                          Resource$new(name=name, capacity=capacity)
-  )
-  return(sim_obj)
-}
+# 
+# #' @export
+# add_resource<-function(sim_obj, name, capacity=1){
+#   sim_obj$resources<-c(sim_obj$resources,
+#                           Resource$new(name=name, capacity=capacity)
+#   )
+#   return(sim_obj)
+# }
 
 
 #' @export
@@ -42,11 +42,11 @@ order_objects_by_slot_value<-function(vector_obj, slot){
 }
 
 
-#' @export
-add_trajectory<-function(sim_obj, name, trajectory){
-  sim_obj$add_trajectory(name=name, trajectory=trajectory)
-  return(sim_obj)
-}
+# #' @export
+# add_trajectory<-function(sim_obj, name, trajectory){
+#   sim_obj$add_trajectory(name=name, trajectory=trajectory)
+#   return(sim_obj)
+# }
 
 #' the simmer function
 #' @param sim_obj input simboject

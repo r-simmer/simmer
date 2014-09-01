@@ -32,6 +32,20 @@ t2<-
              3 logistieke logistieke 1 rnorm(1,10) NA"
   )
 
+
+
+
+library(magrittr)
+sim<-
+create_simulator() %>%
+  add_trajectory(name = "t2", trajectory_df = t2) %>%
+  add_resource(name = "vpk", 3) %>%
+  add_resource(name = "logistieke", 3) %>%
+  add_resource(name = "arts", 3) %>%
+  add_entities_with_interval(10, "test", "t1", 5) 
+
+sim$init_events()
+
 library(magrittr)
 library(simmer)
 sim<-
@@ -42,15 +56,33 @@ sim<-
   add_resource("arts", 4) %>%
   add_trajectory("t1",t1) %>%
   add_entities_with_interval(10, "test", "t1", 5) %>%
-  replicator(10)
+  replicator(40)
 
 # %>%
 #   simmer()
 
 simmer(sim, until = 120)
+
+# Rprof("Rprof.out")
+# simmer(sim, until = 120)
+# Rprof(NULL)
+# summaryRprof("Rprof.out")
+
+
+res<-Resource()
+
 # 
 # plot_resource_utilization(sim)
 plot_evolution_entity_times(sim, type="flow_time")
+
+
+
+
+
+
+
+
+
 # 
 # plot_resource_usage(sim, "vpk", 2)
 # plot_resource_usage(sim, "vpk")
@@ -142,3 +174,22 @@ plot_evolution_entity_times(sim, type="flow_time")
 # }
 # 
 # test(3,4,8, 9)
+
+testClass<-setRefClass("testClass", fields = list(value = "numeric", text = "character"))
+
+ptm <- Sys.time()
+holdList<-list()
+for(x in 1:1000){
+  testClass(value = x, text=as.character(x))
+  holdList<-c(holdList, testClass)
+}
+Sys.time() - ptm
+
+ptm <- Sys.time()
+holdList<-list(values= c(), texts = c())
+for(x in 1:1000){
+ holdList$values<-c(holdList$values, x)
+ holdList$texts<-c(holdList$texts, as.character(x))
+}
+Sys.time() - ptm
+
