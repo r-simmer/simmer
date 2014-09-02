@@ -1,4 +1,4 @@
-
-setClass("trajectory", representation(name = "character", trajectory = "data.frame"))
-
-
+# 
+# setClass("trajectory", representation(name = "character", trajectory = "data.frame"))
+# 
+# 

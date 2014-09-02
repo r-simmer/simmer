@@ -19,12 +19,13 @@ plot_resource_usage <- function(sim_obj, resource_name, replication=FALSE){
     simulators<-c(simulators[[replication]])
   }
   
-  res<-simulators[[1]]$get_resource(resource_name)
+  capacity<-simulators[[1]]$resources_capacity[[resource_name]]
+  
   
   dataset<-
     do.call(rbind,
             mapply(function(sim_obj, rep) { 
-              dataset<- sim_obj$get_resource(resource_name)$monitor$data
+              dataset<- sim_obj$resources_monitor[[resource_name]]$data
               dataset$rep<-rep
               dataset
             }, simulators, 1:length(simulators), SIMPLIFY=F)
@@ -37,8 +38,8 @@ plot_resource_usage <- function(sim_obj, resource_name, replication=FALSE){
   ggplot(dataset) +
     aes(x=t, y=v) + 
     geom_step(aes(group=rep), alpha=.4)+
-    geom_hline(y=res$capacity, lty=2, color="red") +
-    ggtitle(paste("Resource usage:", res$name)) +
+    geom_hline(y=capacity, lty=2, color="red") +
+    ggtitle(paste("Resource usage:", resource_name)) +
     scale_y_continuous(breaks=seq(0,1000,1)) +
     ylab("in use") +
     xlab("time") +
@@ -66,8 +67,8 @@ plot_resource_utilization <- function(sim_obj){
   
   
   run_times<-sapply(simulators, function(sim_obj) sim_obj$now())
-  resources_names<-sapply(simulators[[1]]$resources, function(obj) obj$name)
-  resources_capacity<-sapply(simulators[[1]]$resources, function(obj) obj$capacity)
+  resources_names<-names(simulators[[1]]$resources_monitor)
+  resources_capacity<-simulators[[1]]$resources_capacity
   
   
   dataset<-
@@ -76,7 +77,7 @@ plot_resource_utilization <- function(sim_obj){
               dataset<-
                 do.call(rbind,
                         mapply(function(resource_name, resource_capacity){
-                          dataset<- sim_obj$get_resource(resource_name)$monitor$data
+                          dataset<- sim_obj$resources_monitor[[resource_name]]$data
                           dataset$resource<-resource_name
                           dataset$capacity<-resource_capacity
                           dataset
