@@ -82,7 +82,7 @@ Simulator$methods(simmer = function(until = Inf){
   while(current_time < until && !all(is.na(entities_current_event))){
     
     
-    ## STOP FINISHED ACTIVITIES (AND INIT NEXT ONE)
+    ## stop finished activities (and init next one)
     for(entity_i in 1:length(entities_current_event)){
       event_i<-entities_current_event[[entity_i]]
       
@@ -131,7 +131,7 @@ Simulator$methods(simmer = function(until = Inf){
         
       })
     )
-    #     print(current_events_ordered)
+
     
     for(entity_i in current_events_ordered){
       event_i<-entities_current_event[[entity_i]]
@@ -170,7 +170,7 @@ Simulator$methods(simmer = function(until = Inf){
     }
     
     
-    current_time <<- current_time + 1
+    current_time <<- current_time + 1 ## can be more efficient
   }
   
   # set register NA for all entities with unfinished trajectories
