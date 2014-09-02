@@ -39,14 +39,15 @@ library(magrittr)
 sim<-
 create_simulator() %>%
   add_trajectory(name = "t2", trajectory_df = t2) %>%
-  add_resource(name = "vpk", 2) %>%
-  add_resource(name = "logistieke", 2) %>%
-  add_resource(name = "arts", 3) %>%
+  add_resource(name = "vpk", 1) %>%
+  add_resource(name = "logistieke", 1) %>%
+  add_resource(name = "arts", 1) %>%
   add_entities_with_interval(100, "test", "t2", 5) %>%
   replicator(10) %>%
   simmer(until = 120)
-plot_resource_utilization(sim)
-plot_resource_usage(sim, "vpk")
+# plot_resource_utilization(sim)
+# plot_resource_usage(sim, "vpk")
+plot_evolution_entity_times(sim, type = "flow_time")
 # %>%
 #   simmer()
 

@@ -137,9 +137,9 @@ plot_evolution_entity_times <- function(sim_obj, type=c("flow_time","activity_ti
     do.call(rbind, 
             mapply(function(sim_obj, rep){
               do.call(rbind,
-                      lapply(sim_obj$entities, function(ent){
+                      lapply(sim_obj$entities_monitor, function(ent_mon){ 
                         
-                        entity_data<-ent$time_value_monitor$data
+                        entity_data<-ent_mon$data
                         
                         if(is.na(entity_data[nrow(entity_data),"v"])) {
                           return(data.frame())
@@ -154,7 +154,7 @@ plot_evolution_entity_times <- function(sim_obj, type=c("flow_time","activity_ti
                           summarise(activity_time = sum(activity_time, na.rm=T)) %>%
                           data.frame(activity_time = ., 
                                      start_time = min(subset(entity_data, v>0, select="t")),
-                                     end_time = entity_data[nrow(entity_data),"t"], entity=ent$name) %>%
+                                     end_time = entity_data[nrow(entity_data),"t"]) %>%
                           mutate(flow_time = end_time - start_time,
                                  waiting_time = flow_time - activity_time,
                                  replication = rep)
@@ -165,7 +165,7 @@ plot_evolution_entity_times <- function(sim_obj, type=c("flow_time","activity_ti
               )
             }, simulators, 1:length(simulators), SIMPLIFY=F)
     ) %>%
-    arrange(replication, flow_time)
+    arrange(replication, end_time)
   
   if(type=="flow_time"){
     ggplot(dataset) +

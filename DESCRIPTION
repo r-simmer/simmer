@@ -1,7 +1,7 @@
 Package: simmer
 Type: Package
 Title: Just let it simmer
-Version: 0.01
+Version: 0.02
 Date: 2014-08-28
 Author: Bart Smeets
 Maintainer: Bart Smeets <bqrtsmeets86@gmail.com>
@@ -9,11 +9,7 @@ License: MIT + file LICENSE
 Depends: magrittr
 Suggests: ggplot2, dplyr
 Collate:
-  'trajectory.R'
   'monitor.R'
-  'resource.R'
-  'event.R'
-  'entity.R'
   'simulator.R'
   'simmer.R'
   'replication_container.R'

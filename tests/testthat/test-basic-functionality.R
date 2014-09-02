@@ -29,7 +29,7 @@ test_that("basic scenario can be simulated with one replication", {
   
   expect_that(sim, is_a("Simulator"))
   expect_that(sim$now(), is_more_than(0))
-  expect_equal(length(sim$events), 0)
+  expect_equal(all(unlist(sim$entities_current_event)), NA)
   
 })
 
@@ -76,6 +76,6 @@ test_that("basic scenario can be simulated with >1 replication", {
   
   expect_that(sim, is_a("ReplicationContainer"))
   expect_that(min(sapply(sim$simulators, function(obj) obj$now())), is_more_than(0))
-  expect_equal(max(sapply(sim$simulators, function(obj) length(obj$events))), 0)
+  expect_equal(all(unlist(sapply(sim$simulators, function(obj) all(unlist(obj$entities_current_event))))), NA)
   
 })
