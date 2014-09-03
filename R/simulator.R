@@ -20,7 +20,10 @@ Simulator<-setRefClass("Simulator",
 
 Simulator$methods(now = function() current_time)
 
-Simulator$methods(init_events = function(){
+Simulator$methods(init_sim = function(){
+  if(getOption("verbose")) message("Initializing events")
+  
+  
   ## loop over entities
   for(i in 1:length(entities_name)){
     ## get trajectory
@@ -65,14 +68,19 @@ Simulator$methods(init_events = function(){
     event_list[[length(event_list)+1]]<<-entity_event_list
     
     
-    
   }
+  if(getOption("verbose")) message("...done")
+  
+  ## initialize activation times
+  if(getOption("verbose")) message("Initializing activation times")
+  entities_early_start<<-
+    lapply(entities_early_start, function(start) eval(parse(text=start)))
+  
+  if(getOption("verbose")) message("...done")
 })
 
 Simulator$methods(simmer = function(until = Inf){
-  if(getOption("verbose")) message("Initializing events")
-  .self$init_events()
-  if(getOption("verbose")) message("...done")
+  
   
   ## (first event for all entities was set to 1)
   ## get early_start_times
@@ -89,7 +97,7 @@ Simulator$methods(simmer = function(until = Inf){
       
       if(!is.na(entities_current_event[[entity_i]])){
         ## if trajectory has not been finished
-
+        
         if(event_list[[entity_i]][[event_i]]$end_time <= current_time && event_list[[entity_i]][[event_i]]$end_time>=0){
           # end time has been reached, start next activity and set early start of that activity
           # record releasing of resources
@@ -131,14 +139,14 @@ Simulator$methods(simmer = function(until = Inf){
         
       })
     )
-
+    
     
     for(entity_i in current_events_ordered){
       event_i<-entities_current_event[[entity_i]]
       
       
       if(!is.na(entities_current_event[[entity_i]])){
-
+        
         if(event_list[[entity_i]][[event_i]]$early_start_time <= current_time && event_list[[entity_i]][[event_i]]$start_time<0){
           # early start time has passed but event hasnt started yet
           # check if resources are available for it to start

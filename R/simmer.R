@@ -2,7 +2,10 @@
 #' @param sim_obj the Simulator object
 #' @param until the maximum simulation time (after which the simulation is stopeed)
 #' @export
-simmer<-function(sim_obj, until=Inf) sim_obj$simmer(until)
+simmer<-function(sim_obj, until=Inf){
+  sim_obj$init_sim()
+  sim_obj$simmer(until)
+}
 
 #' Add a resource
 #' @param sim_obj the Simulator object
@@ -68,7 +71,7 @@ add_entities_with_interval<-function(sim_obj, n, name_prefix, trajectory_name, i
   
   for(x in 1:n){
     add_entity(sim_obj, paste0(name_prefix,x), early_start = time, trajectory_name = trajectory_name)    
-    time <- time + eval(substitute(interval))
+    time <- paste(time, interval, sep=" + ")
   }
   
   return(sim_obj)

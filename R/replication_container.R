@@ -2,7 +2,6 @@ ReplicationContainer<-setRefClass("ReplicationContainer", fields=list(
   simulators = "vector"))
 
 ReplicationContainer$methods(build_container = function(sim_obj, n_replications = 1){
-  # TODO; list/vectors binnen refClasses moeten apart gekopieerd worden
   simulators<<-sapply(1:n_replications, function(x) deep_copy_simulator(sim_obj))
   return(.self)
 })
@@ -11,6 +10,14 @@ ReplicationContainer$methods(build_container = function(sim_obj, n_replications 
 ReplicationContainer$methods(simmer = function(until = Inf){
   for(sim in .self$simulators){
     sim$simmer(until)
+  }
+  
+  return(.self)
+})
+
+ReplicationContainer$methods(init_sim = function(until = Inf){
+  for(sim in .self$simulators){
+    sim$init_sim()
   }
   
   return(.self)
