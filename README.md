@@ -3,8 +3,7 @@
 
 __*simmer* is under heavy development and its internals and syntax can still change extensively over the coming time__
 
-*simmer* is a discrete event package for the R language. It is developed with my own specific requirements for simulating day-to-day hospital proceses and thus might not be suited for everyone. It is designed to be as simple to use as possible and tries to be compatible with the piping features of [magrittr](https://github.com/smbache/magrittr). 
-
+*simmer* is a discrete event package for the R language. It is developed with my own specific requirements for simulating day-to-day hospital proceses and thus might not be suited for everyone. It is designed to be as simple to use as possible and tries to be compatible with the chaining/piping workflow introduced by the [magrittr](https://github.com/smbache/magrittr) package. 
 
 
 
@@ -30,7 +29,7 @@ Set-up a simple trajectory (the column names are important!).
 
 
 ```r
-t1<-
+t0<-
   read.table(header=T, text=
                "event_id  description   resource        amount  duration      successor
                 1         intake        nurse           1       15            2
@@ -38,11 +37,11 @@ t1<-
                 3         planning      administration  1       5             NA"  )
 ```
 
-The ```successor``` describes which event is started next. An ```successor``` value of ```NA``` means that the end of the trajectory has been reached. The ```duration``` and ```successor``` value are parsed as R commands and re-evaluated for every individual entity. This means that this does not have to be a static value and the concept of probability can be introduced. The following trajectory shows this.
+The ```successor``` describes which event is started next. An ```successor``` value of ```NA``` means that the end of the trajectory has been reached. The ```duration``` and ```successor``` value are parsed as R commands and re-evaluated for every individual entity and event. This means that this does not have to be a static value and the concept of probability can be introduced. The following trajectory shows this.
 
 
 ```r
-t2<-
+t1<-
   read.table(header=T, text=
                "event_id  description   resource        amount  duration      successor
                 1         intake        nurse           1       rnorm(1,15)   2
@@ -52,7 +51,7 @@ t2<-
 
 In the above trajectory the ```duration``` is drawn from a normal distribution with a given mean. The ```successor``` of event 2 is either ```NA``` (end of trajectory) or event 3.
 
-When the trajectory is know, a simulator object can be build. In the below example, a simulator is instantiated and three types of resources are added. The *nurse* and *administration* with a capacity of 1 and the *doctor* resource with a capacity of 2.
+When the trajectory is know, a simulator object can be build. In the below example, a simulator is instantiated and three types of resources are added. The *nurse* and *administration* resource each with a capacity of 1 and the *doctor* resource with a capacity of 2.
 
 
 ```r
@@ -71,8 +70,17 @@ The simulator object is extended by adding a trajectory and adding 10 entities w
 ```r
 sim<-
   sim %>%
-  add_trajectory("Trajectory1",t2) %>%
-  add_entities_with_interval(10, "patient", "Trajectory1", 10)
+  add_trajectory("Trajectory1",t1) %>%
+  add_entities_with_interval(n = 10, name_prefix = "patient", trajectory_name = "Trajectory1", interval =  10)
+```
+
+Entities can also be added on an individual basis. In the below example 1 extra individual entity is added which will be activated at time 100.
+
+
+```r
+sim<-
+  sim %>%
+  add_entity(name = "individual_entity", trajectory_name = "Trajectory1", early_start = 100)
 ```
 
 If we only simulate the entities going through the trajectory 1 time we won't get a good look on the stability of the system, so we add a replicator and simulate it 10 times.
@@ -102,7 +110,7 @@ After you've left it simmering for a bit (pun intended), we can have a look at t
 plot_resource_utilization(sim)
 ```
 
-![plot of chunk unnamed-chunk-9](./README_files/figure-html/unnamed-chunk-9.png) 
+![plot of chunk unnamed-chunk-10](./README_files/figure-html/unnamed-chunk-10.png) 
 
 It is also possible to have a look at a specific resource and its activity during the simulation.
 
@@ -111,7 +119,7 @@ It is also possible to have a look at a specific resource and its activity durin
 plot_resource_usage(sim, "doctor")
 ```
 
-![plot of chunk unnamed-chunk-10](./README_files/figure-html/unnamed-chunk-10.png) 
+![plot of chunk unnamed-chunk-11](./README_files/figure-html/unnamed-chunk-11.png) 
 
 In the above graph, the individual lines are all seperate replications. A smooth line is drawn over them to get a sense of the *'average'* utilization. You can also see here that the ```until``` time of 120 was most likely lower than the unrestricted run time of the simulation. It is also possible to get a graph about a specific replication by simply specifying the replication number. In the example below the 6th replication is shown.
 
@@ -120,18 +128,18 @@ In the above graph, the individual lines are all seperate replications. A smooth
 plot_resource_usage(sim, "doctor", 6)
 ```
 
-![plot of chunk unnamed-chunk-11](./README_files/figure-html/unnamed-chunk-11.png) 
+![plot of chunk unnamed-chunk-12](./README_files/figure-html/unnamed-chunk-12.png) 
 
 ### Flowtime
 
-We can also have a look at the evolution of the entities' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them.
+Next we can have a look at the evolution of the entities' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them.
 
 
 ```r
 plot_evolution_entity_times(sim, "flow_time")
 ```
 
-![plot of chunk unnamed-chunk-12](./README_files/figure-html/unnamed-chunk-12.png) 
+![plot of chunk unnamed-chunk-13](./README_files/figure-html/unnamed-chunk-13.png) 
 
 Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
 

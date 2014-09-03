@@ -8,13 +8,12 @@ output:
 
 __*simmer* is under heavy development and its internals and syntax can still change extensively over the coming time__
 
-*simmer* is a discrete event package for the R language. It is developed with my own specific requirements for simulating day-to-day hospital proceses and thus might not be suited for everyone. It is designed to be as simple to use as possible and tries to be compatible with the piping features of [magrittr](https://github.com/smbache/magrittr). 
+*simmer* is a discrete event package for the R language. It is developed with my own specific requirements for simulating day-to-day hospital proceses and thus might not be suited for everyone. It is designed to be as simple to use as possible and tries to be compatible with the chaining/piping workflow introduced by the [magrittr](https://github.com/smbache/magrittr) package. 
 
 ```{r setup, echo=FALSE, message=FALSE}
 library(ggthemr)
 ggthemr('fresh', layout="scientific")
 ```
-
 
 ## Installation
 
@@ -36,7 +35,7 @@ Set-up a simple trajectory (the column names are important!).
 
 ```{r}
 
-t1<-
+t0<-
   read.table(header=T, text=
                "event_id  description   resource        amount  duration      successor
                 1         intake        nurse           1       15            2
@@ -44,11 +43,11 @@ t1<-
                 3         planning      administration  1       5             NA"  )
 ```
 
-The ```successor``` describes which event is started next. An ```successor``` value of ```NA``` means that the end of the trajectory has been reached. The ```duration``` and ```successor``` value are parsed as R commands and re-evaluated for every individual entity. This means that this does not have to be a static value and the concept of probability can be introduced. The following trajectory shows this.
+The ```successor``` describes which event is started next. An ```successor``` value of ```NA``` means that the end of the trajectory has been reached. The ```duration``` and ```successor``` value are parsed as R commands and re-evaluated for every individual entity and event. This means that this does not have to be a static value and the concept of probability can be introduced. The following trajectory shows this.
 
 ```{r}
 
-t2<-
+t1<-
   read.table(header=T, text=
                "event_id  description   resource        amount  duration      successor
                 1         intake        nurse           1       rnorm(1,15)   2
@@ -58,7 +57,7 @@ t2<-
 
 In the above trajectory the ```duration``` is drawn from a normal distribution with a given mean. The ```successor``` of event 2 is either ```NA``` (end of trajectory) or event 3.
 
-When the trajectory is know, a simulator object can be build. In the below example, a simulator is instantiated and three types of resources are added. The *nurse* and *administration* with a capacity of 1 and the *doctor* resource with a capacity of 2.
+When the trajectory is know, a simulator object can be build. In the below example, a simulator is instantiated and three types of resources are added. The *nurse* and *administration* resource each with a capacity of 1 and the *doctor* resource with a capacity of 2.
 
 ```{r}
 library(magrittr)
@@ -77,8 +76,18 @@ The simulator object is extended by adding a trajectory and adding 10 entities w
 
 sim<-
   sim %>%
-  add_trajectory("Trajectory1",t2) %>%
-  add_entities_with_interval(10, "patient", "Trajectory1", 10)
+  add_trajectory("Trajectory1",t1) %>%
+  add_entities_with_interval(n = 10, name_prefix = "patient", trajectory_name = "Trajectory1", interval =  10)
+
+```
+
+Entities can also be added on an individual basis. In the below example 1 extra individual entity is added which will be activated at time 100.
+
+```{r}
+
+sim<-
+  sim %>%
+  add_entity(name = "individual_entity", trajectory_name = "Trajectory1", early_start = 100)
 
 ```
 
@@ -121,7 +130,7 @@ plot_resource_usage(sim, "doctor", 6)
 
 ### Flowtime
 
-We can also have a look at the evolution of the entities' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them.
+Next we can have a look at the evolution of the entities' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them.
 
 ```{r, message=FALSE}
 plot_evolution_entity_times(sim, "flow_time")
