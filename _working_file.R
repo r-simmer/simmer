@@ -43,11 +43,11 @@ create_simulator() %>%
   add_resource(name = "logistieke", 1) %>%
   add_resource(name = "arts", 1) %>%
   add_entities_with_interval(10, "test", "t2", "rnorm(1,10)") %>%
-  replicator(2) %>%
+  replicator(10) %>%
   simmer(until = 120)
 # plot_resource_utilization(sim)
 # plot_resource_usage(sim, "vpk")
-plot_evolution_entity_times(sim, type = "flow_time")
+plot_evolution_entity_times(sim, type = "waiting_time")
 # %>%
 #   simmer()
 

@@ -80,6 +80,13 @@ Simulator$methods(init_sim = function(){
   }
   if(getOption("verbose")) message("...done")
   
+  # register start in process of entity (@ early_start)
+  if(getOption("verbose")) message("Registering activation time of entities in monitor")
+  for(ent_i in 1:length(entities_early_start)){
+    entities_monitor[[ent_i]]$record(entities_early_start[[ent_i]], 1)
+    entities_monitor[[ent_i]]$record(entities_early_start[[ent_i]], 0)
+  }
+  if(getOption("verbose")) message("...done")
   
 })
 
