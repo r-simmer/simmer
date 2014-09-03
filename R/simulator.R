@@ -21,6 +21,15 @@ Simulator<-setRefClass("Simulator",
 Simulator$methods(now = function() current_time)
 
 Simulator$methods(init_sim = function(){
+  
+  ## initialize activation times
+  if(getOption("verbose")) message("Initializing activation times")
+  entities_early_start<<-
+    lapply(entities_early_start, function(start) eval(parse(text=start)))
+  
+  if(getOption("verbose")) message("...done")
+  
+  
   if(getOption("verbose")) message("Initializing events")
   
   
@@ -71,12 +80,7 @@ Simulator$methods(init_sim = function(){
   }
   if(getOption("verbose")) message("...done")
   
-  ## initialize activation times
-  if(getOption("verbose")) message("Initializing activation times")
-  entities_early_start<<-
-    lapply(entities_early_start, function(start) eval(parse(text=start)))
   
-  if(getOption("verbose")) message("...done")
 })
 
 Simulator$methods(simmer = function(until = Inf){

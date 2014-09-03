@@ -49,9 +49,9 @@ add_entity<-function(sim_obj, name, trajectory_name, early_start = 0){
   sim_obj$entities_trajectory_name[[length(sim_obj$entities_trajectory_name)+1]]<-trajectory_name
   sim_obj$entities_early_start[[length(sim_obj$entities_early_start)+1]]<-early_start
   sim_obj$entities_monitor[[length(sim_obj$entities_monitor)+1]]<-TimeValueMonitor()
-  # register start in process of event (@ early_start)
-  sim_obj$entities_monitor[[length(sim_obj$entities_monitor)]]$record(early_start, 1)
-  sim_obj$entities_monitor[[length(sim_obj$entities_monitor)]]$record(early_start, 0)
+  # register start in process of entity (@ early_start)
+  sim_obj$entities_monitor[[length(sim_obj$entities_monitor)]]$record(eval(parse(text=early_start)), 1)
+  sim_obj$entities_monitor[[length(sim_obj$entities_monitor)]]$record(eval(parse(text=early_start)), 0)
   
   sim_obj$entities_current_event[[length(sim_obj$entities_current_event)+1]]<-1
   
