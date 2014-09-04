@@ -1,4 +1,6 @@
 # simmer
+[![Build Status](https://travis-ci.org/Bart6114/simmer.svg)](https://travis-ci.org/Bart6114/simmer)
+
 *by Bart Smeets -- bartsmeets86@gmail.com*
 
 __*simmer* is under heavy development and its internals and syntax can still change extensively over the coming time__
