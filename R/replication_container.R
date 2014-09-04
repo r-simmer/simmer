@@ -23,7 +23,9 @@ ReplicationContainer$methods(init_sim = function(until = Inf){
   return(.self)
 })
 
-
+#' Replicate the simulation n times
+#' @param sim_obj the Simulator object
+#' @param n_replications the number of desired replications
 #' @export
 replicator<-function(sim_obj, n_replications){
   replication_container<-ReplicationContainer()

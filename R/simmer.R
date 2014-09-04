@@ -10,7 +10,7 @@ simmer<-function(sim_obj, until=Inf){
 #' Add a resource
 #' @param sim_obj the Simulator object
 #' @param name specify the name of the resource
-#' @param the capacity of the resource
+#' @param capacity the capacity of the resource
 #' @export
 add_resource<-function(sim_obj, name, capacity=1){
   #   sim_obj$resources_name[[length(sim_obj$resources_name)+1]] <- name 
