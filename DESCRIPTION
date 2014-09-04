@@ -1,6 +1,7 @@
 Package: simmer
 Type: Package
 Title: Just let it simmer
+Description: simmer is a discrete event simulation package for R 
 Version: 0.02
 Date: 2014-08-28
 Author: Bart Smeets
