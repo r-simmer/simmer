@@ -8,7 +8,7 @@ Author: Bart Smeets
 Maintainer: Bart Smeets <bqrtsmeets86@gmail.com>
 License: MIT + file LICENSE
 Depends: magrittr
-Suggests: ggplot2, dplyr
+Suggests: ggplot2, dplyr, testthat
 Collate:
   'monitor.R'
   'simulator.R'
