@@ -142,6 +142,13 @@ Similarly one can have a look at the evolution of the activity times with ```typ
 
 **DOCUMENTATION TO BE CONTINUED**
 
+## Roadmap
+
+* Better next step algorithm
+* More flexible method to release/seize resources (alternative trajectory construction?)
+* Time-specific resource availability
+* Implement main simulation loop in C++ (using Rcpp)
+
 ## Contact
 
 For bugs and/or issues: create a new issue on GitHub.

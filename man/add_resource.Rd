@@ -10,7 +10,7 @@ add_resource(sim_obj, name, capacity = 1)
 
 \item{name}{specify the name of the resource}
 
-\item{the}{capacity of the resource}
+\item{capacity}{the capacity of the resource}
 }
 \description{
 Add a resource
