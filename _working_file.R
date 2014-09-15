@@ -34,10 +34,33 @@ t2<-
 
 
 
+t1<-
+  create_trajectory("test") %>%
+  
+  ## seize 1 nurse for a duration of rnorm(1,10) and release
+  seize_resource("vpk",1) %>%
+  timeout_entity("rnorm(1,10)") %>%
+  release_resource("vpk", 1, successor_id = "sample(c('seize_arts','seize_logistieke'),1)") %>%
+  
+  ## seize 1 arts for a duration of rnorm(1,10) and release
+  seize_resource("arts",1, event_id="seize_arts") %>%
+  timeout_entity("rnorm(1,10)") %>%
+  release_resource("arts", 1, successor_id = "STOP") %>%
+  
+  
+  ## seize 1 arts for a duration of rnorm(1,10) and release
+  seize_resource("logistieke",1, event_id="seize_logistieke") %>%
+  timeout_entity("rnorm(1,10)") %>%
+  release_resource("logistieke", 1, successor_id = "STOP")
+
+
+
+
+
 
 library(magrittr)
 sim<-
-create_simulator() %>%
+  create_simulator() %>%
   add_trajectory(name = "t2", trajectory_df = t2) %>%
   add_resource(name = "vpk", 1) %>%
   add_resource(name = "logistieke", 1) %>%
@@ -178,8 +201,8 @@ Sys.time() - ptm
 ptm <- Sys.time()
 holdList<-list(values= c(), texts = c())
 for(x in 1:1000){
- holdList$values<-c(holdList$values, x)
- holdList$texts<-c(holdList$texts, as.character(x))
+  holdList$values<-c(holdList$values, x)
+  holdList$texts<-c(holdList$texts, as.character(x))
 }
 Sys.time() - ptm
 

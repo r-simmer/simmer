@@ -10,6 +10,7 @@ License: MIT + file LICENSE
 Depends: magrittr
 Suggests: ggplot2, dplyr, testthat
 Collate:
+  'trajectory.R'
   'monitor.R'
   'simulator.R'
   'simmer.R'
