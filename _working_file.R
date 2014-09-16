@@ -45,23 +45,36 @@ t1<-
   ## seize 1 arts for a duration of rnorm(1,10) and release
   seize_resource("arts",1, event_id="seize_arts") %>%
   timeout_entity("rnorm(1,10)") %>%
-  release_resource("arts", 1, successor_id = "STOP") %>%
+  release_resource("arts", 1, successor_id = NA) %>%
   
   
   ## seize 1 arts for a duration of rnorm(1,10) and release
   seize_resource("logistieke",1, event_id="seize_logistieke") %>%
   timeout_entity("rnorm(1,10)") %>%
-  release_resource("logistieke", 1, successor_id = "STOP")
+  release_resource("logistieke", 1, successor_id = NA)
 
 
+# t_rep<-
+# do.call(rbind,
+#         lapply(1:100, function(x){
+#           temp<-as.data.frame(t1@timeline)
+#           temp$rep<-x
+#           temp$successor_id<-
+#             sapply(temp$successor_id, function(val) eval(parse(text=val)), USE.NAMES=F)
+#           temp
+#         })
+# )
 
-
+# library(dplyr)
+# t_rep %>%
+#   group_by(event_id, event_type, value, successor_id, rep) %>%
+#   summarise(count = n())
 
 
 library(magrittr)
 sim<-
   create_simulator() %>%
-  add_trajectory(name = "t2", trajectory_df = t2) %>%
+  add_trajectory(t1) %>%
   add_resource(name = "vpk", 1) %>%
   add_resource(name = "logistieke", 1) %>%
   add_resource(name = "arts", 1) %>%

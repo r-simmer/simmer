@@ -3,7 +3,7 @@
 \alias{add_trajectory}
 \title{Add a trajectory}
 \usage{
-add_trajectory(sim_obj, name, trajectory_obj)
+add_trajectory(sim_obj, trajectory_obj)
 }
 \arguments{
 \item{sim_obj}{the Simulator object}

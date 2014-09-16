@@ -32,8 +32,8 @@ create_simulator<-function(name = "anonymous"){
 #' @param name the name of the trajectory
 #' @param trajectory_df the trajectory data frame
 #' @export
-add_trajectory<-function(sim_obj, name, trajectory_obj){
-  sim_obj$trajectories[[name]]<-trajectory_obj
+add_trajectory<-function(sim_obj, trajectory_obj){
+  sim_obj$trajectories[[trajectory_obj@name]]<-trajectory_obj
   
   return(sim_obj)
 }

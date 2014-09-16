@@ -1,18 +1,20 @@
 #' @export
 TimeValueMonitor <- setRefClass("TimeValueMonitor",
                                 fields = list(
-                                  data = "data.frame")
+                                  data = "matrix")
 )
 
 
 TimeValueMonitor$methods(initialize = function(...){
   callSuper(...)
-  .self$data <- data.frame(t=0, v=0)
+  .self$data <- matrix(ncol=2, nrow=0)
+  .self$data <- rbind(.self$data, c(0,0))
+  colnames(.self$data) <- c("t","v")
   .self
 })
 
 TimeValueMonitor$methods(record = function(t, v){
-  data<<-rbind(data, data.frame(t, v))
+  data<<-rbind(data, c(t, v))
 })
 
 TimeValueMonitor$methods(get_last_value = function(){
