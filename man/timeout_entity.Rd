@@ -3,7 +3,8 @@
 \alias{timeout_entity}
 \title{timeout entity for x duration}
 \usage{
-timeout_entity(trajectory_obj, duration, ...)
+timeout_entity(trajectory_obj, duration, description = "undefined",
+  successor_id = NA, event_id = NA)
 }
 \arguments{
 \item{trajectory_obj}{the trajectory object}

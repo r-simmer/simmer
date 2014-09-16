@@ -3,7 +3,8 @@
 \alias{release_resource}
 \title{release n amount of resource x}
 \usage{
-release_resource(trajectory_obj, resource_name, amount, ...)
+release_resource(trajectory_obj, resource_name, amount,
+  description = "undefined", successor_id = NA, event_id = NA)
 }
 \arguments{
 \item{trajectory_obj}{the trajectory object}

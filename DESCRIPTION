@@ -11,6 +11,7 @@ Depends: magrittr
 Suggests: ggplot2, dplyr, testthat
 Collate:
   'trajectory.R'
+  'event.R'
   'monitor.R'
   'simulator.R'
   'simmer.R'

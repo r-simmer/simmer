@@ -35,7 +35,7 @@ t2<-
 
 
 t1<-
-  create_trajectory("test") %>%
+  create_trajectory("t1") %>%
   
   ## seize 1 nurse for a duration of rnorm(1,10) and release
   seize_resource("vpk",1) %>%
@@ -78,7 +78,7 @@ sim<-
   add_resource(name = "vpk", 1) %>%
   add_resource(name = "logistieke", 1) %>%
   add_resource(name = "arts", 1) %>%
-  add_entities_with_interval(10, "test", "t2", "rnorm(1,10)") %>%
+  add_entities_with_interval(10, "test", "t1", "rnorm(1,10)") %>%
   replicator(10) %>%
   simmer(until = 120)
 # plot_resource_utilization(sim)

@@ -22,8 +22,8 @@ Simulator$methods(now = function() current_time)
 
 Simulator$methods(init_sim = function(){
   
-  ## initialize activation times
-  if(getOption("verbose")) message("Initializing activation times")
+  ## calculate early start times of entities
+  if(getOption("verbose")) message("Parsing & evaluating early start times of entities")
   entities_early_start<<-
     lapply(entities_early_start, function(start) eval(parse(text=start)))
   
@@ -36,23 +36,32 @@ Simulator$methods(init_sim = function(){
   ## loop over entities
   for(i in 1:length(entities_name)){
     ## get trajectory
-    traj<-trajectories[[entities_trajectory_name[[i]]]]
-    #     print(traj)
+    traj<-trajectories[[entities_trajectory_name[[i]]]]@timeline
+    
     entity_event_list<-list()
     step <- traj[1,]
     while(TRUE){
       
       early_start <- ifelse(length(entity_event_list)==0, entities_early_start[[i]], -999)
       
-      event_details<-list(
-        id = as.character(step[["event_id"]]),
-        description = as.character(step[["description"]]),
-        resource = unlist(strsplit(as.character(step[["resource"]]),"/")),
-        duration = floor(eval(parse(text=as.character(step[["duration"]])))),
-        early_start_time = early_start,
-        start_time = -999,
-        end_time = -999
-      )
+      if(step[["event_type"]] %in% c("seize", "release")){
+        new("SeizeReleaseEvent", 
+            type = as.character(step[["event_type"]]),
+            resource_type_required = as.character(step[["resource"]]),
+            resource_amount_required = as.character(step[["value"]])
+        )
+      }
+      #       
+      #       event_details<-list(
+      #         id = as.character(step[["event_id"]]),
+      #         event_type = as.character(step[["event_type"]])
+      #         description = as.character(step[["description"]]),
+      #         resource = unlist(strsplit(as.character(step[["resource"]]),"/")),
+      #         duration = floor(eval(parse(text=as.character(step[["duration"]])))),
+      #         early_start_time = early_start,
+      #         start_time = -999,
+      #         end_time = -999
+      #       )
       
       
       event_details$resources_fulfilled<-sapply(event_details$resource, function(x) FALSE, USE.NAMES=T)
@@ -79,14 +88,14 @@ Simulator$methods(init_sim = function(){
     
   }
   if(getOption("verbose")) message("...done")
-  
-  # register start in process of entity (@ early_start)
-  if(getOption("verbose")) message("Registering activation time of entities in monitor")
-  for(ent_i in 1:length(entities_early_start)){
-    entities_monitor[[ent_i]]$record(entities_early_start[[ent_i]], 1)
-    entities_monitor[[ent_i]]$record(entities_early_start[[ent_i]], 0)
-  }
-  if(getOption("verbose")) message("...done")
+  #   
+  #   # register start in process of entity (@ early_start)
+  #   if(getOption("verbose")) message("Registering activation time of entities in monitor")
+  #   for(ent_i in 1:length(entities_early_start)){
+  #     entities_monitor[[ent_i]]$record(entities_early_start[[ent_i]], 1)
+  #     entities_monitor[[ent_i]]$record(entities_early_start[[ent_i]], 0)
+  #   }
+  #   if(getOption("verbose")) message("...done")
   
 })
 

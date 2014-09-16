@@ -3,7 +3,8 @@
 \alias{seize_resource}
 \title{seize n amount of resource x}
 \usage{
-seize_resource(trajectory_obj, resource_name, amount, ...)
+seize_resource(trajectory_obj, resource_name, amount,
+  description = "undefined", successor_id = NA, event_id = NA)
 }
 \arguments{
 \item{trajectory_obj}{the trajectory object}
