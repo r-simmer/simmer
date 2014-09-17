@@ -2,7 +2,12 @@ setClass("Trajectory", representation(name = "character",
                                       timeline = "list"))
 
 setMethod("show", "Trajectory", function(object){
-  print(object@timeline)
+  cat(paste("Trajectory name:",object@name, "\n"))
+  cat(
+  do.call(paste0,
+    lapply(object@timeline, function(ev) paste0(" --> ",class(ev), "\n"))
+    )
+  )
 })
 
 

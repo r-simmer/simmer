@@ -32,70 +32,81 @@ Simulator$methods(init_sim = function(){
   
   if(getOption("verbose")) message("Initializing events")
   
-  
-  ## loop over entities
-  for(i in 1:length(entities_name)){
-    ## get trajectory
-    traj<-trajectories[[entities_trajectory_name[[i]]]]@timeline
+  for(i in 1:length(entities_trajectory_name)){
+    event_list[[i]]<<-trajectories[[entities_trajectory_name[[i]]]]@timeline
     
-    entity_event_list<-list()
-    step <- traj[1,]
-    while(TRUE){
-      
-      early_start <- ifelse(length(entity_event_list)==0, entities_early_start[[i]], -999)
-      
-      if(step[["event_type"]] %in% c("seize", "release")){
-        new("SeizeReleaseEvent", 
-            type = as.character(step[["event_type"]]),
-            resource_type_required = as.character(step[["resource"]]),
-            resource_amount_required = as.character(step[["value"]])
-        )
-      }
-      #       
-      #       event_details<-list(
-      #         id = as.character(step[["event_id"]]),
-      #         event_type = as.character(step[["event_type"]])
-      #         description = as.character(step[["description"]]),
-      #         resource = unlist(strsplit(as.character(step[["resource"]]),"/")),
-      #         duration = floor(eval(parse(text=as.character(step[["duration"]])))),
-      #         early_start_time = early_start,
-      #         start_time = -999,
-      #         end_time = -999
-      #       )
-      
-      
-      event_details$resources_fulfilled<-sapply(event_details$resource, function(x) FALSE, USE.NAMES=T)
-      event_details$amount <- mapply(function(res_name, amount) amount, 
-                                     event_details$resource, as.numeric(unlist(strsplit(as.character(step[["amount"]]),"/"))),
-                                     SIMPLIFY=F, USE.NAMES=T)      
-      
-      
-      successor_evaluated<-as.character(
-        eval(parse(text=as.character(step[["successor"]])))
-      )
-      
-      
-      
-      
-      entity_event_list[[length(entity_event_list)+1]]<-event_details
-      
-      if(is.na(successor_evaluated)) break
-      step<-subset(traj, as.character(traj$event_id)==successor_evaluated)
-    }
-    
-    event_list[[length(event_list)+1]]<<-entity_event_list
-    
-    
+    #TODO evaluated times
   }
-  if(getOption("verbose")) message("...done")
-  #   
-  #   # register start in process of entity (@ early_start)
-  #   if(getOption("verbose")) message("Registering activation time of entities in monitor")
-  #   for(ent_i in 1:length(entities_early_start)){
-  #     entities_monitor[[ent_i]]$record(entities_early_start[[ent_i]], 1)
-  #     entities_monitor[[ent_i]]$record(entities_early_start[[ent_i]], 0)
-  #   }
-  #   if(getOption("verbose")) message("...done")
+  
+  
+  
+  
+#   
+#   
+#   
+#   ## loop over entities
+#   for(i in 1:length(entities_name)){
+#     ## get trajectory
+#     traj<-trajectories[[entities_trajectory_name[[i]]]]@timeline
+#     
+#     entity_event_list<-list()
+#     step <- traj[1,]
+#     while(TRUE){
+#       
+#       early_start <- ifelse(length(entity_event_list)==0, entities_early_start[[i]], -999)
+#       
+#       if(step[["event_type"]] %in% c("seize", "release")){
+#         new("SeizeReleaseEvent", 
+#             type = as.character(step[["event_type"]]),
+#             resource_type_required = as.character(step[["resource"]]),
+#             resource_amount_required = as.character(step[["value"]])
+#         )
+#       }
+#       #       
+#       #       event_details<-list(
+#       #         id = as.character(step[["event_id"]]),
+#       #         event_type = as.character(step[["event_type"]])
+#       #         description = as.character(step[["description"]]),
+#       #         resource = unlist(strsplit(as.character(step[["resource"]]),"/")),
+#       #         duration = floor(eval(parse(text=as.character(step[["duration"]])))),
+#       #         early_start_time = early_start,
+#       #         start_time = -999,
+#       #         end_time = -999
+#       #       )
+#       
+#       
+#       event_details$resources_fulfilled<-sapply(event_details$resource, function(x) FALSE, USE.NAMES=T)
+#       event_details$amount <- mapply(function(res_name, amount) amount, 
+#                                      event_details$resource, as.numeric(unlist(strsplit(as.character(step[["amount"]]),"/"))),
+#                                      SIMPLIFY=F, USE.NAMES=T)      
+#       
+#       
+#       successor_evaluated<-as.character(
+#         eval(parse(text=as.character(step[["successor"]])))
+#       )
+#       
+#       
+#       
+#       
+#       entity_event_list[[length(entity_event_list)+1]]<-event_details
+#       
+#       if(is.na(successor_evaluated)) break
+#       step<-subset(traj, as.character(traj$event_id)==successor_evaluated)
+#     }
+#     
+#     event_list[[length(event_list)+1]]<<-entity_event_list
+#     
+#     
+#   }
+#   if(getOption("verbose")) message("...done")
+#   #   
+#   #   # register start in process of entity (@ early_start)
+#   #   if(getOption("verbose")) message("Registering activation time of entities in monitor")
+#   #   for(ent_i in 1:length(entities_early_start)){
+#   #     entities_monitor[[ent_i]]$record(entities_early_start[[ent_i]], 1)
+#   #     entities_monitor[[ent_i]]$record(entities_early_start[[ent_i]], 0)
+#   #   }
+#   #   if(getOption("verbose")) message("...done")
   
 })
 
