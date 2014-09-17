@@ -4,8 +4,8 @@ setClass("Trajectory", representation(name = "character",
 setMethod("show", "Trajectory", function(object){
   cat(paste("Trajectory name:",object@name, "\n"))
   cat(
-  do.call(paste0,
-    lapply(object@timeline, function(ev) paste0(" --> ",class(ev), "\n"))
+    do.call(paste0,
+            lapply(object@timeline, function(ev) paste0(" --> ",class(ev), "\n"))
     )
   )
 })
@@ -27,19 +27,19 @@ create_trajectory<-function(name = "anonymous"){
 #' @param amount the amount of \emph{resource_name} to be seized
 #' @export
 seize_resource<-function(trajectory_obj, resource_name, amount, description = "undefined", successor_id = NA, event_id = NA){
-  event_id = ifelse(is.na(event_id), NROW(trajectory_obj@timeline) + 1, successor_id)
-  succesor_id = ifelse(is.na(successor_id), event_id + 1, successor_id)
   
-  trajectory_obj@timeline<-c(trajectory_obj@timeline, 
-                             new("SeizeEvent",
-                                 event_id = as.character(event_id),
-                                 successor_id = as.character(successor_id),
-                                 description = as.character(description), 
-                                 resource_name = as.character(resource_name),
-                                 resource_amount = amount
-                             ))
+  event_id = ifelse(is.na(event_id), length(trajectory_obj@timeline) + 1, event_id)
+  successor_id = ifelse(is.na(successor_id), length(trajectory_obj@timeline) + 2, successor_id)
   
-  trajectory_obj
+  trajectory_obj@timeline[[as.character(event_id)]]<-
+    new("SeizeEvent",
+        event_id = as.character(event_id),
+        successor_id = as.character(successor_id),
+        description = as.character(description), 
+        resource_name = as.character(resource_name),
+        resource_amount = amount
+    )
+  
   
   trajectory_obj
 }
@@ -52,8 +52,8 @@ seize_resource<-function(trajectory_obj, resource_name, amount, description = "u
 #' @export
 release_resource<-function(trajectory_obj, resource_name, amount, description = "undefined", successor_id = NA, event_id = NA){
   
-  event_id = ifelse(is.na(event_id), NROW(trajectory_obj@timeline) + 1, successor_id)
-  succesor_id = ifelse(is.na(successor_id), event_id + 1, successor_id)
+  event_id = ifelse(is.na(event_id), length(trajectory_obj@timeline) + 1, event_id)
+  successor_id = ifelse(is.na(successor_id), length(trajectory_obj@timeline) + 2, successor_id)
   
   trajectory_obj@timeline<-c(trajectory_obj@timeline, 
                              new("ReleaseEvent",
@@ -73,6 +73,9 @@ release_resource<-function(trajectory_obj, resource_name, amount, description = 
 #' @param duration timeout x time units
 #' @export
 timeout_entity <- function(trajectory_obj, duration, description = "undefined", successor_id = NA, event_id = NA){
+  
+  event_id = ifelse(is.na(event_id), length(trajectory_obj@timeline) + 1, event_id)
+  successor_id = ifelse(is.na(successor_id), length(trajectory_obj@timeline) + 2, successor_id)
   
   trajectory_obj@timeline<-c(trajectory_obj@timeline, 
                              new("TimeoutEvent",
