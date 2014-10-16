@@ -1,19 +1,14 @@
 Package: simmer
 Type: Package
 Title: Just let it simmer
-Description: simmer is a discrete event simulation package for R 
-Version: 0.02
+Description: simmer is a discrete event simulation package for R
+Version: 2.0
 Date: 2014-08-28
 Author: Bart Smeets
 Maintainer: Bart Smeets <bqrtsmeets86@gmail.com>
 License: MIT + file LICENSE
+Imports: Rcpp (>= 0.11.2)
 Depends: magrittr
-Suggests: ggplot2, dplyr, testthat
-Collate:
-  'trajectory.R'
-  'event.R'
-  'monitor.R'
-  'simulator.R'
-  'simmer.R'
-  'replication_container.R'
-  'plot.R'
+Suggests: dplyr, ggplot2
+LinkingTo: Rcpp
+RcppModules: 

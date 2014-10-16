@@ -1,0 +1,25 @@
+setClass("Resource", representation(pointer = "externalptr",
+                                    name = "character",
+                                    capacity = "numeric"))
+setMethod( "initialize", "Resource", function(.Object, name, capacity) {
+  .Object@pointer <- Resource__new(name, capacity)
+  .Object@name <- name
+  .Object@capacity <- capacity
+  .Object
+} )
+
+setMethod("show", "Resource", function(.Object) {
+  cat(paste0("Resource object\nName: ", 
+               .Object@name, 
+               "\nCapacity: ",
+               .Object@capacity))
+})
+
+#' Creates a resource object
+#' 
+#' @param resource_name the name of the resource (defaults to 'anonymous')
+#' @param capacity the resource's capacity (defaults to 1)
+#' @export
+create_resource<-function(resource_name = "anonymous", capacity = 1){
+  new("Resource", resource_name, capacity)
+}

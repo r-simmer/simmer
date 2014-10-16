@@ -4,40 +4,34 @@
 #' @param sim_obj the simulation object
 #' @param resource_name the name of the resource (character value)
 #' @param replication specify to plot only a specific replication (default=FALSE)
+#' @param smooth_line adds a smoothline, usefull if a lot of different replications are plotted
 #' @export
-plot_resource_usage <- function(sim_obj, resource_name, replication=FALSE){
+plot_resource_usage <- function(sim_obj, resource_name, replication_n=FALSE, smooth_line = FALSE){
   
   require(ggplot2)
   require(dplyr)
   
+  monitor_data<-
+    get_resource_monitor_values(sim_obj, resource_name)
   
-  if(class(sim_obj)=="Simulator"){
-    simulators<-c(sim_obj)
-  } else simulators<-sim_obj$simulators
   
-  if(!replication==F){
-    simulators<-c(simulators[[replication]])
+  if(!replication_n==F){
+    monitor_data <- monitor_data %>%
+      filter(replication == replication_n)
   }
   
-  capacity<-simulators[[1]]$resources_capacity[[resource_name]]
+  capacity<-get_resource_capacity_(sim@simulators[[1]], resource_name)
+  
+  monitor_data <-
+    monitor_data %>%
+    group_by(time, replication) %>%
+    summarise(value = max(value))
   
   
-  dataset<-
-    do.call(rbind,
-            mapply(function(sim_obj, rep) { 
-              dataset<- sim_obj$resources_monitor[[resource_name]]$data
-              dataset$rep<-rep
-              dataset
-            }, simulators, 1:length(simulators), SIMPLIFY=F)
-    ) %>%
-    group_by(t, rep) %>%
-    summarise(v = max(v))
-  
-
   plot_obj<-
-  ggplot(dataset) +
-    aes(x=t, y=v) + 
-    geom_step(aes(group=rep), alpha=.4)+
+    ggplot(monitor_data) +
+    aes(x=time, y=value) + 
+    geom_step(aes(group=replication), alpha=.4) +
     geom_hline(y=capacity, lty=2, color="red") +
     ggtitle(paste("Resource usage:", resource_name)) +
     scale_y_continuous(breaks=seq(0,1000,1)) +
@@ -45,7 +39,7 @@ plot_resource_usage <- function(sim_obj, resource_name, replication=FALSE){
     xlab("time") +
     expand_limits(y=0)
   
-  if(replication==F){
+  if(smooth_line == T){
     plot_obj +
       stat_smooth()      
   } else plot_obj
@@ -128,47 +122,20 @@ plot_evolution_entity_times <- function(sim_obj, type=c("flow_time","activity_ti
   require(dplyr)
   require(ggplot2)
   
-  if(class(sim_obj)=="Simulator"){
-    simulators<-c(sim_obj)
-  } else simulators<-sim_obj$simulators
-  
-  
-  dataset<-
-    do.call(rbind, 
-            mapply(function(sim_obj, rep){
-              do.call(rbind,
-                      lapply(sim_obj$entities_monitor, function(ent_mon){ 
-                        
-                        entity_data<-ent_mon$data
-                        
-                        if(is.na(entity_data[nrow(entity_data),"v"])) {
-                          return(data.frame())
-                        } else {
-                        
-                        activity_data<-
-                          entity_data %>%
-                          group_by(t) %>%
-                          summarise(v=max(v)) %>%
-                          mutate(activity_time = (t-lag(t)) * lag(v)) %>%
-                          ungroup() %>%
-                          summarise(activity_time = sum(activity_time, na.rm=T)) %>%
-                          data.frame(activity_time = ., 
-                                     start_time = min(subset(entity_data, v>0, select="t")),
-                                     end_time = entity_data[nrow(entity_data),"t"]) %>%
-                          mutate(flow_time = end_time - start_time,
-                                 waiting_time = flow_time - activity_time,
-                                 replication = rep)
-                        return(activity_data)
-                        }
-                        
-                      })
-              )
-            }, simulators, 1:length(simulators), SIMPLIFY=F)
-    ) %>%
+  monitor_data<-
+    get_entity_monitor_values(sim_obj) %>%
+    group_by(replication, entity_id, time) %>%
+    summarise(value=max(value)) %>%
+    mutate(activity_time = (time-lag(time)) * lag(value)) %>%
+    summarise(activity_time = sum(activity_time, na.rm=T),
+               start_time = min(time),
+               end_time = max(time)) %>%
+    mutate(flow_time = end_time - start_time,
+           waiting_time = flow_time - activity_time) %>%
     arrange(replication, end_time)
   
   if(type=="flow_time"){
-    ggplot(dataset) +
+    ggplot(monitor_data) +
       aes(x=end_time, y=flow_time) +
       geom_line(alpha=.4, aes(group=replication)) +
       stat_smooth() +
@@ -177,7 +144,7 @@ plot_evolution_entity_times <- function(sim_obj, type=c("flow_time","activity_ti
       ggtitle("Flow time evolution") +
       expand_limits(y=0)
   } else if(type=="waiting_time"){
-    ggplot(dataset) +
+    ggplot(monitor_data) +
       aes(x=end_time, y=waiting_time) +
       geom_line(alpha=.4, aes(group=replication)) +
       stat_smooth() +
@@ -186,7 +153,7 @@ plot_evolution_entity_times <- function(sim_obj, type=c("flow_time","activity_ti
       ggtitle("Waiting time evolution") +
       expand_limits(y=0)
   } else if(type=="activity_time"){
-    ggplot(dataset) +
+    ggplot(monitor_data) +
       aes(x=end_time, y=activity_time) +
       geom_line(alpha=.4, aes(group=replication)) +
       stat_smooth() +
