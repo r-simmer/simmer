@@ -41,6 +41,10 @@ Simulator__new <- function(name_, until_, verbose_) {
     .Call('simmer_Simulator__new', PACKAGE = 'simmer', name_, until_, verbose_)
 }
 
+now_ <- function(sim) {
+    .Call('simmer_now_', PACKAGE = 'simmer', sim)
+}
+
 Entity__new <- function(name_, activation_time_) {
     .Call('simmer_Entity__new', PACKAGE = 'simmer', name_, activation_time_)
 }

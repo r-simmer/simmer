@@ -22,14 +22,14 @@ create_trajectory("test") %>%
 #   add_release_event("dr",1.0) 
 
 
-sim<-create_simulator("test", n = 1,verbose = F) %>%
+sim<-create_simulator("test", n = 1,verbose = F, until = 120) %>%
   add_resource("vpk",1) %>%
 #   add_resource("dr",1) %>%
   add_entity(t1, name = "test", activation_time = 0) %>%
   add_entity(t1, name = "test", activation_time = 0) %>%
   add_entity(t1, name = "test", activation_time = 10) %>%
 #   add_entity(t1, name = "test", activation_time = 0) %>%
-#   add_entities_with_interval(t1, n = 15, interval = 15) %>%
+  add_entities_with_interval(t1, n = 15, interval = 15) %>%
   simmer()
 
 
@@ -37,6 +37,9 @@ get_entity_monitor_values(sim)
 get_entity_monitor_values(sim, aggregated =T)
 get_resource_monitor_values(sim, "vpk") 
 
+now_(sim@simulators[[1]])
+
+plot_resource_utilization(sim, c("nurse", "doctor"))
 # plot_resource_usage(sim, "vpk", smooth_line = F)
 plot_evolution_entity_times(sim, "activity_time")
 # get_resource_monitor_values(sim, "dr") 

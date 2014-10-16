@@ -179,9 +179,13 @@ SEXP Simulator__new(SEXP name_, SEXP until_, SEXP verbose_) {
   
 }
 
-
-
-
+//[[Rcpp::export]]
+int now_(SEXP sim) {
+  XPtr<Simulator> sim_ptr(sim);
+  return sim_ptr->now();
+}
+    
+    
 //[[Rcpp::export]]
 SEXP Entity__new(SEXP name_, SEXP activation_time_) {
   

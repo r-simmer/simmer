@@ -36,6 +36,36 @@ public:
 	
 };
 
+class SkipEvent: public Event
+{
+  int n_events;
+  public:
+  SkipEvent(Entity* parent, int n) {
+    n_events = n;
+    parent_entity = parent;
+		end_time = -1;
+		type = "SkipEvent";
+  };
+  
+  virtual SkipEvent* clone() const { return new SkipEvent (*this); }
+  
+    virtual bool try_to_start(int now) {
+		
+    for(int i = 0; i < n_events; ++i){
+      Event* event_to_delete = parent_entity->get_event();
+      delete event_to_delete;
+    }
+    
+    
+	}
+
+	virtual bool stop(int now) {
+		return true;
+	}
+  
+  
+};
+
 
 class SeizeEvent: public Event
 {

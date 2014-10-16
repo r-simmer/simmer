@@ -121,7 +121,7 @@ sim <-
 After you've left it simmering for a bit (pun intended), we can have a look at the overall resource utilization. The top and bottom of the error bars show respectively the 25th and 75th percentile of the utilization across all the replications. The top of the bar shows the median utilization.
 
 ```{r, message=FALSE}
-# plot_resource_utilization(sim)
+plot_resource_utilization(sim, c("nurse", "doctor","administration"))
 ```
 
 It is also possible to have a look at a specific resource and its activity during the simulation.

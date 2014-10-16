@@ -126,7 +126,7 @@ void Simulator::run()
 	}
 
 	std::vector <int> events_to_delete;
-
+  long int next_time;
 	while(current_time < until && event_queue.size()>0) {
 
 
@@ -191,8 +191,10 @@ void Simulator::run()
 		events_to_delete.clear();
 
 		i = 0;
-
-		current_time = get_next_step(event_queue, current_time, until);
+    
+    next_time = get_next_step(event_queue, current_time, until);
+		if(next_time > until) break;
+    current_time = next_time;
 		if(verbose) cout << "Current simulation time: " << current_time << std::endl;
 
 	}

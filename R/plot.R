@@ -64,41 +64,17 @@ plot_resource_utilization <- function(sim_obj, resources){
       do.call(rbind,
               lapply(resources, function(res) data.frame(resource = res, capacity = get_resource_capacity_(sim_obj@simulators[[1]], res)))
       )
-    )
-  
-  # tot hier geraakt...
-  
-  run_times<-sapply(simulators, function(sim_obj) sim_obj$now())
-  resources_names<-names(simulators[[1]]$resources_monitor)
-  resources_capacity<-simulators[[1]]$resources_capacity
-  
-  
-  dataset<-
-    do.call(rbind,
-            mapply(function(sim_obj, rep, runtime) { 
-              dataset<-
-                do.call(rbind,
-                        mapply(function(resource_name, resource_capacity){
-                          dataset<- sim_obj$resources_monitor[[resource_name]]$data
-                          dataset$resource<-resource_name
-                          dataset$capacity<-resource_capacity
-                          dataset
-                        }, resources_names, resources_capacity, SIMPLIFY=F))  
-              
-              dataset$rep<-rep
-              dataset$runtime<-runtime
-              dataset
-            }, simulators, 1:length(simulators),run_times, SIMPLIFY=F)
-    )
-  
-  dataset<-
-    dataset %>%
-    group_by(resource, rep, capacity, runtime, t) %>%
-    summarise(v=max(v)) %>%
-    ungroup() %>%
-    group_by(resource, rep, capacity, runtime) %>%
-    mutate(in_use = (t-lag(t)) * lag(v)) %>%
-    group_by(resource, rep, capacity, runtime) %>%
+    ) %>%
+    left_join(
+      do.call(rbind,
+      lapply(1:length(sim_obj@simulators), function(r) data.frame(replication = r, runtime = now_(sim_obj@simulators[[1]])))
+      )
+    ) %>%
+    group_by(resource, replication, capacity, runtime, time) %>%
+    summarise(value=max(value)) %>%
+    group_by(resource, replication, capacity, runtime) %>%
+    mutate(in_use = (time-lag(time)) * lag(value)) %>%
+    group_by(resource, replication, capacity, runtime) %>%
     summarise(in_use = sum(in_use, na.rm=T)) %>%
     ungroup() %>%
     mutate(utilization = in_use / capacity / runtime) %>%
@@ -107,11 +83,9 @@ plot_resource_utilization <- function(sim_obj, resources){
               Q50 = quantile(utilization, .5),
               Q75 = quantile(utilization, .75))
   
+
   
-  
-  
-  
-  ggplot(dataset) +
+  ggplot(monitor_data) +
     aes(x=resource, y=Q50, ymin=Q25, ymax=Q75) + 
     geom_bar(stat="identity") + 
     geom_errorbar(width=.25, color="black") +

@@ -149,6 +149,21 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// now_
+int now_(SEXP sim);
+RcppExport SEXP simmer_now_(SEXP simSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type sim(simSEXP );
+        int __result = now_(sim);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // Entity__new
 SEXP Entity__new(SEXP name_, SEXP activation_time_);
 RcppExport SEXP simmer_Entity__new(SEXP name_SEXP, SEXP activation_time_SEXP) {
