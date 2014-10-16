@@ -24,7 +24,7 @@ public:
   
 	Entity(std::string ent_name, int activation): name(ent_name), monitor(new TimeValueMonitor()), activation_time(activation) {
     // set activation time
-    monitor->record(activation, 0);
+    monitor->record(activation, -999);
 	}
 
 	void set_simulator(Simulator* sim_obj) {

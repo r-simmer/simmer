@@ -166,6 +166,10 @@ void Simulator::run()
 					);
 					event_queue.back()->early_start_time = current_time;
 
+				} 
+        else { // entity is finished
+        ev->parent_entity->monitor->record(current_time, -999);
+          
 				}
 
 				// finally save the index of the current event to be deleted from the queue

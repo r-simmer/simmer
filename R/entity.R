@@ -24,10 +24,10 @@ create_entity<-function(name = "anonymous", activation_time = 0){
 #' @param activation_time the time at which to activate the first entity
 #' @param interval the time between intervals, if a character value is given - e.g. "rnorm(1,10)" - it will be evaluated for every entity 
 #' @export
-add_entities_with_interval<-function(sim_obj, trajectory, name = "anonymous", n = 1, activation_time = 0, interval = 0){
+add_entities_with_interval<-function(sim_obj, trajectory, name_prefix = "anonymous", n = 1, activation_time = 0, interval = 0){
   act_time <- activation_time
   for(i in 1:n){
-    add_entity(sim_obj, trajectory, activation_time = act_time)
+    add_entity(sim_obj, name = paste0(name_prefix,"_",i), trajectory, activation_time = act_time)
     act_time <- act_time + evaluate_value(interval)
   }
   

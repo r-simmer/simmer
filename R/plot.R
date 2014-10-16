@@ -47,18 +47,26 @@ plot_resource_usage <- function(sim_obj, resource_name, replication_n=FALSE, smo
 
 #' plot utilization of resources
 #' 
-#' plot the utilization of all resources in the simulation
+#' plot the utilization of specified resources in the simulation
 #' @param sim_obj the simulation object
+#' @param a character vector with at least one resource specified
 #' @export
-plot_resource_utilization <- function(sim_obj){
+plot_resource_utilization <- function(sim_obj, resources){
   require(ggplot2)
   require(scales)
   require(dplyr)
   
-  if(class(sim_obj)=="Simulator"){
-    simulators<-c(sim_obj)
-  } else simulators<-sim_obj$simulators
+  monitor_data<-
+    do.call(rbind,
+            lapply(resources, function(res) get_resource_monitor_values(sim_obj, res))
+    ) %>%
+    left_join(
+      do.call(rbind,
+              lapply(resources, function(res) data.frame(resource = res, capacity = get_resource_capacity_(sim_obj@simulators[[1]], res)))
+      )
+    )
   
+  # tot hier geraakt...
   
   run_times<-sapply(simulators, function(sim_obj) sim_obj$now())
   resources_names<-names(simulators[[1]]$resources_monitor)
@@ -123,16 +131,7 @@ plot_evolution_entity_times <- function(sim_obj, type=c("flow_time","activity_ti
   require(ggplot2)
   
   monitor_data<-
-    get_entity_monitor_values(sim_obj) %>%
-    group_by(replication, entity_id, time) %>%
-    summarise(value=max(value)) %>%
-    mutate(activity_time = (time-lag(time)) * lag(value)) %>%
-    summarise(activity_time = sum(activity_time, na.rm=T),
-               start_time = min(time),
-               end_time = max(time)) %>%
-    mutate(flow_time = end_time - start_time,
-           waiting_time = flow_time - activity_time) %>%
-    arrange(replication, end_time)
+    get_entity_monitor_values(sim_obj, aggregated = T)
   
   if(type=="flow_time"){
     ggplot(monitor_data) +
