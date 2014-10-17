@@ -2,7 +2,7 @@
 title: "simmer"
 output:
 html_document:
-keep_md: yes
+  keep_md: yes
 ---
 [![Build Status](https://travis-ci.org/Bart6114/simmer.svg)](https://travis-ci.org/Bart6114/simmer)
 
@@ -146,7 +146,7 @@ head(
 
 ### Flow time
 
-Next we can have a look at the evolution of the entities' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them.
+Next we can have a look at the evolution of the entities' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them. All entities that didn't finish their entire trajectory are excluded from the plot.
 
 ```{r, message=FALSE}
 plot_evolution_entity_times(sim, type = "flow_time")

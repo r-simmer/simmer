@@ -39,7 +39,7 @@ get_resource_monitor_values(sim, "vpk")
 
 now_(sim@simulators[[1]])
 
-plot_resource_utilization(sim, c("nurse", "doctor"))
+plot_resource_utilization(sim, c("vpk"))
 # plot_resource_usage(sim, "vpk", smooth_line = F)
 plot_evolution_entity_times(sim, "activity_time")
 # get_resource_monitor_values(sim, "dr") 
