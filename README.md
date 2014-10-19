@@ -113,8 +113,10 @@ After you've left it simmering for a bit (pun intended), we can have a look at t
 
 
 ```r
-# plot_resource_utilization(sim)
+plot_resource_utilization(sim, c("nurse", "doctor","administration"))
 ```
+
+![plot of chunk unnamed-chunk-9](./README_files/figure-html/unnamed-chunk-9.png) 
 
 It is also possible to have a look at a specific resource and its activity during the simulation.
 
@@ -134,90 +136,82 @@ plot_resource_usage(sim, "doctor", 6)
 
 ![plot of chunk unnamed-chunk-11](./README_files/figure-html/unnamed-chunk-11.png) 
 
+One can also query the raw resource monitor data.
+
+
+```r
+head(
+  get_resource_monitor_values(sim, "nurse")
+  )
+```
+
+```
+##   time value resource replication
+## 1    0     0    nurse           1
+## 2    0     1    nurse           1
+## 3   15     0    nurse           1
+## 4   15     1    nurse           1
+## 5   30     0    nurse           1
+## 6   30     1    nurse           1
+```
+
 ### Flow time
 
-Next we can have a look at the evolution of the entities' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them.
+Next we can have a look at the evolution of the entities' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them. All entities that didn't finish their entire trajectory are excluded from the plot.
 
 
 ```r
 plot_evolution_entity_times(sim, type = "flow_time")
 ```
 
-![plot of chunk unnamed-chunk-12](./README_files/figure-html/unnamed-chunk-12.png) 
-
-```r
-get_entity_monitor_values(sim, aggregated = T)
-```
-
-```
-## Source: local data frame [60 x 8]
-## Groups: replication, entity_id, start_time, end_time
-## 
-##    replication entity_id start_time end_time finished activity_time
-## 1            1         0          0       36        1            36
-## 2            1         1          9       51        1            38
-## 3            1         2         16       68        1            40
-## 4            1         4         38       72        1            14
-## 5            1         5         48       72        1             0
-## 6            1         3         26       77        1            35
-## 7            2         0          0       35        1            35
-## 8            2         1          9       53        1            39
-## 9            2         2         16       69        1            40
-## 10           2         4         38       72        1            14
-## 11           2         5         48       72        1             0
-## 12           2         3         26       76        1            33
-## 13           3         0          0       37        1            37
-## 14           3         1          9       54        1            40
-## 15           3         2         16       66        1            37
-## 16           3         4         38       72        1            15
-## 17           3         5         48       72        1             0
-## 18           3         3         26       76        1            33
-## 19           4         0          0       40        1            40
-## 20           4         1          9       53        1            38
-## 21           4         2         16       68        1            39
-## 22           4         4         38       73        1            15
-## 23           4         5         48       73        1             0
-## 24           4         3         26       78        1            34
-## 25           5         0          0       40        1            40
-## 26           5         1          9       55        1            40
-## 27           5         2         16       68        1            38
-## 28           5         4         38       75        1            14
-## 29           5         5         48       75        1             0
-## 30           5         3         26       79        1            33
-## 31           6         0          0       36        1            36
-## 32           6         1          9       54        1            40
-## 33           6         2         16       69        1            40
-## 34           6         4         38       75        1            17
-## 35           6         5         48       75        1             0
-## 36           6         3         26       78        1            34
-## 37           7         0          0       40        1            40
-## 38           7         1          9       52        1            38
-## 39           7         2         16       67        1            38
-## 40           7         4         38       72        1            16
-## 41           7         5         48       72        1             0
-## 42           7         3         26       76        1            34
-## 43           8         0          0       38        1            38
-## 44           8         1          9       55        1            40
-## 45           8         2         16       66        1            37
-## 46           8         4         38       73        1            14
-## 47           8         5         48       73        1             0
-## 48           8         3         26       79        1            35
-## 49           9         0          0       41        1            41
-## 50           9         1          9       57        1            42
-## 51           9         2         16       68        1            37
-## 52           9         4         38       72        1            13
-## 53           9         5         48       72        1             0
-## 54           9         3         26       78        1            34
-## 55          10         0          0       39        1            39
-## 56          10         1          9       50        1            35
-## 57          10         2         16       67        1            39
-## 58          10         4         38       72        1            15
-## 59          10         5         48       72        1             0
-## 60          10         3         26       77        1            35
-## Variables not shown: flow_time (int), waiting_time (dbl)
-```
+![plot of chunk unnamed-chunk-13](./README_files/figure-html/unnamed-chunk-13.png) 
 
 Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
+
+It is also possible to extract the raw entity monitor data.
+
+
+```r
+head(
+  get_entity_monitor_values(sim)
+  )
+```
+
+```
+##   time value entity_id entity_name replication
+## 1    0  -999         0   patient_1           1
+## 2    0     1         0   patient_1           1
+## 3   15     0         0   patient_1           1
+## 4   15     1         0   patient_1           1
+## 5   33     0         0   patient_1           1
+## 6   33     1         0   patient_1           1
+```
+
+Or to look at the aggregated data.
+
+
+```r
+head(
+  get_entity_monitor_values(sim, aggregated = T)
+  )
+```
+
+```
+##   replication entity_id start_time end_time finished activity_time
+## 1           1         0          0       39        1            39
+## 2           1         1          8       52        1            37
+## 3           1         2         20       67        1            37
+## 4           2         0          0       40        1            40
+## 5           2         1          8       52        1            37
+## 6           2         2         20       67        1            37
+##   flow_time waiting_time
+## 1        39            0
+## 2        44            7
+## 3        47           10
+## 4        40            0
+## 5        44            7
+## 6        47           10
+```
 
 **DOCUMENTATION TO BE CONTINUED**
 
