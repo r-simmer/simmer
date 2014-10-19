@@ -3,7 +3,6 @@ title: "simmer"
 output:
   html_document:
     keep_md: true
-    self_contained: false
 ---
 [![Build Status](https://travis-ci.org/Bart6114/simmer.svg)](https://travis-ci.org/Bart6114/simmer)
 
