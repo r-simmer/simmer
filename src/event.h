@@ -55,7 +55,8 @@ class SkipEvent: public Event
       Event* event_to_delete = parent_entity->get_event();
       delete event_to_delete;
     }
-    
+    end_time = now;
+    return true;
     
 	}
 

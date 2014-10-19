@@ -45,5 +45,13 @@ add_timeout_event<-function(trajectory_obj, duration){
   trajectory_obj
 }
 
+#' @export
+add_skip_event<-function(trajectory_obj, number_to_skip){
+  trajectory_obj@events[[length(trajectory_obj@events) + 1]]<-c(list(type = "SkipEvent",
+                                                                     number = number_to_skip))
+  
+  trajectory_obj
+}
+
 
 

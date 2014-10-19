@@ -42,6 +42,7 @@ public:
 	void add_timeout_event(int);
 	void add_seize_event(std::string, double);
 	void add_release_event(std::string, double);
+  void add_skip_event(int);
 
 };
 

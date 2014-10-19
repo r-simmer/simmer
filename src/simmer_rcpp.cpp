@@ -45,6 +45,17 @@ void add_seize_event_(SEXP ent, SEXP res_name_, SEXP amount_) {
 }
 
 //[[Rcpp::export]]
+void add_skip_event_(SEXP ent, SEXP number_) {
+  
+  XPtr<Entity> ent_ptr(ent);
+  
+  int number = as<int>(number_);
+  ent_ptr->add_skip_event(number);
+  
+}
+
+
+//[[Rcpp::export]]
 void add_release_event_(SEXP ent, SEXP res_name_, SEXP amount_) {
   
   XPtr<Entity> ent_ptr(ent);

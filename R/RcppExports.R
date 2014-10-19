@@ -9,6 +9,10 @@ add_seize_event_ <- function(ent, res_name_, amount_) {
     invisible(.Call('simmer_add_seize_event_', PACKAGE = 'simmer', ent, res_name_, amount_))
 }
 
+add_skip_event_ <- function(ent, number_) {
+    invisible(.Call('simmer_add_skip_event_', PACKAGE = 'simmer', ent, number_))
+}
+
 add_release_event_ <- function(ent, res_name_, amount_) {
     invisible(.Call('simmer_add_release_event_', PACKAGE = 'simmer', ent, res_name_, amount_))
 }

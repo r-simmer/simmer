@@ -32,6 +32,19 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// add_skip_event_
+void add_skip_event_(SEXP ent, SEXP number_);
+RcppExport SEXP simmer_add_skip_event_(SEXP entSEXP, SEXP number_SEXP) {
+BEGIN_RCPP
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type ent(entSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type number_(number_SEXP );
+        add_skip_event_(ent, number_);
+    }
+    return R_NilValue;
+END_RCPP
+}
 // add_release_event_
 void add_release_event_(SEXP ent, SEXP res_name_, SEXP amount_);
 RcppExport SEXP simmer_add_release_event_(SEXP entSEXP, SEXP res_name_SEXP, SEXP amount_SEXP) {

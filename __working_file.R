@@ -11,6 +11,8 @@ ggthemr("fresh", layout="scientific")
 t1<-
 create_trajectory("test") %>%
   add_seize_event("vpk",1.0) %>%
+  add_skip_event("sample(c(1,0),1)") %>%
+  add_timeout_event("rnorm(1,10,1)") %>%
   add_timeout_event("rnorm(1,10,1)") %>%
   add_release_event("vpk",1.0) 
 # 
@@ -22,7 +24,7 @@ create_trajectory("test") %>%
 #   add_release_event("dr",1.0) 
 
 
-sim<-create_simulator("test", n = 1,verbose = F, until = 120) %>%
+sim<-create_simulator("test", n = 5,verbose = F, until = 120) %>%
   add_resource("vpk",1) %>%
 #   add_resource("dr",1) %>%
   add_entity(t1, name = "test", activation_time = 0) %>%

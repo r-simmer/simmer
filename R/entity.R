@@ -37,7 +37,6 @@ add_entities_with_interval<-function(sim_obj, trajectory, name_prefix = "anonymo
 #' @export
 add_entity<-function(sim_obj, trajectory, name = "anonymous", activation_time = 0){
   
-  
   for(sim_ptr in sim_obj@simulators){
     
     ent<-
@@ -51,6 +50,8 @@ add_entity<-function(sim_obj, trajectory, name = "anonymous", activation_time = 
         add_release_event_to_entity(ent, evaluate_value(ev$resource), evaluate_value(ev$amount))
       } else if( ev$type == "TimeoutEvent"){
         add_timeout_event_to_entity(ent, floor(evaluate_value(ev$duration)))
+      } else if( ev$type == "SkipEvent"){
+        add_skip_event_to_entity(ent, floor(evaluate_value(ev$number)))
       }
       
     }
