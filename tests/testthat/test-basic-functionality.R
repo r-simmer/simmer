@@ -23,7 +23,8 @@ test_that("basic scenario can be simulated with 100 replications", {
     create_simulator("SuperDuperSim", n = 100) %>%
     add_resource("nurse", 1) %>%
     add_resource("doctor", 2) %>%
-    add_resource("administration", 1)
+    add_resource("administration", 1) %>%
+    add_entities_with_interval(trajectory = t1, n = 10, name_prefix = "patient", interval =  "rnorm(1, 10, 2)")
   
   expect_that(sim, is_a("Simulator"))
   
@@ -33,6 +34,6 @@ test_that("basic scenario can be simulated with 100 replications", {
     simmer()
   
   expect_that(sim, is_a("Simulator"))
-  expect_that(now_(sim@simulators[[0]]), is_more_than(0))
+  expect_that(now_(sim@simulators[[1]]), is_more_than(0))
   
 })
