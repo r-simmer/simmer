@@ -25,7 +25,6 @@ public:
   
 	~Resource()
 	{
-		std::cout << "resource destructor called" << std::endl;
 		delete monitor;
 	}
 

@@ -76,12 +76,12 @@ t1<-
 
 In the above trajectory the ```duration``` is drawn from a normal distribution with a given mean.
 
-When the trajectory is know, a simulator object can be build. In the below example, a simulator is instantiated and three types of resources are added. The *nurse* and *administration* resource each with a capacity of 1 and the *doctor* resource with a capacity of 2. We specify that we to replicate the simulation 10 times using the ```n``` argument. We also specify that we want to limit the run-time to 120 time units using the ```until``` argument.
+When the trajectory is know, a simulator object can be build. In the below example, a simulator is instantiated and three types of resources are added. The *nurse* and *administration* resource each with a capacity of 1 and the *doctor* resource with a capacity of 2. We specify that we to replicate the simulation 100 times using the ```n``` argument. We also specify that we want to limit the run-time to 120 time units using the ```until``` argument.
 
 ```{r}
 
 sim<-
-  create_simulator("SuperDuperSim", n = 10, until = 80) %>%
+  create_simulator("SuperDuperSim", n = 100, until = 80) %>%
   add_resource("nurse", 1) %>%
   add_resource("doctor", 2) %>%
   add_resource("administration", 1)
@@ -172,11 +172,11 @@ plot_evolution_entity_times(sim, type = "flow_time")
 
 Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
 
-It is also possible to extract the raw entity monitor data.
+It is also possible to extract the aggregated or raw entity monitor data.
 
 ```{r, message=FALSE}
 head(
-  get_entity_monitor_values(sim)
+  get_entity_monitor_values(sim, aggregated = TRUE)
   )
 ```
 
@@ -193,10 +193,8 @@ head(
 
 ## Roadmap
 
-* Better next step algorithm
-* More flexible method to release/seize resources (alternative trajectory construction?)
+* Introduce *rewind event*
 * Time-specific resource availability
-* Implement main simulation loop in C++ (using Rcpp)
 
 ## Contact
 

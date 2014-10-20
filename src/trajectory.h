@@ -1,4 +1,4 @@
-    #ifndef TRAJECTORY_H
+#ifndef TRAJECTORY_H
 #define TRAJECTORY_H
 
 #include "event.h"

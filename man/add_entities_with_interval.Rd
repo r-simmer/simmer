@@ -3,21 +3,21 @@
 \alias{add_entities_with_interval}
 \title{Add n entities with specified interval}
 \usage{
-add_entities_with_interval(sim_obj, trajectory, name = "anonymous", n = 1,
-  activation_time = 0, interval = 0)
+add_entities_with_interval(sim_obj, trajectory, name_prefix = "anonymous",
+  n = 1, activation_time = 0, interval = 0)
 }
 \arguments{
 \item{sim_obj}{the simulator object}
 
 \item{trajectory}{a trajectory object}
 
-\item{name}{the name of the entities, with be suffixed by a number (1:n)}
-
 \item{n}{the number of entities to create}
 
 \item{activation_time}{the time at which to activate the first entity}
 
 \item{interval}{the time between intervals, if a character value is given - e.g. "rnorm(1,10)" - it will be evaluated for every entity}
+
+\item{name}{the name of the entities, with be suffixed by a number (1:n)}
 }
 \description{
 Add n entities with specified interval

@@ -91,7 +91,7 @@ public:
 	Simulator(std::string sim_name, int until_time, bool verbose = false): name(sim_name), until(until_time), verbose(verbose), current_time(0) {}
 
 	~Simulator() {
-//		std::cout << "Simulator destructor called" << std::endl;
+
 		while(!entity_vec.empty()) delete entity_vec.back(), entity_vec.pop_back();
 		while(!event_queue.empty()) delete event_queue.back(), event_queue.pop_back();
 
@@ -112,7 +112,7 @@ public:
 void Simulator::run()
 {
 	if(verbose) cout << "Starting simulation..." << endl;
-// TODO: early_start_time bekijken
+
 	// initialize events
 	for(std::vector <Entity*>::iterator it = entity_vec.begin(); it != entity_vec.end(); ++it) {
 
@@ -142,7 +142,7 @@ void Simulator::run()
 				if(verbose) cout << "Starting " << ev->type << "  <  " << ev->parent_entity->name;
 				if(started) {
 					if(verbose) cout << ".....started" << endl;
-					//ev->parent_entity->monitor->record(current_time, 1);
+					
 				} else {
 					if(verbose) cout << ".....failed" << endl;
 				}
@@ -155,7 +155,7 @@ void Simulator::run()
 				if(verbose) cout << ".....stopped" << endl;
 
 				ev->stop(current_time);
-				//ev->parent_entity->monitor->record(current_time, 0);
+				
 
 				// check if there is a next event to start for the current entity,
 				if(ev->parent_entity->entity_event_vec.size() > 0 ) {
@@ -172,7 +172,7 @@ void Simulator::run()
           
 				}
 
-				// finally save the index of the current event to be deleted from the queue
+				// save the index of the current event to be deleted from the queue
 				events_to_delete.push_back(i);
 
 

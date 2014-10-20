@@ -1,7 +1,6 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-//TODO: add method to define (pseudo TimeoutEvent) to use for activation intervals
 //TODO: monitor activity (standard monitoring = on, but allow for disabling)
 
 #include <stdlib.h>   
@@ -116,10 +115,7 @@ class ReleaseEvent: public Event
 
 public:
 
-	virtual ~ReleaseEvent() {
-//		std::cout << "ReleaseEvent destructor called" << std::endl;
-
-	}
+	virtual ~ReleaseEvent() {}
 
 	double resource_amount;
 	ReleaseEvent(Entity* parent,  std::string res, double res_amount) {

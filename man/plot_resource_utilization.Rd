@@ -3,12 +3,14 @@
 \alias{plot_resource_utilization}
 \title{plot utilization of resources}
 \usage{
-plot_resource_utilization(sim_obj)
+plot_resource_utilization(sim_obj, resources)
 }
 \arguments{
 \item{sim_obj}{the simulation object}
+
+\item{resources}{a character vector with at least one resource specified - e.g. "c('res1','res2')"}
 }
 \description{
-plot the utilization of all resources in the simulation
+plot the utilization of specified resources in the simulation
 }
 

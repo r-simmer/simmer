@@ -49,7 +49,7 @@ plot_resource_usage <- function(sim_obj, resource_name, replication_n=FALSE, smo
 #' 
 #' plot the utilization of specified resources in the simulation
 #' @param sim_obj the simulation object
-#' @param a character vector with at least one resource specified
+#' @param resources a character vector with at least one resource specified - e.g. "c('res1','res2')"
 #' @export
 plot_resource_utilization <- function(sim_obj, resources){
   require(ggplot2)

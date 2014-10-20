@@ -5,10 +5,9 @@ Description: simmer is a discrete event simulation package for R
 Version: 2.0
 Date: 2014-08-28
 Author: Bart Smeets
-Maintainer: Bart Smeets <bqrtsmeets86@gmail.com>
+Maintainer: Bart Smeets <bartsmeets86@gmail.com>
 License: MIT + file LICENSE
 Imports: Rcpp (>= 0.11.2)
 Depends: magrittr
 Suggests: dplyr, ggplot2
 LinkingTo: Rcpp
-RcppModules: 

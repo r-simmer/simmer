@@ -1,9 +1,9 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-// forward declarations
 #include <memory>
 
+// forward declarations
 class Event;
 class TimeoutEvent;
 class SeizeEvent;
