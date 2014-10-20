@@ -1,7 +1,7 @@
 ---
 title: "simmer"
 output:
-  html_document:
+  html_fragment:
     keep_md: true
 ---
 [![Build Status](https://travis-ci.org/Bart6114/simmer.svg)](https://travis-ci.org/Bart6114/simmer)
@@ -116,6 +116,24 @@ sim <-
   simmer()
 ```
 
+### Optional events
+
+The *skip event* introduces the possibility of introducing probability in whether or not to include a step in a trajectory. The following example shows how a trajectory can be build with a 50-50 chance for the entitity to undergo the second *time-out event*. 
+
+
+```{r}
+t2<-
+  create_trajectory("trajectory with a skip event") %>%
+  ## add a skip event - (50 - 50 chance that the next event is skipped)
+  add_skip_event(number_to_skip = "sample(c(0,1),1)") %>%
+  add_timeout_event(15) %>%
+  add_timeout_event(5)
+
+
+```
+
+The ```add_skip_event``` command can be used to skip *n* number of events after the *skip event*. The *n* number of events to skip is specified using the ```number_to_skip``` parameter. It is import to enclose an command to be evaluated for each entity in quotes. 
+
 ### Resource utilization
 
 After you've left it simmering for a bit (pun intended), we can have a look at the overall resource utilization. The top and bottom of the error bars show respectively the 25th and 75th percentile of the utilization across all the replications. The top of the bar shows the median utilization.
@@ -169,6 +187,7 @@ head(
   get_entity_monitor_values(sim, aggregated = T)
   )
 ```
+
 
 **DOCUMENTATION TO BE CONTINUED**
 

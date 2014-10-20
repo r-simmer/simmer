@@ -107,6 +107,23 @@ sim <-
   simmer()
 ```
 
+### Optional events
+
+The *skip event* introduces the possibility of introducing probability in whether or not to include a step in a trajectory. The following example shows how a trajectory can be build with a 50-50 chance for the entitity to undergo the second *time-out event*. 
+
+
+
+```r
+t2<-
+  create_trajectory("trajectory with a skip event") %>%
+  ## add a skip event - (50 - 50 chance that the next event is skipped)
+  add_skip_event(number_to_skip = "sample(c(0,1),1)") %>%
+  add_timeout_event(15) %>%
+  add_timeout_event(5)
+```
+
+The ```add_skip_event``` command can be used to skip *n* number of events after the *skip event*. The *n* number of events to skip is specified using the ```number_to_skip``` parameter. It is import to enclose an command to be evaluated for each entity in quotes. 
+
 ### Resource utilization
 
 After you've left it simmering for a bit (pun intended), we can have a look at the overall resource utilization. The top and bottom of the error bars show respectively the 25th and 75th percentile of the utilization across all the replications. The top of the bar shows the median utilization.
@@ -116,7 +133,7 @@ After you've left it simmering for a bit (pun intended), we can have a look at t
 plot_resource_utilization(sim, c("nurse", "doctor","administration"))
 ```
 
-![plot of chunk unnamed-chunk-9](./README_files/figure-html/unnamed-chunk-9.png) 
+![](./README_files/figure-html/unnamed-chunk-10-1.png) 
 
 It is also possible to have a look at a specific resource and its activity during the simulation.
 
@@ -125,7 +142,7 @@ It is also possible to have a look at a specific resource and its activity durin
 plot_resource_usage(sim, "doctor")
 ```
 
-![plot of chunk unnamed-chunk-10](./README_files/figure-html/unnamed-chunk-10.png) 
+![](./README_files/figure-html/unnamed-chunk-11-1.png) 
 
 In the above graph, the individual lines are all seperate replications. A smooth line is drawn over them to get a sense of the *'average'* utilization. You can also see here that the ```until``` time of 120 was most likely lower than the unrestricted run time of the simulation. It is also possible to get a graph about a specific replication by simply specifying the replication number. In the example below the 6th replication is shown.
 
@@ -134,7 +151,7 @@ In the above graph, the individual lines are all seperate replications. A smooth
 plot_resource_usage(sim, "doctor", 6)
 ```
 
-![plot of chunk unnamed-chunk-11](./README_files/figure-html/unnamed-chunk-11.png) 
+![](./README_files/figure-html/unnamed-chunk-12-1.png) 
 
 One can also query the raw resource monitor data.
 
@@ -149,10 +166,10 @@ head(
 ##   time value resource replication
 ## 1    0     0    nurse           1
 ## 2    0     1    nurse           1
-## 3   15     0    nurse           1
-## 4   15     1    nurse           1
-## 5   30     0    nurse           1
-## 6   30     1    nurse           1
+## 3   16     0    nurse           1
+## 4   16     1    nurse           1
+## 5   29     0    nurse           1
+## 6   29     1    nurse           1
 ```
 
 ### Flow time
@@ -164,7 +181,7 @@ Next we can have a look at the evolution of the entities' flow time during the s
 plot_evolution_entity_times(sim, type = "flow_time")
 ```
 
-![plot of chunk unnamed-chunk-13](./README_files/figure-html/unnamed-chunk-13.png) 
+![](./README_files/figure-html/unnamed-chunk-14-1.png) 
 
 Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
 
@@ -181,10 +198,10 @@ head(
 ##   time value entity_id entity_name replication
 ## 1    0  -999         0   patient_1           1
 ## 2    0     1         0   patient_1           1
-## 3   15     0         0   patient_1           1
-## 4   15     1         0   patient_1           1
-## 5   33     0         0   patient_1           1
-## 6   33     1         0   patient_1           1
+## 3   16     0         0   patient_1           1
+## 4   16     1         0   patient_1           1
+## 5   35     0         0   patient_1           1
+## 6   35     1         0   patient_1           1
 ```
 
 Or to look at the aggregated data.
@@ -198,20 +215,21 @@ head(
 
 ```
 ##   replication entity_id start_time end_time finished activity_time
-## 1           1         0          0       39        1            39
-## 2           1         1          8       52        1            37
-## 3           1         2         20       67        1            37
-## 4           2         0          0       40        1            40
-## 5           2         1          8       52        1            37
-## 6           2         2         20       67        1            37
+## 1           1         0          0       40        1            40
+## 2           1         1         10       53        1            37
+## 3           1         2         19       68        1            39
+## 4           2         0          0       38        1            38
+## 5           2         1         10       55        1            41
+## 6           2         2         19       70        1            40
 ##   flow_time waiting_time
-## 1        39            0
-## 2        44            7
-## 3        47           10
-## 4        40            0
-## 5        44            7
-## 6        47           10
+## 1        40            0
+## 2        43            6
+## 3        49           10
+## 4        38            0
+## 5        45            4
+## 6        51           11
 ```
+
 
 **DOCUMENTATION TO BE CONTINUED**
 
