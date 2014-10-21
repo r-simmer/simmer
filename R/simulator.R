@@ -39,9 +39,7 @@ setMethod("show", "Simulator", function(object) {
 #' @param verbose show log messages
 #' @useDynLib simmer
 #' @importFrom Rcpp evalCpp
-#' @import magrittr
 #' @import methods
-#' @export '%>%'
 #' @export
 create_simulator<-function(sim_name = "anonymous", n=1, until = Inf, verbose = FALSE){  
   new("Simulator", sim_name, n, until, verbose)
@@ -82,3 +80,9 @@ evaluate_value<-function(value){
 }, 
 error = function(err) value)
 }
+
+#' @importFrom magrittr %>%
+#' @name %>%
+#' @export
+#' @rdname create_simulator
+NULL

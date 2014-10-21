@@ -1,5 +1,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+working_dir
+README.Rmd
+README.html
+README_files
 .travis.yml
 .gitignore
 .git
