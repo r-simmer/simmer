@@ -45,6 +45,10 @@ Simulator__new <- function(name_, until_, verbose_) {
     .Call('simmer_Simulator__new', PACKAGE = 'simmer', name_, until_, verbose_)
 }
 
+#' Return the current time of a simulator
+#'
+#' @param sim a external pointer to a simulator object
+#' @export
 now_ <- function(sim) {
     .Call('simmer_now_', PACKAGE = 'simmer', sim)
 }

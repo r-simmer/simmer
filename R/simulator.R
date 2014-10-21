@@ -41,7 +41,6 @@ setMethod("show", "Simulator", function(object) {
 #' @importFrom Rcpp evalCpp
 #' @import magrittr
 #' @import methods
-#' @export now_
 #' @export
 create_simulator<-function(sim_name = "anonymous", n=1, until = Inf, verbose = FALSE){  
   new("Simulator", sim_name, n, until, verbose)

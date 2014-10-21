@@ -190,6 +190,10 @@ SEXP Simulator__new(SEXP name_, SEXP until_, SEXP verbose_) {
   
 }
 
+//' Return the current time of a simulator
+//'
+//' @param sim a external pointer to a simulator object
+//' @export
 //[[Rcpp::export]]
 int now_(SEXP sim) {
   XPtr<Simulator> sim_ptr(sim);
