@@ -59,7 +59,7 @@ public:
 	void add_entity(Entity* ent) {
 		ent->set_simulator(this);
 		entity_vec.push_back(ent);
-    
+		
 	}
 
 
@@ -71,14 +71,15 @@ public:
 	
 	Resource* get_resource(std::string res_name){
 
-    try{
-      return resource_map[res_name];
-    } catch (...) {
-		// not found
-		Rcpp::Rcout << "Error: resource '" << res_name <<"' not found (typo?)" << std::endl;
-    
-	}
-    
+		try{
+			return resource_map[res_name];
+		} catch (...) {
+			// not found
+			Rcpp::Rcout << "Error: resource '" << res_name <<"' not found (typo?)" << std::endl;
+			throw ("Resource not found...");
+			
+		}
+		
 	};
 
 	int now() {
@@ -127,7 +128,7 @@ void Simulator::run()
 	}
 
 	std::vector <int> events_to_delete;
-  long int next_time;
+	long int next_time;
 	while(current_time < until && event_queue.size()>0) {
 
 
@@ -163,14 +164,14 @@ void Simulator::run()
 
 					Event* next_ev = ev->parent_entity->get_event();
 					event_queue.push_back(
-					    next_ev
+					next_ev
 					);
 					event_queue.back()->early_start_time = current_time;
 
 				} 
-        else { // entity is finished
-        ev->parent_entity->monitor->record(current_time, -999);
-          
+				else { // entity is finished
+					ev->parent_entity->monitor->record(current_time, -999);
+					
 				}
 
 				// save the index of the current event to be deleted from the queue
@@ -192,10 +193,10 @@ void Simulator::run()
 		events_to_delete.clear();
 
 		i = 0;
-    
-    next_time = get_next_step(event_queue, current_time, until);
+		
+		next_time = get_next_step(event_queue, current_time, until);
 		if(next_time > until) break;
-    current_time = next_time;
+		current_time = next_time;
 		if(verbose) Rcpp::Rcout << "Current simulation time: " << current_time << std::endl;
 
 	}

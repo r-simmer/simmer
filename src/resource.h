@@ -20,9 +20,9 @@ public:
 
 
 	Resource(std::string res_name, double res_capacity): name(res_name), capacity(res_capacity), monitor(new TimeValueMonitor()) {
-    monitor->record(0,0);
+		monitor->record(0,0);
 	}
-  
+
 	~Resource()
 	{
 		delete monitor;

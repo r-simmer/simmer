@@ -15,7 +15,7 @@ public:
 
 
 	void record(int time, double value) {
-    time_vec.push_back(time);
+		time_vec.push_back(time);
 		value_vec.push_back(value);
 
 	}
@@ -32,11 +32,11 @@ public:
 
 		return value_vec.back();
 	}
-  
-  std::pair<std::vector<int>, std::vector<double> > get_all_values() {
-    return std::make_pair(time_vec, value_vec);
-    
-  }
+
+	std::pair<std::vector<int>, std::vector<double> > get_all_values() {
+		return std::make_pair(time_vec, value_vec);
+		
+	}
 
 };
 

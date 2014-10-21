@@ -23,7 +23,7 @@ void Entity::add_release_event(std::string res, double amount)
 
 void Entity::add_skip_event(int number)
 {
-  SkipEvent* ev = new SkipEvent(this, number);
+	SkipEvent* ev = new SkipEvent(this, number);
 	entity_event_vec.push_back(ev);
 
 }
