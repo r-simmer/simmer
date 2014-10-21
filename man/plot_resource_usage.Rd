@@ -11,9 +11,9 @@ plot_resource_usage(sim_obj, resource_name, replication_n = FALSE,
 
 \item{resource_name}{the name of the resource (character value)}
 
-\item{smooth_line}{adds a smoothline, usefull if a lot of different replications are plotted}
+\item{replication_n}{specify to plot only a specific replication (default=FALSE)}
 
-\item{replication}{specify to plot only a specific replication (default=FALSE)}
+\item{smooth_line}{adds a smoothline, usefull if a lot of different replications are plotted}
 }
 \description{
 plot the usage of a resource over the simulation time frame

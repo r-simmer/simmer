@@ -33,7 +33,7 @@ setMethod("show", "Simulator", function(object) {
 
 #' Create a simulator object
 #' 
-#' @param name the name of the simulator (defaults to 'anonymous')
+#' @param sim_name the name of the simulator (defaults to 'anonymous')
 #' @param n the number of replications
 #' @param until the maximum run time of the simulation
 #' @param verbose show log messages
@@ -60,8 +60,8 @@ simmer<-function(sim_obj){
 #' Add a resource to the simulation object
 #' 
 #' @param sim_obj the simulation object
-#' @param the name of the resource
-#' @param the capacity of the resource
+#' @param name the name of the resource
+#' @param capacity the capacity of the resource
 #' @export
 add_resource<-function(sim_obj, name, capacity){
   for(sim_ptr in sim_obj@simulators) add_resource_(sim_ptr, name, capacity)

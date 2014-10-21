@@ -3,7 +3,7 @@
 #' plot the usage of a resource over the simulation time frame
 #' @param sim_obj the simulation object
 #' @param resource_name the name of the resource (character value)
-#' @param replication specify to plot only a specific replication (default=FALSE)
+#' @param replication_n specify to plot only a specific replication (default=FALSE)
 #' @param smooth_line adds a smoothline, usefull if a lot of different replications are plotted
 #' @export
 plot_resource_usage <- function(sim_obj, resource_name, replication_n=FALSE, smooth_line = FALSE){

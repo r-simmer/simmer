@@ -7,13 +7,13 @@ create_simulator(sim_name = "anonymous", n = 1, until = Inf,
   verbose = FALSE)
 }
 \arguments{
+\item{sim_name}{the name of the simulator (defaults to 'anonymous')}
+
 \item{n}{the number of replications}
 
 \item{until}{the maximum run time of the simulation}
 
 \item{verbose}{show log messages}
-
-\item{name}{the name of the simulator (defaults to 'anonymous')}
 }
 \description{
 Create a simulator object

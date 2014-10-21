@@ -8,7 +8,7 @@ setMethod( "initialize", "Entity", function(.Object, name, activation_time) {
 
 #' Creates an entity object
 #' 
-#' @param entity_name the name of the entity (defaults to 'anonymous')
+#' @param name the name of the entity (defaults to 'anonymous')
 #' @param activation_time the time at which the entity is activated
 create_entity<-function(name = "anonymous", activation_time = 0){
   new("Entity", name, activation_time)
@@ -19,7 +19,7 @@ create_entity<-function(name = "anonymous", activation_time = 0){
 #' 
 #' @param sim_obj the simulator object
 #' @param trajectory a trajectory object
-#' @param name the name of the entities, with be suffixed by a number (1:n)
+#' @param name_prefix the name of the entities, with be suffixed by a number (1:n)
 #' @param n the number of entities to create
 #' @param activation_time the time at which to activate the first entity
 #' @param interval the time between intervals, if a character value is given - e.g. "rnorm(1,10)" - it will be evaluated for every entity 
@@ -70,11 +70,3 @@ add_entity<-function(sim_obj, trajectory, name = "anonymous", activation_time = 
   sim_obj
 }
 
-
-
-# 
-# #' @export
-# copy_entity<-function(entity_obj){
-#   entity_obj@pointer <- copy_entity_(entity_obj@pointer)
-#   entity_obj
-# }

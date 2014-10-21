@@ -6,9 +6,9 @@
 create_entity(name = "anonymous", activation_time = 0)
 }
 \arguments{
-\item{activation_time}{the time at which the entity is activated}
+\item{name}{the name of the entity (defaults to 'anonymous')}
 
-\item{entity_name}{the name of the entity (defaults to 'anonymous')}
+\item{activation_time}{the time at which the entity is activated}
 }
 \description{
 Creates an entity object

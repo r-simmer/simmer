@@ -1,13 +1,15 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
+#include <Rcpp.h>
+
 #include <map>
 #include <limits>
 #include <algorithm>
 #include <list>
 
-using std::cout;
 using std::endl;
+
 
 class Resource;
 class Event;
@@ -68,14 +70,13 @@ public:
 
 	
 	Resource* get_resource(std::string res_name){
-      // check if key exists
-	if ( resource_map.find(res_name) == resource_map.end() ) {
+
+    try{
+      return resource_map[res_name];
+    } catch (...) {
 		// not found
-		std::cout << "Error: resource '" << res_name <<"' not found (typo?)" << std::endl;
-		exit (EXIT_FAILURE);
-	} else {
-		// found
-		return resource_map[res_name];
+		Rcpp::Rcout << "Error: resource '" << res_name <<"' not found (typo?)" << std::endl;
+    
 	}
     
 	};
@@ -111,7 +112,7 @@ public:
 
 void Simulator::run()
 {
-	if(verbose) cout << "Starting simulation..." << endl;
+	if(verbose) Rcpp::Rcout << "Starting simulation..." << endl;
 
 	// initialize events
 	for(std::vector <Entity*>::iterator it = entity_vec.begin(); it != entity_vec.end(); ++it) {
@@ -139,20 +140,20 @@ void Simulator::run()
 
 			if(ev->end_time < 0 && ev->early_start_time <= current_time) { // activity hasn't started yet, try to start it
 				bool started = ev->try_to_start(current_time);
-				if(verbose) cout << "Starting " << ev->type << "  <  " << ev->parent_entity->name;
+				if(verbose) Rcpp::Rcout << "Starting " << ev->type << "  <  " << ev->parent_entity->name;
 				if(started) {
-					if(verbose) cout << ".....started" << endl;
+					if(verbose) Rcpp::Rcout << ".....started" << endl;
 					
 				} else {
-					if(verbose) cout << ".....failed" << endl;
+					if(verbose) Rcpp::Rcout << ".....failed" << endl;
 				}
 
 
 			} else if(current_time >= ev->end_time) { // activity has finished
 
 				// call event specific stopping procedure
-				if(verbose) cout << "Stopping" << ev->type << "  <  " << ev->parent_entity->name;
-				if(verbose) cout << ".....stopped" << endl;
+				if(verbose) Rcpp::Rcout << "Stopping" << ev->type << "  <  " << ev->parent_entity->name;
+				if(verbose) Rcpp::Rcout << ".....stopped" << endl;
 
 				ev->stop(current_time);
 				
@@ -195,10 +196,10 @@ void Simulator::run()
     next_time = get_next_step(event_queue, current_time, until);
 		if(next_time > until) break;
     current_time = next_time;
-		if(verbose) cout << "Current simulation time: " << current_time << std::endl;
+		if(verbose) Rcpp::Rcout << "Current simulation time: " << current_time << std::endl;
 
 	}
-	if(verbose) cout << "Simulation ended..." << endl;
+	if(verbose) Rcpp::Rcout << "Simulation ended..." << endl;
 
 }
 

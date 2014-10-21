@@ -8,9 +8,9 @@ add_resource(sim_obj, name, capacity)
 \arguments{
 \item{sim_obj}{the simulation object}
 
-\item{the}{name of the resource}
+\item{name}{the name of the resource}
 
-\item{the}{capacity of the resource}
+\item{capacity}{the capacity of the resource}
 }
 \description{
 Add a resource to the simulation object

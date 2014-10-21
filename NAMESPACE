@@ -1,3 +1,5 @@
 useDynLib(simmer)
 exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
+import(magrittr)
+import(methods)

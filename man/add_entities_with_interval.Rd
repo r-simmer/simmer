@@ -11,13 +11,13 @@ add_entities_with_interval(sim_obj, trajectory, name_prefix = "anonymous",
 
 \item{trajectory}{a trajectory object}
 
+\item{name_prefix}{the name of the entities, with be suffixed by a number (1:n)}
+
 \item{n}{the number of entities to create}
 
 \item{activation_time}{the time at which to activate the first entity}
 
 \item{interval}{the time between intervals, if a character value is given - e.g. "rnorm(1,10)" - it will be evaluated for every entity}
-
-\item{name}{the name of the entities, with be suffixed by a number (1:n)}
 }
 \description{
 Add n entities with specified interval
