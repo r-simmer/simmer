@@ -37,6 +37,11 @@ setMethod("show", "Simulator", function(object) {
 #' @param n the number of replications
 #' @param until the maximum run time of the simulation
 #' @param verbose show log messages
+#' @useDynLib simmer
+#' @importFrom Rcpp evalCpp
+#' @import magrittr
+#' @import methods
+#' @export now_
 #' @export
 create_simulator<-function(sim_name = "anonymous", n=1, until = Inf, verbose = FALSE){  
   new("Simulator", sim_name, n, until, verbose)

@@ -2,7 +2,7 @@
 # TODO: create SkipEventsEvent
 # TODO: create resource overview
 library(simmer)
-library(magrittr)
+# library(magrittr)
 
 library(ggthemr)
 ggthemr("fresh", layout="scientific")
@@ -24,7 +24,7 @@ create_trajectory("test") %>%
 #   add_release_event("dr",1.0) 
 
 
-sim<-create_simulator("test", n = 50,verbose = T, until = 120) %>%
+sim<-create_simulator("test", n = 50,verbose = F, until = 120) %>%
   add_resource("vpk",1) %>%
 #   add_resource("dr",1) %>%
   add_entity(t1, name = "test", activation_time = 0) %>%
