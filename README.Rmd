@@ -25,7 +25,7 @@ The installation requires the [devtools](https://github.com/hadley/devtools) pac
 devtools::install_github("Bart6114/simmer")
 ```
 
-Please note that the package contains some C++ code and you thus need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows). If you don't want to build the package yourself and you're on Windows you could try a pre-built binary package [here]().
+Please note that the package contains some C++ code and you thus need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows). If you don't want to build the package yourself and you're on Windows you could try a pre-built binary package [here](https://github.com/Bart6114/simmer/releases/download/v2.0/simmer_2.0.zip).
 
 ## Using simmer
 

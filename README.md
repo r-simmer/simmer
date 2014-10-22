@@ -18,7 +18,7 @@ The installation requires the [devtools](https://github.com/hadley/devtools) pac
 devtools::install_github("Bart6114/simmer")
 ```
 
-Please note that the package contains some C++ code and you thus need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows). If you don't want to build the package yourself and you're on Windows you could try a pre-built binary package [here]().
+Please note that the package contains some C++ code and you thus need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows). If you don't want to build the package yourself and you're on Windows you could try a pre-built binary package [here](https://github.com/Bart6114/simmer/releases/download/v2.0/simmer_2.0.zip).
 
 ## Using simmer
 
@@ -168,8 +168,8 @@ head(
 ##   time value resource replication
 ## 1    0     0    nurse           1
 ## 2    0     1    nurse           1
-## 3   14     0    nurse           1
-## 4   14     1    nurse           1
+## 3   16     0    nurse           1
+## 4   16     1    nurse           1
 ## 5   29     0    nurse           1
 ## 6   29     1    nurse           1
 ```
@@ -198,19 +198,19 @@ head(
 
 ```
 ##   replication entity_id start_time end_time finished activity_time
-## 1           1         0          0       38        1            38
-## 2           1         1          9       52        1            38
-## 3           1         2         19       69        1            40
-## 4           2         0          0       41        1            41
-## 5           2         1          9       54        1            38
-## 6           2         2         19       72        1            41
+## 1           1         0          0       40        1            40
+## 2           1         1          8       52        1            36
+## 3           1         2         16       66        1            37
+## 4           2         0          0       39        1            39
+## 5           2         1          8       54        1            40
+## 6           2         2         16       68        1            38
 ##   flow_time waiting_time
-## 1        38            0
-## 2        43            5
-## 3        50           10
-## 4        41            0
-## 5        45            7
-## 6        53           12
+## 1        40            0
+## 2        44            8
+## 3        50           13
+## 4        39            0
+## 5        46            6
+## 6        52           14
 ```
 
 Or to look at the aggregated data.
@@ -224,19 +224,19 @@ head(
 
 ```
 ##   replication entity_id start_time end_time finished activity_time
-## 1           1         0          0       38        1            38
-## 2           1         1          9       52        1            38
-## 3           1         2         19       69        1            40
-## 4           2         0          0       41        1            41
-## 5           2         1          9       54        1            38
-## 6           2         2         19       72        1            41
+## 1           1         0          0       40        1            40
+## 2           1         1          8       52        1            36
+## 3           1         2         16       66        1            37
+## 4           2         0          0       39        1            39
+## 5           2         1          8       54        1            40
+## 6           2         2         16       68        1            38
 ##   flow_time waiting_time
-## 1        38            0
-## 2        43            5
-## 3        50           10
-## 4        41            0
-## 5        45            7
-## 6        53           12
+## 1        40            0
+## 2        44            8
+## 3        50           13
+## 4        39            0
+## 5        46            6
+## 6        52           14
 ```
 
 
