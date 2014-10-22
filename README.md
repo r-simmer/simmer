@@ -18,6 +18,8 @@ The installation requires the [devtools](https://github.com/hadley/devtools) pac
 devtools::install_github("Bart6114/simmer")
 ```
 
+Please note that the package contains some C++ code and you thus need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows). If you don't want to build the package yourself and you're on Windows you could try a pre-built binary package [here]().
+
 ## Using simmer
 
 First load the package.
@@ -133,7 +135,7 @@ After you've left it simmering for a bit (pun intended), we can have a look at t
 plot_resource_utilization(sim, c("nurse", "doctor","administration"))
 ```
 
-![](./README_files/figure-html/unnamed-chunk-10-1.png) 
+![plot of chunk unnamed-chunk-10](./README_files/figure-html/unnamed-chunk-10.png) 
 
 It is also possible to have a look at a specific resource and its activity during the simulation.
 
@@ -142,7 +144,7 @@ It is also possible to have a look at a specific resource and its activity durin
 plot_resource_usage(sim, "doctor")
 ```
 
-![](./README_files/figure-html/unnamed-chunk-11-1.png) 
+![plot of chunk unnamed-chunk-11](./README_files/figure-html/unnamed-chunk-11.png) 
 
 In the above graph, the individual lines are all seperate replications. A smooth line is drawn over them to get a sense of the *'average'* utilization. You can also see here that the ```until``` time of 120 was most likely lower than the unrestricted run time of the simulation. It is also possible to get a graph about a specific replication by simply specifying the replication number. In the example below the 6th replication is shown.
 
@@ -151,7 +153,7 @@ In the above graph, the individual lines are all seperate replications. A smooth
 plot_resource_usage(sim, "doctor", 6)
 ```
 
-![](./README_files/figure-html/unnamed-chunk-12-1.png) 
+![plot of chunk unnamed-chunk-12](./README_files/figure-html/unnamed-chunk-12.png) 
 
 One can also query the raw resource monitor data.
 
@@ -166,10 +168,10 @@ head(
 ##   time value resource replication
 ## 1    0     0    nurse           1
 ## 2    0     1    nurse           1
-## 3   13     0    nurse           1
-## 4   13     1    nurse           1
-## 5   30     0    nurse           1
-## 6   30     1    nurse           1
+## 3   14     0    nurse           1
+## 4   14     1    nurse           1
+## 5   29     0    nurse           1
+## 6   29     1    nurse           1
 ```
 
 ### Flow time
@@ -181,7 +183,7 @@ Next we can have a look at the evolution of the entities' flow time during the s
 plot_evolution_entity_times(sim, type = "flow_time")
 ```
 
-![](./README_files/figure-html/unnamed-chunk-14-1.png) 
+![plot of chunk unnamed-chunk-14](./README_files/figure-html/unnamed-chunk-14.png) 
 
 Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
 
@@ -196,19 +198,19 @@ head(
 
 ```
 ##   replication entity_id start_time end_time finished activity_time
-## 1           1         0          0       38        1            38
-## 2           1         1          7       55        1            42
-## 3           1         2         15       69        1            39
-## 4           2         0          0       41        1            41
-## 5           2         1          7       59        1            43
-## 6           2         2         15       71        1            41
+## 1           1         0          0       37        1            37
+## 2           1         1          8       54        1            40
+## 3           1         2         16       67        1            38
+## 4           2         0          0       36        1            36
+## 5           2         1          8       52        1            38
+## 6           2         2         16       66        1            37
 ##   flow_time waiting_time
-## 1        38            0
-## 2        48            6
-## 3        54           15
-## 4        41            0
-## 5        52            9
-## 6        56           15
+## 1        37            0
+## 2        46            6
+## 3        51           13
+## 4        36            0
+## 5        44            6
+## 6        50           13
 ```
 
 Or to look at the aggregated data.
@@ -222,19 +224,19 @@ head(
 
 ```
 ##   replication entity_id start_time end_time finished activity_time
-## 1           1         0          0       38        1            38
-## 2           1         1          7       55        1            42
-## 3           1         2         15       69        1            39
-## 4           2         0          0       41        1            41
-## 5           2         1          7       59        1            43
-## 6           2         2         15       71        1            41
+## 1           1         0          0       37        1            37
+## 2           1         1          8       54        1            40
+## 3           1         2         16       67        1            38
+## 4           2         0          0       36        1            36
+## 5           2         1          8       52        1            38
+## 6           2         2         16       66        1            37
 ##   flow_time waiting_time
-## 1        38            0
-## 2        48            6
-## 3        54           15
-## 4        41            0
-## 5        52            9
-## 6        56           15
+## 1        37            0
+## 2        46            6
+## 3        51           13
+## 4        36            0
+## 5        44            6
+## 6        50           13
 ```
 
 
