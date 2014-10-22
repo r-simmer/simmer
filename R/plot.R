@@ -20,7 +20,7 @@ plot_resource_usage <- function(sim_obj, resource_name, replication_n=FALSE, smo
       filter(replication == replication_n)
   }
   
-  capacity<-get_resource_capacity_(sim@simulators[[1]], resource_name)
+  capacity<-get_resource_capacity_(sim_obj@simulators[[1]], resource_name)
   
   monitor_data <-
     monitor_data %>%
