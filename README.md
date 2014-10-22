@@ -1,5 +1,5 @@
 # simmer
-[![Build Status](https://travis-ci.org/Bart6114/simmer.svg)](https://travis-ci.org/Bart6114/simmer)
+[![Build Status](https://travis-ci.org/Bart6114/simmer.svg?branch=master)](https://travis-ci.org/Bart6114/simmer)
 
 *by Bart Smeets -- bartsmeets86@gmail.com*
 
