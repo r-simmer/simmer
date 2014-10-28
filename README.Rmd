@@ -197,6 +197,7 @@ head(
 
 * Introduce *rewind event*
 * Time-specific resource availability
+* Refine queue discipline (and allow multiple types?)
 
 ## Contact
 
