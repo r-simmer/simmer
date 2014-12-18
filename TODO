@@ -2,3 +2,4 @@ link timetable to resource availability
 add depletable resources
 stop the simulation mid-run, adjust some parameters and continue the simulation
 create release_all event
+inspect the queue
