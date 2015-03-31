@@ -90,25 +90,35 @@ public:
 	virtual bool try_to_start(int now) {
 		
 		Resource* resource = get_resource(resource_name, parent_entity->sim);
+		int server_usage = resource->serve_mon->get_last_value();
+		int queue_usage = resource->queue_mon->get_last_value();
 		if(parent_entity->activation_time > now) return false;
 		
-		if(resource->capacity >= resource->serve_mon->get_last_value() + resource_amount) {
-			// register seize
-			resource->serve_mon->record_increment(now, resource_amount);
-			if(enqueued) resource->queue_mon->record_decrement(now, 1);
-			end_time = now;
-			enqueued = false;
-			return true;
-		} else {
-			if(resource->queue_size && resource->queue_size > resource->queue_mon->get_last_value()) {
-				resource->queue_mon->record_increment(now, 1);
-				enqueued = true;
-			} else {
-				// no room for it
-				if(!enqueued) parent_entity->leave = true;
+		// another customer can be served
+		if(resource->capacity >= server_usage + resource_amount) {
+			// only if it was previously enqueued or there are no others waiting
+			if(enqueued || !queue_usage) {
+				// register seize
+				resource->serve_mon->record_increment(now, resource_amount);
+				if(enqueued) resource->queue_mon->record_decrement(now, 1);
+				end_time = now;
+				enqueued = false;
+				return true;
 			}
-			return false;
 		}
+		// this customer cannot be served now
+		// already waiting
+		if(enqueued) return false;
+		// or enqueue
+		if(resource->queue_size && (resource->queue_size < 0 || 
+		  resource->queue_size > queue_usage)) {
+			resource->queue_mon->record_increment(now, 1);
+			enqueued = true;
+		} else {
+			// no room for it
+			parent_entity->leave = true;
+		}
+		return false;
 	}
 
 	virtual bool stop(int now) {
