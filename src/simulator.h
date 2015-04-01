@@ -63,8 +63,8 @@ public:
 	}
 
 
-	void add_resource(std::string res_name, int capacity) {
-		Resource* res_obj = new Resource(res_name, capacity);
+	void add_resource(std::string res_name, int capacity, int queue_size) {
+		Resource* res_obj = new Resource(res_name, capacity, queue_size);
 		resource_map[res_name] = res_obj;
 	}
 
@@ -147,6 +147,10 @@ void Simulator::run()
 					
 				} else {
 					if(verbose) Rcpp::Rcout << ".....failed" << endl;
+					if(ev->parent_entity->leave) {
+						// save the index of the current event to be deleted from the queue
+						events_to_delete.push_back(i);
+					}
 				}
 
 
@@ -163,9 +167,7 @@ void Simulator::run()
 				if(ev->parent_entity->entity_event_vec.size() > 0 ) {
 
 					Event* next_ev = ev->parent_entity->get_event();
-					event_queue.push_back(
-					next_ev
-					);
+					event_queue.push_back(next_ev);
 					event_queue.back()->early_start_time = current_time;
 
 				} 

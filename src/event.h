@@ -73,13 +73,14 @@ class SeizeEvent: public Event
 
 public:
 	double resource_amount;
+	bool enqueued;
 	SeizeEvent(Entity* parent, std::string res, double res_amount) {
 		parent_entity = parent;
 		end_time = -1;
 		resource_name = res;
 		resource_amount = res_amount;
 		type = "SeizeEvent";
-
+		enqueued = false;
 	};
 	
 	virtual SeizeEvent* clone() const { return new SeizeEvent (*this); }
@@ -89,17 +90,35 @@ public:
 	virtual bool try_to_start(int now) {
 		
 		Resource* resource = get_resource(resource_name, parent_entity->sim);
+		int server_usage = resource->serve_mon->get_last_value();
+		int queue_usage = resource->queue_mon->get_last_value();
 		if(parent_entity->activation_time > now) return false;
 		
-		if(resource->capacity >= resource->monitor->get_last_value() + resource_amount) {
-			// register seize
-			resource->monitor->record_increment(now, resource_amount);
-			end_time = now;
-			return true;
-		} else {
-
-			return false;
+		// another customer can be served
+		if(resource->capacity >= server_usage + resource_amount) {
+			// only if it was previously enqueued or there are no others waiting
+			if(enqueued || !queue_usage) {
+				// register seize
+				resource->serve_mon->record_increment(now, resource_amount);
+				if(enqueued) resource->queue_mon->record_decrement(now, 1);
+				end_time = now;
+				enqueued = false;
+				return true;
+			}
 		}
+		// this customer cannot be served now
+		// already waiting
+		if(enqueued) return false;
+		// or enqueue
+		if(resource->queue_size && (resource->queue_size < 0 || 
+		  resource->queue_size > queue_usage)) {
+			resource->queue_mon->record_increment(now, 1);
+			enqueued = true;
+		} else {
+			// no room for it
+			parent_entity->leave = true;
+		}
+		return false;
 	}
 
 	virtual bool stop(int now) {
@@ -133,9 +152,9 @@ public:
 		if(parent_entity->activation_time > now) return false;
 		
 		Resource* resource = get_resource(resource_name, parent_entity->sim);
-		if(resource->monitor->get_last_value() - resource_amount >= 0) {
+		if(resource->serve_mon->get_last_value() - resource_amount >= 0) {
 			// register release
-			resource->monitor->record_decrement(now, resource_amount);
+			resource->serve_mon->record_decrement(now, resource_amount);
 			end_time = now;
 			return true;
 		} else {
