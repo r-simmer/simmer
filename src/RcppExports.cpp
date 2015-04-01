@@ -73,15 +73,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // add_resource_
-void add_resource_(SEXP sim, SEXP name_, SEXP capacity_);
-RcppExport SEXP simmer_add_resource_(SEXP simSEXP, SEXP name_SEXP, SEXP capacity_SEXP) {
+void add_resource_(SEXP sim, SEXP name_, SEXP capacity_, SEXP queue_size_);
+RcppExport SEXP simmer_add_resource_(SEXP simSEXP, SEXP name_SEXP, SEXP capacity_SEXP, SEXP queue_size_SEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< SEXP >::type sim(simSEXP );
         Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP );
         Rcpp::traits::input_parameter< SEXP >::type capacity_(capacity_SEXP );
-        add_resource_(sim, name_, capacity_);
+        Rcpp::traits::input_parameter< SEXP >::type queue_size_(queue_size_SEXP );
+        add_resource_(sim, name_, capacity_, queue_size_);
     }
     return R_NilValue;
 END_RCPP
@@ -96,6 +97,22 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< SEXP >::type sim(simSEXP );
         Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP );
         int __result = get_resource_capacity_(sim, name_);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// get_resource_queue_size_
+int get_resource_queue_size_(SEXP sim, SEXP name_);
+RcppExport SEXP simmer_get_resource_queue_size_(SEXP simSEXP, SEXP name_SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type sim(simSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP );
+        int __result = get_resource_queue_size_(sim, name_);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -117,16 +134,32 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// get_resource_monitor_values_
-SEXP get_resource_monitor_values_(SEXP sim, SEXP resource_name_);
-RcppExport SEXP simmer_get_resource_monitor_values_(SEXP simSEXP, SEXP resource_name_SEXP) {
+// get_resource_serve_mon_values_
+SEXP get_resource_serve_mon_values_(SEXP sim, SEXP resource_name_);
+RcppExport SEXP simmer_get_resource_serve_mon_values_(SEXP simSEXP, SEXP resource_name_SEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< SEXP >::type sim(simSEXP );
         Rcpp::traits::input_parameter< SEXP >::type resource_name_(resource_name_SEXP );
-        SEXP __result = get_resource_monitor_values_(sim, resource_name_);
+        SEXP __result = get_resource_serve_mon_values_(sim, resource_name_);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// get_resource_queue_mon_values_
+SEXP get_resource_queue_mon_values_(SEXP sim, SEXP resource_name_);
+RcppExport SEXP simmer_get_resource_queue_mon_values_(SEXP simSEXP, SEXP resource_name_SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type sim(simSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type resource_name_(resource_name_SEXP );
+        SEXP __result = get_resource_queue_mon_values_(sim, resource_name_);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

@@ -21,20 +21,28 @@ add_entity_ <- function(sim, ent) {
     invisible(.Call('simmer_add_entity_', PACKAGE = 'simmer', sim, ent))
 }
 
-add_resource_ <- function(sim, name_, capacity_) {
-    invisible(.Call('simmer_add_resource_', PACKAGE = 'simmer', sim, name_, capacity_))
+add_resource_ <- function(sim, name_, capacity_, queue_size_) {
+    invisible(.Call('simmer_add_resource_', PACKAGE = 'simmer', sim, name_, capacity_, queue_size_))
 }
 
 get_resource_capacity_ <- function(sim, name_) {
     .Call('simmer_get_resource_capacity_', PACKAGE = 'simmer', sim, name_)
 }
 
+get_resource_queue_size_ <- function(sim, name_) {
+    .Call('simmer_get_resource_queue_size_', PACKAGE = 'simmer', sim, name_)
+}
+
 get_entity_monitor_values_ <- function(sim) {
     .Call('simmer_get_entity_monitor_values_', PACKAGE = 'simmer', sim)
 }
 
-get_resource_monitor_values_ <- function(sim, resource_name_) {
-    .Call('simmer_get_resource_monitor_values_', PACKAGE = 'simmer', sim, resource_name_)
+get_resource_serve_mon_values_ <- function(sim, resource_name_) {
+    .Call('simmer_get_resource_serve_mon_values_', PACKAGE = 'simmer', sim, resource_name_)
+}
+
+get_resource_queue_mon_values_ <- function(sim, resource_name_) {
+    .Call('simmer_get_resource_queue_mon_values_', PACKAGE = 'simmer', sim, resource_name_)
 }
 
 run_ <- function(sim) {

@@ -12,7 +12,7 @@ plot_resource_usage <- function(sim_obj, resource_name, replication_n=FALSE, smo
   require(dplyr)
   
   monitor_data<-
-    get_resource_monitor_values(sim_obj, resource_name)
+    get_resource_serve_mon_values(sim_obj, resource_name)
   
   
   if(!replication_n==F){
@@ -58,7 +58,7 @@ plot_resource_utilization <- function(sim_obj, resources){
   
   monitor_data<-
     do.call(rbind,
-            lapply(resources, function(res) get_resource_monitor_values(sim_obj, res))
+            lapply(resources, function(res) get_resource_serve_mon_values(sim_obj, res))
     ) %>%
     left_join(
       do.call(rbind,

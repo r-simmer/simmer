@@ -160,7 +160,7 @@ One can also query the raw resource monitor data.
 
 ```{r, message=FALSE}
 head(
-  get_resource_monitor_values(sim, "nurse")
+  get_resource_serve_mon_values(sim, "nurse")
   )
 ```
 

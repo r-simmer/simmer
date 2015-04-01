@@ -43,17 +43,37 @@ get_entity_monitor_values<-function(sim_obj, aggregated = FALSE){
   
 }
 
-#' Get the monitor values of a specified resource
+#' Get the serve monitor values of a specified resource
 #' 
 #' @param sim_obj the simulation object
 #' @param resource_name the name of the resource
 #' @export
-get_resource_monitor_values<-function(sim_obj, resource_name){
+get_resource_serve_mon_values<-function(sim_obj, resource_name){
   do.call(rbind,
           lapply(1:length(sim_obj@simulators),function(i){
             monitor_data<-
               as.data.frame(
-                get_resource_monitor_values_(sim_obj@simulators[[i]], resource_name)
+                get_resource_serve_mon_values_(sim_obj@simulators[[i]], resource_name)
+              )
+            monitor_data$replication<-i
+            monitor_data
+          }
+          )
+  )
+  
+}
+
+#' Get the queue monitor values of a specified resource
+#' 
+#' @param sim_obj the simulation object
+#' @param resource_name the name of the resource
+#' @export
+get_resource_queue_mon_values<-function(sim_obj, resource_name){
+  do.call(rbind,
+          lapply(1:length(sim_obj@simulators),function(i){
+            monitor_data<-
+              as.data.frame(
+                get_resource_queue_mon_values_(sim_obj@simulators[[i]], resource_name)
               )
             monitor_data$replication<-i
             monitor_data
