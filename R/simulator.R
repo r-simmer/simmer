@@ -65,9 +65,11 @@ simmer<-function(sim_obj){
 #' @param sim_obj the simulation object
 #' @param name the name of the resource
 #' @param capacity the capacity of the resource
+#' @param queue_size the queue size of the resource
 #' @export
-add_resource<-function(sim_obj, name, capacity){
-  for(sim_ptr in sim_obj@simulators) add_resource_(sim_ptr, name, capacity)
+add_resource<-function(sim_obj, name, capacity, queue_size = Inf){
+  if(is.infinite(queue_size)) queue_size <- -1
+  for(sim_ptr in sim_obj@simulators) add_resource_(sim_ptr, name, capacity, queue_size)
   
   return(sim_obj)
 }

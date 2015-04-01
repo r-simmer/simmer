@@ -79,13 +79,14 @@ void add_entity_(SEXP sim, SEXP ent) {
 
 
 //[[Rcpp::export]]
-void add_resource_(SEXP sim, SEXP name_, SEXP capacity_){
+void add_resource_(SEXP sim, SEXP name_, SEXP capacity_, SEXP queue_size_){
   XPtr<Simulator> sim_ptr(sim);
   
   int capacity = as<int>(capacity_);
+  int queue_size = as<int>(queue_size_);
   std::string name = as<std::string>(name_);
   
-  sim_ptr->add_resource(name, capacity);
+  sim_ptr->add_resource(name, capacity, queue_size);
 }
 
 //[[Rcpp::export]]
@@ -94,6 +95,14 @@ int get_resource_capacity_(SEXP sim, SEXP name_){
   std::string name = as<std::string>(name_);
   
   return sim_ptr->get_resource(name)->capacity;
+}
+
+//[[Rcpp::export]]
+int get_resource_queue_size_(SEXP sim, SEXP name_){
+  XPtr<Simulator> sim_ptr(sim);
+  std::string name = as<std::string>(name_);
+  
+  return sim_ptr->get_resource(name)->queue_size;
 }
 
 //[[Rcpp::export]]
@@ -128,7 +137,7 @@ SEXP get_entity_monitor_values_(SEXP sim) {
 
 
 //[[Rcpp::export]]
-SEXP get_resource_monitor_values_(SEXP sim, SEXP resource_name_) {
+SEXP get_resource_serve_mon_values_(SEXP sim, SEXP resource_name_) {
   XPtr<Simulator> sim_ptr(sim);
   std::string resource_name = as<std::string>(resource_name_);
   
@@ -136,7 +145,32 @@ SEXP get_resource_monitor_values_(SEXP sim, SEXP resource_name_) {
   std::vector<double> value_vec;
   std::vector<std::string> resource_vec;
   
-  TimeValueMonitor* res_mon = sim_ptr->get_resource(resource_name)->monitor;
+  TimeValueMonitor* res_mon = sim_ptr->get_resource(resource_name)->serve_mon;
+  
+  for(unsigned int i = 0; i < res_mon->value_vec.size(); ++i){
+    time_vec.push_back(res_mon->time_vec[i]);
+    value_vec.push_back(res_mon->value_vec[i]);
+    resource_vec.push_back(resource_name);
+    
+  };
+  
+  
+  return Rcpp::List::create(Rcpp::Named("time") = time_vec,
+  Rcpp::Named("value") = value_vec,
+  Rcpp::Named("resource") = resource_vec);
+  
+}
+
+//[[Rcpp::export]]
+SEXP get_resource_queue_mon_values_(SEXP sim, SEXP resource_name_) {
+  XPtr<Simulator> sim_ptr(sim);
+  std::string resource_name = as<std::string>(resource_name_);
+  
+  std::vector<int> time_vec;
+  std::vector<double> value_vec;
+  std::vector<std::string> resource_vec;
+  
+  TimeValueMonitor* res_mon = sim_ptr->get_resource(resource_name)->queue_mon;
   
   for(unsigned int i = 0; i < res_mon->value_vec.size(); ++i){
     time_vec.push_back(res_mon->time_vec[i]);
