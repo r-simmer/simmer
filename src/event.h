@@ -18,15 +18,15 @@ public:
 	Entity* parent_entity;
 	std::string description, type;
 
-	int early_start_time, end_time;
+	double early_start_time, end_time;
 	bool processing, finished;
 
 
 	void set_parent_entity(Entity* ent);
 	Resource* get_resource(std::string, Simulator*);
 	
-	virtual bool try_to_start(int) = 0;
-	virtual bool stop(int) = 0;
+	virtual bool try_to_start(double) = 0;
+	virtual bool stop(double) = 0;
 
 	virtual ~Event() {};
 	virtual Event* clone() const = 0;
@@ -48,7 +48,7 @@ public:
 
 	virtual SkipEvent* clone() const { return new SkipEvent (*this); }
 
-	virtual bool try_to_start(int now) {
+	virtual bool try_to_start(double now) {
 		
 		for(int i = 0; i < n_events; ++i){
 			Event* event_to_delete = parent_entity->get_event();
@@ -59,7 +59,7 @@ public:
 		
 	}
 
-	virtual bool stop(int now) {
+	virtual bool stop(double now) {
 		return true;
 	}
 
@@ -87,7 +87,7 @@ public:
 	
 
 
-	virtual bool try_to_start(int now) {
+	virtual bool try_to_start(double now) {
 		
 		Resource* resource = get_resource(resource_name, parent_entity->sim);
 		int server_usage = resource->serve_mon->get_last_value();
@@ -121,7 +121,7 @@ public:
 		return false;
 	}
 
-	virtual bool stop(int now) {
+	virtual bool stop(double now) {
 		return true;
 	}
 };
@@ -148,7 +148,7 @@ public:
 
 	virtual ReleaseEvent* clone() const { return new ReleaseEvent (*this); }
 	
-	virtual bool try_to_start(int now) {
+	virtual bool try_to_start(double now) {
 		if(parent_entity->activation_time > now) return false;
 		
 		Resource* resource = get_resource(resource_name, parent_entity->sim);
@@ -162,7 +162,7 @@ public:
 		}
 	}
 
-	virtual bool stop(int now) {
+	virtual bool stop(double now) {
 		return true;
 	}
 };
@@ -174,9 +174,9 @@ class TimeoutEvent: public Event
 {
 
 public:
-	int duration;
+	double duration;
 
-	TimeoutEvent(Entity* parent, int time_units) {
+	TimeoutEvent(Entity* parent, double time_units) {
 		parent_entity = parent;
 		end_time = -1;
 		duration = time_units;
@@ -186,7 +186,7 @@ public:
 	
 	virtual TimeoutEvent* clone() const { return new TimeoutEvent (*this); }
 
-	virtual bool try_to_start(int now) {
+	virtual bool try_to_start(double now) {
 		if(parent_entity->activation_time > now) return false;
 		parent_entity->monitor->record(now, 1);
 		end_time = now + duration;
@@ -195,7 +195,7 @@ public:
 	};
 
 
-	virtual bool stop(int now) {
+	virtual bool stop(double now) {
 		parent_entity->monitor->record(now, 0);
 		return true;
 	};

@@ -19,11 +19,11 @@ bool event_sort_func(Event* i,Event* j)
 	return (i->early_start_time < j->early_start_time);
 }
 
-int get_next_step(std::vector<Event*> event_queue, int now, int until)
+double get_next_step(std::vector<Event*> event_queue, double now, double until)
 {
 
-	int min_end_time = until;
-	int min_early_start_time = until;
+	double min_end_time = until;
+	double min_early_start_time = until;
 
 	for(std::vector<Event*>::iterator it = event_queue.begin(); it != event_queue.end(); ++it) {
 
@@ -34,7 +34,7 @@ int get_next_step(std::vector<Event*> event_queue, int now, int until)
 
 
 
-	int min_value = std::min(min_end_time,min_early_start_time);
+	double min_value = std::min(min_end_time,min_early_start_time);
 
 
 
@@ -52,9 +52,9 @@ public:
 	std::map<std::string, Resource*> resource_map;
 
 
-	long int until;
+	double until;
 	bool verbose;
-	long int current_time;
+	double current_time;
 
 	void add_entity(Entity* ent) {
 		ent->set_simulator(this);
@@ -82,15 +82,15 @@ public:
 		
 	};
 
-	int now() {
+	double now() {
 		return current_time;
 	};
 	void run();
 	
 
-	Simulator(std::string sim_name, int until_time): name(sim_name), until(until_time), verbose(false), current_time(0) {}
-	Simulator(std::string sim_name, bool verbose): name(sim_name), until(std::numeric_limits<int>::max()), verbose(verbose), current_time(0) {}
-	Simulator(std::string sim_name, int until_time, bool verbose = false): name(sim_name), until(until_time), verbose(verbose), current_time(0) {}
+	Simulator(std::string sim_name, double until_time): name(sim_name), until(until_time), verbose(false), current_time(0) {}
+	Simulator(std::string sim_name, bool verbose): name(sim_name), until(std::numeric_limits<double>::max()), verbose(verbose), current_time(0) {}
+	Simulator(std::string sim_name, double until_time, bool verbose = false): name(sim_name), until(until_time), verbose(verbose), current_time(0) {}
 
 	~Simulator() {
 
@@ -121,14 +121,14 @@ void Simulator::run()
 
 		Event* ev = (*it)->get_event();
 
-		ev->early_start_time = current_time;
+		ev->early_start_time = (*it)->activation_time;
 
 
 		event_queue.push_back(ev);
 	}
 
 	std::vector <int> events_to_delete;
-	long int next_time;
+	double next_time;
 	while(current_time < until && event_queue.size()>0) {
 
 
@@ -154,7 +154,9 @@ void Simulator::run()
 				}
 
 
-			} else if(current_time >= ev->end_time) { // activity has finished
+			}
+			
+			if(ev->end_time >= 0 && current_time >= ev->end_time) { // activity has finished
 
 				// call event specific stopping procedure
 				if(verbose) Rcpp::Rcout << "Stopping" << ev->type << "  <  " << ev->parent_entity->name;
