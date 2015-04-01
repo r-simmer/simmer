@@ -135,7 +135,7 @@ After you've left it simmering for a bit (pun intended), we can have a look at t
 plot_resource_utilization(sim, c("nurse", "doctor","administration"))
 ```
 
-![](./README_files/figure-html/unnamed-chunk-10-1.png) 
+![](README_files/figure-html/unnamed-chunk-10-1.png) 
 
 It is also possible to have a look at a specific resource and its activity during the simulation.
 
@@ -144,7 +144,7 @@ It is also possible to have a look at a specific resource and its activity durin
 plot_resource_usage(sim, "doctor")
 ```
 
-![](./README_files/figure-html/unnamed-chunk-11-1.png) 
+![](README_files/figure-html/unnamed-chunk-11-1.png) 
 
 In the above graph, the individual lines are all seperate replications. A smooth line is drawn over them to get a sense of the *'average'* utilization. You can also see here that the ```until``` time of 120 was most likely lower than the unrestricted run time of the simulation. It is also possible to get a graph about a specific replication by simply specifying the replication number. In the example below the 6th replication is shown.
 
@@ -153,14 +153,14 @@ In the above graph, the individual lines are all seperate replications. A smooth
 plot_resource_usage(sim, "doctor", 6)
 ```
 
-![](./README_files/figure-html/unnamed-chunk-12-1.png) 
+![](README_files/figure-html/unnamed-chunk-12-1.png) 
 
 One can also query the raw resource monitor data.
 
 
 ```r
 head(
-  get_resource_monitor_values(sim, "nurse")
+  get_resource_serve_mon_values(sim, "nurse")
   )
 ```
 
@@ -168,10 +168,10 @@ head(
 ##   time value resource replication
 ## 1    0     0    nurse           1
 ## 2    0     1    nurse           1
-## 3   14     0    nurse           1
-## 4   14     1    nurse           1
-## 5   28     0    nurse           1
-## 6   28     1    nurse           1
+## 3   13     0    nurse           1
+## 4   13     1    nurse           1
+## 5   26     0    nurse           1
+## 6   26     1    nurse           1
 ```
 
 ### Flow time
@@ -183,7 +183,7 @@ Next we can have a look at the evolution of the entities' flow time during the s
 plot_evolution_entity_times(sim, type = "flow_time")
 ```
 
-![](./README_files/figure-html/unnamed-chunk-14-1.png) 
+![](README_files/figure-html/unnamed-chunk-14-1.png) 
 
 Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
 
@@ -198,19 +198,19 @@ head(
 
 ```
 ##   replication entity_id start_time end_time finished activity_time
-## 1           1         0          0       38        1            38
-## 2           1         1         11       52        1            38
-## 3           1         2         17       66        1            38
-## 4           2         0          0       37        1            37
-## 5           2         1         11       51        1            38
-## 6           2         2         17       67        1            39
+## 1           1         0          0       34        1            34
+## 2           1         1         10       51        1            38
+## 3           1         2         21       65        1            39
+## 4           2         0          0       39        1            39
+## 5           2         1         10       51        1            37
+## 6           2         2         21       66        1            38
 ##   flow_time waiting_time
-## 1        38            0
+## 1        34            0
 ## 2        41            3
-## 3        49           11
-## 4        37            0
-## 5        40            2
-## 6        50           11
+## 3        44            5
+## 4        39            0
+## 5        41            4
+## 6        45            7
 ```
 
 Or to look at the aggregated data.
@@ -224,19 +224,19 @@ head(
 
 ```
 ##   replication entity_id start_time end_time finished activity_time
-## 1           1         0          0       38        1            38
-## 2           1         1         11       52        1            38
-## 3           1         2         17       66        1            38
-## 4           2         0          0       37        1            37
-## 5           2         1         11       51        1            38
-## 6           2         2         17       67        1            39
+## 1           1         0          0       34        1            34
+## 2           1         1         10       51        1            38
+## 3           1         2         21       65        1            39
+## 4           2         0          0       39        1            39
+## 5           2         1         10       51        1            37
+## 6           2         2         21       66        1            38
 ##   flow_time waiting_time
-## 1        38            0
+## 1        34            0
 ## 2        41            3
-## 3        49           11
-## 4        37            0
-## 5        40            2
-## 6        50           11
+## 3        44            5
+## 4        39            0
+## 5        41            4
+## 6        45            7
 ```
 
 
