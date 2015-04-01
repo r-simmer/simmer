@@ -81,7 +81,7 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< SEXP >::type sim(simSEXP );
         Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP );
         Rcpp::traits::input_parameter< SEXP >::type capacity_(capacity_SEXP );
-	Rcpp::traits::input_parameter< SEXP >::type queue_size_(queue_size_SEXP );
+        Rcpp::traits::input_parameter< SEXP >::type queue_size_(queue_size_SEXP );
         add_resource_(sim, name_, capacity_, queue_size_);
     }
     return R_NilValue;

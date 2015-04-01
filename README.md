@@ -18,7 +18,7 @@ The installation requires the [devtools](https://github.com/hadley/devtools) pac
 devtools::install_github("Bart6114/simmer")
 ```
 
-Please note that the package contains some C++ code and you thus need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows). If you don't want to build the package yourself and you're on Windows you could try a pre-built binary package [here]().
+Please note that the package contains some C++ code and you thus need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows). If you don't want to build the package yourself and you're on Windows you could try a pre-built binary package [here](https://github.com/Bart6114/simmer/releases/download/v2.0/simmer_2.0.zip).
 
 ## Using simmer
 
@@ -135,7 +135,7 @@ After you've left it simmering for a bit (pun intended), we can have a look at t
 plot_resource_utilization(sim, c("nurse", "doctor","administration"))
 ```
 
-![plot of chunk unnamed-chunk-10](./README_files/figure-html/unnamed-chunk-10.png) 
+![](README_files/figure-html/unnamed-chunk-10-1.png) 
 
 It is also possible to have a look at a specific resource and its activity during the simulation.
 
@@ -144,7 +144,7 @@ It is also possible to have a look at a specific resource and its activity durin
 plot_resource_usage(sim, "doctor")
 ```
 
-![plot of chunk unnamed-chunk-11](./README_files/figure-html/unnamed-chunk-11.png) 
+![](README_files/figure-html/unnamed-chunk-11-1.png) 
 
 In the above graph, the individual lines are all seperate replications. A smooth line is drawn over them to get a sense of the *'average'* utilization. You can also see here that the ```until``` time of 120 was most likely lower than the unrestricted run time of the simulation. It is also possible to get a graph about a specific replication by simply specifying the replication number. In the example below the 6th replication is shown.
 
@@ -153,14 +153,14 @@ In the above graph, the individual lines are all seperate replications. A smooth
 plot_resource_usage(sim, "doctor", 6)
 ```
 
-![plot of chunk unnamed-chunk-12](./README_files/figure-html/unnamed-chunk-12.png) 
+![](README_files/figure-html/unnamed-chunk-12-1.png) 
 
 One can also query the raw resource monitor data.
 
 
 ```r
 head(
-  get_resource_monitor_values(sim, "nurse")
+  get_resource_serve_mon_values(sim, "nurse")
   )
 ```
 
@@ -168,10 +168,10 @@ head(
 ##   time value resource replication
 ## 1    0     0    nurse           1
 ## 2    0     1    nurse           1
-## 3   14     0    nurse           1
-## 4   14     1    nurse           1
-## 5   29     0    nurse           1
-## 6   29     1    nurse           1
+## 3   13     0    nurse           1
+## 4   13     1    nurse           1
+## 5   26     0    nurse           1
+## 6   26     1    nurse           1
 ```
 
 ### Flow time
@@ -183,7 +183,7 @@ Next we can have a look at the evolution of the entities' flow time during the s
 plot_evolution_entity_times(sim, type = "flow_time")
 ```
 
-![plot of chunk unnamed-chunk-14](./README_files/figure-html/unnamed-chunk-14.png) 
+![](README_files/figure-html/unnamed-chunk-14-1.png) 
 
 Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
 
@@ -198,19 +198,19 @@ head(
 
 ```
 ##   replication entity_id start_time end_time finished activity_time
-## 1           1         0          0       38        1            38
-## 2           1         1          9       52        1            38
-## 3           1         2         19       69        1            40
-## 4           2         0          0       41        1            41
-## 5           2         1          9       54        1            38
-## 6           2         2         19       72        1            41
+## 1           1         0          0       34        1            34
+## 2           1         1         10       51        1            38
+## 3           1         2         21       65        1            39
+## 4           2         0          0       39        1            39
+## 5           2         1         10       51        1            37
+## 6           2         2         21       66        1            38
 ##   flow_time waiting_time
-## 1        38            0
-## 2        43            5
-## 3        50           10
-## 4        41            0
-## 5        45            7
-## 6        53           12
+## 1        34            0
+## 2        41            3
+## 3        44            5
+## 4        39            0
+## 5        41            4
+## 6        45            7
 ```
 
 Or to look at the aggregated data.
@@ -224,19 +224,19 @@ head(
 
 ```
 ##   replication entity_id start_time end_time finished activity_time
-## 1           1         0          0       38        1            38
-## 2           1         1          9       52        1            38
-## 3           1         2         19       69        1            40
-## 4           2         0          0       41        1            41
-## 5           2         1          9       54        1            38
-## 6           2         2         19       72        1            41
+## 1           1         0          0       34        1            34
+## 2           1         1         10       51        1            38
+## 3           1         2         21       65        1            39
+## 4           2         0          0       39        1            39
+## 5           2         1         10       51        1            37
+## 6           2         2         21       66        1            38
 ##   flow_time waiting_time
-## 1        38            0
-## 2        43            5
-## 3        50           10
-## 4        41            0
-## 5        45            7
-## 6        53           12
+## 1        34            0
+## 2        41            3
+## 3        44            5
+## 4        39            0
+## 5        41            4
+## 6        45            7
 ```
 
 
@@ -246,6 +246,7 @@ head(
 
 * Introduce *rewind event*
 * Time-specific resource availability
+* Refine queue discipline (and allow multiple types?)
 
 ## Contact
 
