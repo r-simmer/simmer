@@ -1,19 +1,21 @@
-#' plot utilization of a resource over time
+#' plot usage of a resource over time
 #' 
 #' plot the usage of a resource over the simulation time frame
 #' @param sim_obj the simulation object
 #' @param resource_name the name of the resource (character value)
 #' @param replication_n specify to plot only a specific replication (default=FALSE)
-#' @param smooth_line adds a smoothline, usefull if a lot of different replications are plotted
+#' @param steps adds the changes in the resource usage
 #' @export
-plot_resource_usage <- function(sim_obj, resource_name, replication_n=FALSE, smooth_line = FALSE){
+plot_resource_usage <- function(sim_obj, resource_name, replication_n=FALSE, steps = FALSE, smooth_line=FALSE){
   
   require(ggplot2)
   require(dplyr)
   
-  monitor_data<-
-    get_resource_serve_mon_values(sim_obj, resource_name)
-  
+  monitor_data<-rbind(
+    get_resource_queue_mon_values(sim_obj, resource_name),
+    get_resource_serve_mon_values(sim_obj, resource_name),
+    get_resource_system_mon_values(sim_obj, resource_name)
+  )
   
   if(!replication_n==F){
     monitor_data <- monitor_data %>%
@@ -22,16 +24,11 @@ plot_resource_usage <- function(sim_obj, resource_name, replication_n=FALSE, smo
   
   capacity<-get_resource_capacity_(sim_obj@simulators[[1]], resource_name)
   
-  monitor_data <-
-    monitor_data %>%
-    group_by(time, replication) %>%
-    summarise(value = max(value))
-  
-  
   plot_obj<-
     ggplot(monitor_data) +
-    aes(x=time, y=value) + 
-    geom_step(aes(group=replication), alpha=.4) +
+    aes(x=time, y=value, color=type) +
+    geom_line(aes(y=mean)) +
+    #geom_step(aes(group=replication), alpha=.4) +
     geom_hline(y=capacity, lty=2, color="red") +
     ggtitle(paste("Resource usage:", resource_name)) +
     scale_y_continuous(breaks=seq(0,1000,1)) +
@@ -41,7 +38,7 @@ plot_resource_usage <- function(sim_obj, resource_name, replication_n=FALSE, smo
   
   if(smooth_line == T){
     plot_obj +
-      stat_smooth()      
+      stat_smooth()
   } else plot_obj
 }
 

@@ -43,7 +43,7 @@ get_entity_monitor_values<-function(sim_obj, aggregated = FALSE){
   
 }
 
-#' Get the serve monitor values of a specified resource
+#' Get the server monitor values of a specified resource
 #' 
 #' @param sim_obj the simulation object
 #' @param resource_name the name of the resource
@@ -56,10 +56,14 @@ get_resource_serve_mon_values<-function(sim_obj, resource_name){
                 get_resource_serve_mon_values_(sim_obj@simulators[[i]], resource_name)
               )
             monitor_data$replication<-i
+            monitor_data$type<-"server"
             monitor_data
           }
           )
-  )
+  ) %>%
+    group_by(time, replication, type) %>%
+    summarise(value = sum(value)) %>%
+    transform(mean = c(0, cumsum(head(value,-1) * diff(time)) / tail(time,-1)))
   
 }
 
@@ -76,9 +80,31 @@ get_resource_queue_mon_values<-function(sim_obj, resource_name){
                 get_resource_queue_mon_values_(sim_obj@simulators[[i]], resource_name)
               )
             monitor_data$replication<-i
+            monitor_data$type<-"queue"
             monitor_data
           }
           )
-  )
+  ) %>%
+    group_by(time, replication, type) %>%
+    summarise(value = sum(value)) %>%
+    transform(mean = c(0, cumsum(head(value,-1) * diff(time)) / tail(time,-1)))
+  
+}
+
+#' Get the system-wide monitor values (queue+server) of a specified resource
+#' 
+#' @param sim_obj the simulation object
+#' @param resource_name the name of the resource
+#' @export
+get_resource_system_mon_values<-function(sim_obj, resource_name){
+  monitor_data<-rbind(
+    get_resource_queue_mon_values(sim_obj, resource_name),
+    get_resource_serve_mon_values(sim_obj, resource_name)
+  ) %>%
+    group_by(time, replication) %>%
+    summarise(value = sum(value)) %>%
+    transform(mean = c(0, cumsum(head(value,-1) * diff(time)) / tail(time,-1)))
+  monitor_data$type<-"system"
+  monitor_data
   
 }

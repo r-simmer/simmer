@@ -2,10 +2,10 @@
 % Please edit documentation in R/plot.R
 \name{plot_resource_usage}
 \alias{plot_resource_usage}
-\title{plot utilization of a resource over time}
+\title{plot usage of a resource over time}
 \usage{
 plot_resource_usage(sim_obj, resource_name, replication_n = FALSE,
-  smooth_line = FALSE)
+  steps = FALSE, smooth_line = FALSE)
 }
 \arguments{
 \item{sim_obj}{the simulation object}
@@ -14,7 +14,7 @@ plot_resource_usage(sim_obj, resource_name, replication_n = FALSE,
 
 \item{replication_n}{specify to plot only a specific replication (default=FALSE)}
 
-\item{smooth_line}{adds a smoothline, usefull if a lot of different replications are plotted}
+\item{steps}{adds the changes in the resource usage}
 }
 \description{
 plot the usage of a resource over the simulation time frame
