@@ -100,9 +100,12 @@ get_resource_queue_mon_values<-function(sim_obj, resource_name){
 #' @param resource_name the name of the resource
 #' @export
 get_resource_system_mon_values<-function(sim_obj, resource_name){
-  rbind(
-    get_resource_queue_mon_values(sim_obj, resource_name),
-    get_resource_serve_mon_values(sim_obj, resource_name)
-  ) %>% .summarise_monitor_values("system")
+  queue <- get_resource_queue_mon_values(sim_obj, resource_name)
+  server <- get_resource_serve_mon_values(sim_obj, resource_name)
+  step_queue <- stepfun(tail(queue$time, -1), queue$value)
+  step_server <- stepfun(tail(server$time, -1), server$value)
+  monitor_data <- rbind(queue, server) %>% .summarise_monitor_values("system")
+  monitor_data$value <- step_queue(monitor_data$time) + step_server(monitor_data$time)
+  monitor_data
   
 }

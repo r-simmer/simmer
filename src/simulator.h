@@ -14,6 +14,7 @@ using std::endl;
 class Resource;
 class Event;
 
+// ?? unused
 bool event_sort_func(Event* i,Event* j)
 {
 	return (i->early_start_time < j->early_start_time);
@@ -21,25 +22,23 @@ bool event_sort_func(Event* i,Event* j)
 
 double get_next_step(std::vector<Event*> event_queue, double now, double until)
 {
-
 	double min_end_time = until;
 	double min_early_start_time = until;
 
 	for(std::vector<Event*>::iterator it = event_queue.begin(); it != event_queue.end(); ++it) {
 
-		if((*it)-> end_time >= 0 && (*it)->end_time < min_end_time) min_end_time = (*it)->end_time;
-		else if((*it)-> early_start_time <= now && (*it)-> end_time < 0 && (*it)-> early_start_time < min_early_start_time) min_early_start_time = now + 1;
-		else if((*it)-> early_start_time >= now && (*it)-> end_time < 0 && (*it)-> early_start_time < min_early_start_time) min_early_start_time = (*it)-> early_start_time ;
+		if((*it)-> end_time >= 0){
+			if((*it)->end_time < min_end_time) 
+				min_end_time = (*it)->end_time;
+		} else {
+			if(!(*it)->enqueued && (*it)-> early_start_time < min_early_start_time) 
+				min_early_start_time = (*it)-> early_start_time;
+		}
 	}
 
-
-
-	double min_value = std::min(min_end_time,min_early_start_time);
-
-
+	double min_value = std::min(min_end_time, min_early_start_time);
 
 	return min_value;
-
 }
 
 class Simulator
@@ -70,16 +69,12 @@ public:
 
 	
 	Resource* get_resource(std::string res_name){
-
-		try{
+		try {
 			return resource_map[res_name];
 		} catch (...) {
 			// not found
-			Rcpp::Rcout << "Error: resource '" << res_name <<"' not found (typo?)" << std::endl;
-			throw ("Resource not found...");
-			
+			throw std::runtime_error("resource '" + res_name + "' not found (typo?)");
 		}
-		
 	};
 
 	double now() {
@@ -104,43 +99,33 @@ public:
 		}
 		resource_map.clear();
 	}
-
-
-
-
 };
 
 
 void Simulator::run()
 {
 	if(verbose) Rcpp::Rcout << "Starting simulation..." << endl;
+	
+	current_time = entity_vec[0]->activation_time;
 
 	// initialize events
 	for(std::vector <Entity*>::iterator it = entity_vec.begin(); it != entity_vec.end(); ++it) {
-
-
 		Event* ev = (*it)->get_event();
-
 		ev->early_start_time = (*it)->activation_time;
-
-
 		event_queue.push_back(ev);
 	}
 
 	std::vector <int> events_to_delete;
-	double next_time;
-	while(current_time < until && event_queue.size()>0) {
-
+	
+	while(event_queue.size()>0) {
 
 		unsigned int i = 0;
 		while(i  < event_queue.size()) {
 
-
 			Event* ev = event_queue[i];
 
-
 			if(ev->end_time < 0 && ev->early_start_time <= current_time) { // activity hasn't started yet, try to start it
-				bool started = ev->try_to_start(current_time);
+				bool started = ev->try_to_start(&current_time);
 				if(verbose) Rcpp::Rcout << "Starting " << ev->type << "  <  " << ev->parent_entity->name;
 				if(started) {
 					if(verbose) Rcpp::Rcout << ".....started" << endl;
@@ -155,22 +140,23 @@ void Simulator::run()
 
 
 			}
-			
-			if(ev->end_time >= 0 && current_time >= ev->end_time) { // activity has finished
+			// activity has finished
+			// non-timed activities can finish just after starting
+			if(ev->end_time >= 0 && current_time >= ev->end_time) {
 
 				// call event specific stopping procedure
 				if(verbose) Rcpp::Rcout << "Stopping" << ev->type << "  <  " << ev->parent_entity->name;
 				if(verbose) Rcpp::Rcout << ".....stopped" << endl;
 
-				ev->stop(current_time);
+				ev->stop(&current_time);
 				
 
 				// check if there is a next event to start for the current entity,
 				if(ev->parent_entity->entity_event_vec.size() > 0 ) {
 
 					Event* next_ev = ev->parent_entity->get_event();
+					next_ev->early_start_time = current_time;
 					event_queue.push_back(next_ev);
-					event_queue.back()->early_start_time = current_time;
 
 				} 
 				else { // entity is finished
@@ -181,7 +167,6 @@ void Simulator::run()
 				// save the index of the current event to be deleted from the queue
 				events_to_delete.push_back(i);
 
-
 			}
 
 			i++ ;
@@ -191,16 +176,13 @@ void Simulator::run()
 		for(std::vector<int>::iterator it = events_to_delete.begin(); it != events_to_delete.end(); ++it) {
 			delete event_queue[*it];
 			
-			event_queue[*it] = event_queue.back();
-			event_queue.pop_back();
+			// yes, not very efficient, but we need to keep the event_queue's order
+			event_queue.erase(event_queue.begin()+(*it));
 		}
 		events_to_delete.clear();
-
-		i = 0;
 		
-		next_time = get_next_step(event_queue, current_time, until);
-		if(next_time > until) break;
-		current_time = next_time;
+		current_time = get_next_step(event_queue, current_time, until);
+		if(current_time >= until) break;
 		if(verbose) Rcpp::Rcout << "Current simulation time: " << current_time << std::endl;
 
 	}
