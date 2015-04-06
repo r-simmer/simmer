@@ -45,9 +45,9 @@ get_entity_monitor_values<-function(sim_obj, aggregated = FALSE){
  
 .summarise_monitor_values<-function(monitor_data, type){
   monitor_data %>%
-    group_by(time, replication) %>%
+    group_by(time, replication, resource) %>%
     summarise(value = sum(value)) %>%
-    group_by(replication) %>%
+    group_by(replication, resource) %>%
     mutate(mean = c(0, cumsum(head(value,-1) * diff(time)) / tail(time,-1)),
            type = type
     ) %>% ungroup()
