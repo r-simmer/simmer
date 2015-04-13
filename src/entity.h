@@ -19,11 +19,11 @@ public:
 	std::string name;
 	std::vector <Event*> entity_event_vec;
 	TimeValueMonitor* monitor;
-	int activation_time;
+	double activation_time;
 	Simulator* sim;
 	bool leave;
 
-	Entity(std::string ent_name, int activation): name(ent_name), monitor(new TimeValueMonitor()), activation_time(activation) {
+	Entity(std::string ent_name, double activation): name(ent_name), monitor(new TimeValueMonitor()), activation_time(activation) {
 		// set activation time
 		monitor->record(activation, -999);
 		leave = false;
@@ -41,7 +41,7 @@ public:
 
 	~Entity();
 
-	void add_timeout_event(int);
+	void add_timeout_event(double);
 	void add_seize_event(std::string, double);
 	void add_release_event(std::string, double);
 	void add_skip_event(int);

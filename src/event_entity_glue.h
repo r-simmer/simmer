@@ -1,7 +1,7 @@
 #ifndef EVENT_ENTITY_GLUE_H
 #define EVENT_ENTITY_GLUE_H
 
-void Entity::add_timeout_event(int duration)
+void Entity::add_timeout_event(double duration)
 {
 	TimeoutEvent* ev = new TimeoutEvent(this, duration);
 	entity_event_vec.push_back(ev);

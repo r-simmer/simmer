@@ -28,7 +28,7 @@ using namespace Rcpp;
 void add_timeout_event_(SEXP ent, SEXP duration_) {
   
   XPtr<Entity> ent_ptr(ent);
-  int duration = as<int>(duration_);
+  double duration = as<double>(duration_);
   ent_ptr->add_timeout_event(duration);
   
 }
@@ -108,13 +108,13 @@ int get_resource_queue_size_(SEXP sim, SEXP name_){
 //[[Rcpp::export]]
 SEXP get_entity_monitor_values_(SEXP sim) {
   XPtr<Simulator> sim_ptr(sim);
-  std::vector<int> time_vec;
+  std::vector<double> time_vec;
   std::vector<double> value_vec;
   std::vector<int> entity_id_vec;
   std::vector<std::string> entity_name_vec;
   
   
-  std::pair<std::vector<int>, std::vector<double> > values;
+  std::pair<std::vector<double>, std::vector<double> > values;
   for(unsigned int i = 0; i < sim_ptr->entity_vec.size(); ++i){
     values = sim_ptr->entity_vec[i]->monitor->get_all_values();
     
@@ -141,7 +141,7 @@ SEXP get_resource_serve_mon_values_(SEXP sim, SEXP resource_name_) {
   XPtr<Simulator> sim_ptr(sim);
   std::string resource_name = as<std::string>(resource_name_);
   
-  std::vector<int> time_vec;
+  std::vector<double> time_vec;
   std::vector<double> value_vec;
   std::vector<std::string> resource_vec;
   
@@ -166,7 +166,7 @@ SEXP get_resource_queue_mon_values_(SEXP sim, SEXP resource_name_) {
   XPtr<Simulator> sim_ptr(sim);
   std::string resource_name = as<std::string>(resource_name_);
   
-  std::vector<int> time_vec;
+  std::vector<double> time_vec;
   std::vector<double> value_vec;
   std::vector<std::string> resource_vec;
   
@@ -209,7 +209,7 @@ void run_(SEXP sim) {
 SEXP Simulator__new(SEXP name_, SEXP until_, SEXP verbose_) {
   
   std::string name = as<std::string>(name_);
-  int until = as<int>(until_);
+  double until = as<double>(until_);
   bool verbose = as<bool>(verbose_);
   
   if(until>0){
@@ -229,7 +229,7 @@ SEXP Simulator__new(SEXP name_, SEXP until_, SEXP verbose_) {
 //' @param sim a external pointer to a simulator object
 //' @export
 //[[Rcpp::export]]
-int now_(SEXP sim) {
+double now_(SEXP sim) {
   XPtr<Simulator> sim_ptr(sim);
   return sim_ptr->now();
 }
@@ -239,7 +239,7 @@ int now_(SEXP sim) {
 SEXP Entity__new(SEXP name_, SEXP activation_time_) {
   
   std::string name = as<std::string>(name_);
-  int activation_time = as<int>(activation_time_);
+  double activation_time = as<double>(activation_time_);
   
   Rcpp::XPtr<Entity> ptr( new Entity( name, activation_time), false );
   return ptr;

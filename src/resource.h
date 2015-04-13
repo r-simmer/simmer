@@ -14,6 +14,7 @@ public:
 	int queue_size;
 	TimeValueMonitor* serve_mon;
 	TimeValueMonitor* queue_mon;
+	double last_release;
 
 	void seize(int);
 	void release(int);

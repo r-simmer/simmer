@@ -196,14 +196,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // now_
-int now_(SEXP sim);
+double now_(SEXP sim);
 RcppExport SEXP simmer_now_(SEXP simSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< SEXP >::type sim(simSEXP );
-        int __result = now_(sim);
+        double __result = now_(sim);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

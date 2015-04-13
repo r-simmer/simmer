@@ -56,7 +56,7 @@ add_entity<-function(sim_obj, trajectory, name = "anonymous", activation_time = 
       } else if (ev$type == "ReleaseEvent"){
         add_release_event_to_entity(ent, evaluate_value(ev$resource), evaluate_value(ev$amount))
       } else if( ev$type == "TimeoutEvent"){
-        add_timeout_event_to_entity(ent, floor(evaluate_value(ev$duration)))
+        add_timeout_event_to_entity(ent, evaluate_value(ev$duration))
       } else if( ev$type == "SkipEvent"){
         add_skip_event_to_entity(ent, floor(evaluate_value(ev$number)))
       }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/monitor.R
 \name{get_resource_serve_mon_values}
 \alias{get_resource_serve_mon_values}
-\title{Get the serve monitor values of a specified resource}
+\title{Get the server monitor values of a specified resource}
 \usage{
 get_resource_serve_mon_values(sim_obj, resource_name)
 }
@@ -12,6 +12,6 @@ get_resource_serve_mon_values(sim_obj, resource_name)
 \item{resource_name}{the name of the resource}
 }
 \description{
-Get the serve monitor values of a specified resource
+Get the server monitor values of a specified resource
 }
 

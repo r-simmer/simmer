@@ -4,19 +4,16 @@
 
 #include <stdlib.h>
 
-
+// redundant code: this function should call to parent_entity->sim->get_resource(name)
+// but a couple of things would need to be reconsidered
 Resource* Event::get_resource(std::string res_name, Simulator* sim_obj)
 {
-	
-	// check if key exists
-	if ( sim_obj->resource_map.find(res_name) == sim_obj->resource_map.end() ) {
-		// not found
-		throw std::runtime_error("Requested resource not found (typo?)");
-	} else {
-		// found
+	try {
 		return sim_obj->resource_map[res_name];
+	} catch (...) {
+		// not found
+		throw std::runtime_error("resource '" + res_name + "' not found (typo?)");
 	}
-
 }
 
 #endif
