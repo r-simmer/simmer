@@ -1,6 +1,10 @@
 # simmer
 [![Build Status](https://travis-ci.org/Bart6114/simmer.svg?branch=master)](https://travis-ci.org/Bart6114/simmer)
 
+__DEFUNCT FOR NOW... WORKING ON A FULL REDESIGN__
+-------------------------------------------------
+
+
 *by Bart Smeets -- bartsmeets86@gmail.com*
 
 __*simmer* is under heavy development and its internals and syntax can still change extensively over the coming time__
