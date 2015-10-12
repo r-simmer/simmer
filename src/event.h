@@ -103,7 +103,7 @@ public:
 				if(enqueued) {
 					if(early_start_time <= resource->last_release)
 						*now = resource->last_release;
-					resource->queue_mon->record_decrement(*now, 1);
+					resource->queue_mon->record_decrement(*now, resource_amount);
 				}
 				resource->serve_mon->record_increment(*now, resource_amount);
 				end_time = *now;
@@ -117,7 +117,7 @@ public:
 		// or enqueue
 		if(resource->queue_size && (resource->queue_size < 0 || 
 		  resource->queue_size > queue_usage)) {
-			resource->queue_mon->record_increment(*now, 1);
+			resource->queue_mon->record_increment(*now, resource_amount);
 			enqueued = true;
 		} else {
 			// no room for it
