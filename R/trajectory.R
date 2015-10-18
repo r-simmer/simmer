@@ -1,78 +1,72 @@
-setClass("Trajectory", representation(name="character",
-                                      events = "list"))
+require(R6)
 
-setMethod("initialize", "Trajectory", function(.Object, name) {
-  .Object@name <- name
-  .Object
-})
-
-setMethod("show", "Trajectory", function(object) {
-  cat(paste0("Trajectory\nName: ", 
-             object@name,
-             "\n# events: ",
-             length(object@events)))
-})
-
-#' create a trajectory object
-#' 
-#' @param name the name of the trajectory
+#' Trajectory
+#'
+#' Trajectory object
+#'
+#' @format An \code{\link{R6Class}} generator object
+#' @field name trajectory name
+#' @field ... events
 #' @export
-create_trajectory<-function(name){
-  new("Trajectory", name)
-}
-
-
-#' add a seize event to the trajectory object
-#' 
-#' @param trajectory_obj the trajectory object
-#' @param resource the resource as a character string
-#' @param amount the amount of resources to seize
-#' @export
-add_seize_event<-function(trajectory_obj, resource, amount){
-  trajectory_obj@events[[length(trajectory_obj@events) + 1]]<-c(list(type = "SeizeEvent",
-                                                                     resource = resource,
-                                                                     amount = amount))
+Trajectory <- R6Class("Trajectory",
+  public = list(
+    name = NA,
+    
+    initialize = function(name, ...) { 
+      self$name <- name; invisible(self)
+      for (ev in list(...))
+        private$add_event(ev)
+      invisible(self)
+    },
+    
+    show = function() {
+      cat(paste0("Trajectory: ", self$name, ", ",
+                 private$n_events, " events\n"))
+      ptr <- private$head
+      while (!is.null(ptr)) {
+        ptr$show()
+        cat("\n")
+        ptr <- ptr$next_event
+      }
+      invisible(self)
+    }
+  ),
   
-  trajectory_obj
-}
+  private = list(
+    n_events = 0,
+    head = NULL,
+    tail = NULL,
+    
+    add_event = function(ev) {
+      if (!inherits(ev, "Event"))
+        stop("not an event")
+      if (is.null(private$head))
+        private$head <- ev
+      else
+        private$tail$next_event <- ev
+      private$tail <- ev
+      private$n_events <- private$n_events + 1
+    }
+  )
+)
 
-#' add a release event to the trajectory object
-#' 
-#' @param trajectory_obj the trajectory object
-#' @param resource the resource as a character string
-#' @param amount the amount of resources to release
+#' Branch
+#'
+#' Break a trajectory in several branches
+#'
+#' @format An \code{\link{R6Class}} generator object
 #' @export
-add_release_event<-function(trajectory_obj, resource, amount){
-  trajectory_obj@events[[length(trajectory_obj@events) + 1]]<-c(list(type = "ReleaseEvent",
-                                                                     resource = resource,
-                                                                     amount = amount))
+Branch <- R6Class("Branch", inherit = Event,
+  public = list(
+    name = "Branch",
+    
+    initialize = function() {
+    }
+  ),
   
-  trajectory_obj
-}
-
-#' add a time-out event to the trajectory object
-#' 
-#' @param trajectory_obj the trajectory object
-#' @param duration the duration of the time-out event
-#' @export
-add_timeout_event<-function(trajectory_obj, duration){
-  trajectory_obj@events[[length(trajectory_obj@events) + 1]]<-c(list(type = "TimeoutEvent",
-                                                                     duration = duration))
-  
-  trajectory_obj
-}
-
-#' add a skip event to the trajectory object
-#' 
-#' @param trajectory_obj the trajectory object
-#' @param number_to_skip the number of events to skip following the skip event, will be evaluated seperately for each entity if a character is given (e.g. "sample(c(0,1),1)")
-#' @export
-add_skip_event<-function(trajectory_obj, number_to_skip){
-  trajectory_obj@events[[length(trajectory_obj@events) + 1]]<-c(list(type = "SkipEvent",
-                                                                     number = number_to_skip))
-  
-  trajectory_obj
-}
-
-
-
+  active = list(
+    next_event = function() {
+      1
+    }
+  )
+)

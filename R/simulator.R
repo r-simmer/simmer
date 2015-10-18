@@ -78,7 +78,7 @@ add_resource<-function(sim_obj, name, capacity, queue_size = Inf){
 evaluate_value<-function(value){
   tryCatch(
 {
-  abs(eval(parse(text=value)))
+  abs(parse(text=value))
 }, 
 error = function(err) value)
 }

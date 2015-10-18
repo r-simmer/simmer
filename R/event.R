@@ -1,21 +1,110 @@
+require(R6)
 
+Event <- R6Class("Event",
+  public = list(
+    name = NA,
 
-add_timeout_event_to_entity<-function(entity_obj, duration){
-  add_timeout_event_(entity_obj@pointer, duration)
-  return(entity_obj)
-}
+    show = function() {
+      cat(paste0("{ Event: ", self$name, " | "))
+      for (i in names(private)) {
+        if (is.function(private[[i]]))
+          cat(i, ": function(), ", sep = "")
+        else if (is.environment(private[[i]]))
+          cat(i, ": env, ", sep = "")
+        else
+          cat(i, ": ", private[[i]], ", ", sep = "")
+      }
+      cat("}")
+    },
+    
+    run = function() { stop("not implemented") }
+  ),
+  
+  active = list(
+    next_event = function(ev) {
+      if (missing(ev)) return(private$ptr)
+      else private$ptr <- ev
+    }
+  ),
+  
+  private = list(
+    ptr = NULL
+  )
+)
 
-add_seize_event_to_entity<-function(entity_obj, resource_name, amount){
-  add_seize_event_(entity_obj@pointer, resource_name, amount)
-  return(entity_obj)
-}
+#' SeizeEvent
+#'
+#' Seize a resource by an amount
+#'
+#' @format An \code{\link{R6Class}} generator object
+#' @field resource the resource name
+#' @field amount the amount to seize
+#' @export
+SeizeEvent <- R6Class("SeizeEvent", inherit = Event,
+  public = list(
+    name = "Seize",
+    
+    initialize = function(resource, amount) {
+      private$resource <- evaluate_value(resource)
+      private$amount <- evaluate_value(amount)
+    },
+    
+    run = function() {}
+  ),
+  
+  private = list(
+    resource = NA,
+    amount = NA
+  )
+)
 
-add_release_event_to_entity<-function(entity_obj, resource_name, amount){
-  add_release_event_(entity_obj@pointer, resource_name, amount)
-  return(entity_obj)
-}
+#' ReleaseEvent
+#'
+#' Release a resource by an amount
+#'
+#' @format An \code{\link{R6Class}} generator object
+#' @field resource the resource name
+#' @field amount the amount to release
+#' @export
+ReleaseEvent <- R6Class("ReleaseEvent", inherit = Event,
+  public = list(
+    name = "Release",
+    
+    initialize = function(resource, amount) {
+      private$resource <- evaluate_value(resource)
+      private$amount <- evaluate_value(amount)
+    },
+    
+    run = function() {}
+  ),
+  
+  private = list(
+    resource = NA,
+    amount = NA
+  )
+)
 
-add_skip_event_to_entity<-function(entity_obj, number_to_skip){
-  add_skip_event_(entity_obj@pointer, number_to_skip)
-  return(entity_obj)
-}
+#' TimeoutEvent
+#'
+#' Wait for a given delay
+#'
+#' @format An \code{\link{R6Class}} generator object
+#' @field duration a function that generates a delay
+#' @export
+TimeoutEvent <- R6Class("TimeoutEvent", inherit = Event,
+  public = list(
+    name = "Timeout",
+    
+    initialize = function(duration) {
+      if (!is.function(duration)) 
+        stop(paste0(self$name, ": duration must be callable"))
+      private$duration <- evaluate_value(duration)
+    },
+    
+    run = function() {}
+  ),
+  
+  private = list(
+    duration = NA
+  )
+)
