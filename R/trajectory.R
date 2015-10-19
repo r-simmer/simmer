@@ -4,30 +4,60 @@ require(R6)
 #'
 #' Trajectory object
 #'
-#' @format An \code{\link{R6Class}} generator object
 #' @field name trajectory name
-#' @field ... events
+#' @format An \code{\link{R6Class}} generator object
+#' @examples
+#' t0 <- Trajectory$new("my trajectory") $
+#'   seize("server", 1) $
+#'   timeout(function() rexp(1, 1)) $
+#'   release("server", 1)
 #' @export
 Trajectory <- R6Class("Trajectory",
   public = list(
     name = NA,
     
-    initialize = function(name, ...) { 
+    initialize = function(name) { 
       self$name <- name; invisible(self)
-      for (ev in list(...))
-        private$add_event(ev)
       invisible(self)
     },
     
     show = function() {
       cat(paste0("Trajectory: ", self$name, ", ",
                  private$n_events, " events\n"))
-      ptr <- private$head
+      ptr <- self$get_head()
       while (!is.null(ptr)) {
         ptr$show()
         cat("\n")
         ptr <- ptr$next_event
       }
+      invisible(self)
+    },
+    
+    get_head = function() { private$head },
+    
+    get_tail = function() { private$tail },
+    
+    get_n_events = function() { private$n_events },
+    
+    seize = function(resource, amount) {
+      private$add_event(SeizeEvent$new(resource, amount))
+    },
+    
+    release = function(resource, amount) {
+      private$add_event(ReleaseEvent$new(resource, amount))
+    },
+    
+    timeout = function(duration) {
+      private$add_event(TimeoutEvent$new(duration))
+    },
+    
+    branch = function(prob, merge=T, trj) {
+      if (!inherits(trj, "Trajectory"))
+        stop("not a trajectory")
+      private$tail$next_event <- c(trj$get_head(), prob)
+      if (merge)
+        private$merge <- c(private$merge, trj$get_tail())
+      private$n_events <- private$n_events + trj$get_n_events()
       invisible(self)
     }
   ),
@@ -36,37 +66,21 @@ Trajectory <- R6Class("Trajectory",
     n_events = 0,
     head = NULL,
     tail = NULL,
+    merge = NULL,
     
     add_event = function(ev) {
       if (!inherits(ev, "Event"))
         stop("not an event")
       if (is.null(private$head))
         private$head <- ev
-      else
-        private$tail$next_event <- ev
+      else if (length(private$merge)) {
+        for (i in private$merge) i$next_event <- c(ev, 1)
+        private$merge = NULL
+      } else
+        private$tail$next_event <- c(ev, 1)
       private$tail <- ev
       private$n_events <- private$n_events + 1
-    }
-  )
-)
-
-#' Branch
-#'
-#' Break a trajectory in several branches
-#'
-#' @format An \code{\link{R6Class}} generator object
-#' @export
-Branch <- R6Class("Branch", inherit = Event,
-  public = list(
-    name = "Branch",
-    
-    initialize = function() {
-    }
-  ),
-  
-  active = list(
-    next_event = function() {
-      1
+      invisible(self)
     }
   )
 )

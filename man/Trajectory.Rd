@@ -15,8 +15,12 @@ Trajectory object
 
 \describe{
 \item{\code{name}}{trajectory name}
-
-\item{\code{...}}{events}
 }}
+\examples{
+t0 <- Trajectory$new("my trajectory") $
+  seize("server", 1) $
+  timeout(function() rexp(1, 1)) $
+  release("server", 1)
+}
 \keyword{datasets}
 

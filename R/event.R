@@ -7,12 +7,12 @@ Event <- R6Class("Event",
     show = function() {
       cat(paste0("{ Event: ", self$name, " | "))
       for (i in names(private)) {
-        if (is.function(private[[i]]))
-          cat(i, ": function(), ", sep = "")
-        else if (is.environment(private[[i]]))
-          cat(i, ": env, ", sep = "")
-        else
-          cat(i, ": ", private[[i]], ", ", sep = "")
+        if (i != "prob" && i != "ptr") {
+          if (is.function(private[[i]]))
+            cat(i, ": function(), ", sep = "")
+          else
+            cat(i, ": ", private[[i]], ", ", sep = "")
+        }
       }
       cat("}")
     },
@@ -22,24 +22,22 @@ Event <- R6Class("Event",
   
   active = list(
     next_event = function(ev) {
-      if (missing(ev)) return(private$ptr)
-      else private$ptr <- ev
+      if (missing(ev)) {
+        if (is.null(private$ptr)) return(private$ptr)
+        else return(sample(private$ptr, 1, prob=private$prob)[[1]])
+      } else {
+        private$ptr <- c(private$ptr, ev[1])
+        private$prob <- c(private$prob, ev[2])
+      }
     }
   ),
   
   private = list(
-    ptr = NULL
+    ptr = NULL,
+    prob = NULL
   )
 )
 
-#' SeizeEvent
-#'
-#' Seize a resource by an amount
-#'
-#' @format An \code{\link{R6Class}} generator object
-#' @field resource the resource name
-#' @field amount the amount to seize
-#' @export
 SeizeEvent <- R6Class("SeizeEvent", inherit = Event,
   public = list(
     name = "Seize",
@@ -47,9 +45,7 @@ SeizeEvent <- R6Class("SeizeEvent", inherit = Event,
     initialize = function(resource, amount) {
       private$resource <- evaluate_value(resource)
       private$amount <- evaluate_value(amount)
-    },
-    
-    run = function() {}
+    }
   ),
   
   private = list(
@@ -58,14 +54,6 @@ SeizeEvent <- R6Class("SeizeEvent", inherit = Event,
   )
 )
 
-#' ReleaseEvent
-#'
-#' Release a resource by an amount
-#'
-#' @format An \code{\link{R6Class}} generator object
-#' @field resource the resource name
-#' @field amount the amount to release
-#' @export
 ReleaseEvent <- R6Class("ReleaseEvent", inherit = Event,
   public = list(
     name = "Release",
@@ -73,9 +61,7 @@ ReleaseEvent <- R6Class("ReleaseEvent", inherit = Event,
     initialize = function(resource, amount) {
       private$resource <- evaluate_value(resource)
       private$amount <- evaluate_value(amount)
-    },
-    
-    run = function() {}
+    }
   ),
   
   private = list(
@@ -84,13 +70,6 @@ ReleaseEvent <- R6Class("ReleaseEvent", inherit = Event,
   )
 )
 
-#' TimeoutEvent
-#'
-#' Wait for a given delay
-#'
-#' @format An \code{\link{R6Class}} generator object
-#' @field duration a function that generates a delay
-#' @export
 TimeoutEvent <- R6Class("TimeoutEvent", inherit = Event,
   public = list(
     name = "Timeout",
@@ -99,9 +78,7 @@ TimeoutEvent <- R6Class("TimeoutEvent", inherit = Event,
       if (!is.function(duration)) 
         stop(paste0(self$name, ": duration must be callable"))
       private$duration <- evaluate_value(duration)
-    },
-    
-    run = function() {}
+    }
   ),
   
   private = list(
