@@ -1,90 +1,88 @@
-setClass("Simulator", representation(simulators = "vector",
-                                     n = "numeric",
-                                     until = "numeric",
-                                     name = "character",
-                                     verbose = "logical"))
+require(R6)
 
-setMethod( "initialize", "Simulator", function(.Object, name, n, until, verbose) {
-  .Object@name <- name
-  .Object@n <- n
-  .Object@until <- until
-  .Object@verbose <- verbose
-  
-  for(i in 1:n){
-    if(is.finite(until)) sim <- Simulator__new(name, until, verbose)
-    else sim <- Simulator__new(name, -1, verbose)
-    .Object@simulators<-c(.Object@simulators, sim)
-  }
-  .Object
-  
-})
-
-setMethod("show", "Simulator", function(object) {
-  cat(paste0("Simulator object\nName: ", 
-             object@name, 
-             "\nUntil: ",
-             object@until, 
-             "\nVerbose: ",
-             object@verbose,
-             "\n# replications: ",
-             object@n))
-})
-
-
-#' Create a simulator object
-#' 
-#' @param sim_name the name of the simulator (defaults to 'anonymous')
-#' @param n the number of replications
-#' @param until the maximum run time of the simulation
-#' @param verbose show log messages
-#' @useDynLib simmer
-#' @importFrom Rcpp evalCpp
-#' @import methods
+#' Simmer
+#'
+#' Simulator object
+#'
+#' @field name simulator name
+#' @format An \code{\link{R6Class}} generator object
 #' @export
-create_simulator<-function(sim_name = "anonymous", n=1, until = Inf, verbose = FALSE){  
-  new("Simulator", sim_name, n, until, verbose)
-}
-
-
-#' Run the simulation
-#' 
-#' @param sim_obj the simulation object
-#' @export
-simmer<-function(sim_obj){
+Simmer <- R6Class("Simmer",
+  public = list(
+    name = NA,
+    
+    initialize = function(name="anonymous", verbose=FALSE) {
+      self$name <- name
+      private$verbose <- verbose
+      private$now_ <- 0
+      private$queue <- PriorityQueue$new()
+      private$gen <- list()
+      private$res <- list()
+    },
+    
+    reset = function() {
+      private$now_ <- 0
+      private$queue <- PriorityQueue$new()
+      for (res in private$res)
+        res$reset()
+    },
+    
+    schedule = function(delay, event) {
+      private$queue$push(self$now + delay, event)
+    },
+    
+    run = function(until=1000, rep=1) {
+      until <- evaluate_value(until)
+      rep <- evaluate_value(rep)
+      if(!is.finite(until)) until <- 1000
+      if(!is.finite(rep)) rep <- 1
+      
+      while (rep > 0) {
+        # Initialisation
+        if (!private$queue$length()) {
+          if (!length(private$gen))
+            stop("no generators defined")
+          for (gen in private$gen)
+            gen$activate()
+        }
+      
+        # Loop
+        while (self$now < until) {
+          entity <- self$queue$pop()
+          private$now_ <- entity[[1]]
+          entity[[2]]$activate()
+        }
+        
+        self$reset()
+        rep <- rep - 1
+      }
+    },
+    
+    add_resource = function() {
+      
+    },
+    
+    add_generator = function() {
+      
+    }
+  ),
   
-  for(i in 1:length(sim_obj@simulators)){
-    message(paste("Starting replication",i))
-    run_(sim_obj@simulators[[i]])
-    message(paste("Finished replication",i))
-  }
-  return(sim_obj)
-}
+  active = list(
+    now = function() { private$now_ }
+  ),
+  
+  private = list(
+    verbose = NA,
+    now_ = NA,
+    queue = NA,
+    gen = NA,
+    res = NA
+  )
+)
 
-#' Add a resource to the simulation object
-#' 
-#' @param sim_obj the simulation object
-#' @param name the name of the resource
-#' @param capacity the capacity of the resource
-#' @param queue_size the queue size of the resource
-#' @export
 add_resource<-function(sim_obj, name, capacity, queue_size = Inf){
   if(is.infinite(queue_size)) queue_size <- -1
   for(sim_ptr in sim_obj@simulators) add_resource_(sim_ptr, name, capacity, queue_size)
   
   return(sim_obj)
 }
-
-
-evaluate_value<-function(value){
-  tryCatch(
-{
-  abs(parse(text=value))
-}, 
-error = function(err) value)
-}
-
-#' @importFrom magrittr %>%
-#' @name %>%
-#' @export
-#' @rdname create_simulator
-NULL

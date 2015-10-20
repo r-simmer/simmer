@@ -16,8 +16,8 @@ Trajectory <- R6Class("Trajectory",
   public = list(
     name = NA,
     
-    initialize = function(name) { 
-      self$name <- name; invisible(self)
+    initialize = function(name="anonymous") { 
+      self$name <- name
       invisible(self)
     },
     
