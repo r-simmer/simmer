@@ -1,72 +1,110 @@
-setClass("Entity", representation(pointer = "externalptr"))
-setMethod( "initialize", "Entity", function(.Object, name, activation_time) {
-  .Object@pointer <- Entity__new(name, activation_time)
-  .Object
-} )
+require(R6)
 
-
-
-#' Creates an entity object
-#' 
-#' @param name the name of the entity (defaults to 'anonymous')
-#' @param activation_time the time at which the entity is activated
-create_entity<-function(name = "anonymous", activation_time = 0){
-  new("Entity", name, activation_time)
-}
-
-
-#' Add n entities with specified interval
-#' 
-#' @param sim_obj the simulator object
-#' @param trajectory a trajectory object
-#' @param name_prefix the name of the entities, with be suffixed by a number (1:n)
-#' @param n the number of entities to create
-#' @param activation_time the time at which to activate the first entity
-#' @param interval the time between intervals, if a character value is given - e.g. "rnorm(1,10)" - it will be evaluated for every entity 
-#' @export
-add_entities_with_interval<-function(sim_obj, trajectory, name_prefix = "anonymous", n = 1, activation_time = 0, interval = 0){
-  act_time <- activation_time
-  for(i in 1:n){
-    add_entity(sim_obj, name = paste0(name_prefix,"_",i), trajectory, activation_time = act_time)
-    act_time <- act_time + evaluate_value(interval)
-  }
-  
-  sim_obj
-}
-
-
-#' Add an entity to the simulator object
-#' 
-#' @param sim_obj the simulator object
-#' @param trajectory a trajectory object
-#' @param name the name of the entity
-#' @param activation_time the time at which to activate the entity
-#' @export
-add_entity<-function(sim_obj, trajectory, name = "anonymous", activation_time = 0){
-  
-  for(sim_ptr in sim_obj@simulators){
+Entity <- R6Class("Entity",
+  public = list(
+    name = NA,
     
-    ent<-
-      create_entity(name, activation_time)
-    
-    for(ev in trajectory@events){
+    initialize = function(sim, name) {
+      if (!inherits(sim, "Simmer"))
+        stop("not a simulator")
+      private$sim <- sim
+      self$name <- evaluate_value(name)
+    }
+  ),
+  
+  private = list(
+    sim = NA
+  )
+)
 
-      if(ev$type == "SeizeEvent"){
-        add_seize_event_to_entity(ent, evaluate_value(ev$resource), evaluate_value(ev$amount))
-      } else if (ev$type == "ReleaseEvent"){
-        add_release_event_to_entity(ent, evaluate_value(ev$resource), evaluate_value(ev$amount))
-      } else if( ev$type == "TimeoutEvent"){
-        add_timeout_event_to_entity(ent, evaluate_value(ev$duration))
-      } else if( ev$type == "SkipEvent"){
-        add_skip_event_to_entity(ent, floor(evaluate_value(ev$number)))
-      }
+Process <- R6Class("Process", inherit = Entity,
+  public = list(
+    activate = function() { stop("not implemented") }
+  )
+)
+
+Resource <- R6Class("Resource", inherit = Entity,
+  public = list(
+    initialize = function(sim, name, capacity=1, queue_size=Inf) {
+      super$initialize(sim, name)
+      private$capacity <- evaluate_value(capacity)
+      private$queue_size <- evaluate_value(queue_size)
+    },
+    
+    seize = function(customer) {
+      if (!inherits(customer, "Customer"))
+        stop("not a customer")
+      if (private$room_in_server()) {
+        private$server <- c(private$server, customer)
+        customer$activate()
+      } else if (private$room_in_queue())
+        private$queue <- c(private$queue, customer)
+      else remove(customer)
+    },
+    
+    release = function() {
+      # departure
+      customer <- private$server[[1]]
+      private$server <- private$server[-1]
+      customer$activate()
+      # serve from the queue
+      customer <- private$queue[[1]]
+      private$queue <- private$queue[-1]
+      if (!is.null(customer)) customer$activate()
+    }
+  ),
+  
+  private = list(
+    server = NA,
+    capacity = NA,
+    queue = NA,
+    queue_size = NA,
+    
+    room_in_server = function() { return(length(private$server) < private$capacity) },
+    room_in_queue = function() { return(length(private$queue) < private$queue_size) }
+  )
+)
+
+Generator <- R6Class("Generator", inherit = Process,
+  public = list(
+    initialize = function(sim, name_prefix, trajectory, dist) {
+      super$initialize(sim, name_prefix)
+      if (!inherits(trajectory, "Trajectory"))
+        stop("not a trajectory")
+      private$traj <- trajectory
+      if (!is.function(dist))
+        stop(paste0(self$name, ": dist must be callable"))
+      private$dist <- dist
+    },
+    
+    activate = function() {
       
     }
-    
-    add_entity_(sim_ptr, ent@pointer)
-    
-  }
+  ),
   
-  sim_obj
-}
+  private = list(
+    traj = NA,
+    dist = NA
+  )
+)
 
+Customer <- R6Class("Customer", inherit = Process,
+  public = list(
+    initialize = function(sim, name_prefix, first_event) {
+      super$initialize(sim, name_prefix)
+      if (!inherits(first_event, "Event"))
+        stop("not an event")
+      private$event <- first_event
+    },
+    
+    activate = function() {
+      current_event <- private$event
+      private$event <- private$event$next_event
+      current_event$run()
+    }
+  ),
+  
+  private = list(
+    event = NULL
+  )
+)

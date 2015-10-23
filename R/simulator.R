@@ -12,12 +12,13 @@ Simmer <- R6Class("Simmer",
     name = NA,
     
     initialize = function(name="anonymous", verbose=FALSE) {
-      self$name <- name
+      self$name <- evaluate_value(name)
       private$verbose <- verbose
       private$now_ <- 0
       private$queue <- PriorityQueue$new()
       private$gen <- list()
       private$res <- list()
+      invisible(self)
     },
     
     reset = function() {
@@ -58,12 +59,16 @@ Simmer <- R6Class("Simmer",
       }
     },
     
-    add_resource = function() {
-      
+    add_resource = function(name, capacity, queue_size) {
+      res <- Resource$new(self, name, capacity, queue_size)
+      private$res <- c(private$res, res)
+      invisible(self)
     },
     
-    add_generator = function() {
-      
+    add_generator = function(name_prefix, trajectory, dist) {
+      gen <- Generator$new(self, name_prefix, trajectory, dist)
+      private$gen <- c(private$gen, gen)
+      invisible(self)
     }
   ),
   
@@ -79,10 +84,3 @@ Simmer <- R6Class("Simmer",
     res = NA
   )
 )
-
-add_resource<-function(sim_obj, name, capacity, queue_size = Inf){
-  if(is.infinite(queue_size)) queue_size <- -1
-  for(sim_ptr in sim_obj@simulators) add_resource_(sim_ptr, name, capacity, queue_size)
-  
-  return(sim_obj)
-}

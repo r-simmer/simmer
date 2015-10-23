@@ -17,7 +17,7 @@ Trajectory <- R6Class("Trajectory",
     name = NA,
     
     initialize = function(name="anonymous") { 
-      self$name <- name
+      self$name <- evaluate_value(name)
       invisible(self)
     },
     
