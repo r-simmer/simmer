@@ -1,3 +1,14 @@
+mm1 <- Trajectory$new() $
+  seize("server", 1) $
+  timeout(function() rexp(1, 1)) $
+  release("server", 1)
+
+simmer <- Simmer$new(verbose=F) $
+  add_resource("server", 1) $
+  add_generator("customer", mm1, function() rexp(1, 2))
+simmer$run()
+
+
 t0 <- Trajectory$new("my trajectory") $
   seize("server", 1) $
   timeout(function() rexp(1, 1)) $

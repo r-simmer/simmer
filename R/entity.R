@@ -3,17 +3,14 @@ require(R6)
 Entity <- R6Class("Entity",
   public = list(
     name = NA,
+    sim = NULL,
     
     initialize = function(sim, name) {
       if (!inherits(sim, "Simmer"))
         stop("not a simulator")
-      private$sim <- sim
+      self$sim <- sim
       self$name <- evaluate_value(name)
     }
-  ),
-  
-  private = list(
-    sim = NA
   )
 )
 
@@ -31,37 +28,69 @@ Resource <- R6Class("Resource", inherit = Entity,
       private$queue_size <- evaluate_value(queue_size)
     },
     
-    seize = function(customer) {
-      if (!inherits(customer, "Customer"))
-        stop("not a customer")
-      if (private$room_in_server()) {
-        private$server <- c(private$server, customer)
-        customer$activate()
-      } else if (private$room_in_queue())
-        private$queue <- c(private$queue, customer)
-      else remove(customer)
+    reset = function() {
+      private$server <- NULL
+      private$server_count <- NULL
+      private$queue <- NULL
+      private$queue_count <- NULL
     },
     
-    release = function() {
+    seize = function(customer, amount) {
+      if (!inherits(customer, "Customer"))
+        stop("not a customer")
+      
+      if (private$room_in_server(amount)) {
+        private$server <- c(private$server, customer)
+        private$server_count <- c(private$server_count, amount)
+        return(0) # serving now
+      } else if (private$room_in_queue(amount)) {
+        private$queue <- c(private$queue, customer)
+        private$queue_count <- c(private$queue_count, amount)
+        return(1) # enqueued
+      } else {
+        customer$leave()
+        return(-1) # reject
+      }
+    },
+    
+    release = function(customer, amount) {
       # departure
-      customer <- private$server[[1]]
+      saved_customer <- private$server[[1]]
+      saved_amount <- private$server_count[[1]]
       private$server <- private$server[-1]
-      customer$activate()
+      private$server_count <- private$server_count[-1]
+      if ((!identical(saved_customer, customer)) || (!identical(saved_amount, amount)))
+        stop(paste0(self$name, ": inconsistent trajectory detected"))
+      
       # serve from the queue
-      customer <- private$queue[[1]]
-      private$queue <- private$queue[-1]
-      if (!is.null(customer)) customer$activate()
+      another_customer <- private$queue[[1]]
+      another_amount <- private$queue_count[[1]]
+      if (!is.null(another_customer)) {
+        private$queue <- private$queue[-1]
+        private$queue_count <- private$queue_count[-1]
+        private$server <- c(private$server, another_customer)
+        private$server_count <- c(private$server_count, another_amount)
+        another_customer$sim$schedule(0, another_customer)
+      }
+      return(0)
     }
   ),
   
   private = list(
-    server = NA,
+    server = NULL,
+    server_count = NULL,
     capacity = NA,
-    queue = NA,
+    queue = NULL,
+    queue_count = NULL,
     queue_size = NA,
     
-    room_in_server = function() { return(length(private$server) < private$capacity) },
-    room_in_queue = function() { return(length(private$queue) < private$queue_size) }
+    room_in_server = function(amount) {
+      return(sum(private$server_count) + amount <= private$capacity)
+    },
+    
+    room_in_queue = function(amount) {
+      return(sum(private$queue_count) + amount <= private$queue_size)
+    }
   )
 )
 
@@ -75,23 +104,31 @@ Generator <- R6Class("Generator", inherit = Process,
       if (!is.function(dist))
         stop(paste0(self$name, ": dist must be callable"))
       private$dist <- dist
+      private$count <- 0
     },
     
     activate = function() {
-      
+      delay <- private$dist()
+      customer <- Customer$new(self$sim, 
+                               paste0(self$name, private$count),
+                               private$traj$get_head())
+      self$sim$schedule(delay, self)
+      self$sim$schedule(delay, customer)
+      private$count <- private$count + 1
     }
   ),
   
   private = list(
-    traj = NA,
-    dist = NA
+    count = NA,
+    traj = NULL,
+    dist = NULL
   )
 )
 
 Customer <- R6Class("Customer", inherit = Process,
   public = list(
-    initialize = function(sim, name_prefix, first_event) {
-      super$initialize(sim, name_prefix)
+    initialize = function(sim, name, first_event) {
+      super$initialize(sim, name)
       if (!inherits(first_event, "Event"))
         stop("not an event")
       private$event <- first_event
@@ -99,8 +136,20 @@ Customer <- R6Class("Customer", inherit = Process,
     
     activate = function() {
       current_event <- private$event
-      private$event <- private$event$next_event
-      current_event$run()
+      if (is.null(current_event)) 
+        self$leave()
+      else {
+        if (self$sim$verbose)
+          cat("time:", self$sim$now, "|",
+              "customer:", self$name, "|",
+              "event:", current_event$name, "\n")
+        private$event <- private$event$next_event
+        current_event$run(self)
+      }
+    },
+    
+    leave = function() {
+      # ???
     }
   ),
   

@@ -17,7 +17,7 @@ Event <- R6Class("Event",
       cat("}")
     },
     
-    run = function() { stop("not implemented") }
+    run = function(parent) { stop("not implemented") }
   ),
   
   active = list(
@@ -45,6 +45,12 @@ SeizeEvent <- R6Class("SeizeEvent", inherit = Event,
     initialize = function(resource, amount) {
       private$resource <- evaluate_value(resource)
       private$amount <- evaluate_value(amount)
+    },
+    
+    run = function(parent) {
+      res <- parent$sim$get_resource(private$resource)
+      if (!res$seize(parent, private$amount))
+        parent$sim$schedule(0, parent)
     }
   ),
   
@@ -61,6 +67,12 @@ ReleaseEvent <- R6Class("ReleaseEvent", inherit = Event,
     initialize = function(resource, amount) {
       private$resource <- evaluate_value(resource)
       private$amount <- evaluate_value(amount)
+    },
+    
+    run = function(parent) {
+      res <- parent$sim$get_resource(private$resource)
+      if (!res$release(parent, private$amount))
+        parent$sim$schedule(0, parent)
     }
   ),
   
@@ -78,10 +90,14 @@ TimeoutEvent <- R6Class("TimeoutEvent", inherit = Event,
       if (!is.function(duration)) 
         stop(paste0(self$name, ": duration must be callable"))
       private$duration <- evaluate_value(duration)
+    },
+    
+    run = function(parent) {
+      parent$sim$schedule(private$duration(), parent)
     }
   ),
   
   private = list(
-    duration = NA
+    duration = NULL
   )
 )

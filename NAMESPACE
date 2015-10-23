@@ -2,8 +2,6 @@
 
 export(Simmer)
 export(Trajectory)
-export(add_entities_with_interval)
-export(add_entity)
 export(get_entity_monitor_values)
 export(get_resource_queue_mon_values)
 export(get_resource_serve_mon_values)

@@ -10,10 +10,11 @@ require(R6)
 Simmer <- R6Class("Simmer",
   public = list(
     name = NA,
+    verbose = NA,
     
     initialize = function(name="anonymous", verbose=FALSE) {
       self$name <- evaluate_value(name)
-      private$verbose <- verbose
+      self$verbose <- verbose
       private$now_ <- 0
       private$queue <- PriorityQueue$new()
       private$gen <- list()
@@ -28,8 +29,8 @@ Simmer <- R6Class("Simmer",
         res$reset()
     },
     
-    schedule = function(delay, event) {
-      private$queue$push(self$now + delay, event)
+    schedule = function(delay, entity) {
+      private$queue$push(self$now + delay, entity)
     },
     
     run = function(until=1000, rep=1) {
@@ -39,6 +40,9 @@ Simmer <- R6Class("Simmer",
       if(!is.finite(rep)) rep <- 1
       
       while (rep > 0) {
+        if (self$verbose) 
+          cat("starting replication", rep, "\n")
+        
         # Initialisation
         if (!private$queue$length()) {
           if (!length(private$gen))
@@ -49,7 +53,7 @@ Simmer <- R6Class("Simmer",
       
         # Loop
         while (self$now < until) {
-          entity <- self$queue$pop()
+          entity <- private$queue$pop()
           private$now_ <- entity[[1]]
           entity[[2]]$activate()
         }
@@ -59,11 +63,13 @@ Simmer <- R6Class("Simmer",
       }
     },
     
-    add_resource = function(name, capacity, queue_size) {
+    add_resource = function(name, capacity=1, queue_size=Inf) {
       res <- Resource$new(self, name, capacity, queue_size)
-      private$res <- c(private$res, res)
+      private$res[[name]] <- res
       invisible(self)
     },
+    
+    get_resource = function(name) { return(private$res[[name]]) },
     
     add_generator = function(name_prefix, trajectory, dist) {
       gen <- Generator$new(self, name_prefix, trajectory, dist)
@@ -77,10 +83,9 @@ Simmer <- R6Class("Simmer",
   ),
   
   private = list(
-    verbose = NA,
     now_ = NA,
-    queue = NA,
-    gen = NA,
-    res = NA
+    queue = NULL,
+    gen = NULL,
+    res = NULL
   )
 )
