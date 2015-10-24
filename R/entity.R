@@ -134,12 +134,15 @@ Customer <- R6Class("Customer", inherit = Process,
       if (!inherits(first_event, "Event"))
         stop("not an event")
       private$event <- first_event
-      private$start <- sim$now
+      private$activity <- 0
     },
     
     activate = function() {
+      if (is.na(private$start))
+        private$start <- self$sim$now
+      
       current_event <- private$event
-      if (is.null(current_event)) 
+      if (is.null(current_event))
         self$leave()
       else {
         if (self$sim$verbose)
@@ -148,17 +151,23 @@ Customer <- R6Class("Customer", inherit = Process,
               "customer:", self$name, "|",
               "event:", current_event$name, "\n"))
         private$event <- private$event$next_event
-        current_event$run(self)
+        private$activity <- private$activity + 
+          current_event$run(self)
       }
     },
     
     leave = function() {
-      # ???
+      self$sim$notify(self$name,
+                      self$sim$now - private$start,
+                      private$activity, 
+                      is.null(private$event))
+      # destroy?
     }
   ),
   
   private = list(
     start = NA,
+    activity = NA,
     event = NULL
   )
 )
