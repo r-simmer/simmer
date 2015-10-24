@@ -4,11 +4,11 @@
 \alias{plot_evolution_entity_times}
 \title{plot evolution of entity times}
 \usage{
-plot_evolution_entity_times(sim_obj, type = c("flow_time", "activity_time",
+plot_evolution_entity_times(simmer, type = c("flow_time", "activity_time",
   "waiting_time"))
 }
 \arguments{
-\item{sim_obj}{the simulation object}
+\item{simmer}{the simulation environment}
 
 \item{type}{one of c("flow_time","activity_time","waiting_time")}
 }

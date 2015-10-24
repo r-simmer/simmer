@@ -176,7 +176,8 @@ Customer <- R6Class("Customer", inherit = Process,
     
     leave = function() {
       self$sim$notify(self$name,
-                      self$sim$now - private$start,
+                      private$start,
+                      self$sim$now,
                       private$activity, 
                       is.null(private$event))
       # destroy?

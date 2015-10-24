@@ -82,6 +82,7 @@ plot_resource_utilization <- function(simmer, resources){
   require(ggplot2)
   require(scales)
   require(dplyr)
+  require(tidyr)
   
   theme_set(theme_bw())
   
@@ -119,16 +120,20 @@ plot_resource_utilization <- function(simmer, resources){
 #' plot evolution of entity times
 #' 
 #' plot the evolution of entity related times (flow, activity and waiting time)
-#' @param sim_obj the simulation object
+#' @param simmer the simulation environment
 #' @param type one of c("flow_time","activity_time","waiting_time")
 #' @export
-plot_evolution_entity_times <- function(sim_obj, type=c("flow_time","activity_time","waiting_time")){
+plot_evolution_entity_times <- function(simmer, type=c("flow_time","activity_time","waiting_time")){
   require(dplyr)
   require(ggplot2)
+  require(tidyr)
   
-  monitor_data<-
-    get_entity_monitor_values(sim_obj, aggregated = T)
+  theme_set(theme_bw())
   
+  monitor_data <- simmer$get_mon_customers() %>%
+    mutate(flow_time = end_time - start_time,
+           waiting_time = flow_time - activity_time)
+
   if(type=="flow_time"){
     ggplot(monitor_data) +
       aes(x=end_time, y=flow_time) +

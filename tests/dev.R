@@ -21,9 +21,7 @@ simmer$run(80)
 
 plot_resource_usage(simmer, "doctor", steps=T)
 plot_resource_usage(simmer, "doctor", 6, types="server", steps=T)
-
 plot_resource_utilization(simmer, c("nurse", "doctor","administration"))
-
 plot_evolution_entity_times(simmer, type = "flow_time")
 
 #################################################################
@@ -41,7 +39,7 @@ simmer$run(1000)
 customer_stats <- simmer$get_mon_customers()
 resource_stats <- simmer$get_mon_resources()
 
-plot_resource_usage(simmer, "server", steps=T)
+plot_resource_usage(simmer, "server")
 
 #################################################################
 

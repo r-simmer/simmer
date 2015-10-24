@@ -1,5 +1,4 @@
 require(R6)
-require(doParallel)
 
 #' Simmer
 #'
@@ -33,6 +32,7 @@ Simmer <- R6Class("Simmer",
       if(!is.finite(until)) until <- 1000
       
       if (private$cluster) {
+        require(doParallel)
         cl <- makeCluster(private$cluster, outfile="")
         registerDoParallel(cl)
         private$sim_objs <- 
@@ -129,7 +129,8 @@ Simulator <- R6Class("Simulator",
       private$res <- list()
       private$customer_stats <- list(
         name = character(),
-        flow_time = numeric(),
+        start_time = numeric(),
+        end_time = numeric(),
         activity_time = numeric(),
         finished = numeric()
       )
@@ -143,7 +144,8 @@ Simulator <- R6Class("Simulator",
         res$reset()
       private$customer_stats <- list(
         name = character(),
-        flow_time = numeric(),
+        start_time = numeric(),
+        end_time = numeric(),
         activity_time = numeric(),
         finished = numeric()
       )
@@ -185,11 +187,12 @@ Simulator <- R6Class("Simulator",
       invisible(self)
     },
     
-    notify = function(customer_name, flow_time, activity_time, finished) {
+    notify = function(customer_name, start_time, end_time, activity_time, finished) {
       private$customer_stats[[1]] <- c(private$customer_stats[[1]], customer_name)
-      private$customer_stats[[2]] <- c(private$customer_stats[[2]], flow_time)
-      private$customer_stats[[3]] <- c(private$customer_stats[[3]], activity_time)
-      private$customer_stats[[4]] <- c(private$customer_stats[[4]], finished)
+      private$customer_stats[[2]] <- c(private$customer_stats[[2]], start_time)
+      private$customer_stats[[3]] <- c(private$customer_stats[[3]], end_time)
+      private$customer_stats[[4]] <- c(private$customer_stats[[4]], activity_time)
+      private$customer_stats[[5]] <- c(private$customer_stats[[5]], finished)
     },
     
     get_mon_customers = function() { private$customer_stats },
