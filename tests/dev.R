@@ -3,14 +3,17 @@ mm1 <- Trajectory$new() $
   timeout(function() rexp(1, 2)) $
   release("server", 1)
 
-simmer <- Simmer$new(rep=4, parallel=2, verbose=F) $
+simmer <- Simmer$new(rep=2, parallel=2, verbose=F) $
   add_resource("server", 1, mon=T) $
   add_generator("customer", mm1, function() rexp(1, 1))
-simmer$run(100)
+simmer$run(1000)
 
 customer_stats <- simmer$get_mon_customers()
 resource_stats <- simmer$get_mon_resources()
-View(resource_stats)
+
+plot_resource_usage(simmer, "server", steps=T)
+
+#################################################################
 
 t0 <- Trajectory$new("my trajectory") $
   seize("server", 1) $

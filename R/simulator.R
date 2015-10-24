@@ -52,8 +52,8 @@ Simmer <- R6Class("Simmer",
                          evaluate_value(queue_size), 
                          mon
         )
-        if (mon) private$mon_res <- c(private$mon_res, name)
       }
+      if (mon) private$mon_res <- c(private$mon_res, name)
       invisible(self)
     },
     
@@ -97,6 +97,14 @@ Simmer <- R6Class("Simmer",
           }, i=i)
         })
       )
+    },
+    
+    get_res_capacity = function(name) { 
+      private$sim_objs[[1]]$get_resource(name)$get_capacity()
+    },
+    
+    get_res_queue_size = function(name) {
+      private$sim_objs[[1]]$get_resource(name)$get_queue_size()
     }
   ),
   

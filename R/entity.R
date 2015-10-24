@@ -93,7 +93,11 @@ Resource <- R6Class("Resource", inherit = Entity,
       private$res_stats[[3]] <- c(private$res_stats[[3]], sum(private$queue_count))
     },
     
-    get_observations = function() { private$res_stats }
+    get_observations = function() { private$res_stats },
+    
+    get_capacity = function() { private$capacity },
+    
+    get_queue_size = function() { private$queue_size }
   ),
   
   private = list(

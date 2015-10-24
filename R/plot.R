@@ -1,37 +1,39 @@
 #' plot usage of a resource over time
 #' 
 #' plot the usage of a resource over the simulation time frame
-#' @param sim_obj the simulation object
+#' @param simmer the simulation environment
 #' @param resource_name the name of the resource (character value)
 #' @param replication_n specify to plot only a specific replication (default=FALSE)
 #' @param types the parts of the resource to be plotted
 #' @param steps adds the changes in the resource usage
 #' @param smooth_line adds a smoothline, usefull if a lot of different replications are plotted
 #' @export
-plot_resource_usage <- function(sim_obj, resource_name, replication_n=FALSE,
+plot_resource_usage <- function(simmer, resource_name, replication_n=FALSE,
                                 types=c("queue", "server", "system"), steps = FALSE, smooth_line=FALSE){
   
   require(ggplot2)
   require(dplyr)
+  require(tidyr)
   
-  monitor_data<-rbind(
-    get_resource_queue_mon_values(sim_obj, resource_name),
-    get_resource_serve_mon_values(sim_obj, resource_name),
-    get_resource_system_mon_values(sim_obj, resource_name)
-  )
-  monitor_data$type <- factor(monitor_data$type)
-  monitor_data <- subset(monitor_data, type %in% types)
+  theme_set(theme_bw())
+  
+  monitor_data <- simmer$get_mon_resources() %>% 
+    filter(resource == resource_name) %>%
+    gather(type, value, 2:4) %>%
+    mutate(type = factor(type)) %>%
+    filter(type %in% types) %>%
+    group_by(resource, replication, type) %>%
+    mutate(mean = cumsum(value * diff(c(0,time))) / time) %>% 
+    ungroup()
   
   if(!replication_n==F){
     monitor_data <- monitor_data %>%
       filter(replication == replication_n)
   }
   
-  queue_size <- get_resource_queue_size_(sim_obj@simulators[[1]], resource_name)
-  capacity <- get_resource_capacity_(sim_obj@simulators[[1]], resource_name)
-  if(queue_size >= 0){
-    system <- capacity + queue_size
-  } else system <- capacity
+  queue_size <- simmer$get_res_queue_size(resource_name)
+  capacity <- simmer$get_res_capacity(resource_name)
+  system <- capacity + queue_size
   
   plot_obj<-
     ggplot(monitor_data) +
@@ -43,14 +45,14 @@ plot_resource_usage <- function(sim_obj, resource_name, replication_n=FALSE,
     ylab("in use") +
     xlab("time") +
     expand_limits(y=0)
-    
-  if("queue" %in% types && queue_size >= 0){
-    plot_obj<- plot_obj +
-      geom_hline(y=queue_size, lty=2, color="red")
-  }
+  
   if("server" %in% types){
     plot_obj<- plot_obj +
-      geom_hline(y=capacity, lty=2, color="green")
+      geom_hline(y=capacity, lty=2, color="red")
+  }
+  if("queue" %in% types && queue_size >= 0){
+    plot_obj<- plot_obj +
+      geom_hline(y=queue_size, lty=2, color="green")
   }
   if("system" %in% types && queue_size >= 0){
     plot_obj<- plot_obj +

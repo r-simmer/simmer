@@ -4,12 +4,12 @@
 \alias{plot_resource_usage}
 \title{plot usage of a resource over time}
 \usage{
-plot_resource_usage(sim_obj, resource_name, replication_n = FALSE,
+plot_resource_usage(simmer, resource_name, replication_n = FALSE,
   types = c("queue", "server", "system"), steps = FALSE,
   smooth_line = FALSE)
 }
 \arguments{
-\item{sim_obj}{the simulation object}
+\item{simmer}{the simulation environment}
 
 \item{resource_name}{the name of the resource (character value)}
 
