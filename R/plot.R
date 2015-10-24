@@ -75,30 +75,25 @@ plot_resource_usage <- function(simmer, resource_name, replication_n=FALSE,
 #' plot utilization of resources
 #' 
 #' plot the utilization of specified resources in the simulation
-#' @param sim_obj the simulation object
+#' @param simmer the simulation environment
 #' @param resources a character vector with at least one resource specified - e.g. "c('res1','res2')"
 #' @export
-plot_resource_utilization <- function(sim_obj, resources){
+plot_resource_utilization <- function(simmer, resources){
   require(ggplot2)
   require(scales)
   require(dplyr)
   
-  monitor_data<-
-    do.call(rbind,
-            lapply(resources, function(res) get_resource_serve_mon_values(sim_obj, res))
-    ) %>%
-    left_join(
-      do.call(rbind,
-              lapply(resources, function(res) data.frame(resource = res, capacity = get_resource_capacity_(sim_obj@simulators[[1]], res)))
-      )
-    ) %>%
-    left_join(
-      do.call(rbind,
-      lapply(1:length(sim_obj@simulators), function(r) data.frame(replication = r, runtime = now_(sim_obj@simulators[[1]])))
-      )
-    ) %>%
-    group_by(resource, replication, capacity, runtime, time) %>%
-    summarise(value=max(value)) %>%
+  theme_set(theme_bw())
+  
+  monitor_data <- simmer$get_mon_resources() %>% 
+    filter(resource %in% resources) %>%
+    gather(type, value, 2:4) %>%
+    mutate(type = factor(type)) %>%
+    filter(type == "server") %>%
+    group_by(resource) %>%
+    mutate(capacity = simmer$get_res_capacity(resource[[1]])) %>% 
+    group_by(replication) %>%
+    mutate(runtime = max(time)) %>%
     group_by(resource, replication, capacity, runtime) %>%
     mutate(in_use = (time-lag(time)) * lag(value)) %>%
     group_by(resource, replication, capacity, runtime) %>%

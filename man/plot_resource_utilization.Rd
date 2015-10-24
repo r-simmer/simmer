@@ -4,10 +4,10 @@
 \alias{plot_resource_utilization}
 \title{plot utilization of resources}
 \usage{
-plot_resource_utilization(sim_obj, resources)
+plot_resource_utilization(simmer, resources)
 }
 \arguments{
-\item{sim_obj}{the simulation object}
+\item{simmer}{the simulation environment}
 
 \item{resources}{a character vector with at least one resource specified - e.g. "c('res1','res2')"}
 }

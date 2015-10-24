@@ -43,7 +43,7 @@ Simmer <- R6Class("Simmer",
         sim$run(until)
     },
     
-    add_resource = function(name, capacity=1, queue_size=Inf, mon=F) {
+    add_resource = function(name, capacity=1, queue_size=Inf, mon=T) {
       for (sim in private$sim_objs) {
         name <- evaluate_value(name)
         mon <- evaluate_value(mon)
