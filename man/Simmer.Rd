@@ -9,12 +9,12 @@
 Simmer
 }
 \description{
-Simulator object
+Simulation environment
 }
 \section{Fields}{
 
 \describe{
-\item{\code{name}}{simulator name}
+\item{\code{name}}{environment name}
 }}
 \keyword{datasets}
 

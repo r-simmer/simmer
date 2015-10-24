@@ -6,7 +6,7 @@ Entity <- R6Class("Entity",
     sim = NULL,
     
     initialize = function(sim, name) {
-      if (!inherits(sim, "Simmer"))
+      if (!inherits(sim, "Simulator"))
         stop("not a simulator")
       self$sim <- sim
       self$name <- evaluate_value(name)
@@ -63,14 +63,16 @@ Resource <- R6Class("Resource", inherit = Entity,
         stop(paste0(self$name, ": inconsistent trajectory detected"))
       
       # serve from the queue
-      another_customer <- private$queue[[1]]
-      another_amount <- private$queue_count[[1]]
-      if (!is.null(another_customer)) {
-        private$queue <- private$queue[-1]
-        private$queue_count <- private$queue_count[-1]
-        private$server <- c(private$server, another_customer)
-        private$server_count <- c(private$server_count, another_amount)
-        another_customer$sim$schedule(0, another_customer)
+      if (length(private$queue_count)) {
+        another_customer <- private$queue[[1]]
+        another_amount <- private$queue_count[[1]]
+        if (!is.null(another_customer)) {
+          private$queue <- private$queue[-1]
+          private$queue_count <- private$queue_count[-1]
+          private$server <- c(private$server, another_customer)
+          private$server_count <- c(private$server_count, another_amount)
+          another_customer$sim$schedule(0, another_customer)
+        }
       }
       return(0)
     }
@@ -132,6 +134,7 @@ Customer <- R6Class("Customer", inherit = Process,
       if (!inherits(first_event, "Event"))
         stop("not an event")
       private$event <- first_event
+      private$start <- sim$now
     },
     
     activate = function() {
@@ -140,7 +143,8 @@ Customer <- R6Class("Customer", inherit = Process,
         self$leave()
       else {
         if (self$sim$verbose)
-          cat("time:", self$sim$now, "|",
+          cat("rep:", self$sim$name, "|",
+              "time:", self$sim$now, "|",
               "customer:", self$name, "|",
               "event:", current_event$name, "\n")
         private$event <- private$event$next_event
@@ -154,6 +158,7 @@ Customer <- R6Class("Customer", inherit = Process,
   ),
   
   private = list(
+    start = NA,
     event = NULL
   )
 )
