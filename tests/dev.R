@@ -3,7 +3,7 @@ mm1 <- Trajectory$new() $
   timeout(function() rexp(1, 1)) $
   release("server", 1)
 
-simmer <- Simmer$new(rep=4, verbose=T) $
+simmer <- Simmer$new(rep=4, parallel=2, verbose=T) $
   add_resource("server", 1) $
   add_generator("customer", mm1, function() rexp(1, 2))
 simmer$run(100)

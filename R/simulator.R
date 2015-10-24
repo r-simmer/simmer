@@ -1,4 +1,5 @@
 require(R6)
+require(doParallel)
 
 #' Simmer
 #'
@@ -11,12 +12,13 @@ Simmer <- R6Class("Simmer",
   public = list(
     name = NA,
     
-    initialize = function(name="anonymous", rep=1, verbose=FALSE) {
+    initialize = function(name="anonymous", rep=1, parallel=0, verbose=FALSE) {
       self$name <- evaluate_value(name)
       rep <- evaluate_value(rep)
       if(!is.finite(rep)) rep <- 1
       for (i in seq(rep))
         private$sim_objs <- c(private$sim_objs, Simulator$new(i, verbose))
+      private$cluster <- evaluate_value(parallel)
       invisible(self)
     },
     
@@ -28,7 +30,14 @@ Simmer <- R6Class("Simmer",
     run = function(until=1000) {
       until <- evaluate_value(until)
       if(!is.finite(until)) until <- 1000
-      for (sim in private$sim_objs) 
+      
+      if (private$cluster) {
+        cl <- makeCluster(private$cluster, outfile="")
+        registerDoParallel(cl)
+        foreach (sim=iter(private$sim_objs)) %dopar%
+          sim$run(until)
+        stopCluster(cl)
+      } else for (sim in private$sim_objs)
         sim$run(until)
     },
     
@@ -46,7 +55,8 @@ Simmer <- R6Class("Simmer",
   ),
   
   private = list(
-    sim_objs = NULL
+    sim_objs = NULL,
+    cluster = NA
   )
 )
 

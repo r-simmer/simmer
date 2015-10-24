@@ -143,10 +143,10 @@ Customer <- R6Class("Customer", inherit = Process,
         self$leave()
       else {
         if (self$sim$verbose)
-          cat("rep:", self$sim$name, "|",
+          cat(paste("rep:", self$sim$name, "|",
               "time:", self$sim$now, "|",
               "customer:", self$name, "|",
-              "event:", current_event$name, "\n")
+              "event:", current_event$name, "\n"))
         private$event <- private$event$next_event
         current_event$run(self)
       }
