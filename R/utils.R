@@ -35,3 +35,14 @@ evaluate_value<-function(value){
     }, 
     error = function(err) value)
 }
+
+.summarise_monitor_values<-function(monitor_data, type){
+  monitor_data %>%
+    group_by(time, replication, resource) %>%
+    summarise(value = sum(value)) %>%
+    group_by(replication, resource) %>%
+    mutate(mean = c(0, cumsum(head(value,-1) * diff(time)) / tail(time,-1)),
+           type = type
+    ) %>% ungroup()
+  
+}

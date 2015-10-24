@@ -17,7 +17,8 @@ Simmer <- R6Class("Simmer",
       rep <- evaluate_value(rep)
       if(!is.finite(rep)) rep <- 1
       for (i in seq(rep))
-        private$sim_objs <- c(private$sim_objs, Simulator$new(i, verbose))
+        private$sim_objs <- c(private$sim_objs,
+                              Simulator$new(i, evaluate_value(verbose)))
       private$cluster <- evaluate_value(parallel)
       invisible(self)
     },
@@ -42,15 +43,31 @@ Simmer <- R6Class("Simmer",
         sim$run(until)
     },
     
-    add_resource = function(name, capacity=1, queue_size=Inf) {
-      for (sim in private$sim_objs) 
-        sim$add_resource(name, capacity, queue_size)
+    add_resource = function(name, capacity=1, queue_size=Inf, mon=F) {
+      for (sim in private$sim_objs) {
+        name <- evaluate_value(name)
+        mon <- evaluate_value(mon)
+        sim$add_resource(name,
+                         evaluate_value(capacity), 
+                         evaluate_value(queue_size), 
+                         mon
+        )
+        if (mon) private$mon_res <- c(private$mon_res, name)
+      }
       invisible(self)
     },
     
     add_generator = function(name_prefix, trajectory, dist) {
+      if (!inherits(trajectory, "Trajectory"))
+        stop("not a trajectory")
+      if (!is.function(dist))
+        stop(paste0(self$name, ": dist must be callable"))
+      
       for (sim in private$sim_objs)
-        sim$add_generator(name_prefix, trajectory, dist)
+        sim$add_generator(evaluate_value(name_prefix),
+                          trajectory, 
+                          dist
+        )
       invisible(self)
     },
     
@@ -64,11 +81,28 @@ Simmer <- R6Class("Simmer",
           monitor_data
         })
       )
+    },
+    
+    get_mon_resources = function() {
+      do.call(rbind,
+        sapply(1:length(private$sim_objs), function(i) {
+          lapply(1:length(private$mon_res), function(j, i) {
+            monitor_data <- as.data.frame(
+              private$sim_objs[[i]]$get_mon_resources(private$mon_res[[j]])
+            )
+            monitor_data$system <- monitor_data$server + monitor_data$queue
+            monitor_data$resource <- private$mon_res[[j]]
+            monitor_data$replication <- i
+            monitor_data
+          }, i=i)
+        })
+      )
     }
   ),
   
   private = list(
     sim_objs = NULL,
+    mon_res = NULL,
     cluster = NA
   )
 )
@@ -79,15 +113,15 @@ Simulator <- R6Class("Simulator",
     verbose = NA,
     
     initialize = function(name, verbose) {
-      self$name <- evaluate_value(name)
-      self$verbose <- evaluate_value(verbose)
+      self$name <- name
+      self$verbose <- verbose
       private$now_ <- 0
       private$queue <- PriorityQueue$new()
       private$gen <- list()
       private$res <- list()
       private$customer_stats <- list(
         name = character(),
-        system_time = numeric(),
+        flow_time = numeric(),
         activity_time = numeric(),
         finished = numeric()
       )
@@ -101,7 +135,7 @@ Simulator <- R6Class("Simulator",
         res$reset()
       private$customer_stats <- list(
         name = character(),
-        system_time = numeric(),
+        flow_time = numeric(),
         activity_time = numeric(),
         finished = numeric()
       )
@@ -129,13 +163,13 @@ Simulator <- R6Class("Simulator",
       return(self)
     },
     
-    add_resource = function(name, capacity, queue_size) {
-      res <- Resource$new(self, name, capacity, queue_size)
+    add_resource = function(name, capacity, queue_size, mon) {
+      res <- Resource$new(self, name, capacity, queue_size, mon)
       private$res[[name]] <- res
       invisible(self)
     },
     
-    get_resource = function(name) { return(private$res[[name]]) },
+    get_resource = function(name) { private$res[[name]] },
     
     add_generator = function(name_prefix, trajectory, dist) {
       gen <- Generator$new(self, name_prefix, trajectory, dist)
@@ -143,14 +177,16 @@ Simulator <- R6Class("Simulator",
       invisible(self)
     },
     
-    notify = function(customer_name, system_time, activity_time, finished) {
+    notify = function(customer_name, flow_time, activity_time, finished) {
       private$customer_stats[[1]] <- c(private$customer_stats[[1]], customer_name)
-      private$customer_stats[[2]] <- c(private$customer_stats[[2]], system_time)
+      private$customer_stats[[2]] <- c(private$customer_stats[[2]], flow_time)
       private$customer_stats[[3]] <- c(private$customer_stats[[3]], activity_time)
       private$customer_stats[[4]] <- c(private$customer_stats[[4]], finished)
     },
     
-    get_mon_customers = function() { private$customer_stats }
+    get_mon_customers = function() { private$customer_stats },
+    
+    get_mon_resources = function(name) { private$res[[name]]$get_observations() }
   ),
   
   active = list(

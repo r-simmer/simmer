@@ -6,10 +6,8 @@ Entity <- R6Class("Entity",
     sim = NULL,
     
     initialize = function(sim, name) {
-      if (!inherits(sim, "Simulator"))
-        stop("not a simulator")
       self$sim <- sim
-      self$name <- evaluate_value(name)
+      self$name <- name
     }
   )
 )
@@ -22,10 +20,16 @@ Process <- R6Class("Process", inherit = Entity,
 
 Resource <- R6Class("Resource", inherit = Entity,
   public = list(
-    initialize = function(sim, name, capacity=1, queue_size=Inf) {
+    initialize = function(sim, name, capacity, queue_size, mon) {
       super$initialize(sim, name)
-      private$capacity <- evaluate_value(capacity)
-      private$queue_size <- evaluate_value(queue_size)
+      private$capacity <- capacity
+      private$queue_size <- queue_size
+      private$mon <- mon
+      private$res_stats <- list(
+        time = numeric(),
+        server = numeric(),
+        queue = numeric()
+      )
     },
     
     reset = function() {
@@ -33,11 +37,15 @@ Resource <- R6Class("Resource", inherit = Entity,
       private$server_count <- NULL
       private$queue <- NULL
       private$queue_count <- NULL
+      private$res_stats <- list(
+        time = numeric(),
+        server = numeric(),
+        queue = numeric()
+      )
     },
     
     seize = function(customer, amount) {
-      if (!inherits(customer, "Customer"))
-        stop("not a customer")
+      if (private$mon) self$observe(customer$sim$now)
       
       if (private$room_in_server(amount)) {
         private$server <- c(private$server, customer)
@@ -54,6 +62,8 @@ Resource <- R6Class("Resource", inherit = Entity,
     },
     
     release = function(customer, amount) {
+      if (private$mon) self$observe(customer$sim$now)
+      
       # departure
       saved_customer <- private$server[[1]]
       saved_amount <- private$server_count[[1]]
@@ -75,7 +85,15 @@ Resource <- R6Class("Resource", inherit = Entity,
         }
       }
       return(0)
-    }
+    },
+    
+    observe = function(time) {
+      private$res_stats[[1]] <- c(private$res_stats[[1]], time)
+      private$res_stats[[2]] <- c(private$res_stats[[2]], sum(private$server_count))
+      private$res_stats[[3]] <- c(private$res_stats[[3]], sum(private$queue_count))
+    },
+    
+    get_observations = function() { private$res_stats }
   ),
   
   private = list(
@@ -85,6 +103,8 @@ Resource <- R6Class("Resource", inherit = Entity,
     queue = NULL,
     queue_count = NULL,
     queue_size = NA,
+    mon = NA,
+    res_stats = NA,
     
     room_in_server = function(amount) {
       return(sum(private$server_count) + amount <= private$capacity)
@@ -100,11 +120,7 @@ Generator <- R6Class("Generator", inherit = Process,
   public = list(
     initialize = function(sim, name_prefix, trajectory, dist) {
       super$initialize(sim, name_prefix)
-      if (!inherits(trajectory, "Trajectory"))
-        stop("not a trajectory")
       private$traj <- trajectory
-      if (!is.function(dist))
-        stop(paste0(self$name, ": dist must be callable"))
       private$dist <- dist
       private$count <- 0
     },
@@ -131,8 +147,6 @@ Customer <- R6Class("Customer", inherit = Process,
   public = list(
     initialize = function(sim, name, first_event) {
       super$initialize(sim, name)
-      if (!inherits(first_event, "Event"))
-        stop("not an event")
       private$event <- first_event
       private$activity <- 0
     },
