@@ -15,8 +15,6 @@ plot_resource_usage <- function(simmer, resource_name, replication_n=FALSE,
   require(dplyr)
   require(tidyr)
   
-  theme_set(theme_bw())
-  
   monitor_data <- simmer$get_mon_resources() %>% 
     filter(resource == resource_name) %>%
     gather(type, value, 2:4) %>%
@@ -84,8 +82,6 @@ plot_resource_utilization <- function(simmer, resources){
   require(dplyr)
   require(tidyr)
   
-  theme_set(theme_bw())
-  
   monitor_data <- simmer$get_mon_resources() %>% 
     filter(resource %in% resources) %>%
     gather(type, value, 2:4) %>%
@@ -128,9 +124,7 @@ plot_evolution_entity_times <- function(simmer, type=c("flow_time","activity_tim
   require(ggplot2)
   require(tidyr)
   
-  theme_set(theme_bw())
-  
-  monitor_data <- simmer$get_mon_customers() %>%
+  monitor_data <- simmer$get_mon_entities() %>%
     mutate(flow_time = end_time - start_time,
            waiting_time = flow_time - activity_time)
 

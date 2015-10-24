@@ -11,29 +11,30 @@ Simmer <- R6Class("Simmer",
   public = list(
     name = NA,
     
-    initialize = function(name="anonymous", rep=1, parallel=0, verbose=FALSE) {
+    initialize = function(name="anonymous", rep=1, verbose=FALSE) {
       self$name <- evaluate_value(name)
       rep <- evaluate_value(rep)
       if(!is.finite(rep)) rep <- 1
       for (i in seq(rep))
         private$sim_objs <- c(private$sim_objs,
                               Simulator$new(i, evaluate_value(verbose)))
-      private$cluster <- evaluate_value(parallel)
       invisible(self)
     },
     
     reset = function() { 
       for (sim in private$sim_objs) 
         sim$reset() 
+      invisible(self)
     },
     
-    run = function(until=1000) {
+    run = function(until=1000, parallel=0) {
       until <- evaluate_value(until)
       if(!is.finite(until)) until <- 1000
+      parallel <- evaluate_value(parallel)
       
-      if (private$cluster) {
+      if (parallel) {
         require(doParallel)
-        cl <- makeCluster(private$cluster, outfile="")
+        cl <- makeCluster(parallel, outfile="")
         registerDoParallel(cl)
         private$sim_objs <- 
           foreach (sim=iter(private$sim_objs)) %dopar%
@@ -71,11 +72,11 @@ Simmer <- R6Class("Simmer",
       invisible(self)
     },
     
-    get_mon_customers = function() {
+    get_mon_entities = function() {
       do.call(rbind,
         lapply(1:length(private$sim_objs), function(i) {
           monitor_data <- as.data.frame(
-            private$sim_objs[[i]]$get_mon_customers()
+            private$sim_objs[[i]]$get_mon_entities()
           )
           monitor_data$replication <- i
           monitor_data
@@ -110,8 +111,7 @@ Simmer <- R6Class("Simmer",
   
   private = list(
     sim_objs = NULL,
-    mon_res = NULL,
-    cluster = NA
+    mon_res = NULL
   )
 )
 
@@ -192,7 +192,7 @@ Simulator <- R6Class("Simulator",
       private$customer_stats[[5]] <- c(private$customer_stats[[5]], finished)
     },
     
-    get_mon_customers = function() { private$customer_stats },
+    get_mon_entities = function() { private$customer_stats },
     
     get_mon_resources = function(name) { private$res[[name]]$get_observations() }
   ),

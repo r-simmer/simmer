@@ -30,10 +30,10 @@ mm1 <- Trajectory$new() $
   timeout(function() rexp(1, 2)) $
   release("server", 1)
 
-simmer <- Simmer$new(rep=2, parallel=2, verbose=F) $
+simmer <- Simmer$new(rep=2, verbose=F) $
   add_resource("server", 1) $
   add_generator("customer", mm1, function() rexp(1, 1))
-simmer$run(1000)
+simmer$run(1000, parallel=2)
 
 customer_stats <- simmer$get_mon_customers()
 resource_stats <- simmer$get_mon_resources()
