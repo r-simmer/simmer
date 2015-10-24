@@ -19,7 +19,6 @@ simmer <- Simmer$new("SuperDuperSim", rep=100) $
   add_generator("patient", t1, function() rnorm(1, 10, 2))
 simmer$run(80)
 
-plot_resource_usage(simmer, "doctor", steps=T)
 plot_resource_usage(simmer, "doctor", 6, types="server", steps=T)
 plot_resource_utilization(simmer, c("nurse", "doctor","administration"))
 plot_evolution_entity_times(simmer, type = "flow_time")

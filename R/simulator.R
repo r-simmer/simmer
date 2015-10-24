@@ -134,7 +134,6 @@ Simulator <- R6Class("Simulator",
         activity_time = numeric(),
         finished = numeric()
       )
-      invisible(self)
     },
     
     reset = function() {
@@ -176,7 +175,6 @@ Simulator <- R6Class("Simulator",
     add_resource = function(name, capacity, queue_size, mon) {
       res <- Resource$new(self, name, capacity, queue_size, mon)
       private$res[[name]] <- res
-      invisible(self)
     },
     
     get_resource = function(name) { private$res[[name]] },
@@ -184,7 +182,6 @@ Simulator <- R6Class("Simulator",
     add_generator = function(name_prefix, trajectory, dist) {
       gen <- Generator$new(self, name_prefix, trajectory, dist)
       private$gen <- c(private$gen, gen)
-      invisible(self)
     },
     
     notify = function(customer_name, start_time, end_time, activity_time, finished) {
