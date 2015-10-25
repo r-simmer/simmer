@@ -21,7 +21,7 @@ simmer$run(80)
 
 plot_resource_usage(simmer, "doctor", 6, types="server", steps=T)
 plot_resource_utilization(simmer, c("nurse", "doctor","administration"))
-plot_evolution_entity_times(simmer, type = "flow_time")
+plot_evolution_arrival_times(simmer, type = "flow_time")
 
 #################################################################
 
@@ -35,7 +35,7 @@ simmer <- Simmer$new(rep=2, verbose=F) $
   add_generator("customer", mm1, function() rexp(1, 1))
 simmer$run(1000, parallel=2)
 
-customer_stats <- simmer$get_mon_customers()
+arrival_stats <- simmer$get_mon_arrivals()
 resource_stats <- simmer$get_mon_resources()
 
 plot_resource_usage(simmer, "server")
