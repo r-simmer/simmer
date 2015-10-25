@@ -177,7 +177,11 @@ Simulator <- R6Class("Simulator",
       private$res[[name]] <- res
     },
     
-    get_resource = function(name) { private$res[[name]] },
+    get_resource = function(name) { 
+      res <- private$res[[name]]
+      if (is.null(res)) stop("resource not found")
+      return(res)
+    },
     
     add_generator = function(name_prefix, trajectory, dist) {
       gen <- Generator$new(self, name_prefix, trajectory, dist)
