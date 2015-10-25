@@ -56,7 +56,6 @@ public:
     resource_map.clear();
     generator_vec.clear();
     delete arrival_stats;
-    // TODO: register arrivals and delete the remaining on exit
   }
   
   void reset() {
