@@ -66,7 +66,7 @@ Simmer <- R6Class("Simmer",
       
       for (sim in private$sim_objs)
         sim$add_generator(evaluate_value(name_prefix),
-                          trajectory, 
+                          trajectory$get_head(), 
                           dist
         )
       invisible(self)
@@ -89,7 +89,7 @@ Simmer <- R6Class("Simmer",
         sapply(1:length(private$sim_objs), function(i) {
           lapply(1:length(private$mon_res), function(j, i) {
             monitor_data <- as.data.frame(
-              private$sim_objs[[i]]$get_mon_resources(private$mon_res[[j]])
+              private$sim_objs[[i]]$get_mon_resource(private$mon_res[[j]])
             )
             monitor_data$system <- monitor_data$server + monitor_data$queue
             monitor_data$resource <- private$mon_res[[j]]
@@ -183,22 +183,23 @@ Simulator <- R6Class("Simulator",
       return(res)
     },
     
-    add_generator = function(name_prefix, trajectory, dist) {
-      gen <- Generator$new(self, name_prefix, trajectory, dist)
+    add_generator = function(name_prefix, first_event, dist) {
+      gen <- Generator$new(self, name_prefix, first_event, dist)
       private$gen <- c(private$gen, gen)
     },
     
-    notify = function(arrival_name, start_time, end_time, activity_time, finished) {
-      private$arrival_stats[[1]] <- c(private$arrival_stats[[1]], arrival_name)
-      private$arrival_stats[[2]] <- c(private$arrival_stats[[2]], start_time)
-      private$arrival_stats[[3]] <- c(private$arrival_stats[[3]], end_time)
-      private$arrival_stats[[4]] <- c(private$arrival_stats[[4]], activity_time)
+    notify_end = function(arrival, finished) {
+      private$arrival_stats[[1]] <- c(private$arrival_stats[[1]], arrival$name)
+      private$arrival_stats[[2]] <- c(private$arrival_stats[[2]], arrival$start_time)
+      private$arrival_stats[[3]] <- c(private$arrival_stats[[3]], self$now)
+      private$arrival_stats[[4]] <- c(private$arrival_stats[[4]], arrival$activity_time)
       private$arrival_stats[[5]] <- c(private$arrival_stats[[5]], finished)
+      remove(arrival)
     },
     
     get_mon_arrivals = function() { private$arrival_stats },
     
-    get_mon_resources = function(name) { private$res[[name]]$get_observations() }
+    get_mon_resource = function(name) { private$res[[name]]$get_observations() }
   ),
   
   active = list(

@@ -1,5 +1,5 @@
 t1 <- Trajectory$new("my trajectory") $
-    ## add an intake event 
+  ## add an intake event 
   seize("nurse",1.0) $
   timeout(function() rnorm(1,15)) $
   release("nurse",1.0) $

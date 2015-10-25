@@ -2,7 +2,6 @@
 
 export(Simmer)
 export(Trajectory)
-export(now_)
 export(plot_evolution_arrival_times)
 export(plot_resource_usage)
 export(plot_resource_utilization)
