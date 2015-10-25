@@ -72,11 +72,11 @@ Simmer <- R6Class("Simmer",
       invisible(self)
     },
     
-    get_mon_entities = function() {
+    get_mon_arrivals = function() {
       do.call(rbind,
         lapply(1:length(private$sim_objs), function(i) {
           monitor_data <- as.data.frame(
-            private$sim_objs[[i]]$get_mon_entities()
+            private$sim_objs[[i]]$get_mon_arrivals()
           )
           monitor_data$replication <- i
           monitor_data
@@ -127,7 +127,7 @@ Simulator <- R6Class("Simulator",
       private$queue <- PriorityQueue$new()
       private$gen <- list()
       private$res <- list()
-      private$customer_stats <- list(
+      private$arrival_stats <- list(
         name = character(),
         start_time = numeric(),
         end_time = numeric(),
@@ -141,7 +141,7 @@ Simulator <- R6Class("Simulator",
       private$queue <- PriorityQueue$new()
       for (res in private$res)
         res$reset()
-      private$customer_stats <- list(
+      private$arrival_stats <- list(
         name = character(),
         start_time = numeric(),
         end_time = numeric(),
@@ -184,15 +184,15 @@ Simulator <- R6Class("Simulator",
       private$gen <- c(private$gen, gen)
     },
     
-    notify = function(customer_name, start_time, end_time, activity_time, finished) {
-      private$customer_stats[[1]] <- c(private$customer_stats[[1]], customer_name)
-      private$customer_stats[[2]] <- c(private$customer_stats[[2]], start_time)
-      private$customer_stats[[3]] <- c(private$customer_stats[[3]], end_time)
-      private$customer_stats[[4]] <- c(private$customer_stats[[4]], activity_time)
-      private$customer_stats[[5]] <- c(private$customer_stats[[5]], finished)
+    notify = function(arrival_name, start_time, end_time, activity_time, finished) {
+      private$arrival_stats[[1]] <- c(private$arrival_stats[[1]], arrival_name)
+      private$arrival_stats[[2]] <- c(private$arrival_stats[[2]], start_time)
+      private$arrival_stats[[3]] <- c(private$arrival_stats[[3]], end_time)
+      private$arrival_stats[[4]] <- c(private$arrival_stats[[4]], activity_time)
+      private$arrival_stats[[5]] <- c(private$arrival_stats[[5]], finished)
     },
     
-    get_mon_entities = function() { private$customer_stats },
+    get_mon_arrivals = function() { private$arrival_stats },
     
     get_mon_resources = function(name) { private$res[[name]]$get_observations() }
   ),
@@ -206,6 +206,6 @@ Simulator <- R6Class("Simulator",
     queue = NULL,
     gen = NULL,
     res = NULL,
-    customer_stats = NA
+    arrival_stats = NA
   )
 )

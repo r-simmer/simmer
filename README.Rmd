@@ -65,7 +65,7 @@ simmer <- Simmer$new("SuperDuperSim", rep=100) $
   add_generator("patient", t0, function() rnorm(1, 10, 2))
 ```
 
-The last method above extends the simulation environment by adding a generator of entities following the trajectory ```t0```, wich are activated with an interval of about 10 minutes (a gaussian of ```mean=10``` and ```sd=2```).
+The last method above extends the simulation environment by adding a generator of arrivals following the trajectory ```t0```, wich are activated with an interval of about 10 minutes (a gaussian of ```mean=10``` and ```sd=2```).
 
 The simulation is now ready for a test run; just let it ```simmer``` for a bit. Below, we specify that we want to limit the run-time to 80 time units using the ```until``` argument.
 
@@ -88,7 +88,7 @@ simmer$reset() $
 
 ### Optional events
 
-The *branch method* introduces the possibility of introducing probability in whether or not to include a branch in a trajectory. The following example shows how a trajectory can be build with a 50-50 chance for the entitity to undergo the second *time-out event*.
+The *branch method* introduces the possibility of introducing probability in whether or not to include a branch in a trajectory. The following example shows how a trajectory can be build with a 50-50 chance for the arrival to undergo the second *time-out event*.
 
 ```{r}
 t1 <- Trajectory$new("trajectory with a branch") $
@@ -103,7 +103,7 @@ t1 <- Trajectory$new("trajectory with a branch") $
 
 ```
 
-The argument ```merge``` indicates whether the entity must continue executing the events after the branch or not.
+The argument ```merge``` indicates whether the arrival must continue executing the events after the branch or not.
 
 ### Resource utilization
 
@@ -135,19 +135,19 @@ head(
 
 ### Flow time
 
-Next we can have a look at the evolution of the entities' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them. All entities that didn't finish their entire trajectory are excluded from the plot.
+Next we can have a look at the evolution of the arrivals' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them. All arrivals that didn't finish their entire trajectory are excluded from the plot.
 
 ```{r, message=FALSE}
-plot_evolution_entity_times(simmer, type = "flow_time")
+plot_evolution_arrival_times(simmer, type = "flow_time")
 ```
 
 Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
 
-It is also possible to extract the entity monitor data.
+It is also possible to extract the arrival monitor data.
 
 ```{r, message=FALSE}
 head(
-  simmer$get_mon_entities()
+  simmer$get_mon_arrivals()
   )
 ```
 

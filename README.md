@@ -61,7 +61,7 @@ simmer <- Simmer$new("SuperDuperSim", rep=100) $
   add_generator("patient", t0, function() rnorm(1, 10, 2))
 ```
 
-The last method above extends the simulation environment by adding a generator of entities following the trajectory ```t0```, wich are activated with an interval of about 10 minutes (a gaussian of ```mean=10``` and ```sd=2```).
+The last method above extends the simulation environment by adding a generator of arrivals following the trajectory ```t0```, wich are activated with an interval of about 10 minutes (a gaussian of ```mean=10``` and ```sd=2```).
 
 The simulation is now ready for a test run; just let it ```simmer``` for a bit. Below, we specify that we want to limit the run-time to 80 time units using the ```until``` argument.
 
@@ -87,7 +87,7 @@ simmer$reset() $
 
 ### Optional events
 
-The *branch method* introduces the possibility of introducing probability in whether or not to include a branch in a trajectory. The following example shows how a trajectory can be build with a 50-50 chance for the entitity to undergo the second *time-out event*.
+The *branch method* introduces the possibility of introducing probability in whether or not to include a branch in a trajectory. The following example shows how a trajectory can be build with a 50-50 chance for the arrival to undergo the second *time-out event*.
 
 
 ```r
@@ -102,7 +102,7 @@ t1 <- Trajectory$new("trajectory with a branch") $
   release("server", 1)
 ```
 
-The argument ```merge``` indicates whether the entity must continue executing the events after the branch or not.
+The argument ```merge``` indicates whether the arrival must continue executing the events after the branch or not.
 
 ### Resource utilization
 
@@ -143,45 +143,45 @@ head(
 ```
 
 ```
-##        time server queue system resource replication
-## 1  7.403368      0     0      0    nurse           1
-## 2 17.591327      1     0      1    nurse           1
-## 3 21.465647      1     1      2    nurse           1
-## 4 30.678344      1     0      1    nurse           1
-## 5 37.885139      1     1      2    nurse           1
-## 6 40.051181      1     0      1    nurse           1
+##       time server queue system resource replication
+## 1 10.72273      0     0      0    nurse           1
+## 2 23.71142      1     0      1    nurse           1
+## 3 25.65425      1     1      2    nurse           1
+## 4 31.91200      1     0      1    nurse           1
+## 5 39.56192      1     1      2    nurse           1
+## 6 39.91773      1     0      1    nurse           1
 ```
 
 ### Flow time
 
-Next we can have a look at the evolution of the entities' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them. All entities that didn't finish their entire trajectory are excluded from the plot.
+Next we can have a look at the evolution of the arrivals' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them. All arrivals that didn't finish their entire trajectory are excluded from the plot.
 
 
 ```r
-plot_evolution_entity_times(simmer, type = "flow_time")
+plot_evolution_arrival_times(simmer, type = "flow_time")
 ```
 
 ![](README_files/figure-html/unnamed-chunk-13-1.png) 
 
 Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
 
-It is also possible to extract the entity monitor data.
+It is also possible to extract the arrival monitor data.
 
 
 ```r
 head(
-  simmer$get_mon_entities()
+  simmer$get_mon_arrivals()
   )
 ```
 
 ```
 ##        name start_time  end_time activity_time finished replication
-## 1 patient12   7.403368  46.42542      39.02205        1           1
-## 2 patient13  17.591327  61.05616      39.59051        1           1
-## 3 patient14  30.678344  80.27826      42.39312        1           1
-## 4 patient15  40.051181  93.38706      38.98518        1           1
-## 5 patient16  51.409006 106.41394      37.64338        1           1
-## 6 patient12  12.769466  51.17103      38.40157        1           2
+## 1 patient13  10.722730  52.14979      41.42706        1           1
+## 2 patient14  23.711416  67.84983      42.19558        1           1
+## 3 patient15  31.912001  77.87165      38.30973        1           1
+## 4 patient16  39.917731  95.15135      41.47199        1           1
+## 5 patient17  49.069160 109.31771      39.40658        1           1
+## 6 patient14   9.880601  48.85323      38.97263        1           2
 ```
 
 **DOCUMENTATION TO BE CONTINUED**

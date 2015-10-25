@@ -113,18 +113,18 @@ plot_resource_utilization <- function(simmer, resources){
     ylab("utilization")
 }
 
-#' plot evolution of entity times
+#' plot evolution of arrival times
 #' 
-#' plot the evolution of entity related times (flow, activity and waiting time)
+#' plot the evolution of arrival related times (flow, activity and waiting time)
 #' @param simmer the simulation environment
 #' @param type one of c("flow_time","activity_time","waiting_time")
 #' @export
-plot_evolution_entity_times <- function(simmer, type=c("flow_time","activity_time","waiting_time")){
+plot_evolution_arrival_times <- function(simmer, type=c("flow_time","activity_time","waiting_time")){
   require(dplyr)
   require(ggplot2)
   require(tidyr)
   
-  monitor_data <- simmer$get_mon_entities() %>%
+  monitor_data <- simmer$get_mon_arrivals() %>%
     mutate(flow_time = end_time - start_time,
            waiting_time = flow_time - activity_time)
 
