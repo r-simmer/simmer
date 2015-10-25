@@ -7,187 +7,140 @@
 #include <limits>
 #include <algorithm>
 #include <list>
+#include <queue>
 
-using std::endl;
+#include "entity.h"
 
-
-class Resource;
-class Event;
-
-// ?? unused
-bool event_sort_func(Event* i,Event* j)
-{
-	return (i->early_start_time < j->early_start_time);
-}
-
-double get_next_step(std::vector<Event*> event_queue, double now, double until)
-{
-	double min_end_time = until;
-	double min_early_start_time = until;
-
-	for(std::vector<Event*>::iterator it = event_queue.begin(); it != event_queue.end(); ++it) {
-
-		if((*it)-> end_time >= 0){
-			if((*it)->end_time < min_end_time) 
-				min_end_time = (*it)->end_time;
-		} else {
-			if(!(*it)->enqueued && (*it)-> early_start_time < min_early_start_time) 
-				min_early_start_time = (*it)-> early_start_time;
-		}
-	}
-
-	double min_value = std::min(min_end_time, min_early_start_time);
-
-	return min_value;
-}
-
-class Simulator
-{
+class Event {
 public:
-	std::string name;
-	std::vector<Event*> event_queue;
-	std::vector<Entity*> entity_vec;
-
-	std::map<std::string, Resource*> resource_map;
-
-
-	double until;
-	bool verbose;
-	double current_time;
-
-	void add_entity(Entity* ent) {
-		ent->set_simulator(this);
-		entity_vec.push_back(ent);
-		
-	}
-
-
-	void add_resource(std::string res_name, int capacity, int queue_size) {
-		Resource* res_obj = new Resource(res_name, capacity, queue_size);
-		resource_map[res_name] = res_obj;
-	}
-
-	
-	Resource* get_resource(std::string res_name){
-		try {
-			return resource_map[res_name];
-		} catch (...) {
-			// not found
-			throw std::runtime_error("resource '" + res_name + "' not found (typo?)");
-		}
-	};
-
-	double now() {
-		return current_time;
-	};
-	void run();
-	
-
-	Simulator(std::string sim_name, double until_time): name(sim_name), until(until_time), verbose(false), current_time(0) {}
-	Simulator(std::string sim_name, bool verbose): name(sim_name), until(std::numeric_limits<double>::max()), verbose(verbose), current_time(0) {}
-	Simulator(std::string sim_name, double until_time, bool verbose = false): name(sim_name), until(until_time), verbose(verbose), current_time(0) {}
-
-	~Simulator() {
-
-		while(!entity_vec.empty()) delete entity_vec.back(), entity_vec.pop_back();
-		while(!event_queue.empty()) delete event_queue.back(), event_queue.pop_back();
-
-		std::map<std::string, Resource*>::iterator itr = resource_map.begin();
-		while (itr != resource_map.end()) {
-			delete itr->second;
-			itr++;
-		}
-		resource_map.clear();
-	}
+  double time;
+  Process* process;
+  Event(double time, Process* process): time(time), process(process) {}
+  ~Event() { delete process; }
 };
 
+struct EventOrder {
+  bool operator()(const Event* lhs, const Event* rhs) const {
+    return lhs->time < rhs->time;
+  }
+};
 
-void Simulator::run()
-{
-	if(verbose) Rcpp::Rcout << "Starting simulation..." << endl;
-	
-	current_time = entity_vec[0]->activation_time;
+typedef std::priority_queue<Event*, std::vector<Event*>, EventOrder> PQueue;
+typedef std::map<std::string, Resource*> ResMap;
+typedef std::vector<Generator*> GenVec;
 
-	// initialize events
-	for(std::vector <Entity*>::iterator it = entity_vec.begin(); it != entity_vec.end(); ++it) {
-		Event* ev = (*it)->get_event();
-		ev->early_start_time = (*it)->activation_time;
-		event_queue.push_back(ev);
-	}
+class ArrStats {
+public:
+  std::vector<std::string> name;
+  std::vector<double> start_time;
+  std::vector<double> end_time;
+  std::vector<double> activity_time;
+  std::vector<bool> finished;
+};
 
-	std::vector <int> events_to_delete;
-	
-	while(event_queue.size()>0) {
-
-		unsigned int i = 0;
-		while(i  < event_queue.size()) {
-
-			Event* ev = event_queue[i];
-
-			if(ev->end_time < 0 && ev->early_start_time <= current_time) { // activity hasn't started yet, try to start it
-				bool started = ev->try_to_start(&current_time);
-				if(verbose) Rcpp::Rcout << "Starting " << ev->type << "  <  " << ev->parent_entity->name;
-				if(started) {
-					if(verbose) Rcpp::Rcout << ".....started" << endl;
-					
-				} else {
-					if(verbose) Rcpp::Rcout << ".....failed" << endl;
-					if(ev->parent_entity->leave) {
-						// save the index of the current event to be deleted from the queue
-						events_to_delete.push_back(i);
-					}
-				}
-
-
-			}
-			// activity has finished
-			// non-timed activities can finish just after starting
-			if(ev->end_time >= 0 && current_time >= ev->end_time) {
-
-				// call event specific stopping procedure
-				if(verbose) Rcpp::Rcout << "Stopping" << ev->type << "  <  " << ev->parent_entity->name;
-				if(verbose) Rcpp::Rcout << ".....stopped" << endl;
-
-				ev->stop(&current_time);
-				
-
-				// check if there is a next event to start for the current entity,
-				if(ev->parent_entity->entity_event_vec.size() > 0 ) {
-
-					Event* next_ev = ev->parent_entity->get_event();
-					next_ev->early_start_time = current_time;
-					event_queue.push_back(next_ev);
-
-				} 
-				else { // entity is finished
-					ev->parent_entity->monitor->record(current_time, -999);
-					
-				}
-
-				// save the index of the current event to be deleted from the queue
-				events_to_delete.push_back(i);
-
-			}
-
-			i++ ;
-		}
-
-		std::sort(events_to_delete.begin(), events_to_delete.end(), std::greater<int>());
-		for(std::vector<int>::iterator it = events_to_delete.begin(); it != events_to_delete.end(); ++it) {
-			delete event_queue[*it];
-			
-			// yes, not very efficient, but we need to keep the event_queue's order
-			event_queue.erase(event_queue.begin()+(*it));
-		}
-		events_to_delete.clear();
-		
-		current_time = get_next_step(event_queue, current_time, until);
-		if(current_time >= until) break;
-		if(verbose) Rcpp::Rcout << "Current simulation time: " << current_time << std::endl;
-
-	}
-	if(verbose) Rcpp::Rcout << "Simulation ended..." << endl;
-
-}
+class Simulator {
+public:
+  std::string name;
+  bool verbose;
+  
+  Simulator(std::string name, bool verbose): 
+    name(name), verbose(verbose), now_(0) {
+    arrival_stats = new ArrStats();
+  }
+  
+  ~Simulator() {
+    while (!event_queue.empty()) {
+      delete event_queue.top();
+      event_queue.pop();
+    }
+    resource_map.clear();
+    generator_vec.clear();
+    delete arrival_stats;
+    // TODO: register arrivals and delete the remaining on exit
+  }
+  
+  void reset() {
+    now_ = 0;
+    while (!event_queue.empty()) {
+      delete event_queue.top();
+      event_queue.pop();
+    }
+    for (ResMap::iterator itr = resource_map.begin(); itr != resource_map.end(); ++itr)
+      itr->second->reset();
+    delete arrival_stats;
+    arrival_stats = new ArrStats();
+  }
+  
+  inline double now() { return now_; }
+  
+  inline void schedule(double delay, Process* process) {
+    Event* ev = new Event(now_ + delay, process);
+    event_queue.push(ev);
+  }
+  
+  inline void notify_end(Arrival* arrival, bool finished) {
+    arrival_stats->name.push_back(arrival->name);
+    arrival_stats->start_time.push_back(arrival->start_time);
+    arrival_stats->end_time.push_back(now_);
+    arrival_stats->activity_time.push_back(arrival->activity_time);
+    arrival_stats->finished.push_back(finished);
+    delete arrival;
+  }
+  
+  void run(double until) {
+    // Initialize generators if the queue is empty
+    if (event_queue.empty()) {
+      if (generator_vec.empty())
+        throw std::runtime_error("no generators defined");
+      for (GenVec::iterator itr = generator_vec.begin(); itr != generator_vec.end(); ++itr)
+        itr->activate();
+    }
+    // Loop
+    while(now_ < until) {
+      Event* ev = get_next();
+      now_ = ev->time;
+      ev->process->activate();
+    }
+  }
+  
+  void add_generator(std::string name_prefix, 
+                     Rcpp::Environment* first_event, Rcpp::Function* dist) {
+    Generator* gen = new Generator(this, name_prefix, first_event, dist);
+    generator_vec.push_back(gen);
+  }
+  
+  void add_resource(std::string name, int capacity, int queue_size, bool mon) {
+    Resource* res = new Resource(this, name, capacity, queue_size, mon);
+    resource_map[name] = res;
+  }
+  
+  Resource* get_resource(std::string name) {
+    try {
+      return resource_map[name];
+    } catch (...) {
+      // not found
+      throw std::runtime_error("resource '" + name + "' not found (typo?)");
+    }
+  }
+  
+  ArrStats* get_mon_arrivals() { return arrival_stats; }
+  
+  ResStats* get_mon_resource(std::string name) { 
+    return get_resource(name)->get_observations();
+  }
+  
+private:
+  double now_;
+  PQueue event_queue;
+  ResMap resource_map;
+  GenVec generator_vec;
+  ArrStats* arrival_stats;
+  
+  inline Event* get_next() {
+    Event* ev = event_queue.top();
+    event_queue.pop();
+    return ev;
+  }
+};
 
 #endif
