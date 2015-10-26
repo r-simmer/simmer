@@ -38,6 +38,30 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// seize_
+void seize_(SEXP name_, SEXP arrival_, SEXP amount_);
+RcppExport SEXP simmer_seize_(SEXP name_SEXP, SEXP arrival_SEXP, SEXP amount_SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type arrival_(arrival_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
+    seize_(name_, arrival_, amount_);
+    return R_NilValue;
+END_RCPP
+}
+// release_
+void release_(SEXP name_, SEXP arrival_, SEXP amount_);
+RcppExport SEXP simmer_release_(SEXP name_SEXP, SEXP arrival_SEXP, SEXP amount_SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type arrival_(arrival_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
+    release_(name_, arrival_, amount_);
+    return R_NilValue;
+END_RCPP
+}
 // run_
 void run_(SEXP sim_, SEXP until_);
 RcppExport SEXP simmer_run_(SEXP sim_SEXP, SEXP until_SEXP) {

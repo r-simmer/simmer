@@ -30,6 +30,24 @@ void schedule_(SEXP delay_, SEXP arrival_) {
 }
 
 //[[Rcpp::export]]
+void seize_(SEXP name_, SEXP arrival_, SEXP amount_) {
+  XPtr<Arrival> arrival(arrival_);
+  std::string name = as<std::string>(name_);
+  int amount = as<int>(amount_);
+  
+  arrival->sim->get_resource(name)->seize(arrival, amount);
+}
+
+//[[Rcpp::export]]
+void release_(SEXP name_, SEXP arrival_, SEXP amount_) {
+  XPtr<Arrival> arrival(arrival_);
+  std::string name = as<std::string>(name_);
+  int amount = as<int>(amount_);
+  
+  arrival->sim->get_resource(name)->release(arrival, amount);
+}
+
+//[[Rcpp::export]]
 void run_(SEXP sim_, SEXP until_) {
   XPtr<Simulator> sim(sim_);
   double until = as<double>(until_);

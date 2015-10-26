@@ -13,6 +13,14 @@ schedule_ <- function(delay_, arrival_) {
     invisible(.Call('simmer_schedule_', PACKAGE = 'simmer', delay_, arrival_))
 }
 
+seize_ <- function(name_, arrival_, amount_) {
+    invisible(.Call('simmer_seize_', PACKAGE = 'simmer', name_, arrival_, amount_))
+}
+
+release_ <- function(name_, arrival_, amount_) {
+    invisible(.Call('simmer_release_', PACKAGE = 'simmer', name_, arrival_, amount_))
+}
+
 run_ <- function(sim_, until_) {
     invisible(.Call('simmer_run_', PACKAGE = 'simmer', sim_, until_))
 }
