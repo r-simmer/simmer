@@ -12,7 +12,7 @@ t1 <- Trajectory$new("my trajectory") $
   timeout(function() rnorm(1, 5)) $
   release("administration", 1)
 
-simmer <- Simmer$new("SuperDuperSim", rep=1, verbose=T) $
+simmer <- Simmer$new("SuperDuperSim", rep=100, verbose=F) $
   add_resource("nurse", 1) $
   add_resource("doctor", 2) $
   add_resource("administration", 1) $
@@ -33,7 +33,7 @@ mm1 <- Trajectory$new() $
 simmer <- Simmer$new(rep=2, verbose=F) $
   add_resource("server", 1) $
   add_generator("customer", mm1, function() rexp(1, 1))
-simmer$run(1000, parallel=2)
+simmer$run(10000, parallel=0)
 
 arrival_stats <- simmer$get_mon_arrivals()
 resource_stats <- simmer$get_mon_resources()

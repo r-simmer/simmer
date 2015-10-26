@@ -4,21 +4,20 @@
 inline void Arrival::activate() {
   if (start_time < 0) start_time = sim->now();
   
-  Rcpp::Environment current_event = event;
-  if (current_event == NULL)
-    sim->notify_end(this, 1);
-  else {
-    if (sim->verbose)
-      Rcpp::Rcout <<
-        "rep: " << sim->n << " | " << "time: " << sim->now() << " | " <<
-        "arrival: " << name << " | " << "event: " << 
-        Rcpp::as<std::string>(current_event["name"]) << "(" <<
-        Rcpp::as<std::string>(current_event["resource"]) << ")" << std::endl;
+  if (sim->verbose)
+    Rcpp::Rcout <<
+      "rep: " << sim->n << " | " << "time: " << sim->now() << " | " <<
+      "arrival: " << name << " | " << "event: " << 
+      Rcpp::as<std::string>(event["name"]) << "(" <<
+      Rcpp::as<std::string>(event["resource"]) << ")" << std::endl;
+  
+  Rcpp::Function run(event["run"]);
+  activity_time += Rcpp::as<double>(run((long int)this));
+  
+  if (Rf_isEnvironment(event["next_event"]))
     event = event["next_event"];
-    Rcpp::Function run(current_event["run"]);
-    activity_time += Rcpp::as<double>(run((long int)this));
-    
-  }
+  else
+    sim->notify_end(this, 1);
 }
 
 void Generator::activate() {
@@ -57,6 +56,7 @@ int Resource::release(Arrival* arrival, int amount) {
   if (queue_count) {
     Arrival* another_arrival = queue.front().first;
     int another_amount = queue.front().second;
+    queue.pop();
     queue_count -= another_amount;
     server_count += another_amount;
     sim->schedule(0, another_arrival);

@@ -50,7 +50,8 @@ SeizeEvent <- R6Class("SeizeEvent", inherit = Event,
     
     run = function(parent) {
       ret <- seize_(self$resource, parent, private$amount)
-      if (!ret) schedule_(0, parent)
+      if (!is.null(self$next_event) && !ret) 
+        schedule_(0, parent)
       return(0)
     }
   ),
@@ -71,7 +72,8 @@ ReleaseEvent <- R6Class("ReleaseEvent", inherit = Event,
     
     run = function(parent) {
       ret <- release_(self$resource, parent, private$amount)
-      if (!ret) schedule_(0, parent)
+      if (!is.null(self$next_event) && !ret) 
+        schedule_(0, parent)
       return(0)
     }
   ),
@@ -94,8 +96,8 @@ TimeoutEvent <- R6Class("TimeoutEvent", inherit = Event,
     
     run = function(parent) {
       delay <- private$duration()
-      print(delay)
-      schedule_(delay, parent)
+      if (!is.null(self$next_event))
+        schedule_(delay, parent)
       return(delay)
     }
   ),
