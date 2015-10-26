@@ -45,7 +45,8 @@ public:
   
   ~Simulator() {
     while (!event_queue.empty()) {
-      delete event_queue.top()->process;
+      if (!event_queue.top()->process->is_generator())
+        delete event_queue.top()->process;
       delete event_queue.top();
       event_queue.pop();
     }
@@ -57,7 +58,8 @@ public:
   void reset() {
     now_ = 0;
     while (!event_queue.empty()) {
-      delete event_queue.top()->process;
+      if (!event_queue.top()->process->is_generator())
+        delete event_queue.top()->process;
       delete event_queue.top();
       event_queue.pop();
     }

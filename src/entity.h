@@ -19,6 +19,7 @@ public:
   Process(Simulator* sim, std::string name): Entity(sim, name) {}
   virtual ~Process(){}
   virtual void activate() { throw std::runtime_error("method not implemented"); }
+  inline virtual bool is_generator() { return 0; }
 };
 
 class Arrival: public Process {
@@ -42,6 +43,7 @@ public:
     Process(sim, name_prefix), count(0), first_event(first_event), dist(dist) {}
   
   void activate();
+  inline bool is_generator() { return 1; }
   
 private:
   int count;
