@@ -1,21 +1,24 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include <memory>
+#include <Rcpp.h>
+#include <queue>
 
 class Simulator;
 
 class Entity {
 public:
-  std::string name;
   Simulator* sim;
+  std::string name;
 	Entity(Simulator* sim, std::string name): sim(sim), name(name) {}
+	virtual ~Entity();
 };
 
 class Process: public Entity {
 public:
   Process(Simulator* sim, std::string name): Entity(sim, name) {}
-  virtual inline void activate() { throw std::runtime_error("method not implemented"); }
+  virtual ~Process();
+  virtual void activate() { throw std::runtime_error("method not implemented"); }
 };
 
 class Arrival: public Process {
@@ -24,9 +27,9 @@ public:
   double activity_time;
   
   Arrival(Simulator* sim, std::string name, Rcpp::Environment first_event):
-    Process(sim, name), event(first_event), start_time(-1), activity_time(0) {}
+    Process(sim, name), start_time(-1), activity_time(0), event(first_event) {}
   
-  inline void activate();
+  void activate();
   
 private:
   Rcpp::Environment event;
@@ -36,9 +39,9 @@ class Generator: public Process {
 public:
   Generator(Simulator* sim, std::string name_prefix, 
             Rcpp::Environment first_event, Rcpp::Function dist): 
-    Process(sim, name_prefix), first_event(first_event), dist(dist), count(0) {}
+    Process(sim, name_prefix), count(0), first_event(first_event), dist(dist) {}
   
-  inline void activate();
+  void activate();
   
 private:
   int count;
@@ -56,9 +59,8 @@ public:
 class Resource: public Entity {
 public:
   Resource(Simulator* sim, std::string name, int capacity, int queue_size, bool mon): 
-  Entity(sim, name), capacity(capacity), queue_size(queue_size), mon(mon) {
-    server_count = 0;
-    queue_count = 0;
+    Entity(sim, name), server_count(0), capacity(capacity), queue_count(0), 
+    queue_size(queue_size), mon(mon) {
     res_stats = new ResStats();
   }
   
@@ -81,10 +83,10 @@ public:
     res_stats = new ResStats();
   }
   
-  inline int seize(Arrival* arrival, int amount);
-  inline int release(Arrival* arrival, int amount);
+  int seize(Arrival* arrival, int amount);
+  int release(Arrival* arrival, int amount);
   
-  inline void observe(double time) {
+  void observe(double time) {
     res_stats->time.push_back(time);
     res_stats->server.push_back(server_count);
     res_stats->queue.push_back(queue_count);

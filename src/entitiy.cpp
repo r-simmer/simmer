@@ -1,5 +1,5 @@
-#include "simulator.h"
 #include "entity.h"
+#include "simulator.h"
 
 inline void Arrival::activate() {
   if (start_time < 0) start_time = sim->now();

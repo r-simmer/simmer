@@ -1,12 +1,7 @@
 #include <Rcpp.h>
 
-#include <iostream>
-#include <vector>
-#include <ctime>
-#include <memory>
-#include <utility>
-
 #include "simulator.h"
+#include "entity.h"
 
 using namespace Rcpp;
 

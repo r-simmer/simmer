@@ -2,12 +2,8 @@
 #define SIMULATOR_H
 
 #include <Rcpp.h>
-
-#include <map>
-#include <limits>
-#include <algorithm>
-#include <list>
 #include <queue>
+#include <map>
 
 #include "entity.h"
 
@@ -77,7 +73,7 @@ public:
     event_queue.push(ev);
   }
   
-  inline void notify_end(Arrival* arrival, bool finished);
+  void notify_end(Arrival* arrival, bool finished);
   void run(double until);
   
   void add_generator(std::string name_prefix, 
