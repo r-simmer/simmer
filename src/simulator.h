@@ -12,12 +12,11 @@ public:
   double time;
   Process* process;
   Event(double time, Process* process): time(time), process(process) {}
-  ~Event() { delete process; }
 };
 
 struct EventOrder {
   bool operator()(const Event* lhs, const Event* rhs) const {
-    return lhs->time < rhs->time;
+    return lhs->time > rhs->time;
   }
 };
 
@@ -36,16 +35,17 @@ public:
 
 class Simulator {
 public:
-  std::string name;
+  int n;
   bool verbose;
   
-  Simulator(std::string name, bool verbose): 
-    name(name), verbose(verbose), now_(0) {
+  Simulator(int n, bool verbose): 
+    n(n), verbose(verbose), now_(0) {
     arrival_stats = new ArrStats();
   }
   
   ~Simulator() {
     while (!event_queue.empty()) {
+      delete event_queue.top()->process;
       delete event_queue.top();
       event_queue.pop();
     }
@@ -57,6 +57,7 @@ public:
   void reset() {
     now_ = 0;
     while (!event_queue.empty()) {
+      delete event_queue.top()->process;
       delete event_queue.top();
       event_queue.pop();
     }

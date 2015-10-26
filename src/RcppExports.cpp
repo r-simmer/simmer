@@ -6,14 +6,14 @@
 using namespace Rcpp;
 
 // Simulator__new
-SEXP Simulator__new(SEXP name_, SEXP verbose_);
-RcppExport SEXP simmer_Simulator__new(SEXP name_SEXP, SEXP verbose_SEXP) {
+SEXP Simulator__new(SEXP n_, SEXP verbose_);
+RcppExport SEXP simmer_Simulator__new(SEXP n_SEXP, SEXP verbose_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type n_(n_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
-    __result = Rcpp::wrap(Simulator__new(name_, verbose_));
+    __result = Rcpp::wrap(Simulator__new(n_, verbose_));
     return __result;
 END_RCPP
 }
@@ -39,27 +39,29 @@ BEGIN_RCPP
 END_RCPP
 }
 // seize_
-void seize_(SEXP name_, SEXP arrival_, SEXP amount_);
+int seize_(SEXP name_, SEXP arrival_, SEXP amount_);
 RcppExport SEXP simmer_seize_(SEXP name_SEXP, SEXP arrival_SEXP, SEXP amount_SEXP) {
 BEGIN_RCPP
+    Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type arrival_(arrival_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
-    seize_(name_, arrival_, amount_);
-    return R_NilValue;
+    __result = Rcpp::wrap(seize_(name_, arrival_, amount_));
+    return __result;
 END_RCPP
 }
 // release_
-void release_(SEXP name_, SEXP arrival_, SEXP amount_);
+int release_(SEXP name_, SEXP arrival_, SEXP amount_);
 RcppExport SEXP simmer_release_(SEXP name_SEXP, SEXP arrival_SEXP, SEXP amount_SEXP) {
 BEGIN_RCPP
+    Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type arrival_(arrival_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
-    release_(name_, arrival_, amount_);
-    return R_NilValue;
+    __result = Rcpp::wrap(release_(name_, arrival_, amount_));
+    return __result;
 END_RCPP
 }
 // run_

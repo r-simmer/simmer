@@ -3,6 +3,7 @@ require(R6)
 Event <- R6Class("Event",
   public = list(
     name = NA,
+    resource = NA,
 
     show = function() {
       cat(paste0("{ Event: ", self$name, " | "))
@@ -43,20 +44,18 @@ SeizeEvent <- R6Class("SeizeEvent", inherit = Event,
     name = "Seize",
     
     initialize = function(resource, amount) {
-      private$resource <- evaluate_value(resource)
+      self$resource <- evaluate_value(resource)
       private$amount <- evaluate_value(amount)
     },
     
     run = function(parent) {
-      res <- parent$sim$get_resource(private$resource)
-      if (!res$seize(parent, private$amount))
-        parent$sim$schedule(0, parent)
+      ret <- seize_(self$resource, parent, private$amount)
+      if (!ret) schedule_(0, parent)
       return(0)
     }
   ),
   
   private = list(
-    resource = NA,
     amount = NA
   )
 )
@@ -66,20 +65,18 @@ ReleaseEvent <- R6Class("ReleaseEvent", inherit = Event,
     name = "Release",
     
     initialize = function(resource, amount) {
-      private$resource <- evaluate_value(resource)
+      self$resource <- evaluate_value(resource)
       private$amount <- evaluate_value(amount)
     },
     
     run = function(parent) {
-      res <- parent$sim$get_resource(private$resource)
-      if (!res$release(parent, private$amount))
-        parent$sim$schedule(0, parent)
+      ret <- release_(self$resource, parent, private$amount)
+      if (!ret) schedule_(0, parent)
       return(0)
     }
   ),
   
   private = list(
-    resource = NA,
     amount = NA
   )
 )
@@ -89,6 +86,7 @@ TimeoutEvent <- R6Class("TimeoutEvent", inherit = Event,
     name = "Timeout",
     
     initialize = function(duration) {
+      self$resource <- "None"
       if (!is.function(duration)) 
         stop(paste0(self$name, ": duration must be callable"))
       private$duration <- evaluate_value(duration)
@@ -96,7 +94,8 @@ TimeoutEvent <- R6Class("TimeoutEvent", inherit = Event,
     
     run = function(parent) {
       delay <- private$duration()
-      parent$sim$schedule(delay, parent)
+      print(delay)
+      schedule_(delay, parent)
       return(delay)
     }
   ),

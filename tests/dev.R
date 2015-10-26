@@ -1,18 +1,18 @@
 t1 <- Trajectory$new("my trajectory") $
   ## add an intake event 
-  seize("nurse",1.0) $
-  timeout(function() rnorm(1,15)) $
-  release("nurse",1.0) $
+  seize("nurse", 1) $
+  timeout(function() rnorm(1, 15)) $
+  release("nurse", 1) $
   ## add a consultation event
-  seize("doctor",1.0) $
-  timeout(function() rnorm(1,20)) $
-  release("doctor",1.0) $
+  seize("doctor", 1) $
+  timeout(function() rnorm(1, 20)) $
+  release("doctor", 1) $
   ## add a planning event
-  seize("administration",1.0) $
-  timeout(function() rnorm(1,5)) $
-  release("administration",1.0)
+  seize("administration", 1) $
+  timeout(function() rnorm(1, 5)) $
+  release("administration", 1)
 
-simmer <- Simmer$new("SuperDuperSim", rep=100) $
+simmer <- Simmer$new("SuperDuperSim", rep=1, verbose=T) $
   add_resource("nurse", 1) $
   add_resource("doctor", 2) $
   add_resource("administration", 1) $

@@ -11,6 +11,7 @@ require(R6)
 #'   seize("server", 1) $
 #'   timeout(function() rexp(1, 1)) $
 #'   release("server", 1)
+#' @import R6
 #' @export
 Trajectory <- R6Class("Trajectory",
   public = list(

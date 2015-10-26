@@ -1,7 +1,7 @@
-#include "simulator.h"
 #include "entity.h"
+#include "simulator.h"
 
-inline void Simulator::notify_end(Arrival* arrival, bool finished) {
+void Simulator::notify_end(Arrival* arrival, bool finished) {
   arrival_stats->name.push_back(arrival->name);
   arrival_stats->start_time.push_back(arrival->start_time);
   arrival_stats->end_time.push_back(now_);
@@ -23,5 +23,6 @@ void Simulator::run(double until) {
     Event* ev = get_next();
     now_ = ev->time;
     ev->process->activate();
+    delete ev;
   }
 }

@@ -6,6 +6,9 @@ require(R6)
 #'
 #' @field name environment name
 #' @format An \code{\link{R6Class}} generator object
+#' @useDynLib simmer
+#' @importFrom Rcpp evalCpp
+#' @import R6
 #' @export
 Simmer <- R6Class("Simmer",
   public = list(
@@ -17,13 +20,13 @@ Simmer <- R6Class("Simmer",
       if(!is.finite(rep)) rep <- 1
       for (i in seq(rep))
         private$sim_objs <- c(private$sim_objs,
-                              Simulator$new(i, evaluate_value(verbose)))
+                              Simulator__new(i, evaluate_value(verbose)))
       invisible(self)
     },
     
     reset = function() { 
       for (sim in private$sim_objs) 
-        sim$reset() 
+        reset_(sim) 
       invisible(self)
     },
     
@@ -38,22 +41,22 @@ Simmer <- R6Class("Simmer",
         registerDoParallel(cl)
         private$sim_objs <- 
           foreach (sim=iter(private$sim_objs)) %dopar%
-            sim$run(until)
+            run_(sim, until)
         stopCluster(cl)
       } else for (sim in private$sim_objs)
-        sim$run(until)
+        run_(sim, until)
     },
     
     add_resource = function(name, capacity=1, queue_size=Inf, mon=T) {
-      for (sim in private$sim_objs) {
-        name <- evaluate_value(name)
-        mon <- evaluate_value(mon)
-        sim$add_resource(name,
-                         evaluate_value(capacity), 
-                         evaluate_value(queue_size), 
-                         mon
-        )
-      }
+      name <- evaluate_value(name)
+      capacity <- evaluate_value(capacity)
+      queue_size <- evaluate_value(queue_size)
+      mon <- evaluate_value(mon)
+      if (is.infinite(capacity)) capacity <- -1
+      if (is.infinite(queue_size)) queue_size <- -1
+      
+      for (sim in private$sim_objs)
+        add_resource_(sim, name, capacity, queue_size, mon)
       if (mon) private$mon_res <- c(private$mon_res, name)
       invisible(self)
     },
@@ -63,12 +66,10 @@ Simmer <- R6Class("Simmer",
         stop("not a trajectory")
       if (!is.function(dist))
         stop(paste0(self$name, ": dist must be callable"))
+      name_prefix <- evaluate_value(name_prefix)
       
       for (sim in private$sim_objs)
-        sim$add_generator(evaluate_value(name_prefix),
-                          trajectory$get_head(), 
-                          dist
-        )
+        add_generator_(sim, name_prefix, trajectory$get_head(), dist)
       invisible(self)
     },
     
@@ -76,7 +77,7 @@ Simmer <- R6Class("Simmer",
       do.call(rbind,
         lapply(1:length(private$sim_objs), function(i) {
           monitor_data <- as.data.frame(
-            private$sim_objs[[i]]$get_mon_arrivals()
+            get_mon_arrivals_(private$sim_objs[[i]])
           )
           monitor_data$replication <- i
           monitor_data
@@ -89,7 +90,7 @@ Simmer <- R6Class("Simmer",
         sapply(1:length(private$sim_objs), function(i) {
           lapply(1:length(private$mon_res), function(j, i) {
             monitor_data <- as.data.frame(
-              private$sim_objs[[i]]$get_mon_resource(private$mon_res[[j]])
+              get_mon_resource_(private$sim_objs[[i]], private$mon_res[[j]])
             )
             monitor_data$system <- monitor_data$server + monitor_data$queue
             monitor_data$resource <- private$mon_res[[j]]
@@ -101,11 +102,11 @@ Simmer <- R6Class("Simmer",
     },
     
     get_res_capacity = function(name) { 
-      private$sim_objs[[1]]$get_resource(name)$get_capacity()
+      get_res_capacity_(private$sim_objs[[1]], evaluate_value(name))
     },
     
     get_res_queue_size = function(name) {
-      private$sim_objs[[1]]$get_resource(name)$get_queue_size()
+      get_res_queue_size_(private$sim_objs[[1]], evaluate_value(name))
     }
   ),
   

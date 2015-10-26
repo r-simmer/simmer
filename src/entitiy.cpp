@@ -10,18 +10,19 @@ inline void Arrival::activate() {
   else {
     if (sim->verbose)
       Rcpp::Rcout <<
-        "rep: " << sim->name << " | " << "time: " << sim->now() << " | " <<
+        "rep: " << sim->n << " | " << "time: " << sim->now() << " | " <<
         "arrival: " << name << " | " << "event: " << 
-        Rcpp::as<std::string>(current_event["name"]) << std::endl;
+        Rcpp::as<std::string>(current_event["name"]) << "(" <<
+        Rcpp::as<std::string>(current_event["resource"]) << ")" << std::endl;
     event = event["next_event"];
-    Rcpp::XPtr<Arrival> ptr(this);
     Rcpp::Function run(current_event["run"]);
-    activity_time += Rcpp::as<double>(run(ptr));
+    activity_time += Rcpp::as<double>(run((long int)this));
+    
   }
 }
 
-inline void Generator::activate() {
-  double delay = Rcpp::as<double>(dist());
+void Generator::activate() {
+  double delay = fabs(Rcpp::as<double>(dist()));
   char numstr[21];
   sprintf(numstr, "%d", count);
   Arrival* arrival = new Arrival(sim, name + numstr, first_event);
@@ -30,7 +31,7 @@ inline void Generator::activate() {
   count++;
 }
 
-inline int Resource::seize(Arrival* arrival, int amount) {
+int Resource::seize(Arrival* arrival, int amount) {
   if (mon) observe(sim->now());
   
   if (room_in_server(amount)) {
@@ -46,7 +47,7 @@ inline int Resource::seize(Arrival* arrival, int amount) {
   }
 }
 
-inline int Resource::release(Arrival* arrival, int amount) {
+int Resource::release(Arrival* arrival, int amount) {
   if (mon) observe(sim->now());
   
   // departure

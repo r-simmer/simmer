@@ -11,13 +11,13 @@ public:
   Simulator* sim;
   std::string name;
 	Entity(Simulator* sim, std::string name): sim(sim), name(name) {}
-	virtual ~Entity();
+	virtual ~Entity(){}
 };
 
 class Process: public Entity {
 public:
   Process(Simulator* sim, std::string name): Entity(sim, name) {}
-  virtual ~Process();
+  virtual ~Process(){}
   virtual void activate() { throw std::runtime_error("method not implemented"); }
 };
 
@@ -105,8 +105,14 @@ private:
   bool mon;
   ResStats* res_stats;
   
-  inline bool room_in_server(int amount) { return server_count + amount < capacity; }
-  inline bool room_in_queue(int amount) { return queue_count + amount < queue_size; }
+  inline bool room_in_server(int amount) { 
+    if (capacity < 0) return 1;
+    return server_count + amount <= capacity; 
+  }
+  inline bool room_in_queue(int amount) { 
+    if (queue_size < 0) return 1;
+    return queue_count + amount <= queue_size;
+  }
 };
 
 #endif

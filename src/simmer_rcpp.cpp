@@ -1,16 +1,16 @@
 #include <Rcpp.h>
 
-#include "simulator.h"
 #include "entity.h"
+#include "simulator.h"
 
 using namespace Rcpp;
 
 //[[Rcpp::export]]
-SEXP Simulator__new(SEXP name_, SEXP verbose_) {
-  std::string name = as<std::string>(name_);
+SEXP Simulator__new(SEXP n_, SEXP verbose_) {
+  int n = as<int>(n_);
   bool verbose = as<bool>(verbose_);
   
-  XPtr<Simulator> ptr(new Simulator(name, verbose), false); // What does this "false" mean?
+  XPtr<Simulator> ptr(new Simulator(n, verbose), false); // What does this "false" mean?
   return ptr;
 }
 
@@ -23,28 +23,28 @@ void reset_(SEXP sim_) {
 
 //[[Rcpp::export]]
 void schedule_(SEXP delay_, SEXP arrival_) {
-  XPtr<Arrival> arrival(arrival_);
   double delay = as<double>(delay_);
+  Arrival* arrival = (Arrival*)as<long int>(arrival_);
   
   arrival->sim->schedule(delay, arrival);
 }
 
 //[[Rcpp::export]]
-void seize_(SEXP name_, SEXP arrival_, SEXP amount_) {
-  XPtr<Arrival> arrival(arrival_);
+int seize_(SEXP name_, SEXP arrival_, SEXP amount_) {
   std::string name = as<std::string>(name_);
+  Arrival* arrival = (Arrival *)as<long int>(arrival_);
   int amount = as<int>(amount_);
   
-  arrival->sim->get_resource(name)->seize(arrival, amount);
+  return arrival->sim->get_resource(name)->seize(arrival, amount);
 }
 
 //[[Rcpp::export]]
-void release_(SEXP name_, SEXP arrival_, SEXP amount_) {
-  XPtr<Arrival> arrival(arrival_);
+int release_(SEXP name_, SEXP arrival_, SEXP amount_) {
   std::string name = as<std::string>(name_);
+  Arrival* arrival = (Arrival *)as<long int>(arrival_);
   int amount = as<int>(amount_);
   
-  arrival->sim->get_resource(name)->release(arrival, amount);
+  return arrival->sim->get_resource(name)->release(arrival, amount);
 }
 
 //[[Rcpp::export]]
