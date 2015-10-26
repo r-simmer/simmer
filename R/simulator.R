@@ -33,17 +33,11 @@ Simmer <- R6Class("Simmer",
     run = function(until=1000, parallel=0) {
       until <- evaluate_value(until)
       if(!is.finite(until)) until <- 1000
+      
+      # TODO parallelize in C++
       parallel <- evaluate_value(parallel)
       
-      if (parallel) {
-        require(doParallel)
-        cl <- makeCluster(parallel, outfile="")
-        registerDoParallel(cl)
-        private$sim_objs <- 
-          foreach (sim=iter(private$sim_objs)) %dopar%
-            run_(sim, until)
-        stopCluster(cl)
-      } else for (sim in private$sim_objs)
+      for (sim in private$sim_objs)
         run_(sim, until)
     },
     

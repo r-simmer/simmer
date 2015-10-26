@@ -53,7 +53,7 @@ void run_(SEXP sim_, SEXP until_) {
   double until = as<double>(until_);
   
   try {
-    sim->run(until);  
+    sim->run(until);
   } catch (std::exception &ex) {  
     forward_exception_to_r(ex);
   } catch(...) { 
