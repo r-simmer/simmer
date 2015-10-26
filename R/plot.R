@@ -7,13 +7,13 @@
 #' @param types the parts of the resource to be plotted
 #' @param steps adds the changes in the resource usage
 #' @param smooth_line adds a smoothline, usefull if a lot of different replications are plotted
+#' @importFrom magrittr %>%
 #' @export
 plot_resource_usage <- function(simmer, resource_name, replication_n=FALSE,
                                 types=c("queue", "server", "system"), steps = FALSE, smooth_line=FALSE){
-  
-  require(ggplot2)
-  require(dplyr)
-  require(tidyr)
+  requireNamespace("ggplot2")
+  requireNamespace("dplyr")
+  requireNamespace("tidyr")
   
   monitor_data <- simmer$get_mon_resources() %>% 
     filter(resource == resource_name) %>%
@@ -75,12 +75,13 @@ plot_resource_usage <- function(simmer, resource_name, replication_n=FALSE,
 #' plot the utilization of specified resources in the simulation
 #' @param simmer the simulation environment
 #' @param resources a character vector with at least one resource specified - e.g. "c('res1','res2')"
+#' @importFrom magrittr %>%
 #' @export
 plot_resource_utilization <- function(simmer, resources){
-  require(ggplot2)
-  require(scales)
-  require(dplyr)
-  require(tidyr)
+  requireNamespace("ggplot2")
+  requireNamespace("dplyr")
+  requireNamespace("tidyr")
+  requireNamespace("scales")
   
   monitor_data <- simmer$get_mon_resources() %>% 
     filter(resource %in% resources) %>%
@@ -118,11 +119,12 @@ plot_resource_utilization <- function(simmer, resources){
 #' plot the evolution of arrival related times (flow, activity and waiting time)
 #' @param simmer the simulation environment
 #' @param type one of c("flow_time","activity_time","waiting_time")
+#' @importFrom magrittr %>%
 #' @export
 plot_evolution_arrival_times <- function(simmer, type=c("flow_time","activity_time","waiting_time")){
-  require(dplyr)
-  require(ggplot2)
-  require(tidyr)
+  requireNamespace("ggplot2")
+  requireNamespace("dplyr")
+  requireNamespace("tidyr")
   
   monitor_data <- simmer$get_mon_arrivals() %>%
     mutate(flow_time = end_time - start_time,
