@@ -52,8 +52,8 @@ void run_(SEXP sim_, SEXP until_) {
 void add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_event_, SEXP dist_) {
   XPtr<Simulator> sim(sim_);
   std::string name_prefix = as<std::string>(name_prefix_);
-  Rcpp::Environment* first_event = as<Rcpp::Environment*>(first_event_);
-  Rcpp::Function* dist = as<Rcpp::Function*>(dist_);
+  Environment first_event(first_event_);
+  Function dist(dist_);
   
   sim->add_generator(name_prefix, first_event, dist);
 }
@@ -64,6 +64,7 @@ void add_resource_(SEXP sim_, SEXP name_, SEXP capacity_, SEXP queue_size_, SEXP
   std::string name = as<std::string>(name_);
   int capacity = as<int>(capacity_);
   int queue_size = as<int>(queue_size_);
+  bool mon = as<bool>(mon_);
   
   sim->add_resource(name, capacity, queue_size, mon);
 }
