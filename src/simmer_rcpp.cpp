@@ -62,13 +62,14 @@ void run_(SEXP sim_, SEXP until_) {
 }
 
 //[[Rcpp::export]]
-void add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_event_, SEXP dist_) {
+void add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_event_, SEXP dist_, SEXP mon_) {
   XPtr<Simulator> sim(sim_);
   std::string name_prefix = as<std::string>(name_prefix_);
   Environment first_event(first_event_);
   Function dist(dist_);
+  bool mon = as<bool>(mon_);
   
-  sim->add_generator(name_prefix, first_event, dist);
+  sim->add_generator(name_prefix, first_event, dist, mon);
 }
 
 //[[Rcpp::export]]

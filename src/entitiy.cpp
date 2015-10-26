@@ -24,14 +24,14 @@ void Generator::activate() {
   double delay = fabs(Rcpp::as<double>(dist()));
   char numstr[21];
   sprintf(numstr, "%d", count);
-  Arrival* arrival = new Arrival(sim, name + numstr, first_event);
+  Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_event);
   sim->schedule(delay, this);
   sim->schedule(delay, arrival);
   count++;
 }
 
 int Resource::seize(Arrival* arrival, int amount) {
-  if (mon) observe(sim->now());
+  if (is_monitored()) observe(sim->now());
   
   if (room_in_server(amount)) {
     server_count += amount;
@@ -47,7 +47,7 @@ int Resource::seize(Arrival* arrival, int amount) {
 }
 
 int Resource::release(Arrival* arrival, int amount) {
-  if (mon) observe(sim->now());
+  if (is_monitored()) observe(sim->now());
   
   // departure
   server_count -= amount;

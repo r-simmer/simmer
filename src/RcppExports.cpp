@@ -76,15 +76,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // add_generator_
-void add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_event_, SEXP dist_);
-RcppExport SEXP simmer_add_generator_(SEXP sim_SEXP, SEXP name_prefix_SEXP, SEXP first_event_SEXP, SEXP dist_SEXP) {
+void add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_event_, SEXP dist_, SEXP mon_);
+RcppExport SEXP simmer_add_generator_(SEXP sim_SEXP, SEXP name_prefix_SEXP, SEXP first_event_SEXP, SEXP dist_SEXP, SEXP mon_SEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type name_prefix_(name_prefix_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type first_event_(first_event_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type dist_(dist_SEXP);
-    add_generator_(sim_, name_prefix_, first_event_, dist_);
+    Rcpp::traits::input_parameter< SEXP >::type mon_(mon_SEXP);
+    add_generator_(sim_, name_prefix_, first_event_, dist_, mon_);
     return R_NilValue;
 END_RCPP
 }

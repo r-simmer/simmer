@@ -25,8 +25,8 @@ run_ <- function(sim_, until_) {
     invisible(.Call('simmer_run_', PACKAGE = 'simmer', sim_, until_))
 }
 
-add_generator_ <- function(sim_, name_prefix_, first_event_, dist_) {
-    invisible(.Call('simmer_add_generator_', PACKAGE = 'simmer', sim_, name_prefix_, first_event_, dist_))
+add_generator_ <- function(sim_, name_prefix_, first_event_, dist_, mon_) {
+    invisible(.Call('simmer_add_generator_', PACKAGE = 'simmer', sim_, name_prefix_, first_event_, dist_, mon_))
 }
 
 add_resource_ <- function(sim_, name_, capacity_, queue_size_, mon_) {

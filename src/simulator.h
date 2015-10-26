@@ -80,13 +80,13 @@ public:
   void run(double until);
   
   void add_generator(std::string name_prefix, 
-                                Rcpp::Environment first_event, Rcpp::Function dist) {
-    Generator* gen = new Generator(this, name_prefix, first_event, dist);
+                     Rcpp::Environment first_event, Rcpp::Function dist, bool mon) {
+    Generator* gen = new Generator(this, name_prefix, mon, first_event, dist);
     generator_vec.push_back(gen);
   }
   
   void add_resource(std::string name, int capacity, int queue_size, bool mon) {
-    Resource* res = new Resource(this, name, capacity, queue_size, mon);
+    Resource* res = new Resource(this, name, mon, capacity, queue_size);
     resource_map[name] = res;
   }
   

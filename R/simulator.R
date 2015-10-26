@@ -61,15 +61,16 @@ Simmer <- R6Class("Simmer",
       invisible(self)
     },
     
-    add_generator = function(name_prefix, trajectory, dist) {
+    add_generator = function(name_prefix, trajectory, dist, mon=T) {
       if (!inherits(trajectory, "Trajectory"))
         stop("not a trajectory")
       if (!is.function(dist))
         stop(paste0(self$name, ": dist must be callable"))
       name_prefix <- evaluate_value(name_prefix)
+      mon <- evaluate_value(mon)
       
       for (sim in private$sim_objs)
-        add_generator_(sim, name_prefix, trajectory$get_head(), dist)
+        add_generator_(sim, name_prefix, trajectory$get_head(), dist, mon)
       invisible(self)
     },
     

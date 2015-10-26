@@ -10,13 +10,18 @@ class Entity {
 public:
   Simulator* sim;
   std::string name;
-	Entity(Simulator* sim, std::string name): sim(sim), name(name) {}
+	Entity(Simulator* sim, std::string name, bool mon): 
+	  sim(sim), name(name), mon(mon) {}
 	virtual ~Entity(){}
+	inline bool is_monitored() { return mon; }
+	
+private:
+  bool mon;
 };
 
 class Process: public Entity {
 public:
-  Process(Simulator* sim, std::string name): Entity(sim, name) {}
+  Process(Simulator* sim, std::string name, bool mon): Entity(sim, name, mon) {}
   virtual ~Process(){}
   virtual void activate() { throw std::runtime_error("method not implemented"); }
   inline virtual bool is_generator() { return 0; }
@@ -27,8 +32,8 @@ public:
   double start_time;
   double activity_time;
   
-  Arrival(Simulator* sim, std::string name, Rcpp::Environment first_event):
-    Process(sim, name), start_time(-1), activity_time(0), event(first_event) {}
+  Arrival(Simulator* sim, std::string name, bool mon, Rcpp::Environment first_event):
+    Process(sim, name, mon), start_time(-1), activity_time(0), event(first_event) {}
   
   void activate();
   
@@ -38,9 +43,9 @@ private:
 
 class Generator: public Process {
 public:
-  Generator(Simulator* sim, std::string name_prefix, 
+  Generator(Simulator* sim, std::string name_prefix, bool mon,
             Rcpp::Environment first_event, Rcpp::Function dist): 
-    Process(sim, name_prefix), count(0), first_event(first_event), dist(dist) {}
+    Process(sim, name_prefix, mon), count(0), first_event(first_event), dist(dist) {}
   
   void activate();
   inline bool is_generator() { return 1; }
@@ -60,9 +65,9 @@ public:
 
 class Resource: public Entity {
 public:
-  Resource(Simulator* sim, std::string name, int capacity, int queue_size, bool mon): 
-    Entity(sim, name), server_count(0), capacity(capacity), queue_count(0), 
-    queue_size(queue_size), mon(mon) {
+  Resource(Simulator* sim, std::string name, bool mon, int capacity, int queue_size): 
+    Entity(sim, name, mon), server_count(0), capacity(capacity), queue_count(0), 
+    queue_size(queue_size) {
     res_stats = new ResStats();
   }
   
@@ -104,7 +109,6 @@ private:
   std::queue<std::pair<Arrival*, int> > queue;
   int queue_count;
   int queue_size;
-  bool mon;
   ResStats* res_stats;
   
   inline bool room_in_server(int amount) { 
