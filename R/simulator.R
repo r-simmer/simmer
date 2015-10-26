@@ -116,102 +116,10 @@ Simmer <- R6Class("Simmer",
   )
 )
 
-Simulator <- R6Class("Simulator",
-  public = list(
-    name = NA,
-    verbose = NA,
-    
-    initialize = function(name, verbose) {
-      self$name <- name
-      self$verbose <- verbose
-      private$now_ <- 0
-      private$queue <- PriorityQueue$new()
-      private$gen <- list()
-      private$res <- list()
-      private$arrival_stats <- list(
-        name = character(),
-        start_time = numeric(),
-        end_time = numeric(),
-        activity_time = numeric(),
-        finished = numeric()
-      )
-    },
-    
-    reset = function() {
-      private$now_ <- 0
-      private$queue <- PriorityQueue$new()
-      for (res in private$res)
-        res$reset()
-      private$arrival_stats <- list(
-        name = character(),
-        start_time = numeric(),
-        end_time = numeric(),
-        activity_time = numeric(),
-        finished = numeric()
-      )
-    },
-    
-    schedule = function(delay, entity) {
-      private$queue$push(self$now + delay, entity)
-    },
-    
-    run = function(until) {
-      # Initialisation
-      if (!private$queue$length()) {
-        if (!length(private$gen))
-          stop("no generators defined")
-        for (gen in private$gen)
-          gen$activate()
-      }
-    
-      # Loop
-      while (self$now < until) {
-        entity <- private$queue$pop()
-        private$now_ <- entity[[1]]
-        entity[[2]]$activate()
-      }
-      return(self)
-    },
-    
-    add_resource = function(name, capacity, queue_size, mon) {
-      res <- Resource$new(self, name, capacity, queue_size, mon)
-      private$res[[name]] <- res
-    },
-    
-    get_resource = function(name) { 
-      res <- private$res[[name]]
-      if (is.null(res)) stop("resource not found")
-      return(res)
-    },
-    
-    add_generator = function(name_prefix, first_event, dist) {
-      gen <- Generator$new(self, name_prefix, first_event, dist)
-      private$gen <- c(private$gen, gen)
-    },
-    
-    notify_end = function(arrival, finished) {
-      private$arrival_stats[[1]] <- c(private$arrival_stats[[1]], arrival$name)
-      private$arrival_stats[[2]] <- c(private$arrival_stats[[2]], arrival$start_time)
-      private$arrival_stats[[3]] <- c(private$arrival_stats[[3]], self$now)
-      private$arrival_stats[[4]] <- c(private$arrival_stats[[4]], arrival$activity_time)
-      private$arrival_stats[[5]] <- c(private$arrival_stats[[5]], finished)
-      remove(arrival)
-    },
-    
-    get_mon_arrivals = function() { private$arrival_stats },
-    
-    get_mon_resource = function(name) { private$res[[name]]$get_observations() }
-  ),
-  
-  active = list(
-    now = function() { private$now_ }
-  ),
-  
-  private = list(
-    now_ = NA,
-    queue = NULL,
-    gen = NULL,
-    res = NULL,
-    arrival_stats = NA
-  )
-)
+evaluate_value<-function(value){
+  tryCatch(
+    {
+      abs(parse(text=value))
+    }, 
+    error = function(err) value)
+}
