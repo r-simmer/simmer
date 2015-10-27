@@ -1,10 +1,10 @@
 ---
-title: "simmer"
 output:
   html_fragment:
     keep_md: true
+    self_contained: no
 ---
-[![Build Status](https://travis-ci.org/Bart6114/simmer.svg?branch=master)](https://travis-ci.org/Bart6114/simmer)
+# simmer [![Build Status](https://travis-ci.org/Bart6114/simmer.svg?branch=master)](https://travis-ci.org/Bart6114/simmer)
 
 *by Bart Smeets (bartsmeets86@gmail.com) & Iñaki Ucar (i.ucar86@gmail.com)*
 
@@ -39,15 +39,15 @@ Set-up a simple trajectory. Let's say we want to simulate a ambulatory consultat
 
 ```{r}
 t0 <- Trajectory$new("my trajectory") $
-  ## add an intake event 
+  ## add an intake activity 
   seize("nurse", 1) $
   timeout(function() rnorm(1, 15)) $
   release("nurse", 1) $
-  ## add a consultation event
+  ## add a consultation activity
   seize("doctor", 1) $
   timeout(function() rnorm(1, 20)) $
   release("doctor", 1) $
-  ## add a planning event
+  ## add a planning activity
   seize("administration", 1) $
   timeout(function() rnorm(1, 5)) $
   release("administration", 1)
@@ -86,9 +86,9 @@ simmer$reset() $
   run(until=120, parallel=2)
 ```
 
-### Optional events
+### Optional activities
 
-The *branch method* introduces the possibility of introducing probability in whether or not to include a branch in a trajectory. The following example shows how a trajectory can be build with a 50-50 chance for the arrival to undergo the second *time-out event*.
+The *branch method* introduces the possibility of introducing probability in whether or not to include a branch in a trajectory. The following example shows how a trajectory can be build with a 50-50 chance for the arrival to undergo the second *time-out activity*.
 
 ```{r}
 t1 <- Trajectory$new("trajectory with a branch") $
@@ -103,7 +103,7 @@ t1 <- Trajectory$new("trajectory with a branch") $
 
 ```
 
-The argument ```merge``` indicates whether the arrival must continue executing the events after the branch or not.
+The argument ```merge``` indicates whether the arrival must continue executing the activities after the branch or not.
 
 ### Resource utilization
 

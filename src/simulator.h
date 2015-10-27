@@ -80,8 +80,8 @@ public:
   void run(double until);
   
   void add_generator(std::string name_prefix, 
-                     Rcpp::Environment first_event, Rcpp::Function dist, bool mon) {
-    Generator* gen = new Generator(this, name_prefix, mon, first_event, dist);
+                     Rcpp::Environment first_activity, Rcpp::Function dist, bool mon) {
+    Generator* gen = new Generator(this, name_prefix, mon, first_activity, dist);
     generator_vec.push_back(gen);
   }
   

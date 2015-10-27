@@ -1,12 +1,12 @@
 require(R6)
 
-Event <- R6Class("Event",
+Activity <- R6Class("Activity",
   public = list(
     name = NA,
     resource = NA,
 
     show = function() {
-      cat(paste0("{ Event: ", self$name, " | "))
+      cat(paste0("{ Activity: ", self$name, " | "))
       for (i in names(private)) {
         if (i != "prob" && i != "ptr") {
           if (is.function(private[[i]]))
@@ -22,7 +22,7 @@ Event <- R6Class("Event",
   ),
   
   active = list(
-    next_event = function(ev) {
+    next_activity = function(ev) {
       if (missing(ev)) {
         if (is.null(private$ptr)) return(private$ptr)
         else return(sample(private$ptr, 1, prob=private$prob)[[1]])
@@ -39,7 +39,7 @@ Event <- R6Class("Event",
   )
 )
 
-SeizeEvent <- R6Class("SeizeEvent", inherit = Event,
+SeizeActivity <- R6Class("SeizeActivity", inherit = Activity,
   public = list(
     name = "Seize",
     
@@ -50,7 +50,7 @@ SeizeEvent <- R6Class("SeizeEvent", inherit = Event,
     
     run = function(parent) {
       ret <- seize_(self$resource, parent, private$amount)
-      if (!is.null(self$next_event) && !ret) 
+      if (!is.null(self$next_activity) && !ret) 
         schedule_(0, parent)
       return(0)
     }
@@ -61,7 +61,7 @@ SeizeEvent <- R6Class("SeizeEvent", inherit = Event,
   )
 )
 
-ReleaseEvent <- R6Class("ReleaseEvent", inherit = Event,
+ReleaseActivity <- R6Class("ReleaseActivity", inherit = Activity,
   public = list(
     name = "Release",
     
@@ -72,7 +72,7 @@ ReleaseEvent <- R6Class("ReleaseEvent", inherit = Event,
     
     run = function(parent) {
       ret <- release_(self$resource, parent, private$amount)
-      if (!is.null(self$next_event) && !ret) 
+      if (!is.null(self$next_activity) && !ret) 
         schedule_(0, parent)
       return(0)
     }
@@ -83,7 +83,7 @@ ReleaseEvent <- R6Class("ReleaseEvent", inherit = Event,
   )
 )
 
-TimeoutEvent <- R6Class("TimeoutEvent", inherit = Event,
+TimeoutActivity <- R6Class("TimeoutActivity", inherit = Activity,
   public = list(
     name = "Timeout",
     
@@ -96,7 +96,7 @@ TimeoutEvent <- R6Class("TimeoutEvent", inherit = Event,
     
     run = function(parent) {
       delay <- private$duration()
-      if (!is.null(self$next_event))
+      if (!is.null(self$next_activity))
         schedule_(delay, parent)
       return(delay)
     }

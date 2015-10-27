@@ -1,13 +1,13 @@
 t1 <- Trajectory$new("my trajectory") $
-  ## add an intake event 
+  ## add an intake activity
   seize("nurse", 1) $
   timeout(function() rnorm(1, 15)) $
   release("nurse", 1) $
-  ## add a consultation event
+  ## add a consultation activity
   seize("doctor", 1) $
   timeout(function() rnorm(1, 20)) $
   release("doctor", 1) $
-  ## add a planning event
+  ## add a planning activity
   seize("administration", 1) $
   timeout(function() rnorm(1, 5)) $
   release("administration", 1)
@@ -19,24 +19,27 @@ simmer <- Simmer$new("SuperDuperSim", rep=100, verbose=F) $
   add_generator("patient", t1, function() rnorm(1, 10, 2))
 simmer$run(80)
 
+arrival_stats <- simmer$get_mon_arrivals()
+resource_stats <- simmer$get_mon_resources()
+
 plot_resource_usage(simmer, "doctor", 6, types="server", steps=T)
 plot_resource_utilization(simmer, c("nurse", "doctor","administration"))
 plot_evolution_arrival_times(simmer, type = "flow_time")
 
 #################################################################
 
+system.time({
 mm1 <- Trajectory$new() $
   seize("server", 1) $
-  timeout(function() rexp(1, 2)) $
+  timeout(function() rexp(1, 66)) $
   release("server", 1)
 
-simmer <- Simmer$new(rep=2, verbose=F) $
+simmer <- Simmer$new(rep=1, verbose=F) $
   add_resource("server", 1) $
-  add_generator("customer", mm1, function() rexp(1, 1))
+  add_generator("customer", mm1, function() rexp(1, 60), mon=F)
 simmer$run(10000, parallel=0)
-
-arrival_stats <- simmer$get_mon_arrivals()
-resource_stats <- simmer$get_mon_resources()
+})
+# 115 seconds (Python: ~ 6 seconds)
 
 plot_resource_usage(simmer, "server")
 
@@ -59,8 +62,8 @@ t0 <- Trajectory$new("my trajectory") $
   release("server", 1)
 
 a <- t0$get_head()
-a$next_event
-a <- a$next_event
+a$next_activity
+a <- a$next_activity
 
 t0$show()
 

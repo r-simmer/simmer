@@ -7,15 +7,15 @@ inline void Arrival::activate() {
   if (sim->verbose)
     Rcpp::Rcout <<
       "rep: " << sim->n << " | " << "time: " << sim->now() << " | " <<
-      "arrival: " << name << " | " << "event: " << 
-      Rcpp::as<std::string>(event["name"]) << "(" <<
-      Rcpp::as<std::string>(event["resource"]) << ")" << std::endl;
+      "arrival: " << name << " | " << "activity: " << 
+      Rcpp::as<std::string>(activity["name"]) << "(" <<
+      Rcpp::as<std::string>(activity["resource"]) << ")" << std::endl;
   
-  Rcpp::Function run(event["run"]);
+  Rcpp::Function run(activity["run"]);
   activity_time += Rcpp::as<double>(run((long int)this));
   
-  if (Rf_isEnvironment(event["next_event"]))
-    event = event["next_event"];
+  if (Rf_isEnvironment(activity["next_activity"]))
+    activity = activity["next_activity"];
   else
     sim->notify_end(this, 1);
 }
@@ -24,7 +24,7 @@ void Generator::activate() {
   double delay = fabs(Rcpp::as<double>(dist()));
   char numstr[21];
   sprintf(numstr, "%d", count);
-  Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_event);
+  Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_activity);
   sim->schedule(delay, this);
   sim->schedule(delay, arrival);
   count++;

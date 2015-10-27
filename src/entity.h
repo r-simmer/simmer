@@ -32,27 +32,27 @@ public:
   double start_time;
   double activity_time;
   
-  Arrival(Simulator* sim, std::string name, bool mon, Rcpp::Environment first_event):
-    Process(sim, name, mon), start_time(-1), activity_time(0), event(first_event) {}
+  Arrival(Simulator* sim, std::string name, bool mon, Rcpp::Environment first_activity):
+    Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity) {}
   
   void activate();
   
 private:
-  Rcpp::Environment event;
+  Rcpp::Environment activity;
 };
 
 class Generator: public Process {
 public:
   Generator(Simulator* sim, std::string name_prefix, bool mon,
-            Rcpp::Environment first_event, Rcpp::Function dist): 
-    Process(sim, name_prefix, mon), count(0), first_event(first_event), dist(dist) {}
+            Rcpp::Environment first_activity, Rcpp::Function dist): 
+    Process(sim, name_prefix, mon), count(0), first_activity(first_activity), dist(dist) {}
   
   void activate();
   inline bool is_generator() { return 1; }
   
 private:
   int count;
-  Rcpp::Environment first_event;
+  Rcpp::Environment first_activity;
   Rcpp::Function dist;
 };
 

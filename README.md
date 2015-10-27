@@ -1,5 +1,4 @@
-# simmer
-[![Build Status](https://travis-ci.org/Bart6114/simmer.svg?branch=master)](https://travis-ci.org/Bart6114/simmer)
+# simmer [![Build Status](https://travis-ci.org/Bart6114/simmer.svg?branch=master)](https://travis-ci.org/Bart6114/simmer)
 
 *by Bart Smeets (bartsmeets86@gmail.com) & Iñaki Ucar (i.ucar86@gmail.com)*
 
@@ -34,15 +33,15 @@ Set-up a simple trajectory. Let's say we want to simulate a ambulatory consultat
 
 ```r
 t0 <- Trajectory$new("my trajectory") $
-  ## add an intake event 
+  ## add an intake activity 
   seize("nurse", 1) $
   timeout(function() rnorm(1, 15)) $
   release("nurse", 1) $
-  ## add a consultation event
+  ## add a consultation activity
   seize("doctor", 1) $
   timeout(function() rnorm(1, 20)) $
   release("doctor", 1) $
-  ## add a planning event
+  ## add a planning activity
   seize("administration", 1) $
   timeout(function() rnorm(1, 5)) $
   release("administration", 1)
@@ -85,9 +84,9 @@ simmer$reset() $
   run(until=120, parallel=2)
 ```
 
-### Optional events
+### Optional activities
 
-The *branch method* introduces the possibility of introducing probability in whether or not to include a branch in a trajectory. The following example shows how a trajectory can be build with a 50-50 chance for the arrival to undergo the second *time-out event*.
+The *branch method* introduces the possibility of introducing probability in whether or not to include a branch in a trajectory. The following example shows how a trajectory can be build with a 50-50 chance for the arrival to undergo the second *time-out activity*.
 
 
 ```r
@@ -102,7 +101,7 @@ t1 <- Trajectory$new("trajectory with a branch") $
   release("server", 1)
 ```
 
-The argument ```merge``` indicates whether the arrival must continue executing the events after the branch or not.
+The argument ```merge``` indicates whether the arrival must continue executing the activities after the branch or not.
 
 ### Resource utilization
 
@@ -144,12 +143,12 @@ head(
 
 ```
 ##       time server queue system resource replication
-## 1 10.72273      0     0      0    nurse           1
-## 2 23.71142      1     0      1    nurse           1
-## 3 25.65425      1     1      2    nurse           1
-## 4 31.91200      1     0      1    nurse           1
-## 5 39.56192      1     1      2    nurse           1
-## 6 39.91773      1     0      1    nurse           1
+## 1 11.79944      0     0      0    nurse           1
+## 2 19.22237      1     0      1    nurse           1
+## 3 27.37484      1     1      2    nurse           1
+## 4 29.50780      1     0      1    nurse           1
+## 5 40.57005      1     1      2    nurse           1
+## 6 42.65353      1     0      1    nurse           1
 ```
 
 ### Flow time
@@ -176,12 +175,12 @@ head(
 
 ```
 ##        name start_time  end_time activity_time finished replication
-## 1 patient13  10.722730  52.14979      41.42706        1           1
-## 2 patient14  23.711416  67.84983      42.19558        1           1
-## 3 patient15  31.912001  77.87165      38.30973        1           1
-## 4 patient16  39.917731  95.15135      41.47199        1           1
-## 5 patient17  49.069160 109.31771      39.40658        1           1
-## 6 patient14   9.880601  48.85323      38.97263        1           2
+## 1 patient12   11.79944  51.52696      39.72753     TRUE           1
+## 2 patient13   19.22237  65.72227      38.34743     TRUE           1
+## 3 patient14   29.50780  77.37782      36.80777     TRUE           1
+## 4 patient15   42.65353  94.06661      38.67649     TRUE           1
+## 5 patient16   52.08704 111.67755      41.21065     TRUE           1
+## 6 patient12   10.63929  50.44282      39.80353     TRUE           2
 ```
 
 **DOCUMENTATION TO BE CONTINUED**
