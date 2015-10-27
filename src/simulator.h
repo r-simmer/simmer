@@ -80,7 +80,7 @@ public:
   }
   
   /**
-   * Reset the simulation: time, event queue, resources and statistics.
+   * Reset the simulation: time, event queue, resources, generators and statistics.
    */
   void reset() {
     now_ = 0;
@@ -92,6 +92,8 @@ public:
     }
     for (ResMap::iterator itr = resource_map.begin(); itr != resource_map.end(); ++itr)
       itr->second->reset();
+    for (GenVec::iterator itr = generator_vec.begin(); itr != generator_vec.end(); ++itr)
+      (*itr)->reset();
     delete arrival_stats;
     arrival_stats = new ArrStats();
   }

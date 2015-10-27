@@ -37,7 +37,7 @@ mm1 <- Trajectory$new() $
 simmer <- Simmer$new(rep=1, verbose=F) $
   add_resource("server", 1) $
   add_generator("customer", mm1, function() rexp(1, 60), mon=F)
-simmer$run(10000, parallel=0)
+simmer$run(10000)
 })
 # 115 seconds (Python: ~ 6 seconds, pure R6: ~ 15300)
 

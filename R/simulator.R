@@ -37,12 +37,9 @@ Simmer <- R6Class("Simmer",
       invisible(self)
     },
     
-    run = function(until=1000, parallel=0) {
+    run = function(until=1000) {
       until <- evaluate_value(until)
       if(!is.finite(until)) until <- 1000
-      
-      # TODO parallelize in C++
-      parallel <- evaluate_value(parallel)
       
       for (sim in private$sim_objs)
         run_(sim, until)

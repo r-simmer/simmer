@@ -77,6 +77,11 @@ public:
             Rcpp::Environment first_activity, Rcpp::Function dist): 
     Process(sim, name_prefix, mon), count(0), first_activity(first_activity), dist(dist) {}
   
+  /**
+   * Reset the generator: counter.
+   */
+  void reset() { count = 0; }
+  
   void activate();
   inline bool is_generator() { return 1; }
   inline int n_generated() { return count; }

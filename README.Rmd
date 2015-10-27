@@ -79,11 +79,11 @@ It is possible to resume the execution simply by specifying a longer run-time. B
 simmer$run(until=120)
 ```
 
-Also, if the simulation is heavy and you want to parallelize the execution of replicas, you can add the argument ```parallel=n```, where ```n``` is the number of threads required (this functionality requires the package [doParallel](https://cran.r-project.org/web/packages/doParallel/)). Let's restart the execution from the beginning with 2 threads.
+Also, you can reset the simulation, flush all results, resources and generators, and restart from the beginning.
 
 ```{r, message=FALSE}
 simmer$reset() $
-  run(until=120, parallel=2)
+  run(until=80)
 ```
 
 ### Optional activities

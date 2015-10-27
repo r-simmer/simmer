@@ -39,9 +39,9 @@
 <pre class="r"><code>simmer$run(until=80)</code></pre>
 <p>It is possible to resume the execution simply by specifying a longer run-time. Below, we continue the execution until 120 time units.</p>
 <pre class="r"><code>simmer$run(until=120)</code></pre>
-<p>Also, if the simulation is heavy and you want to parallelize the execution of replicas, you can add the argument <code>parallel=n</code>, where <code>n</code> is the number of threads required (this functionality requires the package <a href="https://cran.r-project.org/web/packages/doParallel/">doParallel</a>). Let’s restart the execution from the beginning with 2 threads.</p>
+<p>Also, you can reset the simulation, flush all results, resources and generators, and restart from the beginning.</p>
 <pre class="r"><code>simmer$reset() $
-  run(until=120, parallel=2)</code></pre>
+  run(until=80)</code></pre>
 <div id="optional-activities" class="section level3">
 <h3>Optional activities</h3>
 <p>The <em>branch method</em> introduces the possibility of introducing probability in whether or not to include a branch in a trajectory. The following example shows how a trajectory can be build with a 50-50 chance for the arrival to undergo the second <em>time-out activity</em>.</p>
@@ -71,13 +71,13 @@
 <pre class="r"><code>head(
   simmer$get_mon_resources()
   )</code></pre>
-<pre><code>##       time server queue system resource replication
-## 1 11.79944      0     0      0    nurse           1
-## 2 19.22237      1     0      1    nurse           1
-## 3 27.37484      1     1      2    nurse           1
-## 4 29.50780      1     0      1    nurse           1
-## 5 40.57005      1     1      2    nurse           1
-## 6 42.65353      1     0      1    nurse           1</code></pre>
+<pre><code>##        time server queue system resource replication
+## 1  9.632495      0     0      0    nurse           1
+## 2 19.996576      1     0      1    nurse           1
+## 3 24.903438      1     1      2    nurse           1
+## 4 34.857134      1     0      1    nurse           1
+## 5 39.357929      1     1      2    nurse           1
+## 6 46.131391      1     0      1    nurse           1</code></pre>
 </div>
 <div id="flow-time" class="section level3">
 <h3>Flow time</h3>
@@ -89,13 +89,13 @@
 <pre class="r"><code>head(
   simmer$get_mon_arrivals()
   )</code></pre>
-<pre><code>##        name start_time  end_time activity_time finished replication
-## 1 patient12   11.79944  51.52696      39.72753     TRUE           1
-## 2 patient13   19.22237  65.72227      38.34743     TRUE           1
-## 3 patient14   29.50780  77.37782      36.80777     TRUE           1
-## 4 patient15   42.65353  94.06661      38.67649     TRUE           1
-## 5 patient16   52.08704 111.67755      41.21065     TRUE           1
-## 6 patient12   10.63929  50.44282      39.80353     TRUE           2</code></pre>
+<pre><code>##       name start_time end_time activity_time finished replication
+## 1 patient0   9.632495 48.66433      39.03183     TRUE           1
+## 2 patient1  19.996576 64.39549      39.49206     TRUE           1
+## 3 patient2  34.857134 78.29535      38.93742     TRUE           1
+## 4 patient0  10.414002 52.19673      41.78272     TRUE           2
+## 5 patient1  21.437187 66.46032      41.96828     TRUE           2
+## 6 patient2  28.745192 81.79729      39.55038     TRUE           2</code></pre>
 <p><strong>DOCUMENTATION TO BE CONTINUED</strong></p>
 </div>
 </div>
