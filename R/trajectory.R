@@ -8,9 +8,18 @@ require(R6)
 #' @format An \code{\link{R6Class}} generator object
 #' @examples
 #' t0 <- Trajectory$new("my trajectory") $
-#'   seize("server", 1) $
-#'   timeout(function() rexp(1, 1)) $
-#'   release("server", 1)
+#'   ## add an intake activity
+#'   seize("nurse", 1) $
+#'   timeout(function() rnorm(1, 15)) $
+#'   release("nurse", 1) $
+#'   ## add a consultation activity
+#'   seize("doctor", 1) $
+#'   timeout(function() rnorm(1, 20)) $
+#'   release("doctor", 1) $
+#'   ## add a planning activity
+#'   seize("administration", 1) $
+#'   timeout(function() rnorm(1, 5)) $
+#'   release("administration", 1)
 #' @import R6
 #' @export
 Trajectory <- R6Class("Trajectory",

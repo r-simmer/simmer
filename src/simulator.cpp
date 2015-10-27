@@ -27,4 +27,5 @@ void Simulator::run(double until) {
     ev->process->activate();
     delete ev;
   }
+  // ... and that's it! :D
 }

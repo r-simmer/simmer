@@ -39,7 +39,7 @@ simmer <- Simmer$new(rep=1, verbose=F) $
   add_generator("customer", mm1, function() rexp(1, 60), mon=F)
 simmer$run(10000, parallel=0)
 })
-# 115 seconds (Python: ~ 6 seconds)
+# 115 seconds (Python: ~ 6 seconds, pure R6: ~ 15300)
 
 plot_resource_usage(simmer, "server")
 

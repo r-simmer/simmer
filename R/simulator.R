@@ -6,6 +6,13 @@ require(R6)
 #'
 #' @field name environment name
 #' @format An \code{\link{R6Class}} generator object
+#' @examples
+#' simmer <- Simmer$new("SuperDuperSim", rep=100, verbose=F) $
+#'   add_resource("nurse", 1) $
+#'   add_resource("doctor", 2) $
+#'   add_resource("administration", 1) $
+#'   add_generator("patient", t1, function() rnorm(1, 10, 2))
+#' simmer$run(until=80)
 #' @useDynLib simmer
 #' @importFrom Rcpp evalCpp
 #' @import R6
