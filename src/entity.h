@@ -3,9 +3,13 @@
 
 #include <Rcpp.h>
 #include <queue>
+#include <map>
 
 // forward declaration
 class Simulator;
+
+typedef std::queue<std::pair<Rcpp::Function, int> > Queue;
+typedef std::map<Rcpp::Function, int> ServerMap;
 
 /** 
  *  Base class. Every element in a simulation model is an entity.
@@ -23,76 +27,6 @@ public:
 private:
   bool mon;
 };
-
-/** 
- * Abstract class for processes, active entities that need a method activate().
- */
-class Process: public Entity {
-public:
-  Process(Simulator* sim, std::string name, bool mon): Entity(sim, name, mon) {}
-  virtual ~Process(){}
-  virtual void activate() = 0;
-  inline virtual bool is_generator() { return 0; }
-};
-
-/** 
- *  Arrival process.
- */
-class Arrival: public Process {
-public:
-  double start_time;    /**< generation time */
-  double activity_time; /**< time spent doing something in the system (not waiting in a queue) */
-  
-  /**
-   * Constructor.
-   * @param sim             a pointer to the simulator
-   * @param name            the name
-   * @param mon             bool that indicates whether this entity must be monitored
-   * @param first_activity  the first activity of a user-defined R trajectory
-   */
-  Arrival(Simulator* sim, std::string name, bool mon, Rcpp::Environment first_activity):
-    Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity) {}
-  
-  void activate();
-  
-private:
-  Rcpp::Environment activity; /**< current activity from an R trajectory */
-};
-
-/**
- * Generation process.
- */
-class Generator: public Process {
-public:
-  
-  /**
-   * Constructor.
-   * @param sim             a pointer to the simulator
-   * @param name            the name
-   * @param mon             bool that indicates whether this entity must be monitored
-   * @param first_activity  the first activity of a user-defined R trajectory
-   * @param dist            an user-defined R function that provides random numbers
-   */
-  Generator(Simulator* sim, std::string name_prefix, bool mon,
-            Rcpp::Environment first_activity, Rcpp::Function dist): 
-    Process(sim, name_prefix, mon), count(0), first_activity(first_activity), dist(dist) {}
-  
-  /**
-   * Reset the generator: counter.
-   */
-  void reset() { count = 0; }
-  
-  void activate();
-  inline bool is_generator() { return 1; }
-  inline int n_generated() { return count; }
-  
-private:
-  int count;  /**< number of arrivals generated */
-  Rcpp::Environment first_activity;
-  Rcpp::Function dist;
-};
-
-typedef std::queue<std::pair<Arrival*, int> > Queue;
 
 /**
  * Resource statistics.
@@ -125,10 +59,8 @@ public:
   }
   
   ~Resource() {
-    while (!queue.empty()) {
-      delete queue.front().first;
-      queue.pop();
-    }
+    while (!queue.empty()) queue.pop();
+    server.clear();
     delete res_stats;
   }
   
@@ -138,31 +70,26 @@ public:
   void reset() {
     server_count = 0;
     queue_count = 0;
-    while (!queue.empty()) {
-      delete queue.front().first;
-      queue.pop();
-    }
+    while (!queue.empty()) queue.pop();
+    server.clear();
     delete res_stats;
     res_stats = new ResStats();
   }
   
   /**
-   * Seize resources.
-   * @param   arrival a pointer to the arrival trying to seize resources
+   * Request resources.
    * @param   amount  the amount of resources needed
    * 
    * @return  0 if success (serving now), failure otherwise (1: enqueued, -1: rejected)
    */
-  int seize(Arrival* arrival, int amount);
+  int request(int amount);
   
   /**
    * Release resources.
-   * @param   arrival a pointer to the arrival that releases resources
-   * @param   amount  the amount of resources released
    * 
-   * @return  0 if success (always)
+   * @return  0 if success
    */
-  int release(Arrival* arrival, int amount);
+  int release();
   
   /**
    * Gather resource statistics.
@@ -182,6 +109,7 @@ private:
   int queue_size;
   int server_count;     /**< number of arrivals being served */
   int queue_count;      /**< number of arrivals waiting */
+  ServerMap server;     /**< server container */
   Queue queue;          /**< queue container */
   ResStats* res_stats;  /**< resource statistics */
   

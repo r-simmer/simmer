@@ -6,14 +6,14 @@
 using namespace Rcpp;
 
 // Simulator__new
-SEXP Simulator__new(SEXP n_, SEXP verbose_);
-RcppExport SEXP simmer_Simulator__new(SEXP n_SEXP, SEXP verbose_SEXP) {
+SEXP Simulator__new(SEXP name_, SEXP verbose_);
+RcppExport SEXP simmer_Simulator__new(SEXP name_SEXP, SEXP verbose_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type n_(n_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
-    __result = Rcpp::wrap(Simulator__new(n_, verbose_));
+    __result = Rcpp::wrap(Simulator__new(name_, verbose_));
     return __result;
 END_RCPP
 }
@@ -27,43 +27,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// schedule_
-void schedule_(SEXP delay_, SEXP arrival_);
-RcppExport SEXP simmer_schedule_(SEXP delay_SEXP, SEXP arrival_SEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type delay_(delay_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type arrival_(arrival_SEXP);
-    schedule_(delay_, arrival_);
-    return R_NilValue;
-END_RCPP
-}
-// seize_
-int seize_(SEXP name_, SEXP arrival_, SEXP amount_);
-RcppExport SEXP simmer_seize_(SEXP name_SEXP, SEXP arrival_SEXP, SEXP amount_SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type arrival_(arrival_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
-    __result = Rcpp::wrap(seize_(name_, arrival_, amount_));
-    return __result;
-END_RCPP
-}
-// release_
-int release_(SEXP name_, SEXP arrival_, SEXP amount_);
-RcppExport SEXP simmer_release_(SEXP name_SEXP, SEXP arrival_SEXP, SEXP amount_SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type arrival_(arrival_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
-    __result = Rcpp::wrap(release_(name_, arrival_, amount_));
-    return __result;
-END_RCPP
-}
 // run_
 void run_(SEXP sim_, SEXP until_);
 RcppExport SEXP simmer_run_(SEXP sim_SEXP, SEXP until_SEXP) {
@@ -75,23 +38,9 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// add_generator_
-void add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_activity_, SEXP dist_, SEXP mon_);
-RcppExport SEXP simmer_add_generator_(SEXP sim_SEXP, SEXP name_prefix_SEXP, SEXP first_activity_SEXP, SEXP dist_SEXP, SEXP mon_SEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type name_prefix_(name_prefix_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type first_activity_(first_activity_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type dist_(dist_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type mon_(mon_SEXP);
-    add_generator_(sim_, name_prefix_, first_activity_, dist_, mon_);
-    return R_NilValue;
-END_RCPP
-}
-// add_resource_
-void add_resource_(SEXP sim_, SEXP name_, SEXP capacity_, SEXP queue_size_, SEXP mon_);
-RcppExport SEXP simmer_add_resource_(SEXP sim_SEXP, SEXP name_SEXP, SEXP capacity_SEXP, SEXP queue_size_SEXP, SEXP mon_SEXP) {
+// resource_
+void resource_(SEXP sim_, SEXP name_, SEXP capacity_, SEXP queue_size_, SEXP mon_);
+RcppExport SEXP simmer_resource_(SEXP sim_SEXP, SEXP name_SEXP, SEXP capacity_SEXP, SEXP queue_size_SEXP, SEXP mon_SEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
@@ -99,7 +48,41 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type capacity_(capacity_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type queue_size_(queue_size_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type mon_(mon_SEXP);
-    add_resource_(sim_, name_, capacity_, queue_size_, mon_);
+    resource_(sim_, name_, capacity_, queue_size_, mon_);
+    return R_NilValue;
+END_RCPP
+}
+// process_
+void process_(SEXP sim_, SEXP func_);
+RcppExport SEXP simmer_process_(SEXP sim_SEXP, SEXP func_SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type func_(func_SEXP);
+    process_(sim_, func_);
+    return R_NilValue;
+END_RCPP
+}
+// timeout_
+void timeout_(SEXP sim_, SEXP delay_);
+RcppExport SEXP simmer_timeout_(SEXP sim_SEXP, SEXP delay_SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type delay_(delay_SEXP);
+    timeout_(sim_, delay_);
+    return R_NilValue;
+END_RCPP
+}
+// request_
+void request_(SEXP sim_, SEXP name_, SEXP amount_);
+RcppExport SEXP simmer_request_(SEXP sim_SEXP, SEXP name_SEXP, SEXP amount_SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
+    request_(sim_, name_, amount_);
     return R_NilValue;
 END_RCPP
 }

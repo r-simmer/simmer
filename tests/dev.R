@@ -1,3 +1,4 @@
+library(simmer)
 
 arrival <- Simmer.make_closure(is_gen=F, {
   function(env, mu) {
