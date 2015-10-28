@@ -1,0 +1,108 @@
+require(R6)
+
+Activity <- R6Class("Activity",
+  public = list(
+    name = NA,
+    resource = NA,
+
+    show = function() {
+      cat(paste0("{ Activity: ", self$name, " | "))
+      for (i in names(private)) {
+        if (i != "prob" && i != "ptr") {
+          if (is.function(private[[i]]))
+            cat(i, ": function(), ", sep = "")
+          else
+            cat(i, ": ", private[[i]], ", ", sep = "")
+        }
+      }
+      cat("}")
+    },
+    
+    run = function(parent) { stop("not implemented") }
+  ),
+  
+  active = list(
+    next_activity = function(ev) {
+      if (missing(ev)) {
+        if (is.null(private$ptr)) return(private$ptr)
+        else return(sample(private$ptr, 1, prob=private$prob)[[1]])
+      } else {
+        private$ptr <- c(private$ptr, ev[1])
+        private$prob <- c(private$prob, ev[2])
+      }
+    }
+  ),
+  
+  private = list(
+    ptr = NULL,
+    prob = NULL
+  )
+)
+
+SeizeActivity <- R6Class("SeizeActivity", inherit = Activity,
+  public = list(
+    name = "Seize",
+    
+    initialize = function(resource, amount) {
+      self$resource <- evaluate_value(resource)
+      private$amount <- evaluate_value(amount)
+    },
+    
+    run = function(parent) {
+      ret <- seize_(self$resource, parent, private$amount)
+      if (!is.null(self$next_activity) && !ret) 
+        schedule_(0, parent)
+      return(0)
+    }
+  ),
+  
+  private = list(
+    amount = NA
+  )
+)
+
+ReleaseActivity <- R6Class("ReleaseActivity", inherit = Activity,
+  public = list(
+    name = "Release",
+    
+    initialize = function(resource, amount) {
+      self$resource <- evaluate_value(resource)
+      private$amount <- evaluate_value(amount)
+    },
+    
+    run = function(parent) {
+      ret <- release_(self$resource, parent, private$amount)
+      if (!is.null(self$next_activity) && !ret) 
+        schedule_(0, parent)
+      return(0)
+    }
+  ),
+  
+  private = list(
+    amount = NA
+  )
+)
+
+TimeoutActivity <- R6Class("TimeoutActivity", inherit = Activity,
+  public = list(
+    name = "Timeout",
+    
+    initialize = function(duration) {
+      self$resource <- "None"
+      if (!is.function(duration)) 
+        stop(paste0(self$name, ": duration must be callable"))
+      private$duration <- evaluate_value(duration)
+    },
+    
+    run = function(parent) {
+      delay <- private$duration()
+      if (!is.null(self$next_activity))
+        schedule_(delay, parent)
+      return(delay)
+    }
+  ),
+  
+  private = list(
+    duration = NULL
+  )
+)

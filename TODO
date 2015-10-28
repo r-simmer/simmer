@@ -1,5 +1,8 @@
-link timetable to resource availability
-add depletable resources
-stop the simulation mid-run, adjust some parameters and continue the simulation
-create release_all event
-inspect the queue
+ - Multithreading support for parallelization of replicas (wait for C++11?)
+
+OLD ITEMS:
+ - link timetable to resource availability
+ - add depletable resources
+ - stop the simulation mid-run, adjust some parameters and continue the simulation
+ - create release_all event
+ - inspect the queue
