@@ -1,23 +1,16 @@
 require(R6)
 
-#' Simmer
+#' Simmer.Env
 #'
 #' Simulation environment
 #'
 #' @field name environment name
 #' @format An \code{\link{R6Class}} generator object
-#' @examples
-#' simmer <- Simmer$new("SuperDuperSim", rep=100, verbose=F) $
-#'   add_resource("nurse", 1) $
-#'   add_resource("doctor", 2) $
-#'   add_resource("administration", 1) $
-#'   add_generator("patient", t1, function() rnorm(1, 10, 2))
-#' simmer$run(until=80)
 #' @useDynLib simmer
 #' @importFrom Rcpp evalCpp
 #' @import R6
 #' @export
-Simmer <- R6Class("Simmer",
+Simmer.Env <- R6Class("Simmer",
   public = list(
     name = NA,
     
@@ -45,7 +38,7 @@ Simmer <- R6Class("Simmer",
         run_(sim, until)
     },
     
-    add_resource = function(name, capacity=1, queue_size=Inf, mon=T) {
+    resource = function(name, capacity=1, queue_size=Inf, mon=T) {
       name <- evaluate_value(name)
       capacity <- evaluate_value(capacity)
       queue_size <- evaluate_value(queue_size)
@@ -59,7 +52,7 @@ Simmer <- R6Class("Simmer",
       invisible(self)
     },
     
-    add_generator = function(name_prefix, trajectory, dist, mon=T) {
+    process = function(name_prefix, trajectory, dist, mon=T) {
       if (!inherits(trajectory, "Trajectory"))
         stop("not a trajectory")
       if (!is.function(dist))
@@ -71,6 +64,10 @@ Simmer <- R6Class("Simmer",
         add_generator_(sim, name_prefix, trajectory$get_head(), dist, mon)
       invisible(self)
     },
+    
+    timeout = function(delay) {},
+    
+    request = function(name, amount) {},
     
     get_mon_arrivals = function() {
       do.call(rbind,
