@@ -13,14 +13,14 @@
 class Event {
 public:
   double time;
-  Rcpp::Function process;
+  Process* process;
   
   /**
    * Constructor.
    * @param time    time of occurrence in the future
    * @param process the process to activate
    */
-  Event(double time, Rcpp::Function process): time(time), process(process) {}
+  Event(double time, Process* process): time(time), process(process) {}
 };
 
 /**
@@ -55,7 +55,7 @@ class Simulator {
 public:
   std::string name;
   bool verbose;
-  Rcpp::Function active_process;
+  Process* active_process;
   
   /**
    * Constructor.
@@ -63,12 +63,13 @@ public:
    * @param verbose verbose flag
    */
   Simulator(std::string name, bool verbose): 
-    name(name), verbose(verbose), active_process(R_NilValue), now_(0) {
+    name(name), verbose(verbose), active_process(NULL), now_(0) {
     arrival_stats = new ArrStats();
   }
   
   ~Simulator() {
     while (!event_queue.empty()) {
+      delete event_queue.top()->process;
       delete event_queue.top();
       event_queue.pop();
     }
@@ -82,6 +83,7 @@ public:
   void reset() {
     now_ = 0;
     while (!event_queue.empty()) {
+      delete event_queue.top()->process;
       delete event_queue.top();
       event_queue.pop();
     }
@@ -98,16 +100,56 @@ public:
    * @param   delay   delay from now()
    * @param   process the process to schedule
    */
-  inline void schedule(double delay, Rcpp::Function process) {
+  inline void schedule(double delay, Process* process) {
     Event* ev = new Event(now_ + delay, process);
     event_queue.push(ev);
+  }
+  
+  /**
+   * Insert a new process now.
+   */
+  void process(Rcpp::Function func) {
+    if (verbose)
+      Rcpp::Rcout << now_ << ": " << active_process << ": new process" << std::endl;
+    
+    Process* proc = new Process(this, func, FALSE);
+    schedule(0, proc);
+  }
+  
+  /**
+   * Insert the active process with a delay.
+   */
+  void timeout(double delay) { 
+    if (verbose)
+      Rcpp::Rcout << now_ << ": " << active_process << ": new timeout" << std::endl;
+    
+    schedule(delay, active_process);
+  }
+  
+  /**
+   * Run the simulation. Only one step, a giant leap for mankind.
+   */
+  inline void step() {
+    Event* ev = get_next();
+    now_ = ev->time;
+    active_process = ev->process;
+    delete ev;
+    int ret = Rcpp::as<int>(active_process->callback());
+    if (!ret) {
+      if (verbose)
+        Rcpp::Rcout << now_ << ": " << active_process << ": process terminated " << std::endl;
+      
+      active_process->resource->release();
+      delete active_process;
+    }
+    // ... and that's it! :D
   }
   
   /**
    * Run the simulation.
    * @param   until   time of ending
    */
-  void run(double until);
+  void run(double until) { while(now_ < until) step(); }
   
   /**
    * Add a resource to the simulator.
@@ -120,16 +162,6 @@ public:
     Resource* res = new Resource(this, name, mon, capacity, queue_size);
     resource_map[name] = res;
   }
-  
-  /**
-   * Insert a process now.
-   */
-  void process(Rcpp::Function func) { schedule(0, func); }
-  
-  /**
-   * Insert the active process with a delay.
-   */
-  void timeout(double delay) { schedule(delay, active_process); }
   
   /**
    * Get a resource by name.

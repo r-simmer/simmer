@@ -19,8 +19,18 @@ exp_generator <- Simmer.make_closure(is_gen=T, {
   }
 })
 
-env <- Simmer.Env$new() $
+env <- Simmer.Env$new(verbose=F) $
   resource("server", capacity=1, mon=T) $
   process(exp_generator(env, 1, 2))
 
 env$run(until=1000)
+env$step()
+
+resource_stats <- env$get_mon_resources()
+plot_resource_usage(env, "server")
+
+system.time({
+env$reset() $
+  process(exp_generator(env, 60, 66)) $
+  run(until=10000)
+})

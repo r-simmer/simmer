@@ -11,15 +11,3 @@
 //   }
 //   delete arrival;
 // }
-
-void Simulator::run(double until) {
-  // Loop
-  while(now_ < until) {
-    Event* ev = get_next();
-    now_ = ev->time;
-    active_process = ev->process;
-    delete ev;
-    int ret = Rcpp::as<int>(active_process());
-  }
-  // ... and that's it! :D
-}

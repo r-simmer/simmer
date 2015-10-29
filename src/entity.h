@@ -7,9 +7,7 @@
 
 // forward declaration
 class Simulator;
-
-typedef std::queue<std::pair<Rcpp::Function, int> > Queue;
-typedef std::map<Rcpp::Function, int> ServerMap;
+class Resource;
 
 /** 
  *  Base class. Every element in a simulation model is an entity.
@@ -27,6 +25,21 @@ public:
 private:
   bool mon;
 };
+
+/** 
+ * Class for holding processes.
+ */
+class Process: public Entity {
+public:
+  Process(Simulator* sim, Rcpp::Function func, bool mon): 
+    Entity(sim, "dummy", mon), callback(func), resource(NULL), amount(0) {}
+  virtual ~Process(){}
+  Rcpp::Function callback;
+  Resource* resource;
+  int amount;
+};
+
+typedef std::queue<std::pair<Process*, int> > Queue;
 
 /**
  * Resource statistics.
@@ -59,8 +72,10 @@ public:
   }
   
   ~Resource() {
-    while (!queue.empty()) queue.pop();
-    server.clear();
+    while (!queue.empty()) {
+      delete queue.front().first;
+      queue.pop();
+    }
     delete res_stats;
   }
   
@@ -70,8 +85,10 @@ public:
   void reset() {
     server_count = 0;
     queue_count = 0;
-    while (!queue.empty()) queue.pop();
-    server.clear();
+    while (!queue.empty()) {
+      delete queue.front().first;
+      queue.pop();
+    }
     delete res_stats;
     res_stats = new ResStats();
   }
@@ -109,7 +126,6 @@ private:
   int queue_size;
   int server_count;     /**< number of arrivals being served */
   int queue_count;      /**< number of arrivals waiting */
-  ServerMap server;     /**< server container */
   Queue queue;          /**< queue container */
   ResStats* res_stats;  /**< resource statistics */
   

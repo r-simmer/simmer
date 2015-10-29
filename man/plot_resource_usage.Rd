@@ -4,22 +4,19 @@
 \alias{plot_resource_usage}
 \title{plot usage of a resource over time}
 \usage{
-plot_resource_usage(simmer, resource_name, replication_n = FALSE,
-  types = c("queue", "server", "system"), steps = FALSE,
-  smooth_line = FALSE)
+plot_resource_usage(simmer, resource_name, types = c("queue", "server",
+  "system"), steps = FALSE, smooth_line = FALSE)
 }
 \arguments{
 \item{simmer}{the simulation environment}
 
 \item{resource_name}{the name of the resource (character value)}
 
-\item{replication_n}{specify to plot only a specific replication (default=FALSE)}
-
 \item{types}{the parts of the resource to be plotted}
 
 \item{steps}{adds the changes in the resource usage}
 
-\item{smooth_line}{adds a smoothline, usefull if a lot of different replications are plotted}
+\item{smooth_line}{adds a smoothline}
 }
 \description{
 plot the usage of a resource over the simulation time frame

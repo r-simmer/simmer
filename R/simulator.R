@@ -25,6 +25,8 @@ Simmer.Env <- R6Class("Simmer",
       invisible(self)
     },
     
+    step = function() { step_(private$sim_obj) },
+    
     run = function(until=1000) {
       until <- evaluate_value(until)
       if(!is.finite(until)) until <- 1000

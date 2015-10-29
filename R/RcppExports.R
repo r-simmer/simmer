@@ -9,6 +9,10 @@ reset_ <- function(sim_) {
     invisible(.Call('simmer_reset_', PACKAGE = 'simmer', sim_))
 }
 
+step_ <- function(sim_) {
+    invisible(.Call('simmer_step_', PACKAGE = 'simmer', sim_))
+}
+
 run_ <- function(sim_, until_) {
     invisible(.Call('simmer_run_', PACKAGE = 'simmer', sim_, until_))
 }

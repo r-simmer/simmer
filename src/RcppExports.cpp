@@ -27,6 +27,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// step_
+void step_(SEXP sim_);
+RcppExport SEXP simmer_step_(SEXP sim_SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    step_(sim_);
+    return R_NilValue;
+END_RCPP
+}
 // run_
 void run_(SEXP sim_, SEXP until_);
 RcppExport SEXP simmer_run_(SEXP sim_SEXP, SEXP until_SEXP) {
