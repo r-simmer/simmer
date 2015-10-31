@@ -1,3 +1,5 @@
+library(simmer)
+
 t1 <- Trajectory$new("my trajectory") $
   ## add an intake activity
   seize("nurse", 1) $
@@ -12,7 +14,7 @@ t1 <- Trajectory$new("my trajectory") $
   timeout(function() rnorm(1, 5)) $
   release("administration", 1)
 
-simmer <- Simmer$new("SuperDuperSim", rep=100, verbose=F) $
+simmer <- Simmer$new("SuperDuperSim", verbose=F) $
   add_resource("nurse", 1) $
   add_resource("doctor", 2) $
   add_resource("administration", 1) $
@@ -22,7 +24,7 @@ simmer$run(80)
 arrival_stats <- simmer$get_mon_arrivals()
 resource_stats <- simmer$get_mon_resources()
 
-plot_resource_usage(simmer, "doctor", 6, types="server", steps=T)
+plot_resource_usage(simmer, "doctor", type="server", steps=T)
 plot_resource_utilization(simmer, c("nurse", "doctor","administration"))
 plot_evolution_arrival_times(simmer, type = "flow_time")
 
@@ -34,7 +36,7 @@ mm1 <- Trajectory$new() $
   timeout(function() rexp(1, 66)) $
   release("server", 1)
 
-simmer <- Simmer$new(rep=1, verbose=F) $
+simmer <- Simmer$new(verbose=F) $
   add_resource("server", 1) $
   add_generator("customer", mm1, function() rexp(1, 60), mon=F)
 simmer$run(10000)

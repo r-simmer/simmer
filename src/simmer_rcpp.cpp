@@ -6,11 +6,11 @@
 using namespace Rcpp;
 
 //[[Rcpp::export]]
-SEXP Simulator__new(SEXP n_, SEXP verbose_) {
-  int n = as<int>(n_);
+SEXP Simulator__new(SEXP name_, SEXP verbose_) {
+  std::string name = as<std::string>(name_);
   bool verbose = as<bool>(verbose_);
   
-  XPtr<Simulator> ptr(new Simulator(n, verbose), false); // What does this "false" mean?
+  XPtr<Simulator> ptr(new Simulator(name, verbose), false); // What does this "false" mean?
   return ptr;
 }
 
@@ -30,21 +30,17 @@ void schedule_(SEXP delay_, SEXP arrival_) {
 }
 
 //[[Rcpp::export]]
-int seize_(SEXP name_, SEXP arrival_, SEXP amount_) {
-  std::string name = as<std::string>(name_);
-  Arrival* arrival = (Arrival *)as<long int>(arrival_);
-  int amount = as<int>(amount_);
+double peek_(SEXP sim_) {
+  XPtr<Simulator> sim(sim_);
   
-  return arrival->sim->get_resource(name)->seize(arrival, amount);
+  return sim->peek();
 }
 
 //[[Rcpp::export]]
-int release_(SEXP name_, SEXP arrival_, SEXP amount_) {
-  std::string name = as<std::string>(name_);
-  Arrival* arrival = (Arrival *)as<long int>(arrival_);
-  int amount = as<int>(amount_);
+void step_(SEXP sim_) {
+  XPtr<Simulator> sim(sim_);
   
-  return arrival->sim->get_resource(name)->release(arrival, amount);
+  sim->step();
 }
 
 //[[Rcpp::export]]
@@ -52,13 +48,7 @@ void run_(SEXP sim_, SEXP until_) {
   XPtr<Simulator> sim(sim_);
   double until = as<double>(until_);
   
-  try {
-    sim->run(until);
-  } catch (std::exception &ex) {  
-    forward_exception_to_r(ex);
-  } catch(...) { 
-    ::Rf_error("c++ exception (unknown reason)"); 
-  }
+  sim->run(until);
 }
 
 //[[Rcpp::export]]
@@ -122,4 +112,22 @@ int get_res_queue_size_(SEXP sim_, SEXP name_){
   std::string name = as<std::string>(name_);
   
   return sim->get_resource(name)->get_queue_size();
+}
+
+//[[Rcpp::export]]
+int seize_(SEXP name_, SEXP arrival_, SEXP amount_) {
+  std::string name = as<std::string>(name_);
+  Arrival* arrival = (Arrival *)as<long int>(arrival_);
+  int amount = as<int>(amount_);
+  
+  return arrival->sim->get_resource(name)->seize(arrival, amount);
+}
+
+//[[Rcpp::export]]
+int release_(SEXP name_, SEXP arrival_, SEXP amount_) {
+  std::string name = as<std::string>(name_);
+  Arrival* arrival = (Arrival *)as<long int>(arrival_);
+  int amount = as<int>(amount_);
+  
+  return arrival->sim->get_resource(name)->release(arrival, amount);
 }

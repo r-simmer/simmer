@@ -7,11 +7,11 @@ require(R6)
 #' @field name environment name
 #' @format An \code{\link{R6Class}} generator object
 #' @examples
-#' simmer <- Simmer$new("SuperDuperSim", rep=100, verbose=F) $
+#' simmer <- Simmer$new("SuperDuperSim", verbose=F) $
 #'   add_resource("nurse", 1) $
 #'   add_resource("doctor", 2) $
 #'   add_resource("administration", 1) $
-#'   add_generator("patient", t1, function() rnorm(1, 10, 2))
+#'   add_generator("patient", t0, function() rnorm(1, 10, 2))
 #' simmer$run(until=80)
 #' @useDynLib simmer
 #' @importFrom Rcpp evalCpp
@@ -21,28 +21,26 @@ Simmer <- R6Class("Simmer",
   public = list(
     name = NA,
     
-    initialize = function(name="anonymous", rep=1, verbose=FALSE) {
+    initialize = function(name="anonymous", verbose=FALSE) {
       self$name <- evaluate_value(name)
-      rep <- evaluate_value(rep)
-      if(!is.finite(rep)) rep <- 1
-      for (i in seq(rep))
-        private$sim_objs <- c(private$sim_objs,
-                              Simulator__new(i, evaluate_value(verbose)))
+      private$sim_obj <- Simulator__new(name, evaluate_value(verbose))
       invisible(self)
     },
     
     reset = function() { 
-      for (sim in private$sim_objs) 
-        reset_(sim) 
+      reset_(private$sim_obj) 
       invisible(self)
     },
+    
+    peek = function() { peek_(private$sim_obj) },
+    
+    step = function() { step_(private$sim_obj) },
     
     run = function(until=1000) {
       until <- evaluate_value(until)
       if(!is.finite(until)) until <- 1000
       
-      for (sim in private$sim_objs)
-        run_(sim, until)
+      run_(private$sim_obj, until)
     },
     
     add_resource = function(name, capacity=1, queue_size=Inf, mon=T) {
@@ -53,8 +51,7 @@ Simmer <- R6Class("Simmer",
       if (is.infinite(capacity)) capacity <- -1
       if (is.infinite(queue_size)) queue_size <- -1
       
-      for (sim in private$sim_objs)
-        add_resource_(sim, name, capacity, queue_size, mon)
+      add_resource_(private$sim_obj, name, capacity, queue_size, mon)
       if (mon) private$mon_res <- c(private$mon_res, name)
       invisible(self)
     },
@@ -67,50 +64,43 @@ Simmer <- R6Class("Simmer",
       name_prefix <- evaluate_value(name_prefix)
       mon <- evaluate_value(mon)
       
-      for (sim in private$sim_objs)
-        add_generator_(sim, name_prefix, trajectory$get_head(), dist, mon)
+      add_generator_(private$sim_obj, name_prefix, trajectory$get_head(), dist, mon)
       invisible(self)
     },
     
-    get_mon_arrivals = function() {
+    get_mon_arrivals = function() { 
+      as.data.frame(get_mon_arrivals_(private$sim_obj))
+    },
+    
+    get_mon_resources = function() {
       do.call(rbind,
-        lapply(1:length(private$sim_objs), function(i) {
+        lapply(1:length(private$mon_res), function(j) {
           monitor_data <- as.data.frame(
-            get_mon_arrivals_(private$sim_objs[[i]])
+            get_mon_resource_(private$sim_obj, private$mon_res[[j]])
           )
-          monitor_data$replication <- i
+          tryCatch({
+            monitor_data$system <- monitor_data$server + monitor_data$queue
+            monitor_data$resource <- private$mon_res[[j]]
+          }, error = function(e) {
+            monitor_data$system <<- numeric()
+            monitor_data$resource <<- character()
+          })
           monitor_data
         })
       )
     },
     
-    get_mon_resources = function() {
-      do.call(rbind,
-        sapply(1:length(private$sim_objs), function(i) {
-          lapply(1:length(private$mon_res), function(j, i) {
-            monitor_data <- as.data.frame(
-              get_mon_resource_(private$sim_objs[[i]], private$mon_res[[j]])
-            )
-            monitor_data$system <- monitor_data$server + monitor_data$queue
-            monitor_data$resource <- private$mon_res[[j]]
-            monitor_data$replication <- i
-            monitor_data
-          }, i=i)
-        })
-      )
-    },
-    
     get_res_capacity = function(name) { 
-      get_res_capacity_(private$sim_objs[[1]], evaluate_value(name))
+      get_res_capacity_(private$sim_obj, evaluate_value(name))
     },
     
     get_res_queue_size = function(name) {
-      get_res_queue_size_(private$sim_objs[[1]], evaluate_value(name))
+      get_res_queue_size_(private$sim_obj, evaluate_value(name))
     }
   ),
   
   private = list(
-    sim_objs = NULL,
+    sim_obj = NULL,
     mon_res = NULL
   )
 )

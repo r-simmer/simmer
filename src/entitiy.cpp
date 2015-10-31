@@ -6,7 +6,7 @@ inline void Arrival::activate() {
   
   if (sim->verbose)
     Rcpp::Rcout <<
-      "rep: " << sim->n << " | " << "time: " << sim->now() << " | " <<
+      "sim: " << sim->name << " | " << "time: " << sim->now() << " | " <<
       "arrival: " << name << " | " << "activity: " << 
       Rcpp::as<std::string>(activity["name"]) << "(" <<
       Rcpp::as<std::string>(activity["resource"]) << ")" << std::endl;

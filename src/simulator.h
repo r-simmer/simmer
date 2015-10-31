@@ -34,8 +34,7 @@ struct EventOrder {
 };
 
 typedef std::priority_queue<Event*, std::vector<Event*>, EventOrder> PQueue;
-typedef std::map<std::string, Resource*> ResMap;
-typedef std::vector<Generator*> GenVec;
+typedef std::map<std::string, Entity*> EntMap;
 
 /**
  * Arrival statistics.
@@ -54,7 +53,7 @@ public:
  */
 class Simulator {
 public:
-  int n;
+  std::string name;
   bool verbose;
   
   /**
@@ -62,8 +61,8 @@ public:
    * @param n       simulator identifier
    * @param verbose verbose flag
    */
-  Simulator(int n, bool verbose): 
-    n(n), verbose(verbose), now_(0) {
+  Simulator(std::string name, bool verbose): 
+    name(name), verbose(verbose), now_(0) {
     arrival_stats = new ArrStats();
   }
   
@@ -75,7 +74,7 @@ public:
       event_queue.pop();
     }
     resource_map.clear();
-    generator_vec.clear();
+    generator_map.clear();
     delete arrival_stats;
   }
   
@@ -90,10 +89,12 @@ public:
       delete event_queue.top();
       event_queue.pop();
     }
-    for (ResMap::iterator itr = resource_map.begin(); itr != resource_map.end(); ++itr)
-      itr->second->reset();
-    for (GenVec::iterator itr = generator_vec.begin(); itr != generator_vec.end(); ++itr)
-      (*itr)->reset();
+    for (EntMap::iterator itr = resource_map.begin(); itr != resource_map.end(); ++itr)
+      ((Resource*)itr->second)->reset();
+    for (EntMap::iterator itr = generator_map.begin(); itr != generator_map.end(); ++itr) {
+      ((Generator*)itr->second)->reset();
+      ((Generator*)itr->second)->activate();
+    }
     delete arrival_stats;
     arrival_stats = new ArrStats();
   }
@@ -111,18 +112,34 @@ public:
   }
   
   /**
+   * Get the time of the next scheduled event.
+   */
+  double peek() { return event_queue.top()->time; }
+  
+  /**
+   * Process the next event. Only one step, a giant leap for mankind.
+   */
+  void step() {
+    if (event_queue.empty()) Rcpp::stop("no generators defined");
+    _step();
+  }
+  
+  /**
+   * Executes steps until the given criterion is met.
+   * @param   until   time of ending
+   */
+  void run(double until) { 
+    if (event_queue.empty()) Rcpp::stop("no generators defined");
+    while(now_ < until) _step();
+  }
+  
+  /**
    * Entities notify the end of an arrival with this call.
    * The simulator is in charge of gathering statistics and deleting the arrival.
    * @param   arrival   a pointer to the ending arrival
    * @param   finished  bool that indicates whether the arrival has finished its trajectory
    */
   void notify_end(Arrival* arrival, bool finished);
-  
-  /**
-   * Run the simulation.
-   * @param   until   time of ending
-   */
-  void run(double until);
   
   /**
    * Add a generator of arrivals to the simulator.
@@ -133,8 +150,11 @@ public:
    */
   void add_generator(std::string name_prefix, 
                      Rcpp::Environment first_activity, Rcpp::Function dist, bool mon) {
-    Generator* gen = new Generator(this, name_prefix, mon, first_activity, dist);
-    generator_vec.push_back(gen);
+    if (generator_map.find(name_prefix) == generator_map.end()) {
+      Generator* gen = new Generator(this, name_prefix, mon, first_activity, dist);
+      generator_map[name_prefix] = gen;
+      gen->activate();
+    } else Rcpp::warning("generator " + name_prefix + " already defined");
   }
   
   /**
@@ -145,20 +165,20 @@ public:
    * @param   mon         bool that indicates whether this entity must be monitored
    */
   void add_resource(std::string name, int capacity, int queue_size, bool mon) {
-    Resource* res = new Resource(this, name, mon, capacity, queue_size);
-    resource_map[name] = res;
+    if (resource_map.find(name) == resource_map.end()) {
+      Resource* res = new Resource(this, name, mon, capacity, queue_size);
+      resource_map[name] = res;
+    } else Rcpp::warning("resource " + name + " already defined");
   }
   
   /**
    * Get a resource by name.
    */
   Resource* get_resource(std::string name) {
-    try {
-      return resource_map[name];
-    } catch (...) {
-      // not found
-      throw std::runtime_error("resource '" + name + "' not found (typo?)");
-    }
+    EntMap::iterator search = resource_map.find(name);
+    if (search == resource_map.end())
+      Rcpp::stop("resource '" + name + "' not found (typo?)");
+    return (Resource*)search->second;
   }
   
   /**
@@ -176,14 +196,22 @@ public:
 private:
   double now_;              /**< simulation time */
   PQueue event_queue;       /**< the event queue */
-  ResMap resource_map;      /**< map of resources */
-  GenVec generator_vec;     /**< vector of generators */
+  EntMap resource_map;      /**< map of resources */
+  EntMap generator_map;     /**< map of generators */
   ArrStats* arrival_stats;  /**< arrival statistics */
   
   inline Event* get_next() {
     Event* ev = event_queue.top();
     event_queue.pop();
     return ev;
+  }
+  
+  inline void _step() {
+    Event* ev = get_next();
+    now_ = ev->time;
+    ev->process->activate();
+    delete ev;
+    // ... and that's it! :D
   }
 };
 
