@@ -14,7 +14,7 @@
 <h2>Using <em>simmer</em></h2>
 <p>First, load the package.</p>
 <pre class="r"><code>library(simmer)</code></pre>
-<p>Set-up a simple trajectory. Let’s say we want to simulate a ambulatory consultation where a patient is first seen by a nurse for an intake, next by a doctor for the consultation and finally by administrative staff to schedule a follow-up appointment.</p>
+<p>Set-up a simple trajectory. Let’s say we want to simulate an ambulatory consultation where a patient is first seen by a nurse for an intake, next by a doctor for the consultation and finally by administrative staff to schedule a follow-up appointment.</p>
 <pre class="r"><code>t0 &lt;- Trajectory$new(&quot;my trajectory&quot;) $
   ## add an intake activity 
   seize(&quot;nurse&quot;, 1) $
@@ -28,27 +28,27 @@
   seize(&quot;administration&quot;, 1) $
   timeout(function() rnorm(1, 5)) $
   release(&quot;administration&quot;, 1)</code></pre>
-<p>The time-out duration is evaluated dynamically, so it must be a function. This means that if you want an static value instead of a probability, let’s say <code>3</code>, you need to enter <code>function() 3</code>.</p>
-<p>When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The <em>nurse</em> and <em>administration</em> resources, each one with a capacity of 1, and the <em>doctor</em> resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory <code>t0</code>. The time between patients is about 10 minutes (a gaussian of <code>mean=10</code> and <code>sd=2</code>).</p>
+<p>The timeout duration is evaluated dynamically, so it must be a function. This means that if you want an static value instead of a probability, let’s say <code>3</code>, you need to enter <code>function() 3</code>.</p>
+<p>When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The <em>nurse</em> and <em>administration</em> resources, each one with a capacity of 1, and the <em>doctor</em> resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory <code>t0</code>. The time between patients is about 10 minutes (a Gaussian of <code>mean=10</code> and <code>sd=2</code>).</p>
 <pre class="r"><code>simmer &lt;- Simmer$new(&quot;SuperDuperSim&quot;) $
   add_resource(&quot;nurse&quot;, 1) $
   add_resource(&quot;doctor&quot;, 2) $
   add_resource(&quot;administration&quot;, 1) $
   add_generator(&quot;patient&quot;, t0, function() rnorm(1, 10, 2))</code></pre>
-<p>The simulation is now ready for a test run; just let it <em>simmer</em> for a bit. Below, we specify that we want to limit the run-time to 80 time units using the <code>until</code> argument. After that, we verify the current simulation time (<code>now()</code>) and when will be the next event (<code>peek()</code>).</p>
+<p>The simulation is now ready for a test run; just let it <em>simmer</em> for a bit. Below, we specify that we want to limit the runtime to 80 time units using the <code>until</code> argument. After that, we verify the current simulation time (<code>now()</code>) and when will be the next event (<code>peek()</code>).</p>
 <pre class="r"><code>simmer$run(until=80)
 simmer$now()</code></pre>
-<pre><code>## [1] 81.96183</code></pre>
+<pre><code>## [1] 81.48769</code></pre>
 <pre class="r"><code>simmer$peek()</code></pre>
-<pre><code>## [1] 81.96183</code></pre>
+<pre><code>## [1] 81.48769</code></pre>
 <p>It is possible to run the simulation step by step, and such a method is chainable too.</p>
 <pre class="r"><code>simmer$step()
 simmer$step()$step()$step()
 simmer$now()</code></pre>
-<pre><code>## [1] 91.42328</code></pre>
+<pre><code>## [1] 83.3756</code></pre>
 <pre class="r"><code>simmer$peek()</code></pre>
-<pre><code>## [1] 91.42328</code></pre>
-<p>Also, it is possible to resume the automatic execution simply by specifying a longer run-time. Below, we continue the execution until 120 time units.</p>
+<pre><code>## [1] 83.3756</code></pre>
+<p>Also, it is possible to resume the automatic execution simply by specifying a longer runtime. Below, we continue the execution until 120 time units.</p>
 <pre class="r"><code>simmer$run(until=120)</code></pre>
 <p>Finally, you can reset the simulation, flush all results, resources and generators, and restart from the beginning.</p>
 <pre class="r"><code>simmer$reset()$run(until=80)</code></pre>
@@ -63,7 +63,7 @@ simmer$now()</code></pre>
     add_generator(&quot;patient&quot;, t0, function() rnorm(1, 10, 2)) $
     run(80)
 })</code></pre>
-<p>The advantage of the latter approach is that, if the individual simulations are heavy, it is straightforward to parallelize the execution of replicas (for instance, here we use the function <code>mclapply</code> from the package <a href="https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf">parallel</a>). Nevertheless, the external pointers to the C++ <em>simmer</em> core are no longer valid when the parallelized execution ends. Thus, it is neccessary to extract the results at the end of each execution. This can be done with the helper class <code>Simmer.wrap</code> as follows.</p>
+<p>The advantage of the latter approach is that, if the individual simulations are heavy, it is straightforward to parallelize the execution of replicas (for instance, here we use the function <code>mclapply</code> from the package <a href="https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf">parallel</a>). Nevertheless, the external pointers to the C++ <em>simmer</em> core are no longer valid when the parallelized execution ends. Thus, it is necessary to extract the results for each thread at the end of the execution. This can be done with the helper class <code>Simmer.wrap</code> as follows.</p>
 <pre class="r"><code>library(parallel)
 
 reps &lt;- mclapply(1:100, function(i) {
@@ -85,23 +85,24 @@ reps &lt;- mclapply(1:100, function(i) {
   reps[[1]]$get_mon_resources()
 )</code></pre>
 <pre><code>##       time server queue system resource
-## 1 11.52358      0     0      0    nurse
-## 2 24.04479      1     0      1    nurse
-## 3 27.20815      1     1      2    nurse
-## 4 36.14014      1     0      1    nurse
-## 5 43.00597      1     1      2    nurse
-## 6 46.70719      1     0      1    nurse</code></pre>
+## 1 11.79077      0     0      0    nurse
+## 2 21.99608      1     0      1    nurse
+## 3 28.00295      1     1      2    nurse
+## 4 32.59010      1     0      1    nurse
+## 5 43.05209      1     1      2    nurse
+## 6 44.02270      1     0      1    nurse</code></pre>
 <pre class="r"><code>head(
   reps[[1]]$get_mon_arrivals()
 )</code></pre>
 <pre><code>##       name start_time end_time activity_time finished
-## 1 patient0   11.52358 51.68784      40.16426     TRUE
-## 2 patient1   24.04479 68.76082      41.55267     TRUE</code></pre>
+## 1 patient0   11.79077 53.99191      42.20115     TRUE
+## 2 patient1   21.99608 68.56691      40.56397     TRUE
+## 3 patient2   32.59010 85.30166      42.24957     TRUE</code></pre>
 <p>Unfortunately, as the C++ simulation cores are destroyed, parallelization does not allow to resume the execution of replicas.</p>
 </div>
 <div id="advanced-trajectories" class="section level3">
 <h3>Advanced trajectories</h3>
-<p>The <code>branch()</code> method offers the possibility of adding a branch in the trajectory with some associated probability. The following example shows how a trajectory can be built with a 50-50 chance for the arrival to undergo the second time-out activity.</p>
+<p>The <code>branch()</code> method offers the possibility of adding a branch in the trajectory with some associated probability. The following example shows how a trajectory can be built with a 50-50 chance for the arrival to undergo the second timeout activity.</p>
 <pre class="r"><code>t1 &lt;- Trajectory$new(&quot;trajectory with a branch&quot;) $
   seize(&quot;server&quot;, 1) $
   branch(prob=0.5, merge=T, Trajectory$new(&quot;branch1&quot;) $
@@ -121,13 +122,13 @@ reps &lt;- mclapply(1:100, function(i) {
 <p>It is also possible to have a look at a specific resource and its activity during the simulation.</p>
 <pre class="r"><code>plot_resource_usage(reps, &quot;doctor&quot;, items=&quot;server&quot;, steps=T)</code></pre>
 <p><img src="README_files/figure-html/unnamed-chunk-14-1.png" /></p>
-<p>In the above graph, the individual lines are all seperate replications. The step lines are instantaneous utilization and the smooth line is a running average. Let’s take a look now at a specific replication. In the example below the 6th replication is shown.</p>
+<p>In the above graph, the individual lines are all separate replications. The step lines are instantaneous utilization and the smooth line is a running average. Let’s take a look now at a specific replication. In the example below the 6th replication is shown.</p>
 <pre class="r"><code>plot_resource_usage(reps[[6]], &quot;doctor&quot;, items=&quot;server&quot;, steps=T)</code></pre>
 <p><img src="README_files/figure-html/unnamed-chunk-15-1.png" /></p>
 </div>
 <div id="flow-time" class="section level3">
 <h3>Flow time</h3>
-<p>Next we can have a look at the evolution of the arrivals’ flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them. All arrivals that didn’t finish their entire trajectory are excluded from the plot.</p>
+<p>Next we can have a look at the evolution of the arrivals’ flow time during the simulation. In the below plot, each individual line represents a replication. A smooth line is drawn over them. All arrivals that didn’t finish their entire trajectory are excluded from the plot.</p>
 <pre class="r"><code>plot_evolution_arrival_times(reps, type = &quot;flow_time&quot;)</code></pre>
 <p><img src="README_files/figure-html/unnamed-chunk-16-1.png" /></p>
 <p>Similarly one can have a look at the evolution of the activity times with <code>type = &quot;activity_time&quot;</code> and waiting times with <code>type = &quot;waiting_time&quot;</code>.</p>

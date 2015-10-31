@@ -30,7 +30,7 @@ First, load the package.
 library(simmer)
 ```
 
-Set-up a simple trajectory. Let's say we want to simulate a ambulatory consultation where a patient is first seen by a nurse for an intake, next by a doctor for the consultation and finally by administrative staff to schedule a follow-up appointment.
+Set-up a simple trajectory. Let's say we want to simulate an ambulatory consultation where a patient is first seen by a nurse for an intake, next by a doctor for the consultation and finally by administrative staff to schedule a follow-up appointment.
 
 
 ```r
@@ -49,9 +49,9 @@ t0 <- Trajectory$new("my trajectory") $
   release("administration", 1)
 ```
 
-The time-out duration is evaluated dynamically, so it must be a function. This means that if you want an static value instead of a probability, let's say ```3```, you need to enter ```function() 3```.
+The timeout duration is evaluated dynamically, so it must be a function. This means that if you want an static value instead of a probability, let's say ```3```, you need to enter ```function() 3```.
 
-When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory ```t0```. The time between patients is about 10 minutes (a gaussian of ```mean=10``` and ```sd=2```).
+When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory ```t0```. The time between patients is about 10 minutes (a Gaussian of ```mean=10``` and ```sd=2```).
 
 
 ```r
@@ -62,7 +62,7 @@ simmer <- Simmer$new("SuperDuperSim") $
   add_generator("patient", t0, function() rnorm(1, 10, 2))
 ```
 
-The simulation is now ready for a test run; just let it *simmer* for a bit. Below, we specify that we want to limit the run-time to 80 time units using the ```until``` argument. After that, we verify the current simulation time (```now()```) and when will be the next event (```peek()```).
+The simulation is now ready for a test run; just let it *simmer* for a bit. Below, we specify that we want to limit the runtime to 80 time units using the ```until``` argument. After that, we verify the current simulation time (```now()```) and when will be the next event (```peek()```).
 
 
 ```r
@@ -71,7 +71,7 @@ simmer$now()
 ```
 
 ```
-## [1] 81.96183
+## [1] 81.48769
 ```
 
 ```r
@@ -79,7 +79,7 @@ simmer$peek()
 ```
 
 ```
-## [1] 81.96183
+## [1] 81.48769
 ```
 
 It is possible to run the simulation step by step, and such a method is chainable too.
@@ -92,7 +92,7 @@ simmer$now()
 ```
 
 ```
-## [1] 91.42328
+## [1] 83.3756
 ```
 
 ```r
@@ -100,10 +100,10 @@ simmer$peek()
 ```
 
 ```
-## [1] 91.42328
+## [1] 83.3756
 ```
 
-Also, it is possible to resume the automatic execution simply by specifying a longer run-time. Below, we continue the execution until 120 time units.
+Also, it is possible to resume the automatic execution simply by specifying a longer runtime. Below, we continue the execution until 120 time units.
 
 
 ```r
@@ -133,7 +133,7 @@ reps <- lapply(1:100, function(i) {
 })
 ```
 
-The advantage of the latter approach is that, if the individual simulations are heavy, it is straightforward to parallelize the execution of replicas (for instance, here we use the function ```mclapply``` from the package [parallel](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf)). Nevertheless, the external pointers to the C++ *simmer* core are no longer valid when the parallelized execution ends. Thus, it is neccessary to extract the results at the end of each execution. This can be done with the helper class ```Simmer.wrap``` as follows.
+The advantage of the latter approach is that, if the individual simulations are heavy, it is straightforward to parallelize the execution of replicas (for instance, here we use the function ```mclapply``` from the package [parallel](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf)). Nevertheless, the external pointers to the C++ *simmer* core are no longer valid when the parallelized execution ends. Thus, it is necessary to extract the results for each thread at the end of the execution. This can be done with the helper class ```Simmer.wrap``` as follows.
 
 
 ```r
@@ -178,12 +178,12 @@ head(
 
 ```
 ##       time server queue system resource
-## 1 11.52358      0     0      0    nurse
-## 2 24.04479      1     0      1    nurse
-## 3 27.20815      1     1      2    nurse
-## 4 36.14014      1     0      1    nurse
-## 5 43.00597      1     1      2    nurse
-## 6 46.70719      1     0      1    nurse
+## 1 11.79077      0     0      0    nurse
+## 2 21.99608      1     0      1    nurse
+## 3 28.00295      1     1      2    nurse
+## 4 32.59010      1     0      1    nurse
+## 5 43.05209      1     1      2    nurse
+## 6 44.02270      1     0      1    nurse
 ```
 
 ```r
@@ -194,15 +194,16 @@ head(
 
 ```
 ##       name start_time end_time activity_time finished
-## 1 patient0   11.52358 51.68784      40.16426     TRUE
-## 2 patient1   24.04479 68.76082      41.55267     TRUE
+## 1 patient0   11.79077 53.99191      42.20115     TRUE
+## 2 patient1   21.99608 68.56691      40.56397     TRUE
+## 3 patient2   32.59010 85.30166      42.24957     TRUE
 ```
 
 Unfortunately, as the C++ simulation cores are destroyed, parallelization does not allow to resume the execution of replicas.
 
 ### Advanced trajectories
 
-The ```branch()``` method offers the possibility of adding a branch in the trajectory with some associated probability. The following example shows how a trajectory can be built with a 50-50 chance for the arrival to undergo the second time-out activity.
+The ```branch()``` method offers the possibility of adding a branch in the trajectory with some associated probability. The following example shows how a trajectory can be built with a 50-50 chance for the arrival to undergo the second timeout activity.
 
 
 ```r
@@ -239,7 +240,7 @@ plot_resource_usage(reps, "doctor", items="server", steps=T)
 
 ![](README_files/figure-html/unnamed-chunk-14-1.png) 
 
-In the above graph, the individual lines are all seperate replications. The step lines are instantaneous utilization and the smooth line is a running average. Let's take a look now at a specific replication. In the example below the 6th replication is shown.
+In the above graph, the individual lines are all separate replications. The step lines are instantaneous utilization and the smooth line is a running average. Let's take a look now at a specific replication. In the example below the 6th replication is shown.
 
 
 ```r
@@ -250,7 +251,7 @@ plot_resource_usage(reps[[6]], "doctor", items="server", steps=T)
 
 ### Flow time
 
-Next we can have a look at the evolution of the arrivals' flow time during the simulation. In the below plot, each individual line represents a replication. A smoothline is drawn over them. All arrivals that didn't finish their entire trajectory are excluded from the plot.
+Next we can have a look at the evolution of the arrivals' flow time during the simulation. In the below plot, each individual line represents a replication. A smooth line is drawn over them. All arrivals that didn't finish their entire trajectory are excluded from the plot.
 
 
 ```r
