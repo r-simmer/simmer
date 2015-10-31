@@ -14,7 +14,6 @@ Imports:
     Rcpp (>= 0.11.2),
     R6
 Suggests:
-    doParallel,
     magrittr,
     dplyr,
     tidyr,

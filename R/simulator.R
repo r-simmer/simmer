@@ -116,17 +116,57 @@ Simmer <- R6Class("Simmer",
     },
     
     get_res_capacity = function(name) { 
-      get_res_capacity_(private$sim_obj, evaluate_value(name))
+      ret <- get_res_capacity_(private$sim_obj, evaluate_value(name))
+      if (ret < 0) ret <- Inf
+      ret
     },
     
     get_res_queue_size = function(name) {
-      get_res_queue_size_(private$sim_obj, evaluate_value(name))
+      ret <- get_res_queue_size_(private$sim_obj, evaluate_value(name))
+      if (ret < 0) ret <- Inf
+      ret
     }
   ),
   
   private = list(
     sim_obj = NULL,
     mon_res = NULL
+  )
+)
+
+#' Simmer.wrap
+#'
+#' Extracts the simulation data from a Simmer object making it accessible through the same methods
+#'
+#' @field simmer a simmer object
+#' @format An \code{\link{R6Class}} generator object
+#' @import R6
+#' @export
+Simmer.wrap <- R6Class("Simmer.wrap",
+  public = list(
+    initialize = function(simmer) {
+      if (!inherits(simmer, "Simmer")) stop("not a simmer object")
+      
+      private$arrivals <- simmer$get_mon_arrivals()
+      private$resources <- simmer$get_mon_resources()
+      for (res in levels(factor(private$resources$resource))) {
+        private$capacity[[res]] <- simmer$get_res_capacity(res)
+        private$queue_size[[res]] <- simmer$get_res_queue_size(res)
+      }
+      invisible(self)
+    },
+    
+    get_mon_arrivals = function() { private$arrivals },
+    get_mon_resources = function() { private$resources },
+    get_res_capacity = function(name) { private$capacity[[name]] },
+    get_res_queue_size = function(name) { private$queue_size[[name]] }
+  ),
+  
+  private = list(
+    arrivals = NA,
+    resources = NA,
+    capacity = list(),
+    queue_size = list()
   )
 )
 

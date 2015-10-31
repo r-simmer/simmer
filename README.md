@@ -4,13 +4,15 @@
 
 __*simmer* is under heavy development and its internals and syntax can still change extensively over the coming time__
 
-*simmer* is a discrete event package for the R language. It is developed with my own specific requirements for simulating day-to-day hospital proceses and thus might not be suited for everyone. It is designed to be as simple to use as possible and uses the chaining/piping workflow introduced by [R6](https://cran.r-project.org/web/packages/R6/) classes. 
+*simmer* is a discrete event simulation (DES) package for the R language designed to be a generic framework like [SimPy](https://simpy.readthedocs.org) or [SimJulia](http://simjuliajl.readthedocs.org). Although R alone is definitely not made for DES, we use [Rcpp](http://www.rcpp.org/) to boost the performance of *simmer*. This faces us with an important trade-off between flexibility and performance, depending on how much code remains in R or goes to C++ respectively.
+
+Our implementation solves this problem by introducing the concept of *trajectory*: a common path in the simulation model for arrivals of the same type. As we will see, it is pretty flexible and simple to use, and leverages the chaining/piping workflow introduced by [R6](https://cran.r-project.org/web/packages/R6/) classes. 
 
 
 
 ## Installation
 
-The installation requires the [devtools](https://github.com/hadley/devtools) package to be installed.
+The installation requires the [devtools](https://github.com/hadley/devtools) package.
 
 
 ```r
@@ -19,9 +21,9 @@ devtools::install_github("Bart6114/simmer")
 
 Please note that the package contains some C++ code and you thus need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows). If you don't want to build the package yourself and you're on Windows you could try a pre-built binary package [here](https://github.com/Bart6114/simmer/releases/).
 
-## Using simmer
+## Using *simmer*
 
-First load the package.
+First, load the package.
 
 
 ```r
@@ -49,44 +51,158 @@ t0 <- Trajectory$new("my trajectory") $
 
 The time-out duration is evaluated dynamically, so it must be a function. This means that if you want an static value instead of a probability, let's say ```3```, you need to enter ```function() 3```.
 
-When the trajectory is know, a simulation environment can be build. In the below example, an environment is instantiated and three types of resources are added. The *nurse* and *administration* resource, each with a capacity of 1, and the *doctor* resource with a capacity of 2. We specify that we want to replicate the simulation 100 times using the ```rep``` argument.
+When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory ```t0```. The time between patients is about 10 minutes (a gaussian of ```mean=10``` and ```sd=2```).
 
 
 ```r
-simmer <- Simmer$new("SuperDuperSim", rep=100) $
+simmer <- Simmer$new("SuperDuperSim") $
   add_resource("nurse", 1) $
   add_resource("doctor", 2) $
   add_resource("administration", 1) $
   add_generator("patient", t0, function() rnorm(1, 10, 2))
 ```
 
-The last method above extends the simulation environment by adding a generator of arrivals following the trajectory ```t0```, wich are activated with an interval of about 10 minutes (a gaussian of ```mean=10``` and ```sd=2```).
-
-The simulation is now ready for a test run; just let it ```simmer``` for a bit. Below, we specify that we want to limit the run-time to 80 time units using the ```until``` argument.
+The simulation is now ready for a test run; just let it *simmer* for a bit. Below, we specify that we want to limit the run-time to 80 time units using the ```until``` argument. After that, we verify the current simulation time (```now()```) and when will be the next event (```peek()```).
 
 
 ```r
 simmer$run(until=80)
+simmer$now()
 ```
 
-It is possible to resume the execution simply by specifying a longer run-time. Below, we continue the execution until 120 time units.
+```
+## [1] 81.96183
+```
+
+```r
+simmer$peek()
+```
+
+```
+## [1] 81.96183
+```
+
+It is possible to run the simulation step by step, and such a method is chainable too.
+
+
+```r
+simmer$step()
+simmer$step()$step()$step()
+simmer$now()
+```
+
+```
+## [1] 91.42328
+```
+
+```r
+simmer$peek()
+```
+
+```
+## [1] 91.42328
+```
+
+Also, it is possible to resume the automatic execution simply by specifying a longer run-time. Below, we continue the execution until 120 time units.
 
 
 ```r
 simmer$run(until=120)
 ```
 
-Also, you can reset the simulation, flush all results, resources and generators, and restart from the beginning.
+Finally, you can reset the simulation, flush all results, resources and generators, and restart from the beginning.
 
 
 ```r
-simmer$reset() $
-  run(until=80)
+simmer$reset()$run(until=80)
 ```
 
-### Optional activities
+### Replication
 
-The *branch method* introduces the possibility of introducing probability in whether or not to include a branch in a trajectory. The following example shows how a trajectory can be build with a 50-50 chance for the arrival to undergo the second *time-out activity*.
+It is very easy to replicate a simulation multiple times using standard R functions.
+
+
+```r
+reps <- lapply(1:100, function(i) {
+  Simmer$new("SuperDuperSim") $
+    add_resource("nurse", 1) $
+    add_resource("doctor", 2) $
+    add_resource("administration", 1) $
+    add_generator("patient", t0, function() rnorm(1, 10, 2)) $
+    run(80)
+})
+```
+
+The advantage of the latter approach is that, if the individual simulations are heavy, it is straightforward to parallelize the execution of replicas (for instance, here we use the function ```mclapply``` from the package [parallel](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf)). Nevertheless, the external pointers to the C++ *simmer* core are no longer valid when the parallelized execution ends. Thus, it is neccessary to extract the results at the end of each execution. This can be done with the helper class ```Simmer.wrap``` as follows.
+
+
+```r
+library(parallel)
+
+reps <- mclapply(1:100, function(i) {
+  Simmer.wrap$new(
+  Simmer$new("SuperDuperSim") $
+    add_resource("nurse", 1) $
+    add_resource("doctor", 2) $
+    add_resource("administration", 1) $
+    add_generator("patient", t0, function() rnorm(1, 10, 2)) $
+    run(80)
+  )
+})
+```
+
+This helper class brings the simulation data back to R and makes it accessible through the same methods that the ```Simmer``` class.
+
+
+```r
+reps[[1]]$get_res_capacity("doctor")
+```
+
+```
+## [1] 2
+```
+
+```r
+reps[[1]]$get_res_queue_size("doctor")
+```
+
+```
+## [1] Inf
+```
+
+```r
+head(
+  reps[[1]]$get_mon_resources()
+)
+```
+
+```
+##       time server queue system resource
+## 1 11.52358      0     0      0    nurse
+## 2 24.04479      1     0      1    nurse
+## 3 27.20815      1     1      2    nurse
+## 4 36.14014      1     0      1    nurse
+## 5 43.00597      1     1      2    nurse
+## 6 46.70719      1     0      1    nurse
+```
+
+```r
+head(
+  reps[[1]]$get_mon_arrivals()
+)
+```
+
+```
+##       name start_time end_time activity_time finished
+## 1 patient0   11.52358 51.68784      40.16426     TRUE
+## 2 patient1   24.04479 68.76082      41.55267     TRUE
+```
+
+Unfortunately, as the C++ simulation cores are destroyed, parallelization does not allow to resume the execution of replicas.
+
+### Advanced trajectories
+
+The ```branch()``` method offers the possibility of adding a branch in the trajectory with some associated probability. The following example shows how a trajectory can be built with a 50-50 chance for the arrival to undergo the second time-out activity.
 
 
 ```r
@@ -101,7 +217,7 @@ t1 <- Trajectory$new("trajectory with a branch") $
   release("server", 1)
 ```
 
-The argument ```merge``` indicates whether the arrival must continue executing the activities after the branch or not.
+The argument ```merge``` indicates whether the arrival must continue executing the activities after that branch or not.
 
 ### Resource utilization
 
@@ -109,47 +225,28 @@ After you've left it simmering for a bit (pun intended), we can have a look at t
 
 
 ```r
-plot_resource_utilization(simmer, c("nurse", "doctor","administration"))
+plot_resource_utilization(reps, c("nurse", "doctor","administration"))
 ```
 
-![](README_files/figure-html/unnamed-chunk-9-1.png) 
+![](README_files/figure-html/unnamed-chunk-13-1.png) 
 
 It is also possible to have a look at a specific resource and its activity during the simulation.
 
 
 ```r
-plot_resource_usage(simmer, "doctor", types="server", steps=T)
+plot_resource_usage(reps, "doctor", items="server", steps=T)
 ```
 
-![](README_files/figure-html/unnamed-chunk-10-1.png) 
+![](README_files/figure-html/unnamed-chunk-14-1.png) 
 
-In the above graph, the individual lines are all seperate replications. The step lines are instantaneous utilization and the smooth line is a running average. You can also see here that the ```until``` time of 120 was most likely lower than the unrestricted run time of the simulation. It is also possible to get a graph about a specific replication by simply specifying the replication number. In the example below the 6th replication is shown.
+In the above graph, the individual lines are all seperate replications. The step lines are instantaneous utilization and the smooth line is a running average. Let's take a look now at a specific replication. In the example below the 6th replication is shown.
 
 
 ```r
-plot_resource_usage(simmer, "doctor", 6, types="server", steps=T)
+plot_resource_usage(reps[[6]], "doctor", items="server", steps=T)
 ```
 
-![](README_files/figure-html/unnamed-chunk-11-1.png) 
-
-One can also query the raw resource monitor data.
-
-
-```r
-head(
-  simmer$get_mon_resources()
-  )
-```
-
-```
-##        time server queue system resource replication
-## 1  9.632495      0     0      0    nurse           1
-## 2 19.996576      1     0      1    nurse           1
-## 3 24.903438      1     1      2    nurse           1
-## 4 34.857134      1     0      1    nurse           1
-## 5 39.357929      1     1      2    nurse           1
-## 6 46.131391      1     0      1    nurse           1
-```
+![](README_files/figure-html/unnamed-chunk-15-1.png) 
 
 ### Flow time
 
@@ -157,31 +254,12 @@ Next we can have a look at the evolution of the arrivals' flow time during the s
 
 
 ```r
-plot_evolution_arrival_times(simmer, type = "flow_time")
+plot_evolution_arrival_times(reps, type = "flow_time")
 ```
 
-![](README_files/figure-html/unnamed-chunk-13-1.png) 
+![](README_files/figure-html/unnamed-chunk-16-1.png) 
 
 Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
-
-It is also possible to extract the arrival monitor data.
-
-
-```r
-head(
-  simmer$get_mon_arrivals()
-  )
-```
-
-```
-##       name start_time end_time activity_time finished replication
-## 1 patient0   9.632495 48.66433      39.03183     TRUE           1
-## 2 patient1  19.996576 64.39549      39.49206     TRUE           1
-## 3 patient2  34.857134 78.29535      38.93742     TRUE           1
-## 4 patient0  10.414002 52.19673      41.78272     TRUE           2
-## 5 patient1  21.437187 66.46032      41.96828     TRUE           2
-## 6 patient2  28.745192 81.79729      39.55038     TRUE           2
-```
 
 **DOCUMENTATION TO BE CONTINUED**
 
