@@ -91,7 +91,7 @@ SEXP get_mon_resource_(SEXP sim_, SEXP name_) {
   XPtr<Simulator> sim(sim_);
   std::string name = as<std::string>(name_);
   
-  ResStats* stats = sim->get_mon_resource(name);
+  ResStats* stats = sim->get_resource(name)->get_observations();
   
   return Rcpp::List::create(Rcpp::Named("time") = stats->time,
                             Rcpp::Named("server") = stats->server,

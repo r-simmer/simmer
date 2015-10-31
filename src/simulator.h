@@ -186,13 +186,6 @@ public:
    */
   ArrStats* get_mon_arrivals() { return arrival_stats; }
   
-  /**
-   * Get the monitoring data from a resource by name.
-   */
-  ResStats* get_mon_resource(std::string name) { 
-    return get_resource(name)->get_observations();
-  }
-  
 private:
   double now_;              /**< simulation time */
   PQueue event_queue;       /**< the event queue */
