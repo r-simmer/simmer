@@ -106,6 +106,28 @@ public:
   }
   
   /**
+   * Get the time of the next scheduled event.
+   */
+  double peek() { return event_queue.top()->time; }
+  
+  /**
+   * Process the next event. Only one step, a giant leap for mankind.
+   */
+  void step() {
+    if (event_queue.empty()) Rcpp::stop("no generators defined");
+    _step();
+  }
+  
+  /**
+   * Executes steps until the given criterion is met.
+   * @param   until   time of ending
+   */
+  void run(double until) {
+    if (event_queue.empty()) Rcpp::stop("no generators defined");
+    while(now_ < until) _step();
+  }
+  
+  /**
    * Insert a new process now.
    */
   void process(Rcpp::Function func) {
@@ -127,31 +149,6 @@ public:
   }
   
   /**
-   * Run the simulation. Only one step, a giant leap for mankind.
-   */
-  inline void step() {
-    Event* ev = get_next();
-    now_ = ev->time;
-    active_process = ev->process;
-    delete ev;
-    int ret = Rcpp::as<int>(active_process->callback());
-    if (!ret) {
-      if (verbose)
-        Rcpp::Rcout << now_ << ": " << active_process << ": process terminated " << std::endl;
-      
-      active_process->resource->release();
-      delete active_process;
-    }
-    // ... and that's it! :D
-  }
-  
-  /**
-   * Run the simulation.
-   * @param   until   time of ending
-   */
-  void run(double until) { while(now_ < until) step(); }
-  
-  /**
    * Add a resource to the simulator.
    * @param   name        the name
    * @param   capacity    server capacity (-1 means infinity)
@@ -159,20 +156,20 @@ public:
    * @param   mon         bool that indicates whether this entity must be monitored
    */
   void resource(std::string name, int capacity, int queue_size, bool mon) {
-    Resource* res = new Resource(this, name, mon, capacity, queue_size);
-    resource_map[name] = res;
+    if (resource_map.find(name) == resource_map.end()) {
+      Resource* res = new Resource(this, name, mon, capacity, queue_size);
+      resource_map[name] = res;
+    } else Rcpp::warning("resource " + name + " already defined");
   }
   
   /**
    * Get a resource by name.
    */
   Resource* get_resource(std::string name) {
-    try {
-      return resource_map[name];
-    } catch (...) {
-      // not found
-      throw std::runtime_error("resource '" + name + "' not found (typo?)");
-    }
+    ResMap::iterator search = resource_map.find(name);
+    if (search == resource_map.end())
+      Rcpp::stop("resource '" + name + "' not found (typo?)");
+    return search->second;
   }
   
   /**
@@ -190,6 +187,22 @@ private:
     Event* ev = event_queue.top();
     event_queue.pop();
     return ev;
+  }
+  
+  inline void _step() {
+    Event* ev = get_next();
+    now_ = ev->time;
+    active_process = ev->process;
+    delete ev;
+    int ret = Rcpp::as<int>(active_process->callback());
+    if (!ret) {
+      if (verbose)
+        Rcpp::Rcout << now_ << ": " << active_process << ": process terminated " << std::endl;
+      
+      active_process->resource->release();
+      delete active_process;
+    }
+    // ... and that's it! :D
   }
 };
 

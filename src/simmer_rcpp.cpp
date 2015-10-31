@@ -30,16 +30,17 @@ void reset_(SEXP sim_) {
 // }
 
 //[[Rcpp::export]]
+double peek_(SEXP sim_) {
+  XPtr<Simulator> sim(sim_);
+  
+  return sim->peek();
+}
+
+//[[Rcpp::export]]
 void step_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
   
-  try {
-    sim->step();
-  } catch (std::exception &ex) {  
-    forward_exception_to_r(ex);
-  } catch(...) { 
-    ::Rf_error("c++ exception (unknown reason)"); 
-  }
+  sim->step();
 }
 
 //[[Rcpp::export]]
@@ -47,13 +48,7 @@ void run_(SEXP sim_, SEXP until_) {
   XPtr<Simulator> sim(sim_);
   double until = as<double>(until_);
   
-  try {
-    sim->run(until);
-  } catch (std::exception &ex) {  
-    forward_exception_to_r(ex);
-  } catch(...) { 
-    ::Rf_error("c++ exception (unknown reason)"); 
-  }
+  sim->run(until);
 }
 
 //[[Rcpp::export]]
