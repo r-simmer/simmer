@@ -7,11 +7,28 @@ require(R6)
 #' @field name environment name
 #' @format An \code{\link{R6Class}} generator object
 #' @examples
-#' simmer <- Simmer$new("SuperDuperSim", verbose=F) $
+#' library(simmer)
+#' 
+#' t0 <- Trajectory$new("my trajectory") $
+#'   ## add an intake activity
+#'   seize("nurse", 1) $
+#'   timeout(function() rnorm(1, 15)) $
+#'   release("nurse", 1) $
+#'   ## add a consultation activity
+#'   seize("doctor", 1) $
+#'   timeout(function() rnorm(1, 20)) $
+#'   release("doctor", 1) $
+#'   ## add a planning activity
+#'   seize("administration", 1) $
+#'   timeout(function() rnorm(1, 5)) $
+#'   release("administration", 1)
+#' 
+#' simmer <- Simmer$new("SuperDuperSim") $
 #'   add_resource("nurse", 1) $
 #'   add_resource("doctor", 2) $
 #'   add_resource("administration", 1) $
 #'   add_generator("patient", t0, function() rnorm(1, 10, 2))
+#'   
 #' simmer$run(until=80)
 #' @useDynLib simmer
 #' @importFrom Rcpp evalCpp
@@ -23,7 +40,7 @@ Simmer <- R6Class("Simmer",
     
     initialize = function(name="anonymous", verbose=FALSE) {
       self$name <- evaluate_value(name)
-      private$sim_obj <- Simulator__new(name, evaluate_value(verbose))
+      private$sim_obj <- Simulator__new(name, verbose)
       invisible(self)
     },
     
@@ -32,9 +49,12 @@ Simmer <- R6Class("Simmer",
       invisible(self)
     },
     
+    now = function() { now_(private$sim_obj) },
+    
     peek = function() {
-      peek_(private$sim_obj)
-      invisible(self)
+      ret <- peek_(private$sim_obj)
+      if (ret >= 0) ret
+      else Inf
     },
     
     step = function() {
@@ -54,7 +74,6 @@ Simmer <- R6Class("Simmer",
       name <- evaluate_value(name)
       capacity <- evaluate_value(capacity)
       queue_size <- evaluate_value(queue_size)
-      mon <- evaluate_value(mon)
       if (is.infinite(capacity)) capacity <- -1
       if (is.infinite(queue_size)) queue_size <- -1
       
@@ -69,8 +88,7 @@ Simmer <- R6Class("Simmer",
       if (!is.function(dist))
         stop(paste0(self$name, ": dist must be callable"))
       name_prefix <- evaluate_value(name_prefix)
-      mon <- evaluate_value(mon)
-      
+
       add_generator_(private$sim_obj, name_prefix, trajectory$get_head(), dist, mon)
       invisible(self)
     },

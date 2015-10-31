@@ -4,15 +4,15 @@
 \alias{plot_resource_usage}
 \title{plot usage of a resource over time}
 \usage{
-plot_resource_usage(simmer, resource_name, type = c("queue", "server",
+plot_resource_usage(reps, resource_name, items = c("queue", "server",
   "system"), steps = FALSE)
 }
 \arguments{
-\item{simmer}{the simulation environment}
+\item{reps}{a single simmer environment or a list of environments representing several replications}
 
 \item{resource_name}{the name of the resource (character value)}
 
-\item{type}{the parts of the resource to be plotted}
+\item{items}{the components of the resource to be plotted}
 
 \item{steps}{adds the changes in the resource usage}
 }

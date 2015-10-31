@@ -17,11 +17,28 @@ Simulation environment
 \item{\code{name}}{environment name}
 }}
 \examples{
-simmer <- Simmer$new("SuperDuperSim", verbose=F) $
+library(simmer)
+
+t0 <- Trajectory$new("my trajectory") $
+  ## add an intake activity
+  seize("nurse", 1) $
+  timeout(function() rnorm(1, 15)) $
+  release("nurse", 1) $
+  ## add a consultation activity
+  seize("doctor", 1) $
+  timeout(function() rnorm(1, 20)) $
+  release("doctor", 1) $
+  ## add a planning activity
+  seize("administration", 1) $
+  timeout(function() rnorm(1, 5)) $
+  release("administration", 1)
+
+simmer <- Simmer$new("SuperDuperSim") $
   add_resource("nurse", 1) $
   add_resource("doctor", 2) $
   add_resource("administration", 1) $
   add_generator("patient", t0, function() rnorm(1, 10, 2))
+
 simmer$run(until=80)
 }
 \keyword{datasets}

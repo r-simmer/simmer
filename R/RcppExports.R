@@ -9,8 +9,8 @@ reset_ <- function(sim_) {
     invisible(.Call('simmer_reset_', PACKAGE = 'simmer', sim_))
 }
 
-schedule_ <- function(delay_, arrival_) {
-    invisible(.Call('simmer_schedule_', PACKAGE = 'simmer', delay_, arrival_))
+now_ <- function(sim_) {
+    .Call('simmer_now_', PACKAGE = 'simmer', sim_)
 }
 
 peek_ <- function(sim_) {

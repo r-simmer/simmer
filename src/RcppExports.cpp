@@ -27,15 +27,15 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// schedule_
-void schedule_(SEXP delay_, SEXP arrival_);
-RcppExport SEXP simmer_schedule_(SEXP delay_SEXP, SEXP arrival_SEXP) {
+// now_
+double now_(SEXP sim_);
+RcppExport SEXP simmer_now_(SEXP sim_SEXP) {
 BEGIN_RCPP
+    Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type delay_(delay_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type arrival_(arrival_SEXP);
-    schedule_(delay_, arrival_);
-    return R_NilValue;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    __result = Rcpp::wrap(now_(sim_));
+    return __result;
 END_RCPP
 }
 // peek_

@@ -7,6 +7,8 @@ require(R6)
 #' @field name trajectory name
 #' @format An \code{\link{R6Class}} generator object
 #' @examples
+#' library(simmer)
+#' 
 #' t0 <- Trajectory$new("my trajectory") $
 #'   ## add an intake activity
 #'   seize("nurse", 1) $

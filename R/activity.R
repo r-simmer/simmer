@@ -49,10 +49,7 @@ SeizeActivity <- R6Class("SeizeActivity", inherit = Activity,
     },
     
     run = function(parent) {
-      ret <- seize_(self$resource, parent, private$amount)
-      if (!is.null(self$next_activity) && !ret) 
-        schedule_(0, parent)
-      return(0)
+      return(seize_(self$resource, parent, private$amount))
     }
   ),
   
@@ -71,10 +68,7 @@ ReleaseActivity <- R6Class("ReleaseActivity", inherit = Activity,
     },
     
     run = function(parent) {
-      ret <- release_(self$resource, parent, private$amount)
-      if (!is.null(self$next_activity) && !ret) 
-        schedule_(0, parent)
-      return(0)
+      return(release_(self$resource, parent, private$amount))
     }
   ),
   
@@ -94,12 +88,7 @@ TimeoutActivity <- R6Class("TimeoutActivity", inherit = Activity,
       private$duration <- evaluate_value(duration)
     },
     
-    run = function(parent) {
-      delay <- private$duration()
-      if (!is.null(self$next_activity))
-        schedule_(delay, parent)
-      return(delay)
-    }
+    run = function(parent) { return(abs(private$duration())) }
   ),
   
   private = list(

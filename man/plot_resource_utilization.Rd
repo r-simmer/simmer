@@ -4,10 +4,10 @@
 \alias{plot_resource_utilization}
 \title{plot utilization of resources}
 \usage{
-plot_resource_utilization(simmer, resources)
+plot_resource_utilization(reps, resources)
 }
 \arguments{
-\item{simmer}{the simulation environment}
+\item{reps}{a single simmer environment or a list of environments representing several replications}
 
 \item{resources}{a character vector with at least one resource specified - e.g. "c('res1','res2')"}
 }

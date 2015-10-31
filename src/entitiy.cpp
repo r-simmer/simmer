@@ -13,13 +13,16 @@ inline void Arrival::activate() {
   
   // run the activity and get the activity time
   Rcpp::Function run(activity["run"]);
-  activity_time += Rcpp::as<double>(run((long int)this));
+  double delay = Rcpp::as<double>(run((long int)this));
+  if (delay >= 0) activity_time += delay;
   
   // get the next activity or end
-  if (Rf_isEnvironment(activity["next_activity"]))
-    activity = activity["next_activity"];
-  else
-    sim->notify_end(this, 1);
+  if (delay >= -1) {
+    if (Rf_isEnvironment(activity["next_activity"])) {
+      activity = activity["next_activity"];
+      if (delay >= 0) sim->schedule(delay, this);
+    } else sim->notify_end(this, TRUE);
+  } else sim->notify_end(this, FALSE);
 }
 
 void Generator::activate() {
@@ -51,13 +54,10 @@ int Resource::seize(Arrival* arrival, int amount) {
   else if (room_in_queue(amount)) {
     queue_count += amount;
     queue.push(std::make_pair(arrival, amount));
-    return 1;
-  }
-  // reject
-  else {
-    sim->notify_end(arrival, 0);
     return -1;
   }
+  // reject
+  else return -2;
 }
 
 int Resource::release(Arrival* arrival, int amount) {

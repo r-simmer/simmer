@@ -114,7 +114,11 @@ public:
   /**
    * Get the time of the next scheduled event.
    */
-  double peek() { return event_queue.top()->time; }
+  double peek() { 
+    if (!event_queue.empty())
+      return event_queue.top()->time;
+    else return -1;
+  }
   
   /**
    * Process the next event. Only one step, a giant leap for mankind.

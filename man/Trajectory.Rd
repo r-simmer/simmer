@@ -17,6 +17,8 @@ Trajectory object
 \item{\code{name}}{trajectory name}
 }}
 \examples{
+library(simmer)
+
 t0 <- Trajectory$new("my trajectory") $
   ## add an intake activity
   seize("nurse", 1) $
