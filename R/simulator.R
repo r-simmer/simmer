@@ -32,15 +32,22 @@ Simmer <- R6Class("Simmer",
       invisible(self)
     },
     
-    peek = function() { peek_(private$sim_obj) },
+    peek = function() {
+      peek_(private$sim_obj)
+      invisible(self)
+    },
     
-    step = function() { step_(private$sim_obj) },
+    step = function() {
+      step_(private$sim_obj)
+      invisible(self)
+    },
     
     run = function(until=1000) {
       until <- evaluate_value(until)
       if(!is.finite(until)) until <- 1000
       
       run_(private$sim_obj, until)
+      invisible(self)
     },
     
     add_resource = function(name, capacity=1, queue_size=Inf, mon=T) {

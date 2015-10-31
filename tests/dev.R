@@ -14,19 +14,18 @@ t1 <- Trajectory$new("my trajectory") $
   timeout(function() rnorm(1, 5)) $
   release("administration", 1)
 
-simmer <- Simmer$new("SuperDuperSim", verbose=F) $
-  add_resource("nurse", 1) $
-  add_resource("doctor", 2) $
-  add_resource("administration", 1) $
-  add_generator("patient", t1, function() rnorm(1, 10, 2))
-simmer$run(80)
+reps <- lapply(1:100, function(i) {
+  simmer <- Simmer$new("SuperDuperSim", verbose=F) $
+    add_resource("nurse", 1) $
+    add_resource("doctor", 2) $
+    add_resource("administration", 1) $
+    add_generator("patient", t1, function() rnorm(1, 10, 2)) $
+    run(80)
+})
 
-arrival_stats <- simmer$get_mon_arrivals()
-resource_stats <- simmer$get_mon_resources()
-
-plot_resource_usage(simmer, "doctor", type="server", steps=T)
-plot_resource_utilization(simmer, c("nurse", "doctor","administration"))
-plot_evolution_arrival_times(simmer, type = "flow_time")
+plot_resource_usage(reps, "doctor", items="server", steps=T)
+plot_resource_utilization(reps, c("nurse", "doctor","administration"))
+plot_evolution_arrival_times(reps, type = "flow_time")
 
 #################################################################
 
