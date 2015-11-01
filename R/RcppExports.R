@@ -9,6 +9,10 @@ reset_ <- function(sim_) {
     invisible(.Call('simmer_reset_', PACKAGE = 'simmer', sim_))
 }
 
+now_ <- function(sim_) {
+    .Call('simmer_now_', PACKAGE = 'simmer', sim_)
+}
+
 peek_ <- function(sim_) {
     .Call('simmer_peek_', PACKAGE = 'simmer', sim_)
 }

@@ -21,6 +21,13 @@ void reset_(SEXP sim_) {
   sim->reset();
 }
 
+//[[Rcpp::export]]
+double now_(SEXP sim_) {
+  XPtr<Simulator> sim(sim_);
+  
+  return sim->now();
+}
+
 // //[[Rcpp::export]]
 // void schedule_(SEXP delay_, SEXP arrival_) {
 //   double delay = as<double>(delay_);

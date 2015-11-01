@@ -27,6 +27,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// now_
+double now_(SEXP sim_);
+RcppExport SEXP simmer_now_(SEXP sim_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    __result = Rcpp::wrap(now_(sim_));
+    return __result;
+END_RCPP
+}
 // peek_
 double peek_(SEXP sim_);
 RcppExport SEXP simmer_peek_(SEXP sim_SEXP) {

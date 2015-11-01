@@ -2,10 +2,10 @@ require(R6)
 
 #' Simmer.Env
 #'
-#' Simulation environment
+#' Simulation environment.
 #'
-#' @field name environment name
-#' @format An \code{\link{R6Class}} generator object
+#' @format NULL
+#' @usage NULL
 #' @useDynLib simmer
 #' @importFrom Rcpp evalCpp
 #' @import R6
@@ -25,6 +25,14 @@ Simmer.Env <- R6Class("Simmer",
       invisible(self)
     },
     
+    now = function() { now_(private$sim_obj) },
+    
+    peek = function() {
+      ret <- peek_(private$sim_obj)
+      if (ret >= 0) ret
+      else Inf
+    },
+    
     step = function() { 
       step_(private$sim_obj)
       invisible(self)
@@ -42,9 +50,9 @@ Simmer.Env <- R6Class("Simmer",
       name <- evaluate_value(name)
       capacity <- evaluate_value(capacity)
       queue_size <- evaluate_value(queue_size)
-      mon <- evaluate_value(mon)
       if (is.infinite(capacity)) capacity <- -1
       if (is.infinite(queue_size)) queue_size <- -1
+      mon <- evaluate_value(mon)
       
       resource_(private$sim_obj, name, capacity, queue_size, mon)
       if (mon) private$mon_res <- c(private$mon_res, name)
@@ -70,31 +78,37 @@ Simmer.Env <- R6Class("Simmer",
     },
     
     get_mon_arrivals = function() {
-      monitor_data <- as.data.frame(
-        get_mon_arrivals_(private$sim_obj)
-      )
-      monitor_data
+      as.data.frame(get_mon_arrivals_(private$sim_obj))
     },
     
     get_mon_resources = function() {
       do.call(rbind,
-        lapply(1:length(private$mon_res), function(i) {
+        lapply(1:length(private$mon_res), function(j) {
           monitor_data <- as.data.frame(
-            get_mon_resource_(private$sim_obj, private$mon_res[[i]])
+            get_mon_resource_(private$sim_obj, private$mon_res[[j]])
           )
-          monitor_data$system <- monitor_data$server + monitor_data$queue
-          monitor_data$resource <- private$mon_res[[i]]
+          tryCatch({
+            monitor_data$system <- monitor_data$server + monitor_data$queue
+            monitor_data$resource <- private$mon_res[[j]]
+          }, error = function(e) {
+            monitor_data$system <<- numeric()
+            monitor_data$resource <<- character()
+          })
           monitor_data
         })
       )
     },
     
     get_res_capacity = function(name) { 
-      get_res_capacity_(private$sim_obj, evaluate_value(name))
+      ret <- get_res_capacity_(private$sim_obj, evaluate_value(name))
+      if (ret < 0) ret <- Inf
+      ret
     },
     
     get_res_queue_size = function(name) {
-      get_res_queue_size_(private$sim_obj, evaluate_value(name))
+      ret <- get_res_queue_size_(private$sim_obj, evaluate_value(name))
+      if (ret < 0) ret <- Inf
+      ret
     }
   ),
   
@@ -103,11 +117,3 @@ Simmer.Env <- R6Class("Simmer",
     mon_res = NULL
   )
 )
-
-evaluate_value<-function(value){
-  tryCatch(
-    {
-      abs(parse(text=value))
-    }, 
-    error = function(err) value)
-}

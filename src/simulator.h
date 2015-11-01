@@ -108,24 +108,38 @@ public:
   /**
    * Get the time of the next scheduled event.
    */
-  double peek() { return event_queue.top()->time; }
+  double peek() { 
+    if (!event_queue.empty())
+      return event_queue.top()->time;
+    else return -1;
+  }
   
   /**
    * Process the next event. Only one step, a giant leap for mankind.
    */
-  void step() {
-    if (event_queue.empty()) Rcpp::stop("no generators defined");
-    _step();
+  inline bool step() {
+    Event* ev = get_next();
+    if (!ev) return 0;
+    now_ = ev->time;
+    active_process = ev->process;
+    delete ev;
+    int ret = Rcpp::as<int>(active_process->callback());
+    if (!ret) {
+      if (verbose)
+        Rcpp::Rcout << now_ << ": " << active_process << ": process terminated " << std::endl;
+      
+      active_process->resource->release();
+      delete active_process;
+    }
+    return 1;
+    // ... and that's it! :D
   }
   
   /**
    * Executes steps until the given criterion is met.
    * @param   until   time of ending
    */
-  void run(double until) {
-    if (event_queue.empty()) Rcpp::stop("no generators defined");
-    while(now_ < until) _step();
-  }
+  void run(double until) { while ((now_ < until) && step()); }
   
   /**
    * Insert a new process now.
@@ -184,25 +198,10 @@ private:
   ArrStats* arrival_stats;  /**< arrival statistics */
   
   inline Event* get_next() {
+    if (event_queue.empty()) return NULL;
     Event* ev = event_queue.top();
     event_queue.pop();
     return ev;
-  }
-  
-  inline void _step() {
-    Event* ev = get_next();
-    now_ = ev->time;
-    active_process = ev->process;
-    delete ev;
-    int ret = Rcpp::as<int>(active_process->callback());
-    if (!ret) {
-      if (verbose)
-        Rcpp::Rcout << now_ << ": " << active_process << ": process terminated " << std::endl;
-      
-      active_process->resource->release();
-      delete active_process;
-    }
-    // ... and that's it! :D
   }
 };
 
