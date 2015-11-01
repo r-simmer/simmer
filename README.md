@@ -71,7 +71,7 @@ simmer$now()
 ```
 
 ```
-## [1] 81.48769
+## [1] 86.26052
 ```
 
 ```r
@@ -79,7 +79,7 @@ simmer$peek()
 ```
 
 ```
-## [1] 81.48769
+## [1] 86.26052
 ```
 
 It is possible to run the simulation step by step, and such a method is chainable too.
@@ -92,7 +92,7 @@ simmer$now()
 ```
 
 ```
-## [1] 83.3756
+## [1] 87.02796
 ```
 
 ```r
@@ -100,7 +100,7 @@ simmer$peek()
 ```
 
 ```
-## [1] 83.3756
+## [1] 87.02796
 ```
 
 Also, it is possible to resume the automatic execution simply by specifying a longer runtime. Below, we continue the execution until 120 time units.
@@ -177,13 +177,13 @@ head(
 ```
 
 ```
-##       time server queue system resource
-## 1 11.79077      0     0      0    nurse
-## 2 21.99608      1     0      1    nurse
-## 3 28.00295      1     1      2    nurse
-## 4 32.59010      1     0      1    nurse
-## 5 43.05209      1     1      2    nurse
-## 6 44.02270      1     0      1    nurse
+##        time server queue system resource
+## 1  9.909025      0     0      0    nurse
+## 2 22.559753      1     0      1    nurse
+## 3 25.309044      1     1      2    nurse
+## 4 34.447334      1     0      1    nurse
+## 5 40.129584      1     1      2    nurse
+## 6 42.491323      1     0      1    nurse
 ```
 
 ```r
@@ -194,16 +194,16 @@ head(
 
 ```
 ##       name start_time end_time activity_time finished
-## 1 patient0   11.79077 53.99191      42.20115     TRUE
-## 2 patient1   21.99608 68.56691      40.56397     TRUE
-## 3 patient2   32.59010 85.30166      42.24957     TRUE
+## 1 patient0   9.909025 50.09229      40.18326     TRUE
+## 2 patient1  22.559753 66.80409      41.49504     TRUE
+## 3 patient2  34.447334 77.33145      37.20187     TRUE
 ```
 
 Unfortunately, as the C++ simulation cores are destroyed, parallelization does not allow to resume the execution of replicas.
 
 ### Advanced trajectories
 
-The ```branch()``` method offers the possibility of adding a branch in the trajectory with some associated probability. The following example shows how a trajectory can be built with a 50-50 chance for the arrival to undergo the second timeout activity.
+The ```branch()``` method offers the possibility of adding a branch in the trajectory with some associated probability. The following example shows how a trajectory can be built with a 50-50 chance for the arrival to pass through the second timeout activity.
 
 
 ```r

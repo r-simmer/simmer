@@ -21,3 +21,4 @@ Suggests:
     scales,
     testthat
 LinkingTo: Rcpp
+RoxygenNote: 5.0.0

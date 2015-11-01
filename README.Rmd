@@ -145,7 +145,7 @@ Unfortunately, as the C++ simulation cores are destroyed, parallelization does n
 
 ### Advanced trajectories
 
-The ```branch()``` method offers the possibility of adding a branch in the trajectory with some associated probability. The following example shows how a trajectory can be built with a 50-50 chance for the arrival to undergo the second timeout activity.
+The ```branch()``` method offers the possibility of adding a branch in the trajectory with some associated probability. The following example shows how a trajectory can be built with a 50-50 chance for the arrival to pass through the second timeout activity.
 
 ```{r}
 t1 <- Trajectory$new("trajectory with a branch") $

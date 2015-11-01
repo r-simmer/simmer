@@ -2,13 +2,67 @@ require(R6)
 
 #' Simmer
 #'
-#' Simulation environment
+#' The simulation environment.
 #'
-#' @field name environment name
-#' @format An \code{\link{R6Class}} generator object
+#' @seealso \link{Trajectory}
+#' @section Methods:
+#' \preformatted{## Object creation
+#' Simmer$new(name="anonymous", verbose=FALSE)
+#' }\describe{
+#'   \item{name}{the name of the simulator}
+#'   \item{verbose}{enable showing event information}
+#' }
+#' \preformatted{## Reset the simulator (time, statistics, resources, generators)
+#' Simmer$reset() 
+#' }\preformatted{## Get the current simulation time
+#' Simmer$now()
+#' }
+#' \preformatted{## Get the time of the next scheduled event
+#' Simmer$peek()
+#' }
+#' \preformatted{## Process the next event
+#' Simmer$step()
+#' }
+#' \preformatted{## Execute steps until the given criterion
+#' Simmer$run(until=1000)
+#' }\describe{
+#'   \item{until}{the stop time}
+#' }
+#' \preformatted{## Add a resource to the simulation environment
+#' Simmer$add_resource(name, capacity=1, queue_size=Inf, mon=TRUE)
+#' }\describe{
+#'   \item{name}{the name of the resource}
+#'   \item{capacity}{the capacity of the server}
+#'   \item{queue_size}{the size of the queue}
+#'   \item{mon}{whether the simulator must monitor this resource or not}
+#' }
+#' \preformatted{## Add a generator to the simulation environment
+#' Simmer$add_generator(name_prefix, trajectory, dist, mon=TRUE)
+#' }\describe{
+#'   \item{name_prefix}{the name prefix of the generated arrivals}
+#'   \item{trajectory}{the \link{Trajectory} that the generated arrivals will follow}
+#'   \item{dist}{a function modelling the interarrival times}
+#'   \item{mon}{whether the simulator must monitor the generated arrivals or not}
+#' }
+#' \preformatted{## Get the arrival statistics
+#' Simmer$get_mon_arrivals()
+#' }
+#' \preformatted{## Get the resource statistics
+#' Simmer$get_mon_resources()
+#' }
+#' \preformatted{## Get the capacity of a resource
+#' Simmer$get_res_capacity(name)
+#' }\describe{
+#'   \item{name}{the name of the resource}
+#' }
+#' \preformatted{## Get the queue size of a resource
+#' Simmer$get_res_queue_size(name)
+#' }\describe{
+#'   \item{name}{the name of the resource}
+#' }
+#' @format NULL
+#' @usage NULL
 #' @examples
-#' library(simmer)
-#' 
 #' t0 <- Trajectory$new("my trajectory") $
 #'   ## add an intake activity
 #'   seize("nurse", 1) $
@@ -30,6 +84,8 @@ require(R6)
 #'   add_generator("patient", t0, function() rnorm(1, 10, 2))
 #'   
 #' simmer$run(until=80)
+#' 
+#' plot_resource_usage(simmer, "doctor")
 #' @useDynLib simmer
 #' @importFrom Rcpp evalCpp
 #' @import R6
@@ -70,7 +126,7 @@ Simmer <- R6Class("Simmer",
       invisible(self)
     },
     
-    add_resource = function(name, capacity=1, queue_size=Inf, mon=T) {
+    add_resource = function(name, capacity=1, queue_size=Inf, mon=TRUE) {
       name <- evaluate_value(name)
       capacity <- evaluate_value(capacity)
       queue_size <- evaluate_value(queue_size)
@@ -82,7 +138,7 @@ Simmer <- R6Class("Simmer",
       invisible(self)
     },
     
-    add_generator = function(name_prefix, trajectory, dist, mon=T) {
+    add_generator = function(name_prefix, trajectory, dist, mon=TRUE) {
       if (!inherits(trajectory, "Trajectory"))
         stop("not a trajectory")
       if (!is.function(dist))
@@ -136,10 +192,54 @@ Simmer <- R6Class("Simmer",
 
 #' Simmer.wrap
 #'
-#' Extracts the simulation data from a Simmer object making it accessible through the same methods
+#' Extracts the simulation data from a Simmer object making it accessible 
+#' through the same methods. Only useful if you want to parallelize heavy
+#' replicas (see the example below), because the C++ simulation backend is
+#' destroyed when the threads exit.
 #'
-#' @field simmer a simmer object
-#' @format An \code{\link{R6Class}} generator object
+#' @seealso \link{Simmer}
+#' @section Methods:
+#' \preformatted{## Object creation
+#' Simmer.wrap$new(simmer)
+#' }\describe{
+#'   \item{simmer}{the \link{Simmer} object}
+#' }
+#' \preformatted{## Get the arrival statistics
+#' Simmer.wrap$get_mon_arrivals()
+#' }
+#' \preformatted{## Get the resource statistics
+#' Simmer.wrap$get_mon_resources()
+#' }
+#' \preformatted{## Get the capacity of a resource
+#' Simmer.wrap$get_res_capacity(name)
+#' }\describe{
+#'   \item{name}{the name of the resource}
+#' }
+#' \preformatted{## Get the queue size of a resource
+#' Simmer.wrap$get_res_queue_size(name)
+#' }\describe{
+#'   \item{name}{the name of the resource}
+#' }
+#' @format NULL
+#' @usage NULL
+#' @examples 
+#' library(parallel)
+#' 
+#' mm1 <- Trajectory$new() $
+#'   seize("server", 1) $
+#'   timeout(function() rexp(1, 2)) $
+#'   release("server", 1)
+#' 
+#' reps <- mclapply(1:4, function(i) {
+#'   Simmer.wrap$new(
+#'   Simmer$new("M/M/1 example") $
+#'     add_resource("server", 1) $
+#'     add_generator("customer", mm1, function() rexp(1, 1)) $
+#'     run(100)
+#'   )
+#' })
+#' 
+#' plot_resource_usage(reps, "server")
 #' @import R6
 #' @export
 Simmer.wrap <- R6Class("Simmer.wrap",

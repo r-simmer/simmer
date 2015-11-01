@@ -2,13 +2,53 @@ require(R6)
 
 #' Trajectory
 #'
-#' Trajectory object
+#' A trajectory is a chain of activities followed by arrivals of the same type.
 #'
-#' @field name trajectory name
-#' @format An \code{\link{R6Class}} generator object
+#' @seealso \link{Simmer}
+#' @section Methods:
+#' \preformatted{## Object creation
+#' Trajectory$new(name="anonymous")
+#' }\describe{
+#'   \item{name}{the name of the trajectory}
+#' }
+#' \preformatted{## Show the trajectory
+#' Trajectory$show() 
+#' }\preformatted{## Get the first activity
+#' Trajectory$get_head()
+#' }
+#' \preformatted{## Get the last activity
+#' Trajectory$get_tail()
+#' }
+#' \preformatted{## Get the total number of activities in the trajectory
+#' Trajectory$get_n_activities()
+#' }
+#' \preformatted{## Add a seize activity
+#' Trajectory$seize(resource, amount)
+#' }\describe{
+#'   \item{resource}{the name of the resource}
+#'   \item{amount}{the amount needed}
+#' }
+#' \preformatted{## Add a release activity
+#' Trajectory$release(resource, amount)
+#' }\describe{
+#'   \item{resource}{the name of the resource}
+#'   \item{amount}{the amount needed}
+#' }
+#' \preformatted{## Add a delay activity
+#' Trajectory$timeout(duration)
+#' }\describe{
+#'   \item{duration}{the delay}
+#' }
+#' \preformatted{## Add a branch in the trajectory
+#' Trajectory$branch(prob, merge=TRUE, trj)
+#' }\describe{
+#'   \item{prob}{the probability for an arrival of traversing this branch}
+#'   \item{merge}{whether the arrival must continue executing activities after this branch or not}
+#'   \item{trj}{a Trajectory object describing this branch}
+#' }
+#' @format NULL
+#' @usage NULL
 #' @examples
-#' library(simmer)
-#' 
 #' t0 <- Trajectory$new("my trajectory") $
 #'   ## add an intake activity
 #'   seize("nurse", 1) $
@@ -22,6 +62,24 @@ require(R6)
 #'   seize("administration", 1) $
 #'   timeout(function() rnorm(1, 5)) $
 #'   release("administration", 1)
+#' 
+#' t0$show()
+#' 
+#' t1 <- Trajectory$new("trajectory with a branch") $
+#'   seize("server", 1) $
+#'   ## 50-50 chance for each branch
+#'   branch(prob=0.5, merge=TRUE, Trajectory$new("branch1") $
+#'     timeout(function() 1)
+#'   ) $
+#'   branch(prob=0.5, merge=FALSE, Trajectory$new("branch2") $
+#'     timeout(function() rexp(1, 3)) $
+#'     release("server", 1)
+#'   ) $
+#'   ## only the first branch continues here
+#'   release("server", 1) $
+#'   timeout(function() 2)
+#' 
+#' t1$show()
 #' @import R6
 #' @export
 Trajectory <- R6Class("Trajectory",
@@ -63,7 +121,7 @@ Trajectory <- R6Class("Trajectory",
       private$add_activity(TimeoutActivity$new(duration))
     },
     
-    branch = function(prob, merge=T, trj) {
+    branch = function(prob, merge=TRUE, trj) {
       if (!inherits(trj, "Trajectory"))
         stop("not a trajectory")
       private$tail$next_activity <- c(trj$get_head(), prob)
