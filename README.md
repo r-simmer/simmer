@@ -2,8 +2,6 @@
 
 *by Bart Smeets (bartsmeets86@gmail.com) & Iñaki Ucar (i.ucar86@gmail.com)*
 
-__*simmer* is under heavy development and its internals and syntax can still change extensively over the coming time__
-
 *simmer* is a discrete event simulation (DES) package for the R language designed to be a generic framework like [SimPy](https://simpy.readthedocs.org) or [SimJulia](http://simjuliajl.readthedocs.org). Although R alone is definitely not made for DES, we use [Rcpp](http://www.rcpp.org/) to boost the performance of *simmer*. This faces us with an important trade-off between flexibility and performance, depending on how much code remains in R or goes to C++ respectively.
 
 Our implementation solves this problem by introducing the concept of *trajectory*: a common path in the simulation model for arrivals of the same type. As we will see, it is pretty flexible and simple to use, and leverages the chaining/piping workflow introduced by [R6](https://cran.r-project.org/web/packages/R6/) classes. 
@@ -71,7 +69,7 @@ simmer$now()
 ```
 
 ```
-## [1] 86.26052
+## [1] 86.54868
 ```
 
 ```r
@@ -79,7 +77,7 @@ simmer$peek()
 ```
 
 ```
-## [1] 86.26052
+## [1] 86.54868
 ```
 
 It is possible to run the simulation step by step, and such a method is chainable too.
@@ -92,7 +90,7 @@ simmer$now()
 ```
 
 ```
-## [1] 87.02796
+## [1] 87.71943
 ```
 
 ```r
@@ -100,7 +98,7 @@ simmer$peek()
 ```
 
 ```
-## [1] 87.02796
+## [1] 87.71943
 ```
 
 Also, it is possible to resume the automatic execution simply by specifying a longer runtime. Below, we continue the execution until 120 time units.
@@ -177,13 +175,13 @@ head(
 ```
 
 ```
-##        time server queue system resource
-## 1  9.909025      0     0      0    nurse
-## 2 22.559753      1     0      1    nurse
-## 3 25.309044      1     1      2    nurse
-## 4 34.447334      1     0      1    nurse
-## 5 40.129584      1     1      2    nurse
-## 6 42.491323      1     0      1    nurse
+##       time server queue system resource
+## 1 12.72931      0     0      0    nurse
+## 2 21.44782      1     0      1    nurse
+## 3 28.27344      1     1      2    nurse
+## 4 30.51148      1     0      1    nurse
+## 5 39.15172      1     1      2    nurse
+## 6 45.75769      1     2      3    nurse
 ```
 
 ```r
@@ -194,9 +192,9 @@ head(
 
 ```
 ##       name start_time end_time activity_time finished
-## 1 patient0   9.909025 50.09229      40.18326     TRUE
-## 2 patient1  22.559753 66.80409      41.49504     TRUE
-## 3 patient2  34.447334 77.33145      37.20187     TRUE
+## 1 patient0   12.72931 51.58249      38.85318     TRUE
+## 2 patient1   21.44782 73.01184      44.73839     TRUE
+## 3 patient2   30.51148 84.50470      38.74701     TRUE
 ```
 
 Unfortunately, as the C++ simulation cores are destroyed, parallelization does not allow to resume the execution of replicas.
