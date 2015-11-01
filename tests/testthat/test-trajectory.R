@@ -1,6 +1,6 @@
-context("Trajectory tests")
+context("basic Trajectory functionality")
 
-test_that("The trajectory stores the right number of activities", {
+test_that("the trajectory stores the right number of activities", {
   t0 <- Trajectory$new("my trajectory") $
     seize("nurse", 1) $
     timeout(function() rnorm(1, 15)) $
@@ -22,7 +22,7 @@ test_that("The trajectory stores the right number of activities", {
   expect_equal(t0$get_n_activities(), 9)
 })
 
-test_that("The head/tail pointers are correctly placed", {
+test_that("the head/tail pointers are correctly placed", {
   t0 <- Trajectory$new()
   
   expect_equal(t0$get_head(), NULL)
@@ -41,15 +41,4 @@ test_that("The head/tail pointers are correctly placed", {
   expect_is(t0$get_head(), "SeizeActivity")
   expect_is(t0$get_tail(), "Activity")
   expect_is(t0$get_tail(), "ReleaseActivity")
-})
-
-test_that("The activity chain grows correctly", {
-  t0 <- Trajectory$new("my trajectory") $
-    seize("nurse", 1) $
-    timeout(function() rnorm(1, 15)) $
-    release("nurse", 1)
-  act <- t0$get_head()$next_activity$next_activity
-  
-  expect_equal(act, t0$get_tail())
-  expect_equal(act$next_activity, NULL)
 })

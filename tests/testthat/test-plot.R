@@ -1,4 +1,4 @@
-context("Plot tests")
+context("plot")
 
 t0 <- Trajectory$new("my trajectory") $
   seize("nurse", 1) $
@@ -11,7 +11,7 @@ t0 <- Trajectory$new("my trajectory") $
   timeout(function() rnorm(1, 5)) $
   release("administration", 1)
 
-test_that("Single replication plot", {
+test_that("single replication plots", {
   reps <- Simmer$new() $
     add_resource("nurse", 1) $
     add_resource("doctor", 2) $
@@ -30,7 +30,7 @@ test_that("Single replication plot", {
   expect_is(plot_evolution_arrival_times(reps, type="waiting_time"), "ggplot")
 })
 
-test_that("Multiple replication plot", {
+test_that("multiple replication plots", {
   reps <- lapply(1:100, function(i) {
     Simmer$new() $
       add_resource("nurse", 1) $

@@ -27,7 +27,8 @@ inline void Arrival::activate() {
 
 void Generator::activate() {
   // get the delay for the next arrival
-  double delay = fabs(Rcpp::as<double>(dist()));
+  double delay = Rcpp::as<double>(dist());
+  if (delay < 0) return;
   
   // format the name and create the next arrival
   char numstr[21];

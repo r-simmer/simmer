@@ -132,6 +132,7 @@ Simmer <- R6Class("Simmer",
       queue_size <- evaluate_value(queue_size)
       if (is.infinite(capacity)) capacity <- -1
       if (is.infinite(queue_size)) queue_size <- -1
+      mon <- evaluate_value(mon)
       
       add_resource_(private$sim_obj, name, capacity, queue_size, mon)
       if (mon) private$mon_res <- c(private$mon_res, name)
@@ -144,6 +145,7 @@ Simmer <- R6Class("Simmer",
       if (!is.function(dist))
         stop(paste0(self$name, ": dist must be callable"))
       name_prefix <- evaluate_value(name_prefix)
+      mon <- evaluate_value(mon)
 
       add_generator_(private$sim_obj, name_prefix, trajectory$get_head(), dist, mon)
       invisible(self)
@@ -273,7 +275,7 @@ Simmer.wrap <- R6Class("Simmer.wrap",
 evaluate_value<-function(value){
   tryCatch(
     {
-      abs(parse(text=value))
+      abs(eval(parse(text=value)))
     }, 
     error = function(err) value)
 }

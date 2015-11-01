@@ -125,7 +125,7 @@ Trajectory <- R6Class("Trajectory",
       if (!inherits(trj, "Trajectory"))
         stop("not a trajectory")
       private$tail$next_activity <- c(trj$get_head(), prob)
-      if (merge)
+      if (evaluate_value(merge))
         private$merge <- c(private$merge, trj$get_tail())
       private$n_activities <- private$n_activities + trj$get_n_activities()
       invisible(self)

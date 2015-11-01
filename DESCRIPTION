@@ -1,9 +1,9 @@
 Package: simmer
 Type: Package
 Title: Just let it simmer
-Description: simmer is a discrete event simulation package for R.
+Description: simmer is a discrete event simulation (DES) package for R.
 Version: 3.0.0
-Date: 2015-10-24
+Date: 2015-11-01
 Encoding: UTF-8
 Authors@R: c(person("Bart", "Smeets", role = c("aut", "cre"),
                     email = "bartsmeets86@gmail.com"),

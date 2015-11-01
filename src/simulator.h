@@ -123,19 +123,21 @@ public:
   /**
    * Process the next event. Only one step, a giant leap for mankind.
    */
-  void step() {
-    if (event_queue.empty()) Rcpp::stop("no generators defined");
-    _step();
+  inline bool step() {
+    Event* ev = get_next();
+    if (!ev) return 0;
+    now_ = ev->time;
+    ev->process->activate();
+    delete ev;
+    return 1;
+    // ... and that's it! :D
   }
   
   /**
    * Executes steps until the given criterion is met.
    * @param   until   time of ending
    */
-  void run(double until) { 
-    if (event_queue.empty()) Rcpp::stop("no generators defined");
-    while(now_ < until) _step();
-  }
+  void run(double until) { while ((now_ < until) && step()); }
   
   /**
    * Entities notify the end of an arrival with this call.
@@ -198,17 +200,10 @@ private:
   ArrStats* arrival_stats;  /**< arrival statistics */
   
   inline Event* get_next() {
+    if (event_queue.empty()) return NULL;
     Event* ev = event_queue.top();
     event_queue.pop();
     return ev;
-  }
-  
-  inline void _step() {
-    Event* ev = get_next();
-    now_ = ev->time;
-    ev->process->activate();
-    delete ev;
-    // ... and that's it! :D
   }
 };
 
