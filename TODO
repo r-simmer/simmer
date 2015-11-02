@@ -1,6 +1,7 @@
- - 
+ - arrivals should be able to retrieve information about the state of the system
+ - generic "tasks" inside a trajectory
+ - add priorities to the event queue
 
-OLD ITEMS:
  - link timetable to resource availability
  - add depletable resources
  - stop the simulation mid-run, adjust some parameters and continue the simulation
