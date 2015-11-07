@@ -11,12 +11,18 @@ test_that("the trajectory stores the right number of activities", {
   expect_equal(t0$get_n_activities(), 3)
   
   t0 <- t0 $
-    seize("doctor", 1) $
-    timeout(function() rnorm(1, 20)) $
-    release("doctor", 1) $
-    seize("administration", 1) $
-    timeout(function() rnorm(1, 5)) $
-    release("administration", 1)
+    branch(1, TRUE,
+      Trajectory$new() $
+        seize("doctor", 1) $
+        timeout(function() rnorm(1, 20)) $
+        release("doctor", 1) $
+        branch(1, TRUE, 
+          Trajectory$new() $
+            seize("administration", 1) $
+            timeout(function() rnorm(1, 5)) $
+            release("administration", 1)
+        )
+    )
   
   expect_is(t0, "Trajectory")
   expect_equal(t0$get_n_activities(), 9)

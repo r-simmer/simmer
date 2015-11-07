@@ -70,12 +70,12 @@ t0$show()
 t1 <- Trajectory$new("trajectory with a branch") $
   seize("server", 1) $
   ## 50-50 chance for each branch
-  branch(prob=0.5, merge=TRUE, Trajectory$new("branch1") $
-    timeout(function() 1)
-  ) $
-  branch(prob=0.5, merge=FALSE, Trajectory$new("branch2") $
-    timeout(function() rexp(1, 3)) $
-    release("server", 1)
+  branch(prob=c(0.5, 0.5), merge=c(TRUE, FALSE), 
+    Trajectory$new("branch1") $
+      timeout(function() 1),
+    Trajectory$new("branch2") $
+      timeout(function() rexp(1, 3)) $
+      release("server", 1)
   ) $
   ## only the first branch continues here
   release("server", 1) $

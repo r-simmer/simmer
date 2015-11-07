@@ -30,12 +30,15 @@ plot_evolution_arrival_times(reps, type="flow_time")
 #################################################################
 
 mm1 <- Trajectory$new() $
-  seize("server", 1) $
-  timeout(function() rexp(1, 2)) $
-  release("server", 1)
+  branch(1, T,
+    Trajectory$new() $
+      seize("server", 1) $
+      timeout(function() rexp(1, 2)) $
+      release("server", 1)
+  )
 
 simmer <- Simmer$new(verbose=F) $
-  add_resource("server", 1, 2) $
+  add_resource("server", 1) $
   add_generator("customer", mm1, function() rexp(1, 1), mon=F)
 simmer$run(1000)
 
@@ -63,22 +66,21 @@ plot_resource_usage(simmer, "server")
 t0 <- Trajectory$new("my trajectory") $
   seize("server", 1) $
   timeout(function() rexp(1, 1)) $
-  branch(prob=0.1, merge=F, Trajectory$new("branch1") $
-    seize("server", 2) $
-    timeout(function() 1) $
-    release("server", 2)
-  ) $
-  branch(prob=0.9, merge=T, Trajectory$new("branch2") $
-    seize("server", 4) $
-    timeout(function() rexp(1, 3)) $
-    release("server", 4)
+  branch(prob=c(0.1, 0.9), merge=c(F, T), 
+    Trajectory$new("branch1") $
+      seize("server", 2) $
+      timeout(function() 1) $
+      release("server", 2), 
+    Trajectory$new("branch2") $
+      seize("server", 4) $
+      timeout(function() rexp(1, 3)) $
+      release("server", 4)
   ) $
   timeout(function() 1) $
   release("server", 1)
 
 a <- t0$get_head()
-a$next_activity
-a <- a$next_activity
+a; a <- a$next_activity
 
 t0$show()
 

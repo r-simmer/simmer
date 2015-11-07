@@ -2,11 +2,10 @@ context("method chaining")
 
 test_that("Trajectory's method chaining works", {
   t0 <- Trajectory$new() $
-    show() $
     seize("one", 1) $
     release("one", 1) $
     timeout(function() 1) $
-    branch(0.1, T, Trajectory$new())
+    branch(1, T, Trajectory$new())
   
   expect_is(t0, "Trajectory")
 })

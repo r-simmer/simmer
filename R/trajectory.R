@@ -68,12 +68,12 @@ require(R6)
 #' t1 <- Trajectory$new("trajectory with a branch") $
 #'   seize("server", 1) $
 #'   ## 50-50 chance for each branch
-#'   branch(prob=0.5, merge=TRUE, Trajectory$new("branch1") $
-#'     timeout(function() 1)
-#'   ) $
-#'   branch(prob=0.5, merge=FALSE, Trajectory$new("branch2") $
-#'     timeout(function() rexp(1, 3)) $
-#'     release("server", 1)
+#'   branch(prob=c(0.5, 0.5), merge=c(TRUE, FALSE), 
+#'     Trajectory$new("branch1") $
+#'       timeout(function() 1),
+#'     Trajectory$new("branch2") $
+#'       timeout(function() rexp(1, 3)) $
+#'       release("server", 1)
 #'   ) $
 #'   ## only the first branch continues here
 #'   release("server", 1) $
@@ -91,16 +91,16 @@ Trajectory <- R6Class("Trajectory",
       invisible(self)
     },
     
-    show = function() {
-      cat(paste0("Trajectory: ", self$name, ", ",
+    show = function(indent=0) {
+      margin <- paste(rep(" ", indent), collapse="")
+      cat(paste0(margin, "Trajectory: ", self$name, ", ",
                  private$n_activities, " activities\n"))
-      ptr <- self$get_head()
-      while (!is.null(ptr)) {
-        ptr$show()
-        cat("\n")
+      ptr <- private$head
+      while (!identical(ptr, private$tail)) {
+        ptr$show(indent)
         ptr <- ptr$next_activity
       }
-      invisible(self)
+      ptr$show(indent)
     },
     
     get_head = function() { private$head },
@@ -121,14 +121,8 @@ Trajectory <- R6Class("Trajectory",
       private$add_activity(TimeoutActivity$new(duration))
     },
     
-    branch = function(prob, merge=TRUE, trj) {
-      if (!inherits(trj, "Trajectory"))
-        stop("not a trajectory")
-      private$tail$next_activity <- c(trj$get_head(), prob)
-      if (evaluate_value(merge))
-        private$merge <- c(private$merge, trj$get_tail())
-      private$n_activities <- private$n_activities + trj$get_n_activities()
-      invisible(self)
+    branch = function(prob, merge=TRUE, ...) {
+      private$add_activity(BranchActivity$new(prob, merge, ...))
     }
   ),
   
@@ -136,20 +130,16 @@ Trajectory <- R6Class("Trajectory",
     n_activities = 0,
     head = NULL,
     tail = NULL,
-    merge = NULL,
     
-    add_activity = function(ev) {
-      if (!inherits(ev, "Activity"))
+    add_activity = function(activity) {
+      if (!inherits(activity, "Activity"))
         stop("not an activity")
       if (is.null(private$head))
-        private$head <- ev
-      else if (length(private$merge)) {
-        for (i in private$merge) i$next_activity <- c(ev, 1)
-        private$merge = NULL
-      } else
-        private$tail$next_activity <- c(ev, 1)
-      private$tail <- ev
-      private$n_activities <- private$n_activities + 1
+        private$head <- activity
+      else
+        private$tail$next_activity <- activity
+      private$tail <- activity
+      private$n_activities <- private$n_activities + activity$n
       invisible(self)
     }
   )
