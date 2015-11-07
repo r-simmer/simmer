@@ -43,11 +43,11 @@ Trajectory$timeout(duration)
   \item{duration}{the delay}
 }
 \preformatted{## Add a branch in the trajectory
-Trajectory$branch(prob, merge=TRUE, trj)
+Trajectory$branch(prob, merge, ...)
 }\describe{
-  \item{prob}{the probability for an arrival of traversing this branch}
-  \item{merge}{whether the arrival must continue executing activities after this branch or not}
-  \item{trj}{a Trajectory object describing this branch}
+  \item{prob}{a vector of n probabilities, one for each branch}
+  \item{merge}{a vector of n booleans that indicate whether the arrival must continue executing activities after each branch or not}
+  \item{...}{n Trajectory objects describing each branch}
 }
 }
 \examples{

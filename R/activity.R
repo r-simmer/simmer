@@ -40,8 +40,8 @@ SeizeActivity <- R6Class("SeizeActivity", inherit = Activity,
     name = "Seize",
     
     initialize = function(resource, amount) {
-      self$resource <- evaluate_value(resource)
-      private$amount <- evaluate_value(amount)
+      self$resource <- resource
+      private$amount <- amount
     },
     
     run = function(parent) {
@@ -59,8 +59,8 @@ ReleaseActivity <- R6Class("ReleaseActivity", inherit = Activity,
     name = "Release",
     
     initialize = function(resource, amount) {
-      self$resource <- evaluate_value(resource)
-      private$amount <- evaluate_value(amount)
+      self$resource <- resource
+      private$amount <- amount
     },
     
     run = function(parent) {
@@ -79,19 +79,10 @@ TimeoutActivity <- R6Class("TimeoutActivity", inherit = Activity,
     
     initialize = function(duration) {
       self$resource <- "None"
-      if (!is.function(duration)) 
-        stop(paste0(self$name, ": duration must be callable"))
-      private$duration <- evaluate_value(duration)
+      private$duration <- duration
     },
     
-    run = function(parent) {
-      ret <- private$duration()
-      if (!is.numeric(ret)) {
-        stop("non-numeric value")
-        return(-1)
-      }
-      return(abs(ret))
-    }
+    run = function(parent) { return(abs(private$duration())) }
   ),
   
   private = list(
@@ -103,21 +94,13 @@ BranchActivity <- R6Class("BranchActivity", inherit = Activity,
   public = list(
     name = "Branch",
    
-    initialize = function(prob, merge, ...) {
+    initialize = function(prob, merge, trj) {
       self$resource <- "None"
       self$n <- 0
-      trj <- list(...)
-      if (sum(prob) != 1)
-        stop("prob must sum 1")
-      if ((length(prob) != length(merge)) || (length(prob) != length(trj)))
-        stop("the number of elements does not match")
-      
       private$prob <- prob
       private$merge <- merge
       private$trj <- trj
       for (i in 1:length(trj)) {
-        if (!inherits(trj[[i]], "Trajectory"))
-          stop("not a trajectory")
         private$path <- c(private$path, trj[[i]]$get_head())
         if (merge[[i]]) {
           aux <- trj[[i]]$get_tail()

@@ -24,7 +24,7 @@ test_that("a non-function duration fails", {
   expect_error(Trajectory$new()$timeout(3))
 })
 
-test_that("a duration function that returns nothing fails", {
+test_that("a duration function that returns a non-numeric value fails", {
   t0 <- Trajectory$new() $
     timeout(function() {})
   

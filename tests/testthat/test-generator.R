@@ -16,7 +16,7 @@ test_that("an empty trajectory fails", {
   expect_error(Simmer$new()$add_generator("customer", t0, function() {}))
 })
 
-test_that("a dist that returns nothing fails", {
+test_that("a dist that returns a non-numeric value fails", {
   t0 <- Trajectory$new()$timeout(function() 1)
   
   expect_error(Simmer$new()$add_generator("customer", t0, function() {}))

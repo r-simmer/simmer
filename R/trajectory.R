@@ -40,11 +40,11 @@ require(R6)
 #'   \item{duration}{the delay}
 #' }
 #' \preformatted{## Add a branch in the trajectory
-#' Trajectory$branch(prob, merge=TRUE, trj)
+#' Trajectory$branch(prob, merge, ...)
 #' }\describe{
-#'   \item{prob}{the probability for an arrival of traversing this branch}
-#'   \item{merge}{whether the arrival must continue executing activities after this branch or not}
-#'   \item{trj}{a Trajectory object describing this branch}
+#'   \item{prob}{a vector of n probabilities, one for each branch}
+#'   \item{merge}{a vector of n booleans that indicate whether the arrival must continue executing activities after each branch or not}
+#'   \item{...}{n Trajectory objects describing each branch}
 #' }
 #' @format NULL
 #' @usage NULL
@@ -110,19 +110,32 @@ Trajectory <- R6Class("Trajectory",
     get_n_activities = function() { private$n_activities },
     
     seize = function(resource, amount) {
+      resource <- evaluate_value(resource)
+      amount <- evaluate_value(amount)
       private$add_activity(SeizeActivity$new(resource, amount))
     },
     
     release = function(resource, amount) {
+      resource <- evaluate_value(resource)
+      amount <- evaluate_value(amount)
       private$add_activity(ReleaseActivity$new(resource, amount))
     },
     
     timeout = function(duration) {
+      if (!is.function(duration)) 
+        stop(paste0(self$name, ": duration must be callable"))
       private$add_activity(TimeoutActivity$new(duration))
     },
     
-    branch = function(prob, merge=TRUE, ...) {
-      private$add_activity(BranchActivity$new(prob, merge, ...))
+    branch = function(prob, merge, ...) {
+      trj <- list(...)
+      if (sum(prob) != 1)
+        stop("prob must sum 1")
+      if ((length(prob) != length(merge)) || (length(prob) != length(trj)))
+        stop("the number of elements does not match")
+      for (i in trj) if (!inherits(i, "Trajectory"))
+        stop("not a trajectory")
+      private$add_activity(BranchActivity$new(prob, merge, trj))
     }
   ),
   
