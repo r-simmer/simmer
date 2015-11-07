@@ -35,7 +35,7 @@ Activity <- R6Class("Activity",
   )
 )
 
-SeizeActivity <- R6Class("SeizeActivity", inherit = Activity,
+Seize <- R6Class("Seize", inherit = Activity,
   public = list(
     name = "Seize",
     
@@ -54,7 +54,7 @@ SeizeActivity <- R6Class("SeizeActivity", inherit = Activity,
   )
 )
 
-ReleaseActivity <- R6Class("ReleaseActivity", inherit = Activity,
+Release <- R6Class("Release", inherit = Activity,
   public = list(
     name = "Release",
     
@@ -73,7 +73,7 @@ ReleaseActivity <- R6Class("ReleaseActivity", inherit = Activity,
   )
 )
 
-TimeoutActivity <- R6Class("TimeoutActivity", inherit = Activity,
+Timeout <- R6Class("Timeout", inherit = Activity,
   public = list(
     name = "Timeout",
     
@@ -90,7 +90,7 @@ TimeoutActivity <- R6Class("TimeoutActivity", inherit = Activity,
   )
 )
 
-BranchActivity <- R6Class("BranchActivity", inherit = Activity,
+Branch <- R6Class("Branch", inherit = Activity,
   public = list(
     name = "Branch",
    

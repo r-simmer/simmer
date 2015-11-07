@@ -112,19 +112,19 @@ Trajectory <- R6Class("Trajectory",
     seize = function(resource, amount) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
-      private$add_activity(SeizeActivity$new(resource, amount))
+      private$add_activity(Seize$new(resource, amount))
     },
     
     release = function(resource, amount) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
-      private$add_activity(ReleaseActivity$new(resource, amount))
+      private$add_activity(Release$new(resource, amount))
     },
     
     timeout = function(duration) {
       if (!is.function(duration)) 
         stop(paste0(self$name, ": duration must be callable"))
-      private$add_activity(TimeoutActivity$new(duration))
+      private$add_activity(Timeout$new(duration))
     },
     
     branch = function(prob, merge, ...) {
@@ -135,7 +135,7 @@ Trajectory <- R6Class("Trajectory",
         stop("the number of elements does not match")
       for (i in trj) if (!inherits(i, "Trajectory"))
         stop("not a trajectory")
-      private$add_activity(BranchActivity$new(prob, merge, trj))
+      private$add_activity(Branch$new(prob, merge, trj))
     }
   ),
   

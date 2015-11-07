@@ -37,14 +37,14 @@ test_that("the head/tail pointers are correctly placed", {
   t0$seize("nurse", 1)
   
   expect_is(t0$get_head(), "Activity")
-  expect_is(t0$get_head(), "SeizeActivity")
+  expect_is(t0$get_head(), "Seize")
   expect_equal(t0$get_head(), t0$get_tail())
   
   t0$timeout(function() rnorm(1, 15)) $
     release("nurse", 1)
   
   expect_is(t0$get_head(), "Activity")
-  expect_is(t0$get_head(), "SeizeActivity")
+  expect_is(t0$get_head(), "Seize")
   expect_is(t0$get_tail(), "Activity")
-  expect_is(t0$get_tail(), "ReleaseActivity")
+  expect_is(t0$get_tail(), "Release")
 })

@@ -1,5 +1,5 @@
+ - translate activities to C++
  - arrivals should be able to retrieve information about the state of the system
- - generic "tasks" inside a trajectory
  - add priorities to the event queue
 
  - link timetable to resource availability
