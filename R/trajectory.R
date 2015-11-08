@@ -1,5 +1,3 @@
-require(R6)
-
 #' Trajectory
 #'
 #' A trajectory is a chain of activities followed by arrivals of the same type.
@@ -80,7 +78,8 @@ require(R6)
 #'   timeout(function() 2)
 #' 
 #' t1$show()
-#' @import R6
+#' @importFrom R6 R6Class
+#' @importFrom Rcpp evalCpp
 #' @export
 Trajectory <- R6Class("Trajectory",
   public = list(

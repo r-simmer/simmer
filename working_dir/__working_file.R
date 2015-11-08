@@ -30,7 +30,7 @@ plot_evolution_arrival_times(reps, type="flow_time")
 #################################################################
 
 mm1 <- Trajectory$new() $
-  branch(function() 0, T,
+  branch(function() 1, T,
     Trajectory$new() $
       seize("server", 1) $
       timeout(function() rexp(1, 2)) $

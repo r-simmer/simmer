@@ -1,5 +1,3 @@
-require(R6)
-
 #' Simmer
 #'
 #' The simulation environment.
@@ -97,8 +95,8 @@ require(R6)
 #' 
 #' plot_resource_usage(simmer, "doctor")
 #' @useDynLib simmer
+#' @importFrom R6 R6Class
 #' @importFrom Rcpp evalCpp
-#' @import R6
 #' @export
 Simmer <- R6Class("Simmer",
   public = list(

@@ -48,7 +48,7 @@
 #' })
 #' 
 #' plot_resource_usage(reps, "server")
-#' @import R6
+#' @importFrom R6 R6Class
 #' @export
 Simmer.wrap <- R6Class("Simmer.wrap",
   public = list(
