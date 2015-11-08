@@ -53,9 +53,9 @@ t0 <- Trajectory$new("my trajectory") $
   release("administration", 1)
 ```
 
-The timeout argument is evaluated dynamically, so it must be callable and must return a numeric value (note: negative values are automatically converted to positive). Moreover, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources' status, make decisions according to the latter...
+The timeout argument is evaluated dynamically, so it must be callable and must return a numeric value (note: negative values are automatically converted to positive ones). Moreover, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources' status, make decisions according to the latter...
 
-When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory ```t0```. The time between patients is about 10 minutes (a Gaussian of ```mean=10``` and ```sd=2```).
+When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory ```t0```. The time between patients is about 10 minutes (a Gaussian of ```mean=10``` and ```sd=2```). (Note: returning a negative interarrival time stops the generator).
 
 ```{r}
 simmer <- Simmer$new("SuperDuperSim") $

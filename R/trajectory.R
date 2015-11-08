@@ -35,7 +35,7 @@
 #' \preformatted{## Add a delay activity
 #' Trajectory$timeout(duration)
 #' }\describe{
-#'   \item{duration}{the delay}
+#'   \item{duration}{the delay (negative values are automatically converted to positive ones)}
 #' }
 #' \preformatted{## Add n branches in the trajectory
 #' Trajectory$branch(option, merge, ...)

@@ -27,8 +27,8 @@
   seize(&quot;administration&quot;, 1) $
   timeout(function() rnorm(1, 5)) $
   release(&quot;administration&quot;, 1)</code></pre>
-<p>The timeout argument is evaluated dynamically, so it must be callable and must return a numeric value (note: negative values are automatically converted to positive). Moreover, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources’ status, make decisions according to the latter…</p>
-<p>When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The <em>nurse</em> and <em>administration</em> resources, each one with a capacity of 1, and the <em>doctor</em> resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory <code>t0</code>. The time between patients is about 10 minutes (a Gaussian of <code>mean=10</code> and <code>sd=2</code>).</p>
+<p>The timeout argument is evaluated dynamically, so it must be callable and must return a numeric value (note: negative values are automatically converted to positive ones). Moreover, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources’ status, make decisions according to the latter…</p>
+<p>When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The <em>nurse</em> and <em>administration</em> resources, each one with a capacity of 1, and the <em>doctor</em> resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory <code>t0</code>. The time between patients is about 10 minutes (a Gaussian of <code>mean=10</code> and <code>sd=2</code>). (Note: returning a negative interarrival time stops the generator).</p>
 <pre class="r"><code>simmer &lt;- Simmer$new(&quot;SuperDuperSim&quot;) $
   add_resource(&quot;nurse&quot;, 1) $
   add_resource(&quot;doctor&quot;, 2) $
@@ -37,16 +37,16 @@
 <p>The simulation is now ready for a test run; just let it <em>simmer</em> for a bit. Below, we specify that we want to limit the runtime to 80 time units using the <code>until</code> argument. After that, we verify the current simulation time (<code>now()</code>) and when will be the next event (<code>peek()</code>).</p>
 <pre class="r"><code>simmer$run(until=80)
 simmer$now()</code></pre>
-<pre><code>## [1] 80.16184</code></pre>
+<pre><code>## [1] 80.8987</code></pre>
 <pre class="r"><code>simmer$peek()</code></pre>
-<pre><code>## [1] 80.16184</code></pre>
+<pre><code>## [1] 80.8987</code></pre>
 <p>It is possible to run the simulation step by step, and such a method is chainable too.</p>
 <pre class="r"><code>simmer$step()
 simmer$step()$step()$step()
 simmer$now()</code></pre>
-<pre><code>## [1] 80.68287</code></pre>
+<pre><code>## [1] 85.62607</code></pre>
 <pre class="r"><code>simmer$peek()</code></pre>
-<pre><code>## [1] 80.68287</code></pre>
+<pre><code>## [1] 89.78046</code></pre>
 <p>Also, it is possible to resume the automatic execution simply by specifying a longer runtime. Below, we continue the execution until 120 time units.</p>
 <pre class="r"><code>simmer$run(until=120)</code></pre>
 <p>Finally, you can reset the simulation, flush all results, resources and generators, and restart from the beginning.</p>
@@ -84,19 +84,18 @@ reps &lt;- mclapply(1:100, function(i) {
   reps[[1]]$get_mon_resources()
 )</code></pre>
 <pre><code>##       time server queue system resource
-## 1 10.84529      0     0      0    nurse
-## 2 19.32764      1     0      1    nurse
-## 3 24.78814      1     1      2    nurse
-## 4 28.43090      1     0      1    nurse
-## 5 37.41629      1     1      2    nurse
-## 6 38.78439      1     2      3    nurse</code></pre>
+## 1 12.44980      0     0      0    nurse
+## 2 17.98758      1     0      1    nurse
+## 3 27.69104      1     1      2    nurse
+## 4 28.48675      1     2      3    nurse
+## 5 35.61050      1     1      2    nurse
+## 6 41.98503      1     2      3    nurse</code></pre>
 <pre class="r"><code>head(
   reps[[1]]$get_mon_arrivals()
 )</code></pre>
 <pre><code>##       name start_time end_time activity_time finished
-## 1 patient0   10.84529 49.96901      39.12372     TRUE
-## 2 patient1   19.32764 64.40916      39.62103     TRUE
-## 3 patient2   28.43090 79.95606      41.17168     TRUE</code></pre>
+## 1 patient0   12.44980 53.91402      41.46423     TRUE
+## 2 patient1   17.98758 68.45676      39.97002     TRUE</code></pre>
 <p>Unfortunately, as the C++ simulation cores are destroyed, parallelization does not allow to resume the execution of replicas.</p>
 </div>
 <div id="advanced-trajectories" class="section level3">

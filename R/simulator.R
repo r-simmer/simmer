@@ -39,7 +39,7 @@
 #' }\describe{
 #'   \item{name_prefix}{the name prefix of the generated arrivals}
 #'   \item{trajectory}{the \link{Trajectory} that the generated arrivals will follow}
-#'   \item{dist}{a function modelling the interarrival times}
+#'   \item{dist}{a function modelling the interarrival times (returning a negative value stops the generator)}
 #'   \item{mon}{whether the simulator must monitor the generated arrivals or not}
 #' }
 #' \preformatted{## Get arrival statistics

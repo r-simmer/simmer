@@ -47,9 +47,9 @@ t0 <- Trajectory$new("my trajectory") $
   release("administration", 1)
 ```
 
-The timeout argument is evaluated dynamically, so it must be callable and must return a numeric value (note: negative values are automatically converted to positive). Moreover, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources' status, make decisions according to the latter...
+The timeout argument is evaluated dynamically, so it must be callable and must return a numeric value (note: negative values are automatically converted to positive ones). Moreover, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources' status, make decisions according to the latter...
 
-When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory ```t0```. The time between patients is about 10 minutes (a Gaussian of ```mean=10``` and ```sd=2```).
+When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory ```t0```. The time between patients is about 10 minutes (a Gaussian of ```mean=10``` and ```sd=2```). (Note: returning a negative interarrival time stops the generator).
 
 
 ```r
@@ -69,7 +69,7 @@ simmer$now()
 ```
 
 ```
-## [1] 80.16184
+## [1] 80.8987
 ```
 
 ```r
@@ -77,7 +77,7 @@ simmer$peek()
 ```
 
 ```
-## [1] 80.16184
+## [1] 80.8987
 ```
 
 It is possible to run the simulation step by step, and such a method is chainable too.
@@ -90,7 +90,7 @@ simmer$now()
 ```
 
 ```
-## [1] 80.68287
+## [1] 85.62607
 ```
 
 ```r
@@ -98,7 +98,7 @@ simmer$peek()
 ```
 
 ```
-## [1] 80.68287
+## [1] 89.78046
 ```
 
 Also, it is possible to resume the automatic execution simply by specifying a longer runtime. Below, we continue the execution until 120 time units.
@@ -176,12 +176,12 @@ head(
 
 ```
 ##       time server queue system resource
-## 1 10.84529      0     0      0    nurse
-## 2 19.32764      1     0      1    nurse
-## 3 24.78814      1     1      2    nurse
-## 4 28.43090      1     0      1    nurse
-## 5 37.41629      1     1      2    nurse
-## 6 38.78439      1     2      3    nurse
+## 1 12.44980      0     0      0    nurse
+## 2 17.98758      1     0      1    nurse
+## 3 27.69104      1     1      2    nurse
+## 4 28.48675      1     2      3    nurse
+## 5 35.61050      1     1      2    nurse
+## 6 41.98503      1     2      3    nurse
 ```
 
 ```r
@@ -192,9 +192,8 @@ head(
 
 ```
 ##       name start_time end_time activity_time finished
-## 1 patient0   10.84529 49.96901      39.12372     TRUE
-## 2 patient1   19.32764 64.40916      39.62103     TRUE
-## 3 patient2   28.43090 79.95606      41.17168     TRUE
+## 1 patient0   12.44980 53.91402      41.46423     TRUE
+## 2 patient1   17.98758 68.45676      39.97002     TRUE
 ```
 
 Unfortunately, as the C++ simulation cores are destroyed, parallelization does not allow to resume the execution of replicas.
