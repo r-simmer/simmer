@@ -12,19 +12,19 @@
 #' }\describe{
 #'   \item{simmer}{the \link{Simmer} object}
 #' }
-#' \preformatted{## Get the arrival statistics
+#' \preformatted{## Get arrival statistics
 #' Simmer.wrap$get_mon_arrivals()
 #' }
-#' \preformatted{## Get the resource statistics
+#' \preformatted{## Get resource statistics
 #' Simmer.wrap$get_mon_resources()
 #' }
-#' \preformatted{## Get the capacity of a resource
-#' Simmer.wrap$get_res_capacity(name)
+#' \preformatted{## Get resource's capacity
+#' Simmer$get_capacity(name)
 #' }\describe{
 #'   \item{name}{the name of the resource}
 #' }
-#' \preformatted{## Get the queue size of a resource
-#' Simmer.wrap$get_res_queue_size(name)
+#' \preformatted{## Get resource's queue size
+#' Simmer$get_queue_size(name)
 #' }\describe{
 #'   \item{name}{the name of the resource}
 #' }
@@ -58,16 +58,16 @@ Simmer.wrap <- R6Class("Simmer.wrap",
       private$arrivals <- simmer$get_mon_arrivals()
       private$resources <- simmer$get_mon_resources()
       for (res in levels(factor(private$resources$resource))) {
-        private$capacity[[res]] <- simmer$get_res_capacity(res)
-        private$queue_size[[res]] <- simmer$get_res_queue_size(res)
+        private$capacity[[res]] <- simmer$get_capacity(res)
+        private$queue_size[[res]] <- simmer$get_queue_size(res)
       }
       invisible(self)
     },
     
     get_mon_arrivals = function() { private$arrivals },
     get_mon_resources = function() { private$resources },
-    get_res_capacity = function(name) { private$capacity[[name]] },
-    get_res_queue_size = function(name) { private$queue_size[[name]] }
+    get_capacity = function(name) { private$capacity[[name]] },
+    get_queue_size = function(name) { private$queue_size[[name]] }
   ),
   
   private = list(

@@ -2,7 +2,7 @@
 <h1>simmer <a href="https://travis-ci.org/Bart6114/simmer"><img src="https://travis-ci.org/Bart6114/simmer.svg?branch=master" alt="Build Status" /></a></h1>
 <p><em>by Bart Smeets (<a href="mailto:bartsmeets86@gmail.com">bartsmeets86@gmail.com</a>) &amp; Iñaki Ucar (<a href="mailto:i.ucar86@gmail.com">i.ucar86@gmail.com</a>)</em></p>
 <p><em>simmer</em> is a discrete event simulation (DES) package for the R language designed to be a generic framework like <a href="https://simpy.readthedocs.org">SimPy</a> or <a href="http://simjuliajl.readthedocs.org">SimJulia</a>. Although R alone is definitely not made for DES, we use <a href="http://www.rcpp.org/">Rcpp</a> to boost the performance of <em>simmer</em>. This faces us with an important trade-off between flexibility and performance, depending on how much code remains in R or goes to C++ respectively.</p>
-<p>Our implementation solves this problem by introducing the concept of <em>trajectory</em>: a common path in the simulation model for arrivals of the same type. As we will see, it is pretty flexible and simple to use, and leverages the chaining/piping workflow introduced by <a href="https://cran.r-project.org/web/packages/R6/">R6</a> classes.</p>
+<p>Our implementation solves this problem by introducing the concept of <em>trajectory</em>: a common path in the simulation model for arrivals of the same type. As we will see, it is pretty flexible and simple to use, and leverages the chaining/piping workflow introduced by <a href="https://cran.r-project.org/web/packages/R6/">R6</a> classes. In terms of performance, <em>simmer</em> is faster than SimPy when it comes to simulating queue networks.</p>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
 <p>The installation requires the <a href="https://github.com/hadley/devtools">devtools</a> package.</p>
@@ -27,7 +27,7 @@
   seize(&quot;administration&quot;, 1) $
   timeout(function() rnorm(1, 5)) $
   release(&quot;administration&quot;, 1)</code></pre>
-<p>The timeout duration is evaluated dynamically, so it must be a function. This means that if you want an static value instead of a probability, let’s say <code>3</code>, you need to enter <code>function() 3</code>.</p>
+<p>The timeout argument is evaluated dynamically, so it must be callable and must return a numeric value (note: negative values are automatically converted to positive). Moreover, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources’ status, make decisions according to the latter…</p>
 <p>When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The <em>nurse</em> and <em>administration</em> resources, each one with a capacity of 1, and the <em>doctor</em> resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory <code>t0</code>. The time between patients is about 10 minutes (a Gaussian of <code>mean=10</code> and <code>sd=2</code>).</p>
 <pre class="r"><code>simmer &lt;- Simmer$new(&quot;SuperDuperSim&quot;) $
   add_resource(&quot;nurse&quot;, 1) $
@@ -37,16 +37,16 @@
 <p>The simulation is now ready for a test run; just let it <em>simmer</em> for a bit. Below, we specify that we want to limit the runtime to 80 time units using the <code>until</code> argument. After that, we verify the current simulation time (<code>now()</code>) and when will be the next event (<code>peek()</code>).</p>
 <pre class="r"><code>simmer$run(until=80)
 simmer$now()</code></pre>
-<pre><code>## [1] 86.54868</code></pre>
+<pre><code>## [1] 80.16184</code></pre>
 <pre class="r"><code>simmer$peek()</code></pre>
-<pre><code>## [1] 86.54868</code></pre>
+<pre><code>## [1] 80.16184</code></pre>
 <p>It is possible to run the simulation step by step, and such a method is chainable too.</p>
 <pre class="r"><code>simmer$step()
 simmer$step()$step()$step()
 simmer$now()</code></pre>
-<pre><code>## [1] 87.71943</code></pre>
+<pre><code>## [1] 80.68287</code></pre>
 <pre class="r"><code>simmer$peek()</code></pre>
-<pre><code>## [1] 87.71943</code></pre>
+<pre><code>## [1] 80.68287</code></pre>
 <p>Also, it is possible to resume the automatic execution simply by specifying a longer runtime. Below, we continue the execution until 120 time units.</p>
 <pre class="r"><code>simmer$run(until=120)</code></pre>
 <p>Finally, you can reset the simulation, flush all results, resources and generators, and restart from the beginning.</p>
@@ -62,7 +62,7 @@ simmer$now()</code></pre>
     add_generator(&quot;patient&quot;, t0, function() rnorm(1, 10, 2)) $
     run(80)
 })</code></pre>
-<p>The advantage of the latter approach is that, if the individual simulations are heavy, it is straightforward to parallelize the execution of replicas (for instance, here we use the function <code>mclapply</code> from the package <a href="https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf">parallel</a>). Nevertheless, the external pointers to the C++ <em>simmer</em> core are no longer valid when the parallelized execution ends. Thus, it is necessary to extract the results for each thread at the end of the execution. This can be done with the helper class <code>Simmer.wrap</code> as follows.</p>
+<p>The advantage of the latter approach is that, if the individual simulations are heavy, it is straightforward to parallelize the execution of replicas (for instance, in the next example we use the function <code>mclapply</code> from the package <a href="https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf">parallel</a>). Nevertheless, the external pointers to the C++ <em>simmer</em> core are no longer valid when the parallelized execution ends. Thus, it is necessary to extract the results for each thread at the end of the execution. This can be done with the helper class <code>Simmer.wrap</code> as follows.</p>
 <pre class="r"><code>library(parallel)
 
 reps &lt;- mclapply(1:100, function(i) {
@@ -76,42 +76,43 @@ reps &lt;- mclapply(1:100, function(i) {
   )
 })</code></pre>
 <p>This helper class brings the simulation data back to R and makes it accessible through the same methods that the <code>Simmer</code> class.</p>
-<pre class="r"><code>reps[[1]]$get_res_capacity(&quot;doctor&quot;)</code></pre>
+<pre class="r"><code>reps[[1]]$get_capacity(&quot;doctor&quot;)</code></pre>
 <pre><code>## [1] 2</code></pre>
-<pre class="r"><code>reps[[1]]$get_res_queue_size(&quot;doctor&quot;)</code></pre>
+<pre class="r"><code>reps[[1]]$get_queue_size(&quot;doctor&quot;)</code></pre>
 <pre><code>## [1] Inf</code></pre>
 <pre class="r"><code>head(
   reps[[1]]$get_mon_resources()
 )</code></pre>
 <pre><code>##       time server queue system resource
-## 1 12.72931      0     0      0    nurse
-## 2 21.44782      1     0      1    nurse
-## 3 28.27344      1     1      2    nurse
-## 4 30.51148      1     0      1    nurse
-## 5 39.15172      1     1      2    nurse
-## 6 45.75769      1     2      3    nurse</code></pre>
+## 1 10.84529      0     0      0    nurse
+## 2 19.32764      1     0      1    nurse
+## 3 24.78814      1     1      2    nurse
+## 4 28.43090      1     0      1    nurse
+## 5 37.41629      1     1      2    nurse
+## 6 38.78439      1     2      3    nurse</code></pre>
 <pre class="r"><code>head(
   reps[[1]]$get_mon_arrivals()
 )</code></pre>
 <pre><code>##       name start_time end_time activity_time finished
-## 1 patient0   12.72931 51.58249      38.85318     TRUE
-## 2 patient1   21.44782 73.01184      44.73839     TRUE
-## 3 patient2   30.51148 84.50470      38.74701     TRUE</code></pre>
+## 1 patient0   10.84529 49.96901      39.12372     TRUE
+## 2 patient1   19.32764 64.40916      39.62103     TRUE
+## 3 patient2   28.43090 79.95606      41.17168     TRUE</code></pre>
 <p>Unfortunately, as the C++ simulation cores are destroyed, parallelization does not allow to resume the execution of replicas.</p>
 </div>
 <div id="advanced-trajectories" class="section level3">
 <h3>Advanced trajectories</h3>
-<p>The <code>branch()</code> method offers the possibility of adding a branch in the trajectory with some associated probability. The following example shows how a trajectory can be built with a 50-50 chance for the arrival to pass through the second timeout activity.</p>
+<p>The <code>branch()</code> method offers the possibility of adding a branch in the trajectory. The following example shows how a trajectory can be built with a 50-50 chance for an arrival to pass through each branch.</p>
 <pre class="r"><code>t1 &lt;- Trajectory$new(&quot;trajectory with a branch&quot;) $
   seize(&quot;server&quot;, 1) $
-  branch(prob=0.5, merge=T, Trajectory$new(&quot;branch1&quot;) $
-    timeout(function() 1)
-  ) $
-  branch(prob=0.5, merge=T, Trajectory$new(&quot;branch2&quot;) $
-    timeout(function() rexp(1, 3))
+  branch(function() sample(1:2, 1), merge=c(T, F), 
+    Trajectory$new(&quot;branch1&quot;) $
+      timeout(function() 1),
+    Trajectory$new(&quot;branch2&quot;) $
+      timeout(function() rexp(1, 3)) $
+      release(&quot;server&quot;, 1)
   ) $
   release(&quot;server&quot;, 1)</code></pre>
-<p>The argument <code>merge</code> indicates whether the arrival must continue executing the activities after that branch or not.</p>
+<p>When an arrival gets to the branch, the first argument is evaluated to select a specific branch to follow, so it must be callable and must return a numeric value between 1 and <code>n</code>, where <code>n</code> is the number of branches defined. The second argument, <code>merge</code>, indicates whether the arrival must continue executing the activities after the selected branch or not. In the example above, only the first branch continues to the last <em>release</em>.</p>
 </div>
 <div id="resource-utilization" class="section level3">
 <h3>Resource utilization</h3>
@@ -137,8 +138,8 @@ reps &lt;- mclapply(1:100, function(i) {
 <div id="roadmap" class="section level2">
 <h2>Roadmap</h2>
 <ul>
-<li>Time-specific resource availability</li>
-<li>Refine queue discipline (and allow multiple types?)</li>
+<li>Refine queue discipline (add priorities).</li>
+<li>Time-specific resource availability.</li>
 </ul>
 </div>
 <div id="contact" class="section level2">

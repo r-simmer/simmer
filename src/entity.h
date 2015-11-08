@@ -177,6 +177,8 @@ public:
   ResStats* get_observations() { return res_stats; }
   int get_capacity() { return capacity; }
   int get_queue_size() { return queue_size; }
+  int get_server_count() { return server_count; }
+  int get_queue_count() { return queue_count; }
   
 private:
   int capacity;

@@ -3,6 +3,8 @@
 export(Simmer)
 export(Simmer.wrap)
 export(Trajectory)
+export(activity.get_next)
+export(activity.show)
 export(plot_evolution_arrival_times)
 export(plot_resource_usage)
 export(plot_resource_utilization)

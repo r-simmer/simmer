@@ -17,19 +17,19 @@ Simmer.wrap$new(simmer)
 }\describe{
   \item{simmer}{the \link{Simmer} object}
 }
-\preformatted{## Get the arrival statistics
+\preformatted{## Get arrival statistics
 Simmer.wrap$get_mon_arrivals()
 }
-\preformatted{## Get the resource statistics
+\preformatted{## Get resource statistics
 Simmer.wrap$get_mon_resources()
 }
-\preformatted{## Get the capacity of a resource
-Simmer.wrap$get_res_capacity(name)
+\preformatted{## Get resource's capacity
+Simmer$get_capacity(name)
 }\describe{
   \item{name}{the name of the resource}
 }
-\preformatted{## Get the queue size of a resource
-Simmer.wrap$get_res_queue_size(name)
+\preformatted{## Get resource's queue size
+Simmer$get_queue_size(name)
 }\describe{
   \item{name}{the name of the resource}
 }

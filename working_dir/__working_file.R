@@ -66,7 +66,7 @@ plot_resource_usage(simmer, "server")
 t0 <- Trajectory$new("my trajectory") $
   seize("server", 1) $
   timeout(function() rexp(1, 1)) $
-  branch(function() sample(0:1, 1), merge=c(F, T), 
+  branch(function() sample(1:2, 1), merge=c(F, T), 
     Trajectory$new("branch1") $
       seize("server", 2) $
       timeout(function() 1) $
@@ -79,7 +79,7 @@ t0 <- Trajectory$new("my trajectory") $
   timeout(function() 1) $
   release("server", 1)
 
-a <- t0$get_head()
-a; a <- a$next_activity
-
 t0$show()
+
+a <- t0$get_head()
+activity.show(a); a <- activity.get_next(a)

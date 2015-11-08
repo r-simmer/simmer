@@ -4,7 +4,7 @@
 
 *simmer* is a discrete event simulation (DES) package for the R language designed to be a generic framework like [SimPy](https://simpy.readthedocs.org) or [SimJulia](http://simjuliajl.readthedocs.org). Although R alone is definitely not made for DES, we use [Rcpp](http://www.rcpp.org/) to boost the performance of *simmer*. This faces us with an important trade-off between flexibility and performance, depending on how much code remains in R or goes to C++ respectively.
 
-Our implementation solves this problem by introducing the concept of *trajectory*: a common path in the simulation model for arrivals of the same type. As we will see, it is pretty flexible and simple to use, and leverages the chaining/piping workflow introduced by [R6](https://cran.r-project.org/web/packages/R6/) classes. 
+Our implementation solves this problem by introducing the concept of *trajectory*: a common path in the simulation model for arrivals of the same type. As we will see, it is pretty flexible and simple to use, and leverages the chaining/piping workflow introduced by [R6](https://cran.r-project.org/web/packages/R6/) classes. In terms of performance, *simmer* is faster than SimPy when it comes to simulating queue networks.
 
 
 
@@ -47,7 +47,7 @@ t0 <- Trajectory$new("my trajectory") $
   release("administration", 1)
 ```
 
-The timeout duration is evaluated dynamically, so it must be a function. This means that if you want an static value instead of a probability, let's say ```3```, you need to enter ```function() 3```.
+The timeout argument is evaluated dynamically, so it must be callable and must return a numeric value (note: negative values are automatically converted to positive). Moreover, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources' status, make decisions according to the latter...
 
 When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory ```t0```. The time between patients is about 10 minutes (a Gaussian of ```mean=10``` and ```sd=2```).
 
@@ -69,7 +69,7 @@ simmer$now()
 ```
 
 ```
-## [1] 86.54868
+## [1] 80.16184
 ```
 
 ```r
@@ -77,7 +77,7 @@ simmer$peek()
 ```
 
 ```
-## [1] 86.54868
+## [1] 80.16184
 ```
 
 It is possible to run the simulation step by step, and such a method is chainable too.
@@ -90,7 +90,7 @@ simmer$now()
 ```
 
 ```
-## [1] 87.71943
+## [1] 80.68287
 ```
 
 ```r
@@ -98,7 +98,7 @@ simmer$peek()
 ```
 
 ```
-## [1] 87.71943
+## [1] 80.68287
 ```
 
 Also, it is possible to resume the automatic execution simply by specifying a longer runtime. Below, we continue the execution until 120 time units.
@@ -131,7 +131,7 @@ reps <- lapply(1:100, function(i) {
 })
 ```
 
-The advantage of the latter approach is that, if the individual simulations are heavy, it is straightforward to parallelize the execution of replicas (for instance, here we use the function ```mclapply``` from the package [parallel](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf)). Nevertheless, the external pointers to the C++ *simmer* core are no longer valid when the parallelized execution ends. Thus, it is necessary to extract the results for each thread at the end of the execution. This can be done with the helper class ```Simmer.wrap``` as follows.
+The advantage of the latter approach is that, if the individual simulations are heavy, it is straightforward to parallelize the execution of replicas (for instance, in the next example we use the function ```mclapply``` from the package [parallel](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf)). Nevertheless, the external pointers to the C++ *simmer* core are no longer valid when the parallelized execution ends. Thus, it is necessary to extract the results for each thread at the end of the execution. This can be done with the helper class ```Simmer.wrap``` as follows.
 
 
 ```r
@@ -153,7 +153,7 @@ This helper class brings the simulation data back to R and makes it accessible t
 
 
 ```r
-reps[[1]]$get_res_capacity("doctor")
+reps[[1]]$get_capacity("doctor")
 ```
 
 ```
@@ -161,7 +161,7 @@ reps[[1]]$get_res_capacity("doctor")
 ```
 
 ```r
-reps[[1]]$get_res_queue_size("doctor")
+reps[[1]]$get_queue_size("doctor")
 ```
 
 ```
@@ -176,12 +176,12 @@ head(
 
 ```
 ##       time server queue system resource
-## 1 12.72931      0     0      0    nurse
-## 2 21.44782      1     0      1    nurse
-## 3 28.27344      1     1      2    nurse
-## 4 30.51148      1     0      1    nurse
-## 5 39.15172      1     1      2    nurse
-## 6 45.75769      1     2      3    nurse
+## 1 10.84529      0     0      0    nurse
+## 2 19.32764      1     0      1    nurse
+## 3 24.78814      1     1      2    nurse
+## 4 28.43090      1     0      1    nurse
+## 5 37.41629      1     1      2    nurse
+## 6 38.78439      1     2      3    nurse
 ```
 
 ```r
@@ -192,31 +192,32 @@ head(
 
 ```
 ##       name start_time end_time activity_time finished
-## 1 patient0   12.72931 51.58249      38.85318     TRUE
-## 2 patient1   21.44782 73.01184      44.73839     TRUE
-## 3 patient2   30.51148 84.50470      38.74701     TRUE
+## 1 patient0   10.84529 49.96901      39.12372     TRUE
+## 2 patient1   19.32764 64.40916      39.62103     TRUE
+## 3 patient2   28.43090 79.95606      41.17168     TRUE
 ```
 
 Unfortunately, as the C++ simulation cores are destroyed, parallelization does not allow to resume the execution of replicas.
 
 ### Advanced trajectories
 
-The ```branch()``` method offers the possibility of adding a branch in the trajectory with some associated probability. The following example shows how a trajectory can be built with a 50-50 chance for the arrival to pass through the second timeout activity.
+The ```branch()``` method offers the possibility of adding a branch in the trajectory. The following example shows how a trajectory can be built with a 50-50 chance for an arrival to pass through each branch.
 
 
 ```r
 t1 <- Trajectory$new("trajectory with a branch") $
   seize("server", 1) $
-  branch(prob=0.5, merge=T, Trajectory$new("branch1") $
-    timeout(function() 1)
-  ) $
-  branch(prob=0.5, merge=T, Trajectory$new("branch2") $
-    timeout(function() rexp(1, 3))
+  branch(function() sample(1:2, 1), merge=c(T, F), 
+    Trajectory$new("branch1") $
+      timeout(function() 1),
+    Trajectory$new("branch2") $
+      timeout(function() rexp(1, 3)) $
+      release("server", 1)
   ) $
   release("server", 1)
 ```
 
-The argument ```merge``` indicates whether the arrival must continue executing the activities after that branch or not.
+When an arrival gets to the branch, the first argument is evaluated to select a specific branch to follow, so it must be callable and must return a numeric value between 1 and ```n```, where ```n``` is the number of branches defined. The second argument, ```merge```, indicates whether the arrival must continue executing the activities after the selected branch or not. In the example above, only the first branch continues to the last *release*.
 
 ### Resource utilization
 
@@ -264,8 +265,8 @@ Similarly one can have a look at the evolution of the activity times with ```typ
 
 ## Roadmap
 
-* Time-specific resource availability
-* Refine queue discipline (and allow multiple types?)
+* Refine queue discipline (add priorities).
+* Time-specific resource availability.
 
 ## Contact
 

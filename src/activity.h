@@ -16,18 +16,40 @@ public:
   std::string resource;
   int n;
   
+  /**
+   * Constructor.
+   * @param name      the name of the activity
+   * @param resource  the resource associated
+   */
   Activity(std::string name, std::string resource): 
     name(name), resource(resource), n(1), ptr(NULL) {}
   virtual ~Activity(){}
   
+  /**
+   * Print the activity info.
+   * @param indent number of spaces at the beginning of each line
+   */
   virtual void show(int indent=0) {
     for (int i = 0; i < indent; ++i)
       Rcpp::Rcout << " ";
     Rcpp::Rcout << "{ Activity: " << name << "(" << resource << ") | ";
   }
   
+  /**
+   * Run the activity.
+   * @param arrival a pointer to the calling arrival
+   */
   virtual double run(Arrival* arrival) = 0;
+  
+  /**
+   * Get the next activity in the chain.
+   */
   virtual Activity* get_next() { return ptr; }
+  
+  /**
+   * Set the next activity in the chain.
+   * @param activity a pointer to the next activity
+   */
   virtual void set_next(Activity* activity) { ptr = activity; }
   
 private:
@@ -40,7 +62,10 @@ private:
 class Seize: public Activity {
 public:
   Seize(std::string resource, int amount):
-    Activity("Seize", resource), amount(amount) {}
+    Activity("Seize", resource), amount(amount) {
+    if (amount < 0)
+      Rcpp::stop("not allowed to seize a negative amount");
+  }
   
   void show(int indent=0) {
     Activity::show(indent);
@@ -59,7 +84,10 @@ private:
 class Release: public Activity {
 public:
   Release(std::string resource, int amount):
-    Activity("Release", resource), amount(amount) {}
+    Activity("Release", resource), amount(amount) {
+    if (amount < 0)
+      Rcpp::stop("not allowed to release a negative amount");
+  }
   
   void show(int indent=0) {
     Activity::show(indent);
@@ -135,10 +163,10 @@ public:
       pending.erase(arrival);
     else {
       unsigned int i = Rcpp::as<unsigned int>(option());
-      if (i < 0 || i >= path.size())
+      if (i < 1 || i > path.size())
         Rcpp::stop("index out of range");
-      selected = path[i];
-      if (merge[i])
+      selected = path[i-1];
+      if (merge[i-1])
         pending.insert(arrival);
     }
     return 0;

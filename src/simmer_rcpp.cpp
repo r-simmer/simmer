@@ -99,7 +99,7 @@ SEXP get_mon_resource_(SEXP sim_, SEXP name_) {
 }
 
 //[[Rcpp::export]]
-int get_res_capacity_(SEXP sim_, SEXP name_){
+int get_capacity_(SEXP sim_, SEXP name_){
   XPtr<Simulator> sim(sim_);
   std::string name = as<std::string>(name_);
   
@@ -107,11 +107,27 @@ int get_res_capacity_(SEXP sim_, SEXP name_){
 }
 
 //[[Rcpp::export]]
-int get_res_queue_size_(SEXP sim_, SEXP name_){
+int get_queue_size_(SEXP sim_, SEXP name_){
   XPtr<Simulator> sim(sim_);
   std::string name = as<std::string>(name_);
   
   return sim->get_resource(name)->get_queue_size();
+}
+
+//[[Rcpp::export]]
+int get_server_count_(SEXP sim_, SEXP name_){
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  
+  return sim->get_resource(name)->get_server_count();
+}
+
+//[[Rcpp::export]]
+int get_queue_count_(SEXP sim_, SEXP name_){
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  
+  return sim->get_resource(name)->get_queue_count();
 }
 
 //[[Rcpp::export]]
@@ -141,7 +157,7 @@ SEXP Timeout__new(Function duration) {
 //[[Rcpp::export]]
 SEXP Branch__new(Function option, SEXP merge_, SEXP trj_) {
   std::vector<bool> merge = as<std::vector<bool> >(merge_);
-  std::vector<Rcpp::Environment> trj = as<std::vector<Rcpp::Environment> >(trj_);
+  std::vector<Environment> trj = as<std::vector<Environment> >(trj_);
   
   XPtr<Branch> ptr(new Branch(option, merge, trj), false);
   return ptr;
@@ -151,8 +167,11 @@ SEXP Branch__new(Function option, SEXP merge_, SEXP trj_) {
 SEXP activity_get_next_(SEXP activity_) {
   XPtr<Activity> activity(activity_);
   
-  XPtr<Activity> ptr(activity->get_next());
-  return ptr;
+  Activity* the_next = activity->get_next();
+  if (the_next) {
+    XPtr<Activity> ptr(the_next);
+    return ptr;
+  } else return R_NilValue;
 }
 
 //[[Rcpp::export]]

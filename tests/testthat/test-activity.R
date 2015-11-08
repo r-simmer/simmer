@@ -4,20 +4,22 @@ test_that("the activity chain grows as expected", {
   t0 <- Trajectory$new() $
     seize("nurse", 1) $
     timeout(function() rnorm(1, 15)) $
+    branch(function() 1, T, Trajectory$new()$timeout(function() 1)) $
     release("nurse", 1)
-  act <- t0$get_head()$next_activity$next_activity
+  
+  act <- activity.get_next(
+    activity.get_next(
+    activity.get_next(t0$get_head())))
   
   expect_equal(act, t0$get_tail())
-  expect_equal(act$next_activity, NULL)
+  expect_equal(activity.get_next(act), NULL)
 })
 
 test_that("a negative amount is converted to positive", {
-  t0 <- Trajectory$new() $
-    seize("nurse", -2) $
-    release("nurse", -10)
+  t0 <- Trajectory$new()
   
-  expect_equal(t0$get_head()$.__enclos_env__$private$amount, 2)
-  expect_equal(t0$get_tail()$.__enclos_env__$private$amount, 10)
+  expect_silent(t0$seize("nurse", -2))
+  expect_silent(t0$release("nurse", -10))
 })
 
 test_that("a non-function duration fails", {

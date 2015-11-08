@@ -121,27 +121,51 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// get_res_capacity_
-int get_res_capacity_(SEXP sim_, SEXP name_);
-RcppExport SEXP simmer_get_res_capacity_(SEXP sim_SEXP, SEXP name_SEXP) {
+// get_capacity_
+int get_capacity_(SEXP sim_, SEXP name_);
+RcppExport SEXP simmer_get_capacity_(SEXP sim_SEXP, SEXP name_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
-    __result = Rcpp::wrap(get_res_capacity_(sim_, name_));
+    __result = Rcpp::wrap(get_capacity_(sim_, name_));
     return __result;
 END_RCPP
 }
-// get_res_queue_size_
-int get_res_queue_size_(SEXP sim_, SEXP name_);
-RcppExport SEXP simmer_get_res_queue_size_(SEXP sim_SEXP, SEXP name_SEXP) {
+// get_queue_size_
+int get_queue_size_(SEXP sim_, SEXP name_);
+RcppExport SEXP simmer_get_queue_size_(SEXP sim_SEXP, SEXP name_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
-    __result = Rcpp::wrap(get_res_queue_size_(sim_, name_));
+    __result = Rcpp::wrap(get_queue_size_(sim_, name_));
+    return __result;
+END_RCPP
+}
+// get_server_count_
+int get_server_count_(SEXP sim_, SEXP name_);
+RcppExport SEXP simmer_get_server_count_(SEXP sim_SEXP, SEXP name_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
+    __result = Rcpp::wrap(get_server_count_(sim_, name_));
+    return __result;
+END_RCPP
+}
+// get_queue_count_
+int get_queue_count_(SEXP sim_, SEXP name_);
+RcppExport SEXP simmer_get_queue_count_(SEXP sim_SEXP, SEXP name_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
+    __result = Rcpp::wrap(get_queue_count_(sim_, name_));
     return __result;
 END_RCPP
 }

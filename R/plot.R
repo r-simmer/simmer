@@ -28,8 +28,8 @@ plot_resource_usage <- function(reps, resource_name, items=c("queue", "server", 
     mutate(mean = cumsum(value * diff(c(0,time))) / time) %>% 
     ungroup()
   
-  queue_size <- reps[[1]]$get_res_queue_size(resource_name)
-  capacity <- reps[[1]]$get_res_capacity(resource_name)
+  queue_size <- reps[[1]]$get_queue_size(resource_name)
+  capacity <- reps[[1]]$get_capacity(resource_name)
   system <- capacity + queue_size
   
   plot_obj<-
@@ -90,7 +90,7 @@ plot_resource_utilization <- function(reps, resources){
     mutate(item = factor(item)) %>%
     filter(item == "server") %>%
     group_by(resource) %>%
-    mutate(capacity = reps[[1]]$get_res_capacity(resource[[1]])) %>% 
+    mutate(capacity = reps[[1]]$get_capacity(resource[[1]])) %>% 
     group_by(replication) %>%
     mutate(runtime = max(time)) %>%
     group_by(resource, replication, capacity, runtime) %>%

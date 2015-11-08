@@ -5,20 +5,22 @@ test_that("resources are correctly created", {
     add_resource("server", 5, Inf)
   
   expect_warning(simmer$add_resource("server"))
-  expect_error(simmer$get_res_capacity())
-  expect_error(simmer$get_res_capacity("asdf"))
-  expect_equal(simmer$get_res_capacity("server"), 5)
-  expect_error(simmer$get_res_queue_size())
-  expect_error(simmer$get_res_queue_size("asdf"))
-  expect_equal(simmer$get_res_queue_size("server"), Inf)
+  expect_error(simmer$get_capacity("asdf"))
+  expect_equal(simmer$get_capacity("server"), 5)
+  expect_error(simmer$get_queue_size("asdf"))
+  expect_equal(simmer$get_queue_size("server"), Inf)
+  expect_error(simmer$get_server_count("asdf"))
+  expect_equal(simmer$get_server_count("server"), 0)
+  expect_error(simmer$get_queue_count("asdf"))
+  expect_equal(simmer$get_queue_count("server"), 0)
 })
 
 test_that("a negative capacity or queue_size is converted to positive", {
   simmer <- Simmer$new() $
     add_resource("server", -4, -1)
   
-  expect_equal(simmer$get_res_capacity("server"), 4)
-  expect_equal(simmer$get_res_queue_size("server"), 1)
+  expect_equal(simmer$get_capacity("server"), 4)
+  expect_equal(simmer$get_queue_size("server"), 1)
 })
 
 test_that("a non-existent resource fails", {

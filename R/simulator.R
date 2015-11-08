@@ -44,19 +44,29 @@ require(R6)
 #'   \item{dist}{a function modelling the interarrival times}
 #'   \item{mon}{whether the simulator must monitor the generated arrivals or not}
 #' }
-#' \preformatted{## Get the arrival statistics
+#' \preformatted{## Get arrival statistics
 #' Simmer$get_mon_arrivals()
 #' }
-#' \preformatted{## Get the resource statistics
+#' \preformatted{## Get resource statistics
 #' Simmer$get_mon_resources()
 #' }
-#' \preformatted{## Get the capacity of a resource
-#' Simmer$get_res_capacity(name)
+#' \preformatted{## Get resource's capacity
+#' Simmer$get_capacity(name)
 #' }\describe{
 #'   \item{name}{the name of the resource}
 #' }
-#' \preformatted{## Get the queue size of a resource
-#' Simmer$get_res_queue_size(name)
+#' \preformatted{## Get resource's queue size
+#' Simmer$get_queue_size(name)
+#' }\describe{
+#'   \item{name}{the name of the resource}
+#' }
+#' \preformatted{## Get resource's server count
+#' Simmer$get_server_count(name)
+#' }\describe{
+#'   \item{name}{the name of the resource}
+#' }
+#' \preformatted{## Get resource's queue count
+#' Simmer$get_queue_count(name)
 #' }\describe{
 #'   \item{name}{the name of the resource}
 #' }
@@ -173,16 +183,24 @@ Simmer <- R6Class("Simmer",
       )
     },
     
-    get_res_capacity = function(name) { 
-      ret <- get_res_capacity_(private$sim_obj, evaluate_value(name))
+    get_capacity = function(name) { 
+      ret <- get_capacity_(private$sim_obj, evaluate_value(name))
       if (ret < 0) ret <- Inf
       ret
     },
     
-    get_res_queue_size = function(name) {
-      ret <- get_res_queue_size_(private$sim_obj, evaluate_value(name))
+    get_queue_size = function(name) {
+      ret <- get_queue_size_(private$sim_obj, evaluate_value(name))
       if (ret < 0) ret <- Inf
       ret
+    },
+    
+    get_server_count = function(name) { 
+      get_server_count_(private$sim_obj, evaluate_value(name))
+    },
+    
+    get_queue_count = function(name) {
+      get_queue_count_(private$sim_obj, evaluate_value(name))
     }
   ),
   

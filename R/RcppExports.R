@@ -41,12 +41,20 @@ get_mon_resource_ <- function(sim_, name_) {
     .Call('simmer_get_mon_resource_', PACKAGE = 'simmer', sim_, name_)
 }
 
-get_res_capacity_ <- function(sim_, name_) {
-    .Call('simmer_get_res_capacity_', PACKAGE = 'simmer', sim_, name_)
+get_capacity_ <- function(sim_, name_) {
+    .Call('simmer_get_capacity_', PACKAGE = 'simmer', sim_, name_)
 }
 
-get_res_queue_size_ <- function(sim_, name_) {
-    .Call('simmer_get_res_queue_size_', PACKAGE = 'simmer', sim_, name_)
+get_queue_size_ <- function(sim_, name_) {
+    .Call('simmer_get_queue_size_', PACKAGE = 'simmer', sim_, name_)
+}
+
+get_server_count_ <- function(sim_, name_) {
+    .Call('simmer_get_server_count_', PACKAGE = 'simmer', sim_, name_)
+}
+
+get_queue_count_ <- function(sim_, name_) {
+    .Call('simmer_get_queue_count_', PACKAGE = 'simmer', sim_, name_)
 }
 
 Seize__new <- function(resource_, amount_) {

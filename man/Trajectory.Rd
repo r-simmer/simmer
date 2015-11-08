@@ -42,10 +42,10 @@ Trajectory$timeout(duration)
 }\describe{
   \item{duration}{the delay}
 }
-\preformatted{## Add a branch in the trajectory
-Trajectory$branch(prob, merge, ...)
+\preformatted{## Add n branches in the trajectory
+Trajectory$branch(option, merge, ...)
 }\describe{
-  \item{prob}{a vector of n probabilities, one for each branch}
+  \item{option}{a function that must return a number between 1:n to select a branch}
   \item{merge}{a vector of n booleans that indicate whether the arrival must continue executing activities after each branch or not}
   \item{...}{n Trajectory objects describing each branch}
 }
@@ -70,7 +70,7 @@ t0$show()
 t1 <- Trajectory$new("trajectory with a branch") $
   seize("server", 1) $
   ## 50-50 chance for each branch
-  branch(prob=c(0.5, 0.5), merge=c(TRUE, FALSE), 
+  branch(function() sample(1:2, 1), merge=c(TRUE, FALSE), 
     Trajectory$new("branch1") $
       timeout(function() 1),
     Trajectory$new("branch2") $

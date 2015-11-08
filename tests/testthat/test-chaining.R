@@ -5,7 +5,8 @@ test_that("Trajectory's method chaining works", {
     seize("one", 1) $
     release("one", 1) $
     timeout(function() 1) $
-    branch(1, T, Trajectory$new())
+    branch(function() 1, T, Trajectory$new()$timeout(function() 1)) $
+    seize("one", 1)
   
   expect_is(t0, "Trajectory")
 })
