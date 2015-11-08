@@ -4,8 +4,9 @@
 #include <Rcpp.h>
 #include <queue>
 
-// forward declaration
+// forward declarations
 class Simulator;
+class Activity;
 
 /** 
  *  Base class. Every element in a simulation model is an entity.
@@ -50,13 +51,13 @@ public:
    * @param mon             bool that indicates whether this entity must be monitored
    * @param first_activity  the first activity of a user-defined R trajectory
    */
-  Arrival(Simulator* sim, std::string name, bool mon, Rcpp::Environment first_activity):
+  Arrival(Simulator* sim, std::string name, bool mon, Activity* first_activity):
     Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity) {}
   
   void activate();
   
 private:
-  Rcpp::Environment activity; /**< current activity from an R trajectory */
+  Activity* activity; /**< current activity from an R trajectory */
 };
 
 /**
@@ -74,7 +75,7 @@ public:
    * @param dist            an user-defined R function that provides random numbers
    */
   Generator(Simulator* sim, std::string name_prefix, bool mon,
-            Rcpp::Environment first_activity, Rcpp::Function dist): 
+            Activity* first_activity, Rcpp::Function dist): 
     Process(sim, name_prefix, mon), count(0), first_activity(first_activity), dist(dist) {}
   
   /**
@@ -88,7 +89,7 @@ public:
   
 private:
   int count;  /**< number of arrivals generated */
-  Rcpp::Environment first_activity;
+  Activity* first_activity;
   Rcpp::Function dist;
 };
 

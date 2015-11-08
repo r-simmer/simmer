@@ -145,29 +145,95 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// seize_
-int seize_(SEXP name_, SEXP arrival_, SEXP amount_);
-RcppExport SEXP simmer_seize_(SEXP name_SEXP, SEXP arrival_SEXP, SEXP amount_SEXP) {
+// Seize__new
+SEXP Seize__new(SEXP resource_, SEXP amount_);
+RcppExport SEXP simmer_Seize__new(SEXP resource_SEXP, SEXP amount_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type arrival_(arrival_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type resource_(resource_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
-    __result = Rcpp::wrap(seize_(name_, arrival_, amount_));
+    __result = Rcpp::wrap(Seize__new(resource_, amount_));
     return __result;
 END_RCPP
 }
-// release_
-int release_(SEXP name_, SEXP arrival_, SEXP amount_);
-RcppExport SEXP simmer_release_(SEXP name_SEXP, SEXP arrival_SEXP, SEXP amount_SEXP) {
+// Release__new
+SEXP Release__new(SEXP resource_, SEXP amount_);
+RcppExport SEXP simmer_Release__new(SEXP resource_SEXP, SEXP amount_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type arrival_(arrival_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type resource_(resource_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
-    __result = Rcpp::wrap(release_(name_, arrival_, amount_));
+    __result = Rcpp::wrap(Release__new(resource_, amount_));
     return __result;
+END_RCPP
+}
+// Timeout__new
+SEXP Timeout__new(Function duration);
+RcppExport SEXP simmer_Timeout__new(SEXP durationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Function >::type duration(durationSEXP);
+    __result = Rcpp::wrap(Timeout__new(duration));
+    return __result;
+END_RCPP
+}
+// Branch__new
+SEXP Branch__new(Function option, SEXP merge_, SEXP trj_);
+RcppExport SEXP simmer_Branch__new(SEXP optionSEXP, SEXP merge_SEXP, SEXP trj_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Function >::type option(optionSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type merge_(merge_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type trj_(trj_SEXP);
+    __result = Rcpp::wrap(Branch__new(option, merge_, trj_));
+    return __result;
+END_RCPP
+}
+// activity_get_next_
+SEXP activity_get_next_(SEXP activity_);
+RcppExport SEXP simmer_activity_get_next_(SEXP activity_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
+    __result = Rcpp::wrap(activity_get_next_(activity_));
+    return __result;
+END_RCPP
+}
+// activity_get_n_
+int activity_get_n_(SEXP activity_);
+RcppExport SEXP simmer_activity_get_n_(SEXP activity_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
+    __result = Rcpp::wrap(activity_get_n_(activity_));
+    return __result;
+END_RCPP
+}
+// activity_show_
+void activity_show_(SEXP activity_, SEXP indent_);
+RcppExport SEXP simmer_activity_show_(SEXP activity_SEXP, SEXP indent_SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type indent_(indent_SEXP);
+    activity_show_(activity_, indent_);
+    return R_NilValue;
+END_RCPP
+}
+// activity_set_next_
+void activity_set_next_(SEXP activity_, SEXP the_next_);
+RcppExport SEXP simmer_activity_set_next_(SEXP activity_SEXP, SEXP the_next_SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type the_next_(the_next_SEXP);
+    activity_set_next_(activity_, the_next_);
+    return R_NilValue;
 END_RCPP
 }

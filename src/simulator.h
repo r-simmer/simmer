@@ -7,6 +7,9 @@
 
 #include "entity.h"
 
+// forward declarations
+class Activity;
+
 /**
  * Event container. Encapsulates future processes in the event queue.
  */
@@ -155,7 +158,7 @@ public:
    * @param   mon             bool that indicates whether this entity must be monitored
    */
   void add_generator(std::string name_prefix, 
-                     Rcpp::Environment first_activity, Rcpp::Function dist, bool mon) {
+                     Activity* first_activity, Rcpp::Function dist, bool mon) {
     if (generator_map.find(name_prefix) == generator_map.end()) {
       Generator* gen = new Generator(this, name_prefix, mon, first_activity, dist);
       generator_map[name_prefix] = gen;

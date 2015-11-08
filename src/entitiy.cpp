@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "simulator.h"
+#include "activity.h"
 
 inline void Arrival::activate() {
   if (start_time < 0) start_time = sim->now();
@@ -8,18 +9,16 @@ inline void Arrival::activate() {
     Rcpp::Rcout <<
       "sim: " << sim->name << " | " << "time: " << sim->now() << " | " <<
       "arrival: " << name << " | " << "activity: " << 
-      Rcpp::as<std::string>(activity["name"]) << "(" <<
-      Rcpp::as<std::string>(activity["resource"]) << ")" << std::endl;
+      activity->name << "(" << activity->resource << ")" << std::endl;
   
   // run the activity and get the activity time
-  Rcpp::Function run(activity["run"]);
-  double delay = Rcpp::as<double>(run((long int)this));
+  double delay = activity->run(this);
   if (delay >= 0) activity_time += delay;
   
   // get the next activity or end
   if (delay >= -1) {
-    if (Rf_isEnvironment(activity["next_activity"])) {
-      activity = activity["next_activity"];
+    activity = activity->get_next();
+    if (activity) {
       if (delay >= 0) sim->schedule(delay, this);
     } else sim->notify_end(this, TRUE);
   } else sim->notify_end(this, FALSE);

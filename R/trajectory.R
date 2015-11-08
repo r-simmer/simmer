@@ -97,10 +97,10 @@ Trajectory <- R6Class("Trajectory",
                  private$n_activities, " activities\n"))
       ptr <- private$head
       while (!identical(ptr, private$tail)) {
-        ptr$show(indent)
-        ptr <- ptr$next_activity
+        activity_show_(ptr, indent)
+        ptr <- activity_get_next_(ptr)
       }
-      ptr$show(indent)
+      activity_show_(ptr, indent)
     },
     
     get_head = function() { private$head },
@@ -112,30 +112,30 @@ Trajectory <- R6Class("Trajectory",
     seize = function(resource, amount) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
-      private$add_activity(Seize$new(resource, amount))
+      private$add_activity(Seize__new(resource, amount))
     },
     
     release = function(resource, amount) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
-      private$add_activity(Release$new(resource, amount))
+      private$add_activity(Release__new(resource, amount))
     },
     
     timeout = function(duration) {
       if (!is.function(duration)) 
         stop(paste0(self$name, ": duration must be callable"))
-      private$add_activity(Timeout$new(duration))
+      private$add_activity(Timeout__new(duration))
     },
     
-    branch = function(prob, merge, ...) {
+    branch = function(option, merge, ...) {
       trj <- list(...)
-      if (sum(prob) != 1)
-        stop("prob must sum 1")
-      if ((length(prob) != length(merge)) || (length(prob) != length(trj)))
+      if (!is.function(option)) 
+        stop(paste0(self$name, ": option must be callable"))
+      if (length(merge) != length(trj))
         stop("the number of elements does not match")
       for (i in trj) if (!inherits(i, "Trajectory"))
         stop("not a trajectory")
-      private$add_activity(Branch$new(prob, merge, trj))
+      private$add_activity(Branch__new(option, merge, trj))
     }
   ),
   
@@ -145,14 +145,12 @@ Trajectory <- R6Class("Trajectory",
     tail = NULL,
     
     add_activity = function(activity) {
-      if (!inherits(activity, "Activity"))
-        stop("not an activity")
       if (is.null(private$head))
         private$head <- activity
       else
-        private$tail$next_activity <- activity
+        activity_set_next_(private$tail, activity)
       private$tail <- activity
-      private$n_activities <- private$n_activities + activity$n
+      private$n_activities <- private$n_activities + activity_get_n_(activity)
       invisible(self)
     }
   )

@@ -49,11 +49,35 @@ get_res_queue_size_ <- function(sim_, name_) {
     .Call('simmer_get_res_queue_size_', PACKAGE = 'simmer', sim_, name_)
 }
 
-seize_ <- function(name_, arrival_, amount_) {
-    .Call('simmer_seize_', PACKAGE = 'simmer', name_, arrival_, amount_)
+Seize__new <- function(resource_, amount_) {
+    .Call('simmer_Seize__new', PACKAGE = 'simmer', resource_, amount_)
 }
 
-release_ <- function(name_, arrival_, amount_) {
-    .Call('simmer_release_', PACKAGE = 'simmer', name_, arrival_, amount_)
+Release__new <- function(resource_, amount_) {
+    .Call('simmer_Release__new', PACKAGE = 'simmer', resource_, amount_)
+}
+
+Timeout__new <- function(duration) {
+    .Call('simmer_Timeout__new', PACKAGE = 'simmer', duration)
+}
+
+Branch__new <- function(option, merge_, trj_) {
+    .Call('simmer_Branch__new', PACKAGE = 'simmer', option, merge_, trj_)
+}
+
+activity_get_next_ <- function(activity_) {
+    .Call('simmer_activity_get_next_', PACKAGE = 'simmer', activity_)
+}
+
+activity_get_n_ <- function(activity_) {
+    .Call('simmer_activity_get_n_', PACKAGE = 'simmer', activity_)
+}
+
+activity_show_ <- function(activity_, indent_) {
+    invisible(.Call('simmer_activity_show_', PACKAGE = 'simmer', activity_, indent_))
+}
+
+activity_set_next_ <- function(activity_, the_next_) {
+    invisible(.Call('simmer_activity_set_next_', PACKAGE = 'simmer', activity_, the_next_))
 }
 

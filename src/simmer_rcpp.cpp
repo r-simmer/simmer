@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 
+#include "activity.h"
 #include "entity.h"
 #include "simulator.h"
 
@@ -54,7 +55,7 @@ void run_(SEXP sim_, SEXP until_) {
 void add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_activity_, SEXP dist_, SEXP mon_) {
   XPtr<Simulator> sim(sim_);
   std::string name_prefix = as<std::string>(name_prefix_);
-  Environment first_activity(first_activity_);
+  XPtr<Activity> first_activity(first_activity_);
   Function dist(dist_);
   bool mon = as<bool>(mon_);
   
@@ -114,19 +115,65 @@ int get_res_queue_size_(SEXP sim_, SEXP name_){
 }
 
 //[[Rcpp::export]]
-int seize_(SEXP name_, SEXP arrival_, SEXP amount_) {
-  std::string name = as<std::string>(name_);
-  Arrival* arrival = (Arrival *)as<long int>(arrival_);
+SEXP Seize__new(SEXP resource_, SEXP amount_) {
+  std::string resource = as<std::string>(resource_);
   int amount = as<int>(amount_);
   
-  return arrival->sim->get_resource(name)->seize(arrival, amount);
+  XPtr<Seize> ptr(new Seize(resource, amount), false);
+  return ptr;
 }
 
 //[[Rcpp::export]]
-int release_(SEXP name_, SEXP arrival_, SEXP amount_) {
-  std::string name = as<std::string>(name_);
-  Arrival* arrival = (Arrival *)as<long int>(arrival_);
+SEXP Release__new(SEXP resource_, SEXP amount_) {
+  std::string resource = as<std::string>(resource_);
   int amount = as<int>(amount_);
   
-  return arrival->sim->get_resource(name)->release(arrival, amount);
+  XPtr<Release> ptr(new Release(resource, amount), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP Timeout__new(Function duration) {
+  XPtr<Timeout> ptr(new Timeout(duration), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP Branch__new(Function option, SEXP merge_, SEXP trj_) {
+  std::vector<bool> merge = as<std::vector<bool> >(merge_);
+  std::vector<Rcpp::Environment> trj = as<std::vector<Rcpp::Environment> >(trj_);
+  
+  XPtr<Branch> ptr(new Branch(option, merge, trj), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP activity_get_next_(SEXP activity_) {
+  XPtr<Activity> activity(activity_);
+  
+  XPtr<Activity> ptr(activity->get_next());
+  return ptr;
+}
+
+//[[Rcpp::export]]
+int activity_get_n_(SEXP activity_) {
+  XPtr<Activity> activity(activity_);
+  
+  return activity->n;
+}
+
+//[[Rcpp::export]]
+void activity_show_(SEXP activity_, SEXP indent_) {
+  XPtr<Activity> activity(activity_);
+  int indent = as<int>(indent_);
+  
+  return activity->show(indent);
+}
+
+//[[Rcpp::export]]
+void activity_set_next_(SEXP activity_, SEXP the_next_) {
+  XPtr<Activity> activity(activity_);
+  XPtr<Activity> the_next(the_next_);
+  
+  activity->set_next(the_next);
 }

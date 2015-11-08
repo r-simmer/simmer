@@ -30,7 +30,7 @@ plot_evolution_arrival_times(reps, type="flow_time")
 #################################################################
 
 mm1 <- Trajectory$new() $
-  branch(1, T,
+  branch(function() 0, T,
     Trajectory$new() $
       seize("server", 1) $
       timeout(function() rexp(1, 2)) $
@@ -57,7 +57,7 @@ simmer <- Simmer$new(verbose=F) $
   add_generator("customer", mm1, function() rexp(1, 60), mon=F)
 simmer$run(10000)
 })
-# 86 seconds (Python: ~ 6 seconds, pure R6: ~ 15300)
+# 38 seconds (Python: 6 seconds, Simpy: 30 seconds, pure R6: ~ 15300)
 
 plot_resource_usage(simmer, "server")
 
@@ -66,7 +66,7 @@ plot_resource_usage(simmer, "server")
 t0 <- Trajectory$new("my trajectory") $
   seize("server", 1) $
   timeout(function() rexp(1, 1)) $
-  branch(prob=c(0.1, 0.9), merge=c(F, T), 
+  branch(function() sample(0:1, 1), merge=c(F, T), 
     Trajectory$new("branch1") $
       seize("server", 2) $
       timeout(function() 1) $
@@ -83,4 +83,3 @@ a <- t0$get_head()
 a; a <- a$next_activity
 
 t0$show()
-
