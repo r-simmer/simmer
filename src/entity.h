@@ -4,6 +4,10 @@
 #include <Rcpp.h>
 #include <queue>
 
+#define SUCCESS 0
+#define ENQUEUED -1
+#define REJECTED -2
+
 // forward declarations
 class Simulator;
 class Activity;
@@ -152,7 +156,7 @@ public:
    * @param   arrival a pointer to the arrival trying to seize resources
    * @param   amount  the amount of resources needed
    * 
-   * @return  0 if success (serving now), failure otherwise (1: enqueued, -1: rejected)
+   * @return  SUCCESS, ENQUEUED, REJECTED
    */
   int seize(Arrival* arrival, int amount);
   
@@ -161,7 +165,7 @@ public:
    * @param   arrival a pointer to the arrival that releases resources
    * @param   amount  the amount of resources released
    * 
-   * @return  0 if success (always)
+   * @return  SUCCESS
    */
   int release(Arrival* arrival, int amount);
   

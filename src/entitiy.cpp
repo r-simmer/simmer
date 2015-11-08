@@ -11,17 +11,24 @@ inline void Arrival::activate() {
       "arrival: " << name << " | " << "activity: " << 
       activity->name << "(" << activity->resource << ")" << std::endl;
   
-  // run the activity and get the activity time
+  bool flag = TRUE;
   double delay = activity->run(this);
-  if (delay >= 0) activity_time += delay;
+  if (delay == REJECTED) goto reject;
   
-  // get the next activity or end
-  if (delay >= -1) {
-    activity = activity->get_next();
-    if (activity) {
-      if (delay >= 0) sim->schedule(delay, this);
-    } else sim->notify_end(this, TRUE);
-  } else sim->notify_end(this, FALSE);
+  activity = activity->get_next();
+  if (!activity) goto finish;
+  if (delay == ENQUEUED) goto end;
+  
+  activity_time += delay;
+  sim->schedule(delay, this);
+  goto end;
+  
+reject:
+  flag = FALSE;
+finish:
+  sim->notify_end(this, flag);
+end:
+  return;
 }
 
 void Generator::activate() {
@@ -48,16 +55,16 @@ int Resource::seize(Arrival* arrival, int amount) {
   // serve now
   if (room_in_server(amount)) {
     server_count += amount;
-    return 0;
+    return SUCCESS;
   }
   // enqueue
   else if (room_in_queue(amount)) {
     queue_count += amount;
     queue.push(std::make_pair(arrival, amount));
-    return -1;
+    return ENQUEUED;
   }
   // reject
-  else return -2;
+  else return REJECTED;
 }
 
 int Resource::release(Arrival* arrival, int amount) {
@@ -76,6 +83,5 @@ int Resource::release(Arrival* arrival, int amount) {
     server_count += another_amount;
     sim->schedule(0, another_arrival);
   }
-  
-  return 0;
+  return SUCCESS;
 }
