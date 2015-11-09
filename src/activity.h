@@ -122,7 +122,8 @@ private:
 };
 
 /**
- * Timeout.
+ * Branch. It runs as another activity, but encloses other trajectories
+ * that are selected at runtime through a user-defined function.
  */
 class Branch: public Activity {
 public:
