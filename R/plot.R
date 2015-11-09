@@ -8,6 +8,9 @@
 #' @importFrom magrittr %>%
 #' @export
 plot_resource_usage <- function(reps, resource_name, items=c("queue", "server", "system"), steps = FALSE) {
+  # Hack to avoid spurious notes
+  resource <- item <- value <- replication <- NULL
+  
   if (!is.list(reps)) reps <- list(reps)
   
   monitor_data <- do.call(rbind, lapply(1:length(reps), function(i) {
@@ -68,7 +71,11 @@ plot_resource_usage <- function(reps, resource_name, items=c("queue", "server", 
 #' @param resources a character vector with at least one resource specified - e.g. "c('res1','res2')"
 #' @importFrom magrittr %>%
 #' @export
-plot_resource_utilization <- function(reps, resources){
+plot_resource_utilization <- function(reps, resources) {
+  # Hack to avoid spurious notes
+  resource <- item <- value <- replication <- capacity <- runtime <- 
+    in_use <- utilization <- Q25 <- Q50 <- Q75 <- NULL
+  
   if (!is.list(reps)) reps <- list(reps)
   
   monitor_data <- do.call(rbind, lapply(1:length(reps), function(i) {
@@ -114,6 +121,10 @@ plot_resource_utilization <- function(reps, resources){
 #' @importFrom magrittr %>%
 #' @export
 plot_evolution_arrival_times <- function(reps, type=c("flow_time","activity_time","waiting_time")){
+  # Hack to avoid spurious notes
+  end_time <- start_time <- flow_time <- activity_time <- 
+    replication <- waiting_time <- NULL
+  
   if (!is.list(reps)) reps <- list(reps)
   
   monitor_data <- do.call(rbind, lapply(1:length(reps), function(i) {
