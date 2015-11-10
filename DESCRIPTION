@@ -2,7 +2,7 @@ Package: simmer
 Type: Package
 Version: 3.0.0
 Title: Just let it simmer
-Description: simmer is a discrete event simulation (DES) package for R.
+Description: simmer is a Discrete-Event Simulation (DES) package for R.
 Encoding: UTF-8
 Authors@R: as.person(c(
     "Bart Smeets <bartsmeets86@gmail.com> [aut, cre]", 
@@ -10,18 +10,21 @@ Authors@R: as.person(c(
   ))
 URL: https://github.com/Bart6114/simmer
 BugReports: https://github.com/Bart6114/simmer/issues
-Depends:
+Depends: 
     R (>= 3.1.2)
-Imports:
+Imports: 
     Rcpp,
     R6,
     magrittr
-Suggests:
+Suggests: 
     dplyr,
     tidyr,
     ggplot2,
     scales,
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
 LinkingTo: Rcpp (>= 0.12.0)
 License: MIT + file LICENSE
 RoxygenNote: 5.0.0
+VignetteBuilder: knitr
