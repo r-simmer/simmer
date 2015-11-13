@@ -2,17 +2,22 @@
 
 language: c
 
-env:
-  - global:
-    - WARNINGS_ARE_ERRORS=1
-    - R_CHECK_ARGS="--no-manual --as-cran"
-
 before_install:
   - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
   - chmod 755 ./travis-tool.sh
   - ./travis-tool.sh bootstrap
 
 install:
+  - ./travis-tool.sh r_binary_install Rcpp
+  - ./travis-tool.sh r_binary_install R6
+  - ./travis-tool.sh r_binary_install magrittr
+  - ./travis-tool.sh r_binary_install dplyr
+  - ./travis-tool.sh r_binary_install tidyr
+  - ./travis-tool.sh r_binary_install ggplot2
+  - ./travis-tool.sh r_binary_install scales
+  - ./travis-tool.sh r_binary_install testthat
+  - ./travis-tool.sh r_binary_install knitr
+  - ./travis-tool.sh r_binary_install rmarkdown
   - ./travis-tool.sh install_deps
 
 script: ./travis-tool.sh run_tests
