@@ -1,15 +1,7 @@
 simmer [![Build Status](https://travis-ci.org/Bart6114/simmer.svg?branch=master)](https://travis-ci.org/Bart6114/simmer)
 ========================================================================================================================
 
-<<<<<<< HEAD
-__DEFUNCT FOR NOW... WORKING ON A FULL REDESIGN__
--------------------------------------------------
-
-
-*by Bart Smeets -- bartsmeets86@gmail.com*
-=======
 *by Bart Smeets (<bartsmeets86@gmail.com>), Iñaki Ucar (<i.ucar86@gmail.com>)*
->>>>>>> 573cb165a58129e0a4a6f90a899e50aa895a64e1
 
 **simmer** is a Discrete-Event Simulation (DES) package for the R language designed to be a generic framework like [SimPy](https://simpy.readthedocs.org) or [SimJulia](http://simjuliajl.readthedocs.org). Although R alone is definitely not made for DES, we use [Rcpp](http://www.rcpp.org/) to boost the performance of simmer. This faces us with an important trade-off between flexibility and performance, depending on how much code remains in R or goes to C++ respectively.
 
