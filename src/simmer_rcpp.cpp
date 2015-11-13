@@ -1,249 +1,198 @@
-
 #include <Rcpp.h>
 
-
-#include <iostream>
-#include <vector>
-#include <ctime>
-#include <memory>
-#include <utility>
-
-#include "monitor.h"
-#include "resource.h"
-
+#include "activity.h"
 #include "entity.h"
-#include "event.h"
-
 #include "simulator.h"
-
-#include "event_entity_glue.h"
-#include "simulator_event_glue.h"
 
 using namespace Rcpp;
 
-
-
-
 //[[Rcpp::export]]
-void add_timeout_event_(SEXP ent, SEXP duration_) {
-  
-  XPtr<Entity> ent_ptr(ent);
-  double duration = as<double>(duration_);
-  ent_ptr->add_timeout_event(duration);
-  
-}
-
-//[[Rcpp::export]]
-void add_seize_event_(SEXP ent, SEXP res_name_, SEXP amount_) {
-  
-  XPtr<Entity> ent_ptr(ent);
-  std::string res_name = as<std::string>(res_name_);
-  
-  double amount = as<double>(amount_);
-  ent_ptr->add_seize_event(res_name, amount);
-  
-}
-
-//[[Rcpp::export]]
-void add_skip_event_(SEXP ent, SEXP number_) {
-  
-  XPtr<Entity> ent_ptr(ent);
-  
-  int number = as<int>(number_);
-  ent_ptr->add_skip_event(number);
-  
-}
-
-
-//[[Rcpp::export]]
-void add_release_event_(SEXP ent, SEXP res_name_, SEXP amount_) {
-  
-  XPtr<Entity> ent_ptr(ent);
-  std::string res_name = as<std::string>(res_name_);
-  
-  double amount = as<double>(amount_);
-  ent_ptr->add_release_event(res_name, amount);
-  
-}
-
-//[[Rcpp::export]]
-void add_entity_(SEXP sim, SEXP ent) {
-  
-  XPtr<Entity> ent_ptr(ent);
-  XPtr<Simulator> sim_ptr(sim);
-  
-  sim_ptr->add_entity(ent_ptr);
-}
-
-
-
-
-//[[Rcpp::export]]
-void add_resource_(SEXP sim, SEXP name_, SEXP capacity_, SEXP queue_size_){
-  XPtr<Simulator> sim_ptr(sim);
-  
-  int capacity = as<int>(capacity_);
-  int queue_size = as<int>(queue_size_);
+SEXP Simulator__new(SEXP name_, SEXP verbose_) {
   std::string name = as<std::string>(name_);
-  
-  sim_ptr->add_resource(name, capacity, queue_size);
-}
-
-//[[Rcpp::export]]
-int get_resource_capacity_(SEXP sim, SEXP name_){
-  XPtr<Simulator> sim_ptr(sim);
-  std::string name = as<std::string>(name_);
-  
-  return sim_ptr->get_resource(name)->capacity;
-}
-
-//[[Rcpp::export]]
-int get_resource_queue_size_(SEXP sim, SEXP name_){
-  XPtr<Simulator> sim_ptr(sim);
-  std::string name = as<std::string>(name_);
-  
-  return sim_ptr->get_resource(name)->queue_size;
-}
-
-//[[Rcpp::export]]
-SEXP get_entity_monitor_values_(SEXP sim) {
-  XPtr<Simulator> sim_ptr(sim);
-  std::vector<double> time_vec;
-  std::vector<double> value_vec;
-  std::vector<int> entity_id_vec;
-  std::vector<std::string> entity_name_vec;
-  
-  
-  std::pair<std::vector<double>, std::vector<double> > values;
-  for(unsigned int i = 0; i < sim_ptr->entity_vec.size(); ++i){
-    values = sim_ptr->entity_vec[i]->monitor->get_all_values();
-    
-    for(unsigned int j = 0; j < values.first.size(); ++j){
-      entity_id_vec.push_back(i);
-      entity_name_vec.push_back( sim_ptr->entity_vec[i]->name );
-      time_vec.push_back(values.first[j]);
-      value_vec.push_back(values.second[j]);
-      
-    }
-    
-  };
-  
-  
-  return Rcpp::List::create(Rcpp::Named("time") = time_vec,
-  Rcpp::Named("value") = value_vec,
-  Rcpp::Named("entity_id") = entity_id_vec,
-  Rcpp::Named("entity_name") = entity_name_vec);
-}
-
-
-//[[Rcpp::export]]
-SEXP get_resource_serve_mon_values_(SEXP sim, SEXP resource_name_) {
-  XPtr<Simulator> sim_ptr(sim);
-  std::string resource_name = as<std::string>(resource_name_);
-  
-  std::vector<double> time_vec;
-  std::vector<double> value_vec;
-  std::vector<std::string> resource_vec;
-  
-  TimeValueMonitor* res_mon = sim_ptr->get_resource(resource_name)->serve_mon;
-  
-  for(unsigned int i = 0; i < res_mon->value_vec.size(); ++i){
-    time_vec.push_back(res_mon->time_vec[i]);
-    value_vec.push_back(res_mon->value_vec[i]);
-    resource_vec.push_back(resource_name);
-    
-  };
-  
-  
-  return Rcpp::List::create(Rcpp::Named("time") = time_vec,
-  Rcpp::Named("value") = value_vec,
-  Rcpp::Named("resource") = resource_vec);
-  
-}
-
-//[[Rcpp::export]]
-SEXP get_resource_queue_mon_values_(SEXP sim, SEXP resource_name_) {
-  XPtr<Simulator> sim_ptr(sim);
-  std::string resource_name = as<std::string>(resource_name_);
-  
-  std::vector<double> time_vec;
-  std::vector<double> value_vec;
-  std::vector<std::string> resource_vec;
-  
-  TimeValueMonitor* res_mon = sim_ptr->get_resource(resource_name)->queue_mon;
-  
-  for(unsigned int i = 0; i < res_mon->value_vec.size(); ++i){
-    time_vec.push_back(res_mon->time_vec[i]);
-    value_vec.push_back(res_mon->value_vec[i]);
-    resource_vec.push_back(resource_name);
-    
-  };
-  
-  
-  return Rcpp::List::create(Rcpp::Named("time") = time_vec,
-  Rcpp::Named("value") = value_vec,
-  Rcpp::Named("resource") = resource_vec);
-  
-}
-
-////[[Rcpp::export]]
-//SEXP copy_entity_(SEXP original_entity){
-//  Rcpp::XPtr<Entity> original_ptr(original_entity);
-//  Rcpp::XPtr<Entity> copy_ptr(new Entity(*original_ptr), false );
-//  return( copy_ptr );
-//}
-
-//[[Rcpp::export]]
-void run_(SEXP sim) {
-  try {
-    XPtr<Simulator> sim_ptr(sim);
-    sim_ptr->run();  
-  } catch (std::exception &ex) {  
-    forward_exception_to_r(ex);
-  } catch(...) { 
-    ::Rf_error("c++ exception (unknown reason)"); 
-  }
-}
-
-//[[Rcpp::export]]
-SEXP Simulator__new(SEXP name_, SEXP until_, SEXP verbose_) {
-  
-  std::string name = as<std::string>(name_);
-  double until = as<double>(until_);
   bool verbose = as<bool>(verbose_);
   
-  if(until>0){
-    Rcpp::XPtr<Simulator> ptr(new Simulator( name, until , verbose), false );
-    return ptr;
-  }
-  else 
-  {
-    Rcpp::XPtr<Simulator> ptr(new Simulator( name , verbose), false);
-    return ptr;
-  }
-  
-}
-
-//' Return the current time of a simulator
-//'
-//' @param sim a external pointer to a simulator object
-//' @export
-//[[Rcpp::export]]
-double now_(SEXP sim) {
-  XPtr<Simulator> sim_ptr(sim);
-  return sim_ptr->now();
-}
-    
-    
-//[[Rcpp::export]]
-SEXP Entity__new(SEXP name_, SEXP activation_time_) {
-  
-  std::string name = as<std::string>(name_);
-  double activation_time = as<double>(activation_time_);
-  
-  Rcpp::XPtr<Entity> ptr( new Entity( name, activation_time), false );
+  XPtr<Simulator> ptr(new Simulator(name, verbose), false); // What does this "false" mean?
   return ptr;
-  
 }
 
+//[[Rcpp::export]]
+void reset_(SEXP sim_) {
+  XPtr<Simulator> sim(sim_);
+  
+  sim->reset();
+}
 
+//[[Rcpp::export]]
+double now_(SEXP sim_) {
+  XPtr<Simulator> sim(sim_);
+  
+  return sim->now();
+}
+
+//[[Rcpp::export]]
+double peek_(SEXP sim_) {
+  XPtr<Simulator> sim(sim_);
+  
+  return sim->peek();
+}
+
+//[[Rcpp::export]]
+void step_(SEXP sim_) {
+  XPtr<Simulator> sim(sim_);
+  
+  sim->step();
+}
+
+//[[Rcpp::export]]
+void run_(SEXP sim_, SEXP until_) {
+  XPtr<Simulator> sim(sim_);
+  double until = as<double>(until_);
+  
+  sim->run(until);
+}
+
+//[[Rcpp::export]]
+void add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_activity_, SEXP dist_, SEXP mon_) {
+  XPtr<Simulator> sim(sim_);
+  std::string name_prefix = as<std::string>(name_prefix_);
+  XPtr<Activity> first_activity(first_activity_);
+  Function dist(dist_);
+  bool mon = as<bool>(mon_);
+  
+  sim->add_generator(name_prefix, first_activity, dist, mon);
+}
+
+//[[Rcpp::export]]
+void add_resource_(SEXP sim_, SEXP name_, SEXP capacity_, SEXP queue_size_, SEXP mon_) {
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  int capacity = as<int>(capacity_);
+  int queue_size = as<int>(queue_size_);
+  bool mon = as<bool>(mon_);
+  
+  sim->add_resource(name, capacity, queue_size, mon);
+}
+
+//[[Rcpp::export]]
+SEXP get_mon_arrivals_(SEXP sim_) {
+  XPtr<Simulator> sim(sim_);
+  
+  ArrStats* stats = sim->get_mon_arrivals();
+  
+  return Rcpp::List::create(Rcpp::Named("name") = stats->name,
+                            Rcpp::Named("start_time") = stats->start_time,
+                            Rcpp::Named("end_time") = stats->end_time,
+                            Rcpp::Named("activity_time") = stats->activity_time,
+                            Rcpp::Named("finished") = stats->finished);
+}
+
+//[[Rcpp::export]]
+SEXP get_mon_resource_(SEXP sim_, SEXP name_) {
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  
+  ResStats* stats = sim->get_resource(name)->get_observations();
+  
+  return Rcpp::List::create(Rcpp::Named("time") = stats->time,
+                            Rcpp::Named("server") = stats->server,
+                            Rcpp::Named("queue") = stats->queue);
+}
+
+//[[Rcpp::export]]
+int get_capacity_(SEXP sim_, SEXP name_){
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  
+  return sim->get_resource(name)->get_capacity();
+}
+
+//[[Rcpp::export]]
+int get_queue_size_(SEXP sim_, SEXP name_){
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  
+  return sim->get_resource(name)->get_queue_size();
+}
+
+//[[Rcpp::export]]
+int get_server_count_(SEXP sim_, SEXP name_){
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  
+  return sim->get_resource(name)->get_server_count();
+}
+
+//[[Rcpp::export]]
+int get_queue_count_(SEXP sim_, SEXP name_){
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  
+  return sim->get_resource(name)->get_queue_count();
+}
+
+//[[Rcpp::export]]
+SEXP Seize__new(SEXP resource_, SEXP amount_) {
+  std::string resource = as<std::string>(resource_);
+  int amount = as<int>(amount_);
+  
+  XPtr<Seize> ptr(new Seize(resource, amount), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP Release__new(SEXP resource_, SEXP amount_) {
+  std::string resource = as<std::string>(resource_);
+  int amount = as<int>(amount_);
+  
+  XPtr<Release> ptr(new Release(resource, amount), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP Timeout__new(Function duration) {
+  XPtr<Timeout> ptr(new Timeout(duration), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP Branch__new(Function option, SEXP merge_, SEXP trj_) {
+  std::vector<bool> merge = as<std::vector<bool> >(merge_);
+  std::vector<Environment> trj = as<std::vector<Environment> >(trj_);
+  
+  XPtr<Branch> ptr(new Branch(option, merge, trj), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP activity_get_next_(SEXP activity_) {
+  XPtr<Activity> activity(activity_);
+  
+  Activity* the_next = activity->get_next();
+  if (the_next) {
+    XPtr<Activity> ptr(the_next);
+    return ptr;
+  } else return R_NilValue;
+}
+
+//[[Rcpp::export]]
+int activity_get_n_(SEXP activity_) {
+  XPtr<Activity> activity(activity_);
+  
+  return activity->n;
+}
+
+//[[Rcpp::export]]
+void activity_show_(SEXP activity_, SEXP indent_) {
+  XPtr<Activity> activity(activity_);
+  int indent = as<int>(indent_);
+  
+  return activity->show(indent);
+}
+
+//[[Rcpp::export]]
+void activity_set_next_(SEXP activity_, SEXP the_next_) {
+  XPtr<Activity> activity(activity_);
+  XPtr<Activity> the_next(the_next_);
+  
+  activity->set_next(the_next);
+}
