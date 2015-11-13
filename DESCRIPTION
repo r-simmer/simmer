@@ -5,8 +5,8 @@ Title: Just let it simmer
 Description: simmer is a Discrete-Event Simulation (DES) package for R.
 Encoding: UTF-8
 Authors@R: as.person(c(
-    "Bart Smeets <bartsmeets86@gmail.com> [aut, cre]", 
-    "Iñaki Ucar <i.ucar86@gmail.com> [aut]"
+    "Bart Smeets <bartsmeets86@gmail.com> [aut]", 
+    "Iñaki Ucar <i.ucar86@gmail.com> [aut, cre]"
   ))
 URL: https://github.com/Bart6114/simmer
 BugReports: https://github.com/Bart6114/simmer/issues
