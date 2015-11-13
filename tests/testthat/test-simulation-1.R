@@ -1,31 +1,31 @@
 context("simulation 1")
 
 test_that("a simple deterministic simulation with rejections behaves as expected", {
-  t0 <- Trajectory$new("") $
-    seize("server", 1) $
-    timeout(function() 2) $
+  t0 <- create_trajectory("") %>%
+    seize("server", 1) %>%
+    timeout(function() 2) %>%
     release("server", 1)
   
-  simmer <- Simmer$new() $
-    add_resource("server", 1, queue_size=0) $
+  env <- simmer() %>%
+    add_resource("server", 1, queue_size=0) %>%
     add_generator("entity", t0, function() 1)
   
-  expect_warning(simmer$add_generator("entity", t0, function() 2))
-  expect_equal(simmer$now(), 0)
-  expect_equal(simmer$peek(), 1)
+  expect_warning(env%>%add_generator("entity", t0, function() 2))
+  expect_equal(env%>%now(), 0)
+  expect_equal(env%>%peek(), 1)
   
-  simmer$step()$step()$step()
+  env%>%onestep()%>%onestep()%>%onestep()
   
-  expect_equal(simmer$now(), 1)
-  expect_equal(simmer$peek(), 2)
+  expect_equal(env%>%now(), 1)
+  expect_equal(env%>%peek(), 2)
   
   n <- 1000
-  simmer$run(n)$step()$step()
-  arrivals <- simmer$get_mon_arrivals()
-  resources <- simmer$get_mon_resources()
+  env%>%run(n)%>%onestep()%>%onestep()
+  arrivals <- env%>%get_mon_arrivals()
+  resources <- env%>%get_mon_resources()
   
-  expect_equal(simmer$now(), n+1)
-  expect_equal(simmer$peek(), n+1)
+  expect_equal(env%>%now(), n+1)
+  expect_equal(env%>%peek(), n+1)
   expect_equal(nrow(arrivals), n)
   expect_equal(nrow(subset(arrivals, finished)), n/2)
   expect_equal(nrow(subset(arrivals, !finished)), n/2)

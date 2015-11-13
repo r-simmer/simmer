@@ -1,20 +1,20 @@
-#' plot usage of a resource over time
+#' Plot usage of a resource over time
 #' 
-#' plot the usage of a resource over the simulation time frame
-#' @param reps a single simmer environment or a list of environments representing several replications
+#' Plot the usage of a resource over the simulation time frame.
+#' 
+#' @param envs a single simmer environment or a list of environments representing several replications
 #' @param resource_name the name of the resource (character value)
 #' @param items the components of the resource to be plotted
 #' @param steps adds the changes in the resource usage
-#' @importFrom magrittr %>%
 #' @export
-plot_resource_usage <- function(reps, resource_name, items=c("queue", "server", "system"), steps = FALSE) {
+plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", "system"), steps = FALSE) {
   # Hack to avoid spurious notes
   resource <- item <- value <- replication <- NULL
   
-  if (!is.list(reps)) reps <- list(reps)
+  if (!is.list(envs)) envs <- list(envs)
   
-  monitor_data <- do.call(rbind, lapply(1:length(reps), function(i) {
-    stats <- reps[[i]]$get_mon_resources()
+  monitor_data <- do.call(rbind, lapply(1:length(envs), function(i) {
+    stats <- envs[[i]] %>% get_mon_resources()
     stats$replication <- i
     stats
   }))
@@ -28,8 +28,8 @@ plot_resource_usage <- function(reps, resource_name, items=c("queue", "server", 
     dplyr::mutate(mean = cumsum(value * diff(c(0,time))) / time) %>% 
     dplyr::ungroup()
   
-  queue_size <- reps[[1]]$get_queue_size(resource_name)
-  capacity <- reps[[1]]$get_capacity(resource_name)
+  queue_size <- envs[[1]] %>% get_queue_size(resource_name)
+  capacity <- envs[[1]] %>% get_capacity(resource_name)
   system <- capacity + queue_size
   
   plot_obj<-
@@ -64,22 +64,22 @@ plot_resource_usage <- function(reps, resource_name, items=c("queue", "server", 
   plot_obj
 }
 
-#' plot utilization of resources
+#' Plot utilization of resources
 #' 
-#' plot the utilization of specified resources in the simulation
-#' @param reps a single simmer environment or a list of environments representing several replications
+#' Plot the utilization of specified resources in the simulation.
+#' 
+#' @param envs a single simmer environment or a list of environments representing several replications
 #' @param resources a character vector with at least one resource specified - e.g. "c('res1','res2')"
-#' @importFrom magrittr %>%
 #' @export
-plot_resource_utilization <- function(reps, resources) {
+plot_resource_utilization <- function(envs, resources) {
   # Hack to avoid spurious notes
   resource <- item <- value <- replication <- capacity <- runtime <- 
     in_use <- utilization <- Q25 <- Q50 <- Q75 <- NULL
   
-  if (!is.list(reps)) reps <- list(reps)
+  if (!is.list(envs)) envs <- list(envs)
   
-  monitor_data <- do.call(rbind, lapply(1:length(reps), function(i) {
-    stats <- reps[[i]]$get_mon_resources()
+  monitor_data <- do.call(rbind, lapply(1:length(envs), function(i) {
+    stats <- envs[[i]] %>% get_mon_resources()
     stats$replication <- i
     stats
   }))
@@ -90,7 +90,7 @@ plot_resource_utilization <- function(reps, resources) {
     dplyr::mutate(item = factor(item)) %>%
     dplyr::filter(item == "server") %>%
     dplyr::group_by(resource) %>%
-    dplyr::mutate(capacity = reps[[1]]$get_capacity(resource[[1]])) %>% 
+    dplyr::mutate(capacity = get_capacity(envs[[1]], resource[[1]])) %>% 
     dplyr::group_by(replication) %>%
     dplyr::mutate(runtime = max(time)) %>%
     dplyr::group_by(resource, replication, capacity, runtime) %>%
@@ -113,22 +113,22 @@ plot_resource_utilization <- function(reps, resources) {
     ggplot2::ylab("utilization")
 }
 
-#' plot evolution of arrival times
+#' Plot evolution of arrival times
 #' 
-#' plot the evolution of arrival related times (flow, activity and waiting time)
-#' @param reps a single simmer environment or a list of environments representing several replications
+#' Plot the evolution of arrival related times (flow, activity and waiting time).
+#' 
+#' @param envs a single simmer environment or a list of environments representing several replications
 #' @param type one of c("flow_time","activity_time","waiting_time")
-#' @importFrom magrittr %>%
 #' @export
-plot_evolution_arrival_times <- function(reps, type=c("flow_time","activity_time","waiting_time")){
+plot_evolution_arrival_times <- function(envs, type=c("flow_time","activity_time","waiting_time")){
   # Hack to avoid spurious notes
   end_time <- start_time <- flow_time <- activity_time <- 
     replication <- waiting_time <- NULL
   
-  if (!is.list(reps)) reps <- list(reps)
+  if (!is.list(envs)) envs <- list(envs)
   
-  monitor_data <- do.call(rbind, lapply(1:length(reps), function(i) {
-    stats <- reps[[i]]$get_mon_arrivals()
+  monitor_data <- do.call(rbind, lapply(1:length(envs), function(i) {
+    stats <- envs[[i]] %>% get_mon_arrivals()
     stats$replication <- i
     stats
   }))

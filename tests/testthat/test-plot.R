@@ -1,22 +1,22 @@
 context("plot")
 
-t0 <- Trajectory$new("my trajectory") $
-  seize("nurse", 1) $
-  timeout(function() rnorm(1, 15)) $
-  release("nurse", 1) $
-  seize("doctor", 1) $
-  timeout(function() rnorm(1, 20)) $
-  release("doctor", 1) $
-  seize("administration", 1) $
-  timeout(function() rnorm(1, 5)) $
+t0 <- create_trajectory("my trajectory") %>%
+  seize("nurse", 1) %>%
+  timeout(function() rnorm(1, 15)) %>%
+  release("nurse", 1) %>%
+  seize("doctor", 1) %>%
+  timeout(function() rnorm(1, 20)) %>%
+  release("doctor", 1) %>%
+  seize("administration", 1) %>%
+  timeout(function() rnorm(1, 5)) %>%
   release("administration", 1)
 
 test_that("single replication plots", {
-  reps <- Simmer$new() $
-    add_resource("nurse", 1) $
-    add_resource("doctor", 2) $
-    add_resource("administration", 1) $
-    add_generator("patient", t0, function() rnorm(1, 10, 2)) $
+  reps <- simmer() %>%
+    add_resource("nurse", 1) %>%
+    add_resource("doctor", 2) %>%
+    add_resource("administration", 1) %>%
+    add_generator("patient", t0, function() rnorm(1, 10, 2)) %>%
     run(80)
   
   expect_error(plot_resource_usage(reps, "asdf"))
@@ -32,11 +32,11 @@ test_that("single replication plots", {
 
 test_that("multiple replication plots", {
   reps <- lapply(1:100, function(i) {
-    Simmer$new() $
-      add_resource("nurse", 1) $
-      add_resource("doctor", 2) $
-      add_resource("administration", 1) $
-      add_generator("patient", t0, function() rnorm(1, 10, 2)) $
+    simmer() %>%
+      add_resource("nurse", 1) %>%
+      add_resource("doctor", 2) %>%
+      add_resource("administration", 1) %>%
+      add_generator("patient", t0, function() rnorm(1, 10, 2)) %>%
       run(80)
   })
   

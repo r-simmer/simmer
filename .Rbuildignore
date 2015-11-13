@@ -2,6 +2,7 @@
 ^\.Rproj\.user$
 ^\.travis\.yml$
 ^README\.Rmd$
+^README\.md$
 ^README-.*\.png$
 working_dir
 .gitignore

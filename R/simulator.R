@@ -1,103 +1,6 @@
-#' Simmer
-#'
-#' The simulation environment.
-#'
-#' @seealso \link{Trajectory}
-#' @section Methods:
-#' \preformatted{## Object creation
-#' Simmer$new(name="anonymous", verbose=FALSE)
-#' }\describe{
-#'   \item{name}{the name of the simulator}
-#'   \item{verbose}{enable showing event information}
-#' }
-#' \preformatted{## Reset the simulator (time, statistics, resources, generators)
-#' Simmer$reset() 
-#' }\preformatted{## Get the current simulation time
-#' Simmer$now()
-#' }
-#' \preformatted{## Get the time of the next scheduled event
-#' Simmer$peek()
-#' }
-#' \preformatted{## Process the next event
-#' Simmer$step()
-#' }
-#' \preformatted{## Execute steps until the given criterion
-#' Simmer$run(until=1000)
-#' }\describe{
-#'   \item{until}{the stop time}
-#' }
-#' \preformatted{## Add a resource to the simulation environment
-#' Simmer$add_resource(name, capacity=1, queue_size=Inf, mon=TRUE)
-#' }\describe{
-#'   \item{name}{the name of the resource}
-#'   \item{capacity}{the capacity of the server}
-#'   \item{queue_size}{the size of the queue}
-#'   \item{mon}{whether the simulator must monitor this resource or not}
-#' }
-#' \preformatted{## Add a generator to the simulation environment
-#' Simmer$add_generator(name_prefix, trajectory, dist, mon=TRUE)
-#' }\describe{
-#'   \item{name_prefix}{the name prefix of the generated arrivals}
-#'   \item{trajectory}{the \link{Trajectory} that the generated arrivals will follow}
-#'   \item{dist}{a function modelling the interarrival times (returning a negative value stops the generator)}
-#'   \item{mon}{whether the simulator must monitor the generated arrivals or not}
-#' }
-#' \preformatted{## Get arrival statistics
-#' Simmer$get_mon_arrivals()
-#' }
-#' \preformatted{## Get resource statistics
-#' Simmer$get_mon_resources()
-#' }
-#' \preformatted{## Get resource's capacity
-#' Simmer$get_capacity(name)
-#' }\describe{
-#'   \item{name}{the name of the resource}
-#' }
-#' \preformatted{## Get resource's queue size
-#' Simmer$get_queue_size(name)
-#' }\describe{
-#'   \item{name}{the name of the resource}
-#' }
-#' \preformatted{## Get resource's server count
-#' Simmer$get_server_count(name)
-#' }\describe{
-#'   \item{name}{the name of the resource}
-#' }
-#' \preformatted{## Get resource's queue count
-#' Simmer$get_queue_count(name)
-#' }\describe{
-#'   \item{name}{the name of the resource}
-#' }
-#' @format NULL
-#' @usage NULL
-#' @examples
-#' t0 <- Trajectory$new("my trajectory") $
-#'   ## add an intake activity
-#'   seize("nurse", 1) $
-#'   timeout(function() rnorm(1, 15)) $
-#'   release("nurse", 1) $
-#'   ## add a consultation activity
-#'   seize("doctor", 1) $
-#'   timeout(function() rnorm(1, 20)) $
-#'   release("doctor", 1) $
-#'   ## add a planning activity
-#'   seize("administration", 1) $
-#'   timeout(function() rnorm(1, 5)) $
-#'   release("administration", 1)
-#' 
-#' simmer <- Simmer$new("SuperDuperSim") $
-#'   add_resource("nurse", 1) $
-#'   add_resource("doctor", 2) $
-#'   add_resource("administration", 1) $
-#'   add_generator("patient", t0, function() rnorm(1, 10, 2))
-#'   
-#' simmer$run(until=80)
-#' 
-#' plot_resource_usage(simmer, "doctor")
 #' @useDynLib simmer
 #' @importFrom R6 R6Class
 #' @importFrom Rcpp evalCpp
-#' @export
 Simmer <- R6Class("Simmer",
   public = list(
     name = NA,
@@ -207,3 +110,226 @@ Simmer <- R6Class("Simmer",
     mon_res = NULL
   )
 )
+
+#' Create a simulator
+#'
+#' This function initialises a simulation environment.
+#' 
+#' @param name the name of the simulator.
+#' @param verbose enable showing activity information.
+#' @return Returns a simulation environment.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{reset}, \link{now}, \link{peek}, \link{step}, \link{run}, 
+#' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_resources}, 
+#' \link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+#' @examples
+#' t0 <- create_trajectory("my trajectory") %>%
+#'   ## add an intake activity
+#'   seize("nurse", 1) %>%
+#'   timeout(function() rnorm(1, 15)) %>%
+#'   release("nurse", 1) %>%
+#'   ## add a consultation activity
+#'   seize("doctor", 1) %>%
+#'   timeout(function() rnorm(1, 20)) %>%
+#'   release("doctor", 1) %>%
+#'   ## add a planning activity
+#'   seize("administration", 1) %>%
+#'   timeout(function() rnorm(1, 5)) %>%
+#'   release("administration", 1)
+#' 
+#' env <- simmer("SuperDuperSim") %>%
+#'   add_resource("nurse", 1) %>%
+#'   add_resource("doctor", 2) %>%
+#'   add_resource("administration", 1) %>%
+#'   add_generator("patient", t0, function() rnorm(1, 10, 2))
+#'   
+#' env %>% run(until=80)
+#' 
+#' plot_resource_usage(env, "doctor")
+#' @export
+simmer <- function(name="anonymous", verbose=FALSE) Simmer$new(name, verbose)
+
+#' Reset a simulator
+#'
+#' Resets the following components of a simulation environment: 
+#' time, event queue, resources, generators and statistics.
+#' 
+#' @param env the simulation environment.
+#' @return Returns the simulation environment.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{simmer}, \link{now}, \link{peek}, \link{step}, \link{run}, 
+#' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_resources}, 
+#' \link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+#' @export
+reset <- function(env) env$reset()
+
+#' Get the current time
+#'
+#' Gets the current simulation time.
+#' 
+#' @param env the simulation environment.
+#' @return Returns a numeric value.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{simmer}, \link{reset}, \link{peek}, \link{step}, \link{run}, 
+#' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_resources}, 
+#' \link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+#' @export
+now <- function(env) env$now()
+
+#' Peek the next event's time
+#'
+#' Gets the time of the next scheduled event.
+#' 
+#' @param env the simulation environment.
+#' @return Returns a numeric value.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{simmer}, \link{reset}, \link{now}, \link{step}, \link{run}, 
+#' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_resources}, 
+#' \link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+#' @export
+peek <- function(env) env$peek()
+
+#' Step the simulation
+#'
+#' Processes the next event.
+#' 
+#' @param env the simulation environment.
+#' @return Returns the simulation environment.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{run}, 
+#' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_resources}, 
+#' \link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+#' @export
+onestep <- function(env) env$step()
+
+#' Run the simulation
+#'
+#' Executes steps until the given criterion.
+#' 
+#' @param env the simulation environment.
+#' @param until stop time.
+#' @return Returns the simulation environment.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{step}, 
+#' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_resources}, 
+#' \link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+#' @export
+run <- function(env, until=1000) env$run(until)
+
+#' Add a resource
+#'
+#' Adds a resource to a simulation environment.
+#' 
+#' @param env the simulation environment.
+#' @param name the name of the resource.
+#' @param capacity the capacity of the server.
+#' @param queue_size the size of the queue.
+#' @param mon whether the simulator must monitor this resource or not.
+#' @return Returns the simulation environment.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{step}, 
+#' \link{run}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_resources}, 
+#' \link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+#' @export
+add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE) 
+  env$add_resource(name, capacity, queue_size, mon)
+
+#' Add a generator
+#'
+#' Adds a generator to a simulation environment.
+#' 
+#' @param env the simulation environment.
+#' @param name_prefix the name prefix of the generated arrivals.
+#' @param trajectory the trajectory that the generated arrivals will follow (see \link{create_trajectory}).
+#' @param dist a function modelling the interarrival times (returning a negative value stops the generator).
+#' @param mon whether the simulator must monitor the generated arrivals or not.
+#' @return Returns the simulation environment.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{simmer}, \link{now}, \link{peek}, \link{peek}, \link{step}, 
+#' \link{run}, \link{add_resource}, \link{get_mon_arrivals}, \link{get_mon_resources}, 
+#' \link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+#' @export
+add_generator <- function(env, name_prefix, trajectory, dist, mon=TRUE) 
+  env$add_generator(name_prefix, trajectory, dist, mon)
+
+#' Get arrival statistics
+#'
+#' Gets the arrivals' monitored data (if any).
+#' 
+#' @param env the simulation environment.
+#' @return Returns a data frame.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{simmer}, \link{now}, \link{peek}, \link{peek}, \link{step}, 
+#' \link{run}, \link{add_resource}, \link{add_generator}, \link{get_mon_resources}, 
+#' \link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+#' @export
+get_mon_arrivals <- function(env) env$get_mon_arrivals()
+
+#' Get resource statistics
+#'
+#' Gets the resources' monitored data (if any).
+#' 
+#' @param env the simulation environment.
+#' @return Returns a data frame.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{simmer}, \link{now}, \link{peek}, \link{peek}, \link{step}, 
+#' \link{run}, \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, 
+#' \link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+#' @export
+get_mon_resources <- function(env) env$get_mon_resources()
+
+#' Get the capacity
+#'
+#' Gets the capacity of a resource by name.
+#' 
+#' @param env the simulation environment.
+#' @param name the name of the resource.
+#' @return Returns a numeric value.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{simmer}, \link{now}, \link{peek}, \link{peek}, \link{step}, 
+#' \link{run}, \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, 
+#' \link{get_mon_resources}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+#' @export
+get_capacity <- function(env, name) env$get_capacity(name)
+
+#' Get the queue size
+#'
+#' Gets the queue size of a resource by name.
+#' 
+#' @param env the simulation environment.
+#' @param name the name of the resource.
+#' @return Returns a numeric value.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{simmer}, \link{now}, \link{peek}, \link{peek}, \link{step}, 
+#' \link{run}, \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, 
+#' \link{get_mon_resources}, \link{get_capacity}, \link{get_server_count}, \link{get_queue_count}.
+#' @export
+get_queue_size <- function(env, name) env$get_queue_size(name)
+
+#' Get the server count
+#'
+#' Gets the number of customers in a resource's server by name.
+#' 
+#' @param env the simulation environment.
+#' @param name the name of the resource.
+#' @return Returns a numeric value.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{simmer}, \link{now}, \link{peek}, \link{peek}, \link{step}, 
+#' \link{run}, \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, 
+#' \link{get_mon_resources}, \link{get_capacity}, \link{get_queue_size}, \link{get_queue_count}.
+#' @export
+get_server_count <- function(env, name) env$get_server_count(name)
+
+#' Get the queue count
+#'
+#' Gets the number of customers in a resource's queue by name.
+#' 
+#' @param env the simulation environment.
+#' @param name the name of the resource.
+#' @return Returns a numeric value.
+#' @seealso Other methods to deal with a simulation environment:
+#' \link{simmer}, \link{now}, \link{peek}, \link{peek}, \link{step}, 
+#' \link{run}, \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, 
+#' \link{get_mon_resources}, \link{get_capacity}, \link{get_queue_size}, \link{get_server_count}.
+#' @export
+get_queue_count <- function(env, name) env$get_queue_count(name)
