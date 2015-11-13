@@ -1,9 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.travis\.yml$
+^README\.Rmd$
+^README-.*\.png$
 working_dir
-README.Rmd
-README.html
-README_files
-.travis.yml
 .gitignore
 .git
