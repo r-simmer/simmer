@@ -9,12 +9,12 @@
 #' @export
 plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", "system"), steps = FALSE) {
   # Hack to avoid spurious notes
-  resource <- item <- value <- replication <- NULL
+  resource <- item <- value <- replication <- time <- NULL
   
   if (!is.list(envs)) envs <- list(envs)
   
   monitor_data <- do.call(rbind, lapply(1:length(envs), function(i) {
-    stats <- envs[[i]] %>% get_mon_resources()
+    stats <- envs[[i]] $ get_mon_resources()
     stats$replication <- i
     stats
   }))
@@ -28,8 +28,8 @@ plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", 
     dplyr::mutate(mean = cumsum(value * diff(c(0,time))) / time) %>% 
     dplyr::ungroup()
   
-  queue_size <- envs[[1]] %>% get_queue_size(resource_name)
-  capacity <- envs[[1]] %>% get_capacity(resource_name)
+  queue_size <- envs[[1]] $ get_queue_size(resource_name)
+  capacity <- envs[[1]] $ get_capacity(resource_name)
   system <- capacity + queue_size
   
   plot_obj<-
@@ -74,12 +74,12 @@ plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", 
 plot_resource_utilization <- function(envs, resources) {
   # Hack to avoid spurious notes
   resource <- item <- value <- replication <- capacity <- runtime <- 
-    in_use <- utilization <- Q25 <- Q50 <- Q75 <- NULL
+    in_use <- utilization <- Q25 <- Q50 <- Q75 <- time <- NULL
   
   if (!is.list(envs)) envs <- list(envs)
   
   monitor_data <- do.call(rbind, lapply(1:length(envs), function(i) {
-    stats <- envs[[i]] %>% get_mon_resources()
+    stats <- envs[[i]] $ get_mon_resources()
     stats$replication <- i
     stats
   }))
@@ -94,15 +94,15 @@ plot_resource_utilization <- function(envs, resources) {
     dplyr::group_by(replication) %>%
     dplyr::mutate(runtime = max(time)) %>%
     dplyr::group_by(resource, replication, capacity, runtime) %>%
-    dplyr::mutate(in_use = (time-lag(time)) * lag(value)) %>%
+    dplyr::mutate(in_use = (time-dplyr::lag(time)) * dplyr::lag(value)) %>%
     dplyr::group_by(resource, replication, capacity, runtime) %>%
     dplyr::summarise(in_use = sum(in_use, na.rm=T)) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(utilization = in_use / capacity / runtime) %>%
     dplyr::group_by(resource, capacity) %>%
-    dplyr::summarise(Q25 = quantile(utilization, .25),
-              Q50 = quantile(utilization, .5),
-              Q75 = quantile(utilization, .75))
+    dplyr::summarise(Q25 = stats::quantile(utilization, .25),
+              Q50 = stats::quantile(utilization, .5),
+              Q75 = stats::quantile(utilization, .75))
   
   ggplot2::ggplot(monitor_data) +
     ggplot2::aes(x=resource, y=Q50, ymin=Q25, ymax=Q75) + 
@@ -128,7 +128,7 @@ plot_evolution_arrival_times <- function(envs, type=c("flow_time","activity_time
   if (!is.list(envs)) envs <- list(envs)
   
   monitor_data <- do.call(rbind, lapply(1:length(envs), function(i) {
-    stats <- envs[[i]] %>% get_mon_arrivals()
+    stats <- envs[[i]] $ get_mon_arrivals()
     stats$replication <- i
     stats
   }))
