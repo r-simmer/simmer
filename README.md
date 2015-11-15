@@ -1,5 +1,7 @@
-simmer [![Build Status](https://travis-ci.org/Bart6114/simmer.svg?branch=master)](https://travis-ci.org/Bart6114/simmer)
-========================================================================================================================
+simmer
+======
+
+[![Build Status](https://travis-ci.org/Bart6114/simmer.svg?branch=master)](https://travis-ci.org/Bart6114/simmer) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/simmer)](http://cran.r-project.org/package=simmer)
 
 *by Bart Smeets (<bartsmeets86@gmail.com>), Iñaki Ucar (<i.ucar86@gmail.com>)*
 
@@ -10,18 +12,24 @@ Our implementation solves this problem by introducing the concept of *trajectory
 Installation
 ------------
 
+Install the release version from CRAN:
+
+``` r
+install.packages("simmer")
+```
+
 The installation from GitHub requires the [devtools](https://github.com/hadley/devtools) package.
 
 ``` r
 devtools::install_github("Bart6114/simmer")
 ```
 
-Please note that the package contains some C++ code and you thus need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows). If you don't want to build the package yourself and you're on Windows you could try a pre-built binary package [here](https://github.com/Bart6114/simmer/releases/).
+Please note that the package contains some C++ code and thus you need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows).
 
 Learning simmer
 ---------------
 
-To get started, please read the intro vignette:
+To get started, please read the [intro vignette](https://cran.r-project.org/web/packages/simmer/vignettes/introduction.html):
 
 ``` r
 vignette("introduction", package = "simmer")
