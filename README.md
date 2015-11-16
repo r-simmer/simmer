@@ -2,7 +2,7 @@ simmer
 ======
 
 [![Build Status](https://travis-ci.org/Bart6114/simmer.svg?branch=master)](https://travis-ci.org/Bart6114/simmer)
-[![Downloads](http://cranlogs.r-pkg.org/badges/simmer)](http://cran.rstudio.com/package=simmer)
+[![Coverage Status](https://coveralls.io/repos/Bart6114/simmer/badge.svg?branch=master&service=github)](https://coveralls.io/github/Bart6114/simmer?branch=master)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/simmer)](http://cran.r-project.org/package=simmer)
 [![Downloads](http://cranlogs.r-pkg.org/badges/simmer)](http://cran.rstudio.com/package=simmer)
 
@@ -41,8 +41,8 @@ vignette("introduction", package = "simmer")
 Roadmap
 -------
 
--   Refine queue discipline (add priorities).
--   Time-specific resource availability.
+- Refine queue discipline (add priorities).
+- Time-specific resource availability.
 
 Contact
 -------
