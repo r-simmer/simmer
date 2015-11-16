@@ -9,5 +9,18 @@ env:
     - RunAllRcppTests="yes"
     - CRAN="http://cran.r-project.org"
 
+r_binary_packages:
+	Rcpp
+	R6
+	magrittr
+	dplyr
+	tidyr
+	ggplot2
+	scales
+	testthat
+	knitr
+	rmarkdown
+	covr
+	
 after_success:
   - Rscript -e 'library(covr);coveralls()'
