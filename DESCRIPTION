@@ -9,13 +9,13 @@ Authors@R: c(
     person("Iñaki", "Ucar", email="i.ucar86@gmail.com", role=c("aut", "cre")))
 URL: https://github.com/Bart6114/simmer
 BugReports: https://github.com/Bart6114/simmer/issues
-Depends: 
+Depends:
     R (>= 3.1.2)
-Imports: 
+Imports:
     Rcpp,
     R6,
     magrittr
-Suggests: 
+Suggests:
     dplyr,
     tidyr,
     ggplot2,
@@ -26,5 +26,5 @@ Suggests:
     covr
 LinkingTo: Rcpp (>= 0.12.0)
 License: MIT + file LICENSE
-RoxygenNote: 5.0.0
+RoxygenNote: 5.0.1
 VignetteBuilder: knitr

@@ -17,7 +17,7 @@ Gets the arrivals' monitored data (if any).
 }
 \seealso{
 Other methods to deal with a simulation environment:
-\link{simmer}, \link{now}, \link{peek}, \link{peek}, \link{step}, 
+\link{simmer}, \link{now}, \link{peek}, \link{peek}, \link{onestep}, 
 \link{run}, \link{add_resource}, \link{add_generator}, \link{get_mon_resources}, 
 \link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 }
