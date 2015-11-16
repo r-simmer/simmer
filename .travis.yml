@@ -2,19 +2,6 @@ language: r
 sudo: required
 warnings_are_errors: false
 
-r_binary_packages:
-  - Rcpp
-  - R6
-  - magrittr
-  - dplyr
-  - tidyr
-  - ggplot2
-  - scales
-  - testthat
-  - knitr
-  - rmarkdown
-  - covr
-
 env:
   global:
     - R_BUILD_ARGS="--no-build-vignettes --no-manual"
