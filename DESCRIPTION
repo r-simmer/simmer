@@ -22,7 +22,8 @@ Suggests:
     scales,
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    covr
 LinkingTo: Rcpp (>= 0.12.0)
 License: MIT + file LICENSE
 RoxygenNote: 5.0.0
