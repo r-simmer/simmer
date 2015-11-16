@@ -2,25 +2,18 @@ language: r
 sudo: required
 warnings_are_errors: false
 
-env:
-  global:
-    - R_BUILD_ARGS="--no-build-vignettes --no-manual"
-    - R_CHECK_ARGS="--no-build-vignettes --no-manual --as-cran"
-    - RunAllRcppTests="yes"
-    - CRAN="http://cran.r-project.org"
-
 r_binary_packages:
-  - Rcpp
-  - R6
-  - magrittr
-  - dplyr
-  - tidyr
-  - ggplot2
-  - scales
-  - testthat
-  - knitr
-  - rmarkdown
-  - covr
+ - Rcpp
+ - R6
+ - magrittr
+ - dplyr
+ - tidyr
+ - ggplot2
+ - scales
+ - testthat
+ - knitr
+ - rmarkdown
+ - covr
 	
 after_success:
-  - Rscript -e 'library(covr);coveralls()'
+ - Rscript -e 'library(covr);coveralls()'
