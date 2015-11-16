@@ -15,8 +15,16 @@ Simmer.wrap <- R6Class("Simmer.wrap",
     
     get_mon_arrivals = function() { private$arrivals },
     get_mon_resources = function() { private$resources },
-    get_capacity = function(name) { private$capacity[[name]] },
-    get_queue_size = function(name) { private$queue_size[[name]] }
+    get_capacity = function(name) {
+      if (!(name %in% names(private$capacity)))
+        stop("resource not found")
+      private$capacity[[name]]
+    },
+    get_queue_size = function(name) {
+      if (!(name %in% names(private$queue_size)))
+        stop("resource not found")
+      private$queue_size[[name]]
+    }
   ),
   
   private = list(

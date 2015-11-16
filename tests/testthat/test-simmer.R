@@ -71,3 +71,13 @@ test_that("a stopped simulation can be resumed", {
   env%>%run(30)
   expect_equal(env%>%now(), 30)
 })
+
+test_that("there is verbose output", {
+  expect_output(
+  env <- simmer(verbose=TRUE) %>%
+    add_resource("server", 1) %>%
+    add_generator("entity", t0, function() 1) %>%
+    run(2),
+  "sim: anonymous | time: 1 | arrival: entity0 | activity: Seize(server)
+  sim: anonymous | time: 1 | arrival: entity0 | activity: Release(server)")
+})

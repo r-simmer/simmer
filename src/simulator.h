@@ -61,7 +61,7 @@ public:
   
   /**
    * Constructor.
-   * @param n       simulator identifier
+   * @param name    simulator name
    * @param verbose verbose flag
    */
   Simulator(std::string name, bool verbose): 
