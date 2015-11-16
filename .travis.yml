@@ -13,7 +13,6 @@ r_binary_packages:
  - testthat
  - knitr
  - rmarkdown
- - covr
 
 after_success:
  - Rscript -e 'library(covr);coveralls()'
