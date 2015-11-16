@@ -11,7 +11,7 @@ SEXP Simulator__new(SEXP name_, SEXP verbose_) {
   std::string name = as<std::string>(name_);
   bool verbose = as<bool>(verbose_);
   
-  XPtr<Simulator> ptr(new Simulator(name, verbose), false); // What does this "false" mean?
+  XPtr<Simulator> ptr(new Simulator(name, verbose));
   return ptr;
 }
 
