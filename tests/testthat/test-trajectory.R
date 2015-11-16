@@ -52,7 +52,7 @@ test_that("the head/tail pointers are correctly placed", {
   t0%>%seize("nurse", 1)
   
   expect_output(show_activity(t0%>%get_head()), "Seize")
-  expect_equal(t0%>%get_head(), t0%>%get_tail())
+  expect_output(show_activity(t0%>%get_tail()), "Seize")
   
   t0%>%timeout(function() rnorm(1, 15)) %>%
     release("nurse", 1)

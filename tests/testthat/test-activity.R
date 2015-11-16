@@ -11,7 +11,8 @@ test_that("the activity chain grows as expected", {
     get_next_activity(
     get_next_activity(t0%>%get_head())))
   
-  expect_equal(act, t0%>%get_tail())
+  expect_output(show_activity(act), "Release")
+  expect_output(show_activity(t0%>%get_tail()), "Release")
   expect_equal(get_next_activity(act), NULL)
 })
 
