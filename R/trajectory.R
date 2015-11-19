@@ -18,7 +18,7 @@ Trajectory <- R6Class("Trajectory",
         activity_show_(ptr, indent)
         ptr <- activity_get_next_(ptr)
       }
-      activity_show_(ptr, indent)
+      if (!is.null(ptr)) activity_show_(ptr, indent)
     },
     
     get_head = function() { private$head },
@@ -40,15 +40,11 @@ Trajectory <- R6Class("Trajectory",
     },
     
     timeout = function(duration) {
-      if (!is.function(duration)) 
-        stop(paste0(self$name, ": duration must be callable"))
       private$add_activity(Timeout__new(duration))
     },
     
     branch = function(option, merge, ...) {
       trj <- list(...)
-      if (!is.function(option)) 
-        stop(paste0(self$name, ": option must be callable"))
       if (length(merge) != length(trj))
         stop("the number of elements does not match")
       for (i in trj) if (!inherits(i, "Trajectory"))

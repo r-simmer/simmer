@@ -81,3 +81,18 @@ test_that("there is verbose output", {
   "sim: anonymous | time: 1 | arrival: entity0 | activity: Seize(server)
   sim: anonymous | time: 1 | arrival: entity0 | activity: Release(server)")
 })
+
+test_that("we can force some errors (just to complete coverage)", {
+  expect_error(simmer(0))
+  expect_error(simmer() %>% add_resource(0))
+  
+  env <- simmer() %>% add_resource("dummy")
+  env$.__enclos_env__$private$sim_obj <- NULL
+  
+  expect_error(env %>% reset())
+  expect_error(env %>% now())
+  expect_error(env %>% peek())
+  expect_error(env %>% onestep())
+  expect_error(env %>% get_mon_arrivals())
+  expect_error(env %>% get_mon_resources())
+})

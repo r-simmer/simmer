@@ -53,8 +53,6 @@ Simmer <- R6Class("Simmer",
     add_generator = function(name_prefix, trajectory, dist, mon=TRUE) {
       if (!inherits(trajectory, "Trajectory"))
         stop("not a trajectory")
-      if (!is.function(dist))
-        stop(paste0(self$name, ": dist must be callable"))
       name_prefix <- evaluate_value(name_prefix)
       mon <- evaluate_value(mon)
 

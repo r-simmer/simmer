@@ -60,3 +60,8 @@ test_that("the head/tail pointers are correctly placed", {
   expect_output(show_activity(t0%>%get_head()), "Seize")
   expect_output(show_activity(t0%>%get_tail()), "Release")
 })
+
+test_that("we can force some errors (just to complete coverage)", {
+  expect_error(create_trajectory() %>% seize(0, 0))
+  expect_error(create_trajectory() %>% release(0, 0))
+})
