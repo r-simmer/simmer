@@ -38,12 +38,6 @@ To get started, please read the [intro vignette](https://cran.r-project.org/web/
 vignette("introduction", package = "simmer")
 ```
 
-Roadmap
--------
-
-- Refine queue discipline (add priorities).
-- Time-specific resource availability.
-
 Contact
 -------
 
