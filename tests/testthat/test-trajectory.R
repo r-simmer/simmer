@@ -84,6 +84,7 @@ test_that("the head/tail pointers are correctly placed", {
 
 test_that("we can force some errors (just to complete coverage)", {
   expect_error(create_trajectory() %>% get_next_activity())
+  expect_error(create_trajectory() %>% get_prev_activity())
   
   t0 <- create_trajectory() %>% timeout(function() {})
   t0$.__enclos_env__$private$head <- NULL
