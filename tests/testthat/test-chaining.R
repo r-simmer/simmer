@@ -6,6 +6,7 @@ test_that("Trajectory's method chaining works", {
     release("one", 1) %>%
     timeout(function() 1) %>%
     branch(function() 1, T, create_trajectory()%>%timeout(function() 1)) %>%
+    rollback(1) %>%
     seize("one", 1)
   
   expect_is(t0, "Trajectory")

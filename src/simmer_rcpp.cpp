@@ -164,14 +164,12 @@ SEXP Branch__new(Function option, SEXP merge_, SEXP trj_) {
 }
 
 //[[Rcpp::export]]
-SEXP activity_get_next_(SEXP activity_) {
-  XPtr<Activity> activity(activity_);
+SEXP Rollback__new(SEXP amount_, SEXP times_) {
+  int amount = as<int>(amount_);
+  int times = as<int>(times_);
   
-  Activity* the_next = activity->get_next();
-  if (the_next) {
-    XPtr<Activity> ptr(the_next);
-    return ptr;
-  } else return R_NilValue;
+  XPtr<Rollback> ptr(new Rollback(amount, times), false);
+  return ptr;
 }
 
 //[[Rcpp::export]]
@@ -190,9 +188,32 @@ void activity_show_(SEXP activity_, SEXP indent_) {
 }
 
 //[[Rcpp::export]]
-void activity_set_next_(SEXP activity_, SEXP the_next_) {
+SEXP activity_get_next_(SEXP activity_) {
+  XPtr<Activity> activity(activity_);
+  
+  Activity* the_next = activity->get_next();
+  if (the_next) {
+    XPtr<Activity> ptr(the_next, false);
+    return ptr;
+  } else return R_NilValue;
+}
+
+//[[Rcpp::export]]
+SEXP activity_get_prev_(SEXP activity_) {
+  XPtr<Activity> activity(activity_);
+  
+  Activity* the_prev = activity->get_prev();
+  if (the_prev) {
+    XPtr<Activity> ptr(the_prev, false);
+    return ptr;
+  } else return R_NilValue;
+}
+
+//[[Rcpp::export]]
+void activity_chain_(SEXP activity_, SEXP the_next_) {
   XPtr<Activity> activity(activity_);
   XPtr<Activity> the_next(the_next_);
   
   activity->set_next(the_next);
+  the_next->set_prev(activity);
 }

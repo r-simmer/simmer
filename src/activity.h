@@ -3,6 +3,7 @@
 
 #include <Rcpp.h>
 #include <set>
+#include <map>
 
 // forward declarations
 class Arrival;
@@ -22,7 +23,7 @@ public:
    * @param resource  the resource associated
    */
   Activity(std::string name, std::string resource): 
-    name(name), resource(resource), n(1), ptr(NULL) {}
+    name(name), resource(resource), n(1), next(NULL), prev(NULL) {}
   virtual ~Activity(){}
   
   /**
@@ -42,18 +43,20 @@ public:
   virtual double run(Arrival* arrival) = 0;
   
   /**
-   * Get the next activity in the chain.
+   * Getter/setter for the next activity in the chain.
    */
-  virtual Activity* get_next() { return ptr; }
+  virtual Activity* get_next() { return next; }
+  virtual void set_next(Activity* activity) { next = activity; }
   
   /**
-   * Set the next activity in the chain.
-   * @param activity a pointer to the next activity
+   * Getter/setter for the previous activity in the chain.
    */
-  virtual void set_next(Activity* activity) { ptr = activity; }
+  virtual Activity* get_prev() { return prev; }
+  virtual void set_prev(Activity* activity) { prev = activity; }
   
 private:
-  Activity* ptr;
+  Activity* next;
+  Activity* prev;
 };
 
 /**
@@ -159,8 +162,7 @@ public:
   }
   
   double run(Arrival* arrival) {
-    std::set<Arrival*>::iterator search = pending.find(arrival);
-    if (search != pending.end())
+    if (pending.find(arrival) != pending.end())
       pending.erase(arrival);
     else {
       unsigned int i = Rcpp::as<unsigned int>(option());
@@ -189,6 +191,66 @@ private:
   Activity* selected;
   std::vector<Activity*> path;
   std::set<Arrival*> pending;
+};
+
+/**
+ * Rollback to a previous activity.
+ */
+class Rollback: public Activity {
+public:
+  Rollback(int amount, int times):
+  Activity("Rollback", "none"), amount(amount), times(times),
+    cached(NULL), selected(NULL) {
+    if (amount < 0)
+      Rcpp::stop("not allowed to rollback a negative amount");
+    if (times < 0)
+      Rcpp::stop("not allowed to repeat a negative amount");
+  }
+  
+  ~Rollback() { pending.clear(); }
+  
+  void show(int indent=0) {
+    if (!cached) cached = goback();
+    Activity::show(indent);
+    Rcpp::Rcout << "amount: " << amount << " (" << cached->name <<
+      "), times: " << times << " }" << std::endl;
+  }
+  
+  double run(Arrival* arrival) {
+    if (pending.find(arrival) == pending.end()) 
+      pending[arrival] = times;
+    if (!pending[arrival]) {
+      pending.erase(arrival);
+      return 0;
+    }
+    if (!cached) cached = goback();
+    pending[arrival]--;
+    selected = cached;
+    return 0;
+  }
+  
+  Activity* get_next() {
+    if (selected) {
+      Activity* aux = selected;
+      selected = NULL;
+      return aux;
+    } else 
+      return Activity::get_next();
+  }
+  
+private:
+  int amount;
+  int times;
+  Activity* cached, *selected;
+  std::map<Arrival*, int> pending;
+  
+  inline Activity* goback() {
+    int n = amount;
+    Activity* ptr = this;
+    while (ptr->get_prev() && n--)
+      ptr = ptr->get_prev();
+    return ptr;
+  }
 };
 
 #endif

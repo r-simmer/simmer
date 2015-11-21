@@ -73,8 +73,8 @@ Branch__new <- function(option, merge_, trj_) {
     .Call('simmer_Branch__new', PACKAGE = 'simmer', option, merge_, trj_)
 }
 
-activity_get_next_ <- function(activity_) {
-    .Call('simmer_activity_get_next_', PACKAGE = 'simmer', activity_)
+Rollback__new <- function(amount_, times_) {
+    .Call('simmer_Rollback__new', PACKAGE = 'simmer', amount_, times_)
 }
 
 activity_get_n_ <- function(activity_) {
@@ -85,7 +85,15 @@ activity_show_ <- function(activity_, indent_) {
     invisible(.Call('simmer_activity_show_', PACKAGE = 'simmer', activity_, indent_))
 }
 
-activity_set_next_ <- function(activity_, the_next_) {
-    invisible(.Call('simmer_activity_set_next_', PACKAGE = 'simmer', activity_, the_next_))
+activity_get_next_ <- function(activity_) {
+    .Call('simmer_activity_get_next_', PACKAGE = 'simmer', activity_)
+}
+
+activity_get_prev_ <- function(activity_) {
+    .Call('simmer_activity_get_prev_', PACKAGE = 'simmer', activity_)
+}
+
+activity_chain_ <- function(activity_, the_next_) {
+    invisible(.Call('simmer_activity_chain_', PACKAGE = 'simmer', activity_, the_next_))
 }
 

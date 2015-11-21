@@ -4,7 +4,7 @@
 \alias{release}
 \title{Add a release activity}
 \usage{
-release(traj, resource, amount)
+release(traj, resource, amount = 1)
 }
 \arguments{
 \item{traj}{the trajectory object.}
@@ -22,6 +22,7 @@ Adds a new activity capable of releasing a resource to the tail of a trajectory.
 \seealso{
 Other methods to deal with trajectories:
 \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
-\link{get_tail}, \link{get_n_activities}, \link{seize}, \link{timeout}, \link{branch}.
+\link{get_tail}, \link{get_n_activities}, \link{seize}, \link{timeout}, 
+\link{branch}, \link{rollback}.
 }
 

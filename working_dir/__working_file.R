@@ -35,14 +35,15 @@ mm1 <- create_trajectory() %>%
       seize("server", 1) %>%
       timeout(function() rexp(1, 2)) %>%
       release("server", 1)
-  )
+  ) %>%
+  rollback(1)
 
-env <- simmer(verbose=F) %>%
+env <- simmer(verbose=T) %>%
   add_resource("server", 1) %>%
   add_generator("customer", mm1, function() rexp(1, 1), mon=F) %>% 
-  run(1000)
+  run(10)
 
-plot_resource_usage(simmer, "server")
+plot_resource_usage(env, "server")
 
 #################################################################
 
@@ -76,6 +77,7 @@ t0 <- create_trajectory("my trajectory") %>%
       timeout(function() rexp(1, 3)) %>%
       release("server", 4)
   ) %>%
+  rollback(1) %>%
   timeout(function() 1) %>%
   release("server", 1)
 

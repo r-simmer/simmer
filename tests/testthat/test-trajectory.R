@@ -1,5 +1,26 @@
 context("basic Trajectory functionality")
 
+test_that("the activity chain grows as expected", {
+  t0 <- create_trajectory() %>%
+    seize("nurse", 1) %>%
+    timeout(function() rnorm(1, 15)) %>%
+    branch(function() 1, T, create_trajectory()%>%timeout(function() 1)) %>%
+    rollback(1) %>%
+    release("nurse", 1)
+  
+  head <- t0%>%get_head()
+  for (i in 1:4) head <- get_next_activity(head)
+  tail <- t0%>%get_tail()
+  for (i in 1:4) tail <- get_prev_activity(tail)
+  
+  expect_output(show_activity(head), "Release")
+  expect_output(show_activity(t0%>%get_tail()), "Release")
+  expect_equal(get_next_activity(head), NULL)
+  expect_output(show_activity(tail), "Seize")
+  expect_output(show_activity(t0%>%get_head()), "Seize")
+  expect_equal(get_prev_activity(tail), NULL)
+})
+
 test_that("the trajectory stores the right number of activities", {
   t0 <- create_trajectory("my trajectory") %>%
     seize("nurse", 1) %>%
@@ -62,6 +83,14 @@ test_that("the head/tail pointers are correctly placed", {
 })
 
 test_that("we can force some errors (just to complete coverage)", {
-  expect_error(create_trajectory() %>% seize(0, 0))
-  expect_error(create_trajectory() %>% release(0, 0))
+  expect_error(create_trajectory() %>% get_next_activity())
+  
+  t0 <- create_trajectory() %>% timeout(function() {})
+  t0$.__enclos_env__$private$head <- NULL
+  expect_error(t0 %>% show_trajectory())
+  expect_error(t0$.__enclos_env__$private$add_activity(NULL))
+  
+  t0 <- create_trajectory() %>% timeout(function() {})
+  t0$.__enclos_env__$private$tail <- NULL
+  expect_error(t0 %>% timeout(function() {}))
 })

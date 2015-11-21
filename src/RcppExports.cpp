@@ -217,14 +217,15 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// activity_get_next_
-SEXP activity_get_next_(SEXP activity_);
-RcppExport SEXP simmer_activity_get_next_(SEXP activity_SEXP) {
+// Rollback__new
+SEXP Rollback__new(SEXP amount_, SEXP times_);
+RcppExport SEXP simmer_Rollback__new(SEXP amount_SEXP, SEXP times_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
-    __result = Rcpp::wrap(activity_get_next_(activity_));
+    Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type times_(times_SEXP);
+    __result = Rcpp::wrap(Rollback__new(amount_, times_));
     return __result;
 END_RCPP
 }
@@ -250,14 +251,36 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// activity_set_next_
-void activity_set_next_(SEXP activity_, SEXP the_next_);
-RcppExport SEXP simmer_activity_set_next_(SEXP activity_SEXP, SEXP the_next_SEXP) {
+// activity_get_next_
+SEXP activity_get_next_(SEXP activity_);
+RcppExport SEXP simmer_activity_get_next_(SEXP activity_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
+    __result = Rcpp::wrap(activity_get_next_(activity_));
+    return __result;
+END_RCPP
+}
+// activity_get_prev_
+SEXP activity_get_prev_(SEXP activity_);
+RcppExport SEXP simmer_activity_get_prev_(SEXP activity_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
+    __result = Rcpp::wrap(activity_get_prev_(activity_));
+    return __result;
+END_RCPP
+}
+// activity_chain_
+void activity_chain_(SEXP activity_, SEXP the_next_);
+RcppExport SEXP simmer_activity_chain_(SEXP activity_SEXP, SEXP the_next_SEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type the_next_(the_next_SEXP);
-    activity_set_next_(activity_, the_next_);
+    activity_chain_(activity_, the_next_);
     return R_NilValue;
 END_RCPP
 }

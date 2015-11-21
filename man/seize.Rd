@@ -4,7 +4,7 @@
 \alias{seize}
 \title{Add a seize activity}
 \usage{
-seize(traj, resource, amount)
+seize(traj, resource, amount = 1)
 }
 \arguments{
 \item{traj}{the trajectory object.}
@@ -22,6 +22,7 @@ Adds a new activity capable of seizing a resource to the tail of a trajectory.
 \seealso{
 Other methods to deal with trajectories:
 \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
-\link{get_tail}, \link{get_n_activities}, \link{release}, \link{timeout}, \link{branch}.
+\link{get_tail}, \link{get_n_activities}, \link{release}, \link{timeout}, 
+\link{branch}, \link{rollback}.
 }
 
