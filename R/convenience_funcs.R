@@ -31,7 +31,7 @@ at<-function(times){
     function(){
       if(i<length(times)){
         i<<-i+1
-        return(times[[i]])
+        return(c(times[1], diff(times))[i])
       } else {
         return(-1)
       }

@@ -26,8 +26,9 @@ test_that("a dist that returns a non-numeric value fails", {
 context("generator - convenience funcs")
 
 test_that("at returns the correct values", {
-  gen_func<-at(c(1,2))
-  expect_equal(gen_func(), 1)
-  expect_equal(gen_func(), 2)
+  gen_func<-at(c(0,10,15))
+  expect_equal(gen_func(), 0)
+  expect_equal(gen_func(), 10)
+  expect_equal(gen_func(), 5)
   expect_equal(gen_func(), -1)
 })
