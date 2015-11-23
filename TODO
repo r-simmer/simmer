@@ -1,8 +1,1 @@
-Random ideas:
- - refine queue discipline (add priorities)
- - time-specific resource availability
- - add depletable resources
- - stop the simulation mid-run, adjust some parameters and continue the simulation
- - create release_all event
- - inspect the queue
- 
+ - inspect the queue (some kind of "advanced peek")
