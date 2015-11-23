@@ -21,3 +21,13 @@ test_that("a dist that returns a non-numeric value fails", {
   
   expect_error(simmer()%>%add_generator("customer", t0, function() {}))
 })
+
+
+context("generator - convenience funcs")
+
+test_that("at returns the correct values", {
+  gen_func<-at(c(1,2))
+  expect_equal(gen_func(), 1)
+  expect_equal(gen_func(), 2)
+  expect_equal(gen_func(), -1)
+})
