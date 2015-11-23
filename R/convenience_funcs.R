@@ -27,11 +27,12 @@
 #'   add_resource("administration", 1) %>%
 #'   add_generator("patient", t0, at(c(0,10,30)))
 at<-function(times){
+  time_diffs<-c(times[1], diff(times))
   i<-0
     function(){
       if(i<length(times)){
         i<<-i+1
-        return(c(times[1], diff(times))[i])
+        return(time_diffs[i])
       } else {
         return(-1)
       }
