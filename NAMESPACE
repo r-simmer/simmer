@@ -3,6 +3,7 @@
 export("%>%")
 export(add_generator)
 export(add_resource)
+export(at)
 export(branch)
 export(create_trajectory)
 export(get_capacity)
