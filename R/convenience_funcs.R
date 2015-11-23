@@ -11,7 +11,7 @@
 #'   add_resource("nurse", 1) %>%
 #'   add_resource("doctor", 2) %>%
 #'   add_resource("administration", 1) %>%
-#'   add_generator("patient", t0, at(0,10,30))
+#'   add_generator("patient", t0, at(c(0,10,30)))
 at<-function(times){
   i<-0
     function(){
