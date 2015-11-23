@@ -1,6 +1,6 @@
 #' generate arrivals at specific times (generator convenience function)
 #'
-#' @param times a (vector) of times at which to initiate an arrival
+#' @param time_vec a (vector) of times at which to initiate an arrival
 #'
 #' @return returns a generator function
 #' @seealso \link{add_generator}
@@ -26,11 +26,11 @@
 #'   add_resource("doctor", 2) %>%
 #'   add_resource("administration", 1) %>%
 #'   add_generator("patient", t0, at(c(0,10,30)))
-at<-function(times){
-  time_diffs<-c(times[1], diff(times))
+at<-function(time_vec){
+  time_diffs<-c(time_vec[1], diff(time_vec))
   i<-0
     function(){
-      if(i<length(times)){
+      if(i<length(time_vec)){
         i<<-i+1
         return(time_diffs[i])
       } else {

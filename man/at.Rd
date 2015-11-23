@@ -4,10 +4,10 @@
 \alias{at}
 \title{generate arrivals at specific times (generator convenience function)}
 \usage{
-at(times)
+at(time_vec)
 }
 \arguments{
-\item{times}{a (vector) of times at which to initiate an arrival}
+\item{time_vec}{a (vector) of times at which to initiate an arrival}
 }
 \value{
 returns a generator function
