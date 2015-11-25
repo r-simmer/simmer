@@ -2,11 +2,17 @@
 % Please edit documentation in R/utils.R
 \name{func_wrapper}
 \alias{func_wrapper}
-\title{export}
+\title{Wrap a function / or value to be evaluated by the Rcpp backend}
 \usage{
 func_wrapper(value)
 }
+\arguments{
+\item{value}{should be a value or a functuon}
+}
+\value{
+a function whcih allows an attrs parameter
+}
 \description{
-export
+Wrap a function / or value to be evaluated by the Rcpp backend
 }
 

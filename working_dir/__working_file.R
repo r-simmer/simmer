@@ -90,10 +90,19 @@ a %>% show_activity(); a <- a %>% get_next_activity()
 #################################
 
 t0 <- create_trajectory() %>%
-  set_attribute("health", 100) %>%
-  timeout(function(attrs){print(attrs); 2}) %>% # has access to the attrs
-  timeout(function() 2) # but the attrs argument isnt required (but the same overhead is incurred...)
+  set_attribute("health", 80) %>%
+  timeout(function(attrs){print(attrs); 2}) %>% # has access to the attributes
+  timeout(function() 2) %>% # but the attrs argument isnt required (but the same overhead is incurred!...)
   timeout(3) # even the function isnt required
+
+## where I would like to get
+#   timeout(function(attrs, attr_setter){
+#     to_heal<-100 - sample(attrs$health:100, 1)
+#     time_to_heal<- to_heal*10
+#     attr_setter("health", attrs$health + to_heal)
+#     
+#     time_to_heal
+#   })
 
 s<-simmer() %>%
   add_generator("test", t0, at(0)) %>%

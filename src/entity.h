@@ -63,6 +63,11 @@ public:
   }
   
   void activate();
+  ~Arrival(){
+    // not tested
+    attributes->clear();
+    delete attributes;
+  }
   
 private:
   Activity* activity; /**< current activity from an R trajectory */
