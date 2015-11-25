@@ -108,20 +108,20 @@ private:
  */
 class Timeout: public Activity {
 public:
-  Timeout(Rcpp::Function duration):
-    Activity("Timeout", "none"), duration(duration) {}
+  Timeout(Rcpp::Function task):
+    Activity("Timeout", "none"), task(task) {}
   
   void show(int indent=0) {
     Activity::show(indent);
-    Rcpp::Rcout << "duration: function() }" << std::endl;
+    Rcpp::Rcout << "task: function() }" << std::endl;
   }
   
   double run(Arrival* arrival) {
-    return fabs(Rcpp::as<double>(duration()));
+    return fabs(Rcpp::as<double>(task()));
   }
   
 private:
-  Rcpp::Function duration;
+  Rcpp::Function task;
 };
 
 /**

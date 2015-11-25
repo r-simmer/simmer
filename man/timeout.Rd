@@ -4,12 +4,12 @@
 \alias{timeout}
 \title{Add a timeout activity}
 \usage{
-timeout(traj, duration)
+timeout(traj, task)
 }
 \arguments{
 \item{traj}{the trajectory object.}
 
-\item{duration}{a callable object (a function) that returns a numeric value 
+\item{task}{a callable object (a function) that returns a numeric value 
 (negative values are automatically converted to positive ones)}
 }
 \value{

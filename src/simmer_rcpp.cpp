@@ -149,8 +149,8 @@ SEXP Release__new(SEXP resource_, SEXP amount_) {
 }
 
 //[[Rcpp::export]]
-SEXP Timeout__new(Function duration) {
-  XPtr<Timeout> ptr(new Timeout(duration), false);
+SEXP Timeout__new(Function task) {
+  XPtr<Timeout> ptr(new Timeout(task), false);
   return ptr;
 }
 

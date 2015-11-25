@@ -39,8 +39,8 @@ Trajectory <- R6Class("Trajectory",
       private$add_activity(Release__new(resource, amount))
     },
     
-    timeout = function(duration) {
-      private$add_activity(Timeout__new(duration))
+    timeout = function(task) {
+      private$add_activity(Timeout__new(task))
     },
     
     branch = function(option, merge, ...) {
@@ -209,7 +209,7 @@ release <- function(traj, resource, amount=1) traj$release(resource, amount)
 #' an associated delay to the tail of a trajectory.
 #' 
 #' @param traj the trajectory object.
-#' @param duration a callable object (a function) that returns a numeric value 
+#' @param task a callable object (a function) that returns a numeric value 
 #' (negative values are automatically converted to positive ones)
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
@@ -217,7 +217,7 @@ release <- function(traj, resource, amount=1) traj$release(resource, amount)
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
 #' \link{branch}, \link{rollback}.
 #' @export
-timeout <- function(traj, duration) traj$timeout(duration)
+timeout <- function(traj, task) traj$timeout(task)
 
 #' Add a branch activity
 #'
