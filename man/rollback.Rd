@@ -4,7 +4,7 @@
 \alias{rollback}
 \title{Add a rollback activity}
 \usage{
-rollback(traj, amount, times = 1)
+rollback(traj, amount, times = 1, check)
 }
 \arguments{
 \item{traj}{the trajectory object.}
@@ -13,6 +13,10 @@ rollback(traj, amount, times = 1)
 not go into branches).}
 
 \item{times}{the number of repetitions until an arrival may continue.}
+
+\item{check}{a callable object (a function) that must return a boolean. If
+present, the \code{times} parameter is ignored, and the activity uses this
+function to check whether the rollback must be done or not.}
 }
 \value{
 The trajectory object.

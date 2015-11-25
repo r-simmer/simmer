@@ -52,10 +52,13 @@ Trajectory <- R6Class("Trajectory",
       private$add_activity(Branch__new(option, merge, trj))
     },
     
-    rollback = function(amount, times=1) {
+    rollback = function(amount, times=1, check) {
       amount <- evaluate_value(amount)
       times <- evaluate_value(times)
-      private$add_activity(Rollback__new(amount, times))
+      if (is.infinite(times)) times <- -1
+      if (missing(check))
+        private$add_activity(Rollback__new_times(amount, times))
+      else private$add_activity(Rollback__new_check(amount, check))
     }
   ),
   
@@ -225,10 +228,10 @@ timeout <- function(traj, task) traj$timeout(task)
 #' 
 #' @param traj the trajectory object.
 #' @param option a callable object (a function) that must return an integer 
-#' between 1 and n; it will be used by the arrivals to select a path to follow.
-#' @param merge a vector of n booleans that indicate whether the arrival must continue 
-#' executing activities after each path or not.
-#' @param ... n trajectory objects describing each path.
+#' between 1 and \code{n}; it will be used by the arrivals to select a path to follow.
+#' @param merge a vector of \code{n} booleans that indicate whether the arrival must 
+#' continue executing activities after each path or not.
+#' @param ... \code{n} trajectory objects describing each path.
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
 #' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
@@ -245,10 +248,13 @@ branch <- function(traj, option, merge, ...) traj$branch(option, merge, ...)
 #' @param amount the amount of activities to roll back (of the same level; it does
 #' not go into branches).
 #' @param times the number of repetitions until an arrival may continue.
+#' @param check a callable object (a function) that must return a boolean. If
+#' present, the \code{times} parameter is ignored, and the activity uses this
+#' function to check whether the rollback must be done or not.
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
 #' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release},
 #' \link{timeout}, \link{branch}.
 #' @export
-rollback <- function(traj, amount, times=1) traj$rollback(amount, times)
+rollback <- function(traj, amount, times=1, check) traj$rollback(amount, times, check)

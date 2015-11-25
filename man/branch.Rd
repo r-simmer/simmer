@@ -10,12 +10,12 @@ branch(traj, option, merge, ...)
 \item{traj}{the trajectory object.}
 
 \item{option}{a callable object (a function) that must return an integer 
-between 1 and n; it will be used by the arrivals to select a path to follow.}
+between 1 and \code{n}; it will be used by the arrivals to select a path to follow.}
 
-\item{merge}{a vector of n booleans that indicate whether the arrival must continue 
-executing activities after each path or not.}
+\item{merge}{a vector of \code{n} booleans that indicate whether the arrival must 
+continue executing activities after each path or not.}
 
-\item{...}{n trajectory objects describing each path.}
+\item{...}{\code{n} trajectory objects describing each path.}
 }
 \value{
 The trajectory object.
