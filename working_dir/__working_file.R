@@ -85,3 +85,17 @@ t0 %>% show_trajectory()
 
 a <- t0 %>% get_head()
 a %>% show_activity(); a <- a %>% get_next_activity()
+
+
+#################################
+
+t0 <- create_trajectory() %>%
+  set_attribute("health", 100) %>%
+  timeout(function(attrs){print(attrs); 2}) %>% # has access to the attrs
+  timeout(function() 2) # but the attrs argument isnt required (but the same overhead is incurred...)
+  timeout(3) # even the function isnt required
+
+s<-simmer() %>%
+  add_generator("test", t0, at(0)) %>%
+  run()
+

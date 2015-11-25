@@ -40,7 +40,11 @@ Trajectory <- R6Class("Trajectory",
     },
     
     timeout = function(duration) {
-      private$add_activity(Timeout__new(duration))
+      private$add_activity(Timeout__new(func_wrapper(duration)))
+    },
+    
+    set_attribute = function(key, value) {
+      private$add_activity(SetAttribute__new(key, value))
     },
     
     branch = function(option, merge, ...) {
@@ -218,6 +222,10 @@ release <- function(traj, resource, amount=1) traj$release(resource, amount)
 #' \link{branch}, \link{rollback}.
 #' @export
 timeout <- function(traj, duration) traj$timeout(duration)
+
+#' @export
+set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
+
 
 #' Add a branch activity
 #'

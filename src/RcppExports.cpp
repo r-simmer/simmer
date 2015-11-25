@@ -193,6 +193,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// SetAttribute__new
+SEXP SetAttribute__new(SEXP key_, SEXP value_);
+RcppExport SEXP simmer_SetAttribute__new(SEXP key_SEXP, SEXP value_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type key_(key_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type value_(value_SEXP);
+    __result = Rcpp::wrap(SetAttribute__new(key_, value_));
+    return __result;
+END_RCPP
+}
 // Timeout__new
 SEXP Timeout__new(Function duration);
 RcppExport SEXP simmer_Timeout__new(SEXP durationSEXP) {

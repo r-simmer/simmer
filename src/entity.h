@@ -47,6 +47,8 @@ class Arrival: public Process {
 public:
   double start_time;    /**< generation time */
   double activity_time; /**< time spent doing something in the system (not waiting in a queue) */
+  std::map<std::string, double>* attributes;
+
   
   /**
    * Constructor.
@@ -56,7 +58,9 @@ public:
    * @param first_activity  the first activity of a user-defined R trajectory
    */
   Arrival(Simulator* sim, std::string name, bool mon, Activity* first_activity):
-    Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity) {}
+    Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity) {
+    attributes = new std::map<std::string, double>();
+  }
   
   void activate();
   

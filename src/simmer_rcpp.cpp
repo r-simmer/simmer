@@ -149,6 +149,15 @@ SEXP Release__new(SEXP resource_, SEXP amount_) {
 }
 
 //[[Rcpp::export]]
+SEXP SetAttribute__new(SEXP key_, SEXP value_) {
+  std::string key = as<std::string>(key_);
+  double value = as<double>(value_);
+  
+  XPtr<SetAttribute> ptr(new SetAttribute(key, value), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
 SEXP Timeout__new(Function duration) {
   XPtr<Timeout> ptr(new Timeout(duration), false);
   return ptr;

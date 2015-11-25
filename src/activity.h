@@ -104,6 +104,26 @@ private:
 };
 
 /**
+ * Set attributes.
+ */
+class SetAttribute: public Activity {
+public:
+  SetAttribute(std::string key, double value):
+  Activity("SetAttribute", "none"), key(key), value(value) {}
+  
+  void show(int indent=0) {
+    Activity::show(indent);
+    // Rcpp::Rcout << "attr: function() }" << std::endl;
+  }
+  
+  double run(Arrival* arrival);
+  
+private:
+  std::string key;
+  double value;
+};
+
+/**
  * Timeout.
  */
 class Timeout: public Activity {
@@ -116,9 +136,7 @@ public:
     Rcpp::Rcout << "duration: function() }" << std::endl;
   }
   
-  double run(Arrival* arrival) {
-    return fabs(Rcpp::as<double>(duration()));
-  }
+  double run(Arrival* arrival);
   
 private:
   Rcpp::Function duration;
