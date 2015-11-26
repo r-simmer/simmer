@@ -28,16 +28,30 @@ sim: anonymous | time: 1 | arrival: dummy0 | activity: Rollback(none)
 sim: anonymous | time: 1 | arrival: dummy0 | activity: Rollback(none)
 sim: anonymous | time: 1 | arrival: dummy0 | activity: Rollback(none)
 sim: anonymous | time: 2 | arrival: dummy1 | activity: Rollback(none)", fixed=T)
+  
+  t0 <- create_trajectory() %>% rollback(0, Inf)
+  expect_output(t0%>%get_tail()%>%show_activity(), "Inf")
 })
 
 test_that("a negative amount is converted to positive", {
   t0 <- create_trajectory() %>% seize("dummy", 1)
 
   expect_silent(t0%>%rollback(-1, -1))
-  expect_output(t0%>%get_tail()%>%show_activity(), "Seize")
+  expect_output(t0%>%get_tail()%>%show_activity(), "amount: 1 (Seize), times: 1", fixed=TRUE)
+})
+
+test_that("a check function that returns a non-boolean value fails", {
+  t0 <- create_trajectory() %>%
+    rollback(1, check=function() "dummy")
+  
+  env <- simmer() %>%
+    add_generator("entity", t0, function() 1)
+  
+  expect_error(env%>%run(100))
 })
 
 test_that("incorrect types fail", {
   expect_error(create_trajectory() %>% rollback("dummy", 0))
   expect_error(create_trajectory() %>% rollback(0, "dummy"))
+  expect_error(create_trajectory() %>% rollback(0, check=0))
 })
