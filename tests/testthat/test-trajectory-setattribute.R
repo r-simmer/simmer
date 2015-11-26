@@ -24,4 +24,5 @@ test_that("an attribute is correctly set and returned to a function that needs i
   sink()
   
   expect_equal(readLines(temp_file), "[1] 123")
+  close(temp_file)
 })
