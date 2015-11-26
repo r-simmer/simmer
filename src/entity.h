@@ -58,11 +58,13 @@ public:
    * @param first_activity  the first activity of a user-defined R trajectory
    */
   Arrival(Simulator* sim, std::string name, bool mon, Activity* first_activity):
-    Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity) {
-    attributes = std::map<std::string, double>();
-  }
+    Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity) {}
   
   void activate();
+  
+  ~Arrival(){
+    attributes.clear();
+  }
   
 private:
   Activity* activity; /**< current activity from an R trajectory */
