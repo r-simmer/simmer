@@ -69,16 +69,20 @@ SetAttribute__new <- function(key_, value, provide_attrs) {
     .Call('simmer_SetAttribute__new', PACKAGE = 'simmer', key_, value, provide_attrs)
 }
 
-Timeout__new <- function(duration, provide_attrs) {
-    .Call('simmer_Timeout__new', PACKAGE = 'simmer', duration, provide_attrs)
+Timeout__new <- function(task, provide_attrs) {
+    .Call('simmer_Timeout__new', PACKAGE = 'simmer', task, provide_attrs)
 }
 
 Branch__new <- function(option, merge_, trj_) {
     .Call('simmer_Branch__new', PACKAGE = 'simmer', option, merge_, trj_)
 }
 
-Rollback__new <- function(amount_, times_) {
-    .Call('simmer_Rollback__new', PACKAGE = 'simmer', amount_, times_)
+Rollback__new_times <- function(amount_, times_) {
+    .Call('simmer_Rollback__new_times', PACKAGE = 'simmer', amount_, times_)
+}
+
+Rollback__new_check <- function(amount_, check) {
+    .Call('simmer_Rollback__new_check', PACKAGE = 'simmer', amount_, check)
 }
 
 activity_get_n_ <- function(activity_) {

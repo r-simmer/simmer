@@ -155,8 +155,8 @@ SEXP SetAttribute__new(SEXP key_, Function value, bool provide_attrs) { // TODO:
 }
 
 //[[Rcpp::export]]
-SEXP Timeout__new(Function duration, bool provide_attrs) {
-  XPtr<Timeout> ptr(new Timeout(duration, provide_attrs), false);
+SEXP Timeout__new(Function task, bool provide_attrs) {
+  XPtr<Timeout> ptr(new Timeout(task, provide_attrs), false);
   return ptr;
 }
 
@@ -170,11 +170,19 @@ SEXP Branch__new(Function option, SEXP merge_, SEXP trj_) {
 }
 
 //[[Rcpp::export]]
-SEXP Rollback__new(SEXP amount_, SEXP times_) {
+SEXP Rollback__new_times(SEXP amount_, SEXP times_) {
   int amount = as<int>(amount_);
   int times = as<int>(times_);
   
   XPtr<Rollback> ptr(new Rollback(amount, times), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP Rollback__new_check(SEXP amount_, Function check) {
+  int amount = as<int>(amount_);
+  
+  XPtr<Rollback> ptr(new Rollback(amount, check), false);
   return ptr;
 }
 

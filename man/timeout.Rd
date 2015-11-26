@@ -4,12 +4,12 @@
 \alias{timeout}
 \title{Add a timeout activity}
 \usage{
-timeout(traj, duration, provide_attrs = FALSE)
+timeout(traj, task, provide_attrs = FALSE)
 }
 \arguments{
 \item{traj}{the trajectory object.}
 
-\item{duration}{a callable object (a function) that returns a numeric value 
+\item{task}{a callable object (a function) that returns a numeric value 
 (negative values are automatically converted to positive ones)}
 
 \item{provide_attrs}{should the attributes be provided to the value function (value has to be a function which accept a parameter)}

@@ -131,18 +131,18 @@ private:
  */
 class Timeout: public Activity {
 public:
-  Timeout(Rcpp::Function duration, bool provide_attrs):
-    Activity("Timeout", "none"), duration(duration), provide_attrs(provide_attrs) {}
+  Timeout(Rcpp::Function task, bool provide_attrs):
+    Activity("Timeout", "none"), task(task), provide_attrs(provide_attrs) {}
   
   void show(int indent=0) {
     Activity::show(indent);
-    Rcpp::Rcout << "duration: function() }" << std::endl;
+    Rcpp::Rcout << "task: function() }" << std::endl;
   }
   
   double run(Arrival* arrival);
   
 private:
-  Rcpp::Function duration;
+  Rcpp::Function task;
   bool provide_attrs;
 };
 
@@ -221,12 +221,16 @@ private:
 class Rollback: public Activity {
 public:
   Rollback(int amount, int times):
-  Activity("Rollback", "none"), amount(amount), times(times),
-    cached(NULL), selected(NULL) {
+    Activity("Rollback", "none"), amount(amount), times(times),
+    cached(NULL), selected(NULL), check("gc") /* dirty trick */ {
     if (amount < 0)
       Rcpp::stop("not allowed to rollback a negative amount");
-    if (times < 0)
-      Rcpp::stop("not allowed to repeat a negative amount");
+  }
+  Rollback(int amount, Rcpp::Function check):
+    Activity("Rollback", "none"), amount(amount), times(-2),
+    cached(NULL), selected(NULL), check(check) {
+    if (amount < 0)
+      Rcpp::stop("not allowed to rollback a negative amount");
   }
   
   ~Rollback() { pending.clear(); }
@@ -234,19 +238,29 @@ public:
   void show(int indent=0) {
     if (!cached) cached = goback();
     Activity::show(indent);
-    Rcpp::Rcout << "amount: " << amount << " (" << cached->name <<
-      "), times: " << times << " }" << std::endl;
+    Rcpp::Rcout << "amount: " << amount << " (" << cached->name << "), ";
+    if (times < -1)
+      Rcpp::Rcout << "check: function() }" << std::endl;
+    else if (times > -1)
+      Rcpp::Rcout << "times: " << times << " }" << std::endl;
+    else
+      Rcpp::Rcout << "times: Inf }" << std::endl;
   }
   
   double run(Arrival* arrival) {
-    if (pending.find(arrival) == pending.end()) 
-      pending[arrival] = times;
-    if (!pending[arrival]) {
-      pending.erase(arrival);
-      return 0;
+    if (times < -1) {
+      if (!Rcpp::as<bool>(check()))return 0;
+    } else if (times > -1) {
+      if (pending.find(arrival) == pending.end()) 
+        pending[arrival] = times;
+      if (!pending[arrival]) {
+        pending.erase(arrival);
+        return 0;
+      }
+      pending[arrival]--;
     }
+    
     if (!cached) cached = goback();
-    pending[arrival]--;
     selected = cached;
     return 0;
   }
@@ -264,6 +278,7 @@ private:
   int amount;
   int times;
   Activity* cached, *selected;
+  Rcpp::Function check;
   std::map<Arrival*, int> pending;
   
   inline Activity* goback() {

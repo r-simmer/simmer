@@ -1,1 +1,2 @@
  - inspect the queue (some kind of "advanced peek")
+ - use Boost C++ (or C++11) to improve the efficiency

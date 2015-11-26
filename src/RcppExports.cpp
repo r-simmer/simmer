@@ -209,14 +209,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // Timeout__new
-SEXP Timeout__new(Function duration, bool provide_attrs);
-RcppExport SEXP simmer_Timeout__new(SEXP durationSEXP, SEXP provide_attrsSEXP) {
+SEXP Timeout__new(Function task, bool provide_attrs);
+RcppExport SEXP simmer_Timeout__new(SEXP taskSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< Function >::type duration(durationSEXP);
+    Rcpp::traits::input_parameter< Function >::type task(taskSEXP);
     Rcpp::traits::input_parameter< bool >::type provide_attrs(provide_attrsSEXP);
-    __result = Rcpp::wrap(Timeout__new(duration, provide_attrs));
+    __result = Rcpp::wrap(Timeout__new(task, provide_attrs));
     return __result;
 END_RCPP
 }
@@ -233,15 +233,27 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// Rollback__new
-SEXP Rollback__new(SEXP amount_, SEXP times_);
-RcppExport SEXP simmer_Rollback__new(SEXP amount_SEXP, SEXP times_SEXP) {
+// Rollback__new_times
+SEXP Rollback__new_times(SEXP amount_, SEXP times_);
+RcppExport SEXP simmer_Rollback__new_times(SEXP amount_SEXP, SEXP times_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type times_(times_SEXP);
-    __result = Rcpp::wrap(Rollback__new(amount_, times_));
+    __result = Rcpp::wrap(Rollback__new_times(amount_, times_));
+    return __result;
+END_RCPP
+}
+// Rollback__new_check
+SEXP Rollback__new_check(SEXP amount_, Function check);
+RcppExport SEXP simmer_Rollback__new_check(SEXP amount_SEXP, SEXP checkSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
+    Rcpp::traits::input_parameter< Function >::type check(checkSEXP);
+    __result = Rcpp::wrap(Rollback__new_check(amount_, check));
     return __result;
 END_RCPP
 }

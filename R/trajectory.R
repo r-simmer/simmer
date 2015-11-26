@@ -39,8 +39,8 @@ Trajectory <- R6Class("Trajectory",
       private$add_activity(Release__new(resource, func_wrapper(amount), provide_attrs))
     },
     
-    timeout = function(duration, provide_attrs=FALSE) {
-      private$add_activity(Timeout__new(func_wrapper(duration), provide_attrs))
+    timeout = function(task, provide_attrs=FALSE) {
+      private$add_activity(Timeout__new(func_wrapper(task), provide_attrs))
     },
     
     set_attribute = function(key, value, provide_attrs=FALSE) {
@@ -56,10 +56,13 @@ Trajectory <- R6Class("Trajectory",
       private$add_activity(Branch__new(option, merge, trj))
     },
     
-    rollback = function(amount, times=1) {
+    rollback = function(amount, times=1, check) {
       amount <- evaluate_value(amount)
       times <- evaluate_value(times)
-      private$add_activity(Rollback__new(amount, times))
+      if (is.infinite(times)) times <- -1
+      if (missing(check))
+        private$add_activity(Rollback__new_times(amount, times))
+      else private$add_activity(Rollback__new_check(amount, check))
     }
   ),
   
@@ -215,7 +218,7 @@ release <- function(traj, resource, amount=1, provide_attrs=FALSE) traj$release(
 #' an associated delay to the tail of a trajectory.
 #' 
 #' @param traj the trajectory object.
-#' @param duration a callable object (a function) that returns a numeric value 
+#' @param task a callable object (a function) that returns a numeric value 
 #' (negative values are automatically converted to positive ones)
 #' @param provide_attrs should the attributes be provided to the value function (value has to be a function which accept a parameter)
 #' @return The trajectory object.
@@ -224,7 +227,7 @@ release <- function(traj, resource, amount=1, provide_attrs=FALSE) traj$release(
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
 #' \link{branch}, \link{rollback}.
 #' @export
-timeout <- function(traj, duration, provide_attrs=FALSE) traj$timeout(duration, provide_attrs)
+timeout <- function(traj, task, provide_attrs=FALSE) traj$timeout(task, provide_attrs)
 
 #' Add a set attribute activity
 #'
@@ -249,10 +252,10 @@ set_attribute <- function(traj, key, value, provide_attrs=FALSE) traj$set_attrib
 #' 
 #' @param traj the trajectory object.
 #' @param option a callable object (a function) that must return an integer 
-#' between 1 and n; it will be used by the arrivals to select a path to follow.
-#' @param merge a vector of n booleans that indicate whether the arrival must continue 
-#' executing activities after each path or not.
-#' @param ... n trajectory objects describing each path.
+#' between 1 and \code{n}; it will be used by the arrivals to select a path to follow.
+#' @param merge a vector of \code{n} booleans that indicate whether the arrival must 
+#' continue executing activities after each path or not.
+#' @param ... \code{n} trajectory objects describing each path.
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
 #' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
@@ -269,10 +272,13 @@ branch <- function(traj, option, merge, ...) traj$branch(option, merge, ...)
 #' @param amount the amount of activities to roll back (of the same level; it does
 #' not go into branches).
 #' @param times the number of repetitions until an arrival may continue.
+#' @param check a callable object (a function) that must return a boolean. If
+#' present, the \code{times} parameter is ignored, and the activity uses this
+#' function to check whether the rollback must be done or not.
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
 #' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release},
 #' \link{timeout}, \link{branch}.
 #' @export
-rollback <- function(traj, amount, times=1) traj$rollback(amount, times)
+rollback <- function(traj, amount, times=1, check) traj$rollback(amount, times, check)

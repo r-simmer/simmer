@@ -50,17 +50,17 @@ test_that("the trajectory stores the right number of activities", {
   expect_output(t0%>%show_trajectory(), 
 "Trajectory: my trajectory, 9 activities
 { Activity: Seize(nurse) | amount: function() }
-{ Activity: Timeout(none) | duration: function() }
+{ Activity: Timeout(none) | task: function() }
 { Activity: Release(nurse) | amount: function() }
 { Activity: Branch(none) | merge: 1 }
   Trajectory: anonymous, 6 activities
   { Activity: Seize(doctor) | amount: function() }
-  { Activity: Timeout(none) | duration: function() }
+  { Activity: Timeout(none) | task: function() }
   { Activity: Release(doctor) | amount: function() }
   { Activity: Branch(none) | merge: 1 }
     Trajectory: anonymous, 3 activities
     { Activity: Seize(administration) | amount: function() }
-    { Activity: Timeout(none) | duration: function() }
+    { Activity: Timeout(none) | task: function() }
     { Activity: Release(administration) | amount: function() }", fixed = TRUE)
 })
 

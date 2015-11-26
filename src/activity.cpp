@@ -31,11 +31,11 @@ double Timeout::run(Arrival* arrival) {
   
   if(provide_attrs)
   {
-    return fabs(Rcpp::as<double>(duration(Rcpp::wrap(*arrival->attributes))));  
+    return fabs(Rcpp::as<double>(task(Rcpp::wrap(*arrival->attributes))));  
   }
   else 
   {
-    return fabs(Rcpp::as<double>(duration()));  
+    return fabs(Rcpp::as<double>(task()));  
   }
   
 }

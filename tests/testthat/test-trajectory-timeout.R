@@ -4,7 +4,7 @@ test_that("a non-function is correctly converted to a function by the value_to_f
   expect_error(not(create_trajectory()%>%timeout(3)))
 })
 
-test_that("a duration function that returns a non-numeric value fails", {
+test_that("a task function that returns a non-numeric value fails", {
   t0 <- create_trajectory() %>%
     timeout(function() {})
   
