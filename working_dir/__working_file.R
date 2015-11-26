@@ -95,25 +95,19 @@ t0 <- create_trajectory() %>%
                 function(attrs){
                   if(attrs[["health"]]<50) 2
                   else 1
-                }, provide_attrs = TRUE) %>%
+                }) %>%
   seize("nurse", 
-        function(attrs){
-          attrs[["nurses_to_seize"]]
-        }, provide_attrs = T) %>%
-  timeout(function(attrs){(100 - attrs[["health"]])},
-          provide_attrs = T) %>%
+        function(attrs){attrs[["nurses_to_seize"]]}) %>%
+  timeout(function(attrs){(100 - attrs[["health"]])}) %>%
   set_attribute("health", 
                 function(attrs){
-                  min(attrs[["health"]] + sample(attrs[["health"]]:100, 1), 100)},
-                provide_attrs=TRUE) %>%
+                  min(attrs[["health"]] + sample(attrs[["health"]]:100, 1), 100)}) %>%
    release("nurse", 
-        function(attrs){
-          attrs[["nurses_to_seize"]]
-        }, provide_attrs = T) %>%
+        function(attrs){attrs[["nurses_to_seize"]]}) %>%
   
   ## some other functionality
   ## simply print the attrs using a 0 timeout
-  timeout(function(attrs){print(attrs); 0}, provide_attrs=T) %>%
+  timeout(function(attrs){print(attrs); 0}) %>%
   timeout(function() 0) %>% #  if provide_attrs=F no attrs are passed and minimal overhead is incurred
   timeout(0) # doesn't have to be a function (will be converted to one)
 

@@ -4,7 +4,7 @@
 \alias{release}
 \title{Add a release activity}
 \usage{
-release(traj, resource, amount = 1, provide_attrs = FALSE)
+release(traj, resource, amount = 1)
 }
 \arguments{
 \item{traj}{the trajectory object.}
@@ -12,8 +12,6 @@ release(traj, resource, amount = 1, provide_attrs = FALSE)
 \item{resource}{the name of the resource.}
 
 \item{amount}{the amount to release.}
-
-\item{provide_attrs}{should the attributes be provided to the value function (value has to be a function which accept a parameter)}
 }
 \value{
 The trajectory object.

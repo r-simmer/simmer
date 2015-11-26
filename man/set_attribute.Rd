@@ -4,7 +4,7 @@
 \alias{set_attribute}
 \title{Add a set attribute activity}
 \usage{
-set_attribute(traj, key, value, provide_attrs = FALSE)
+set_attribute(traj, key, value)
 }
 \arguments{
 \item{traj}{the trajectory object.}
@@ -12,8 +12,6 @@ set_attribute(traj, key, value, provide_attrs = FALSE)
 \item{key}{the attribute key (is coerced to a string)}
 
 \item{value}{the value (should be numeric or a function which returns a numeric)}
-
-\item{provide_attrs}{should the attributes be provided to the value function (value has to be a function which accept a parameter)}
 }
 \value{
 The trajectory object.

@@ -27,23 +27,23 @@ Trajectory <- R6Class("Trajectory",
     
     get_n_activities = function() { private$n_activities },
     
-    seize = function(resource, amount=1, provide_attrs=FALSE) {
+    seize = function(resource, amount=1, provide_attrs=needs_attrs(amount)) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
       private$add_activity(Seize__new(resource, func_wrapper(amount), provide_attrs))
     },
     
-    release = function(resource, amount=1, provide_attrs=FALSE) {
+    release = function(resource, amount=1, provide_attrs=needs_attrs(amount)) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
       private$add_activity(Release__new(resource, func_wrapper(amount), provide_attrs))
     },
     
-    timeout = function(task, provide_attrs=FALSE) {
+    timeout = function(task, provide_attrs=needs_attrs(task)) {
       private$add_activity(Timeout__new(func_wrapper(task), provide_attrs))
     },
     
-    set_attribute = function(key, value, provide_attrs=FALSE) {
+    set_attribute = function(key, value, provide_attrs=needs_attrs(value)) {
       private$add_activity(SetAttribute__new(as.character(key), func_wrapper(value), provide_attrs))
     },
     
@@ -187,14 +187,13 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #' @param traj the trajectory object.
 #' @param resource the name of the resource.
 #' @param amount the amount to seize.
-#' @param provide_attrs should the attributes be provided to the value function (value has to be a function which accept a parameter)
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
 #' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{release}, \link{timeout}, 
 #' \link{branch}, \link{rollback}.
 #' @export
-seize <- function(traj, resource, amount=1, provide_attrs=FALSE) traj$seize(resource, amount, provide_attrs)
+seize <- function(traj, resource, amount=1) traj$seize(resource, amount)
 
 #' Add a release activity
 #'
@@ -203,14 +202,13 @@ seize <- function(traj, resource, amount=1, provide_attrs=FALSE) traj$seize(reso
 #' @param traj the trajectory object.
 #' @param resource the name of the resource.
 #' @param amount the amount to release.
-#' @param provide_attrs should the attributes be provided to the value function (value has to be a function which accept a parameter)
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
 #' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{timeout}, 
 #' \link{branch}, \link{rollback}.
 #' @export
-release <- function(traj, resource, amount=1, provide_attrs=FALSE) traj$release(resource, amount, provide_attrs)
+release <- function(traj, resource, amount=1) traj$release(resource, amount)
 
 #' Add a timeout activity
 #'
@@ -220,14 +218,13 @@ release <- function(traj, resource, amount=1, provide_attrs=FALSE) traj$release(
 #' @param traj the trajectory object.
 #' @param task a callable object (a function) that returns a numeric value 
 #' (negative values are automatically converted to positive ones)
-#' @param provide_attrs should the attributes be provided to the value function (value has to be a function which accept a parameter)
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
 #' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
 #' \link{branch}, \link{rollback}.
 #' @export
-timeout <- function(traj, task, provide_attrs=FALSE) traj$timeout(task, provide_attrs)
+timeout <- function(traj, task) traj$timeout(task)
 
 #' Add a set attribute activity
 #'
@@ -236,14 +233,13 @@ timeout <- function(traj, task, provide_attrs=FALSE) traj$timeout(task, provide_
 #' @param traj the trajectory object.
 #' @param key the attribute key (is coerced to a string)
 #' @param value the value (should be numeric or a function which returns a numeric)
-#' @param provide_attrs should the attributes be provided to the value function (value has to be a function which accept a parameter)
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
 #' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
 #' \link{branch}, \link{rollback}.
 #' @export
-set_attribute <- function(traj, key, value, provide_attrs=FALSE) traj$set_attribute(key, value, provide_attrs)
+set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
 
 
 #' Add a branch activity
