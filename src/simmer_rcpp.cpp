@@ -131,20 +131,18 @@ int get_queue_count_(SEXP sim_, SEXP name_){
 }
 
 //[[Rcpp::export]]
-SEXP Seize__new(SEXP resource_, SEXP amount_) {
+SEXP Seize__new(SEXP resource_, Function amount, bool provide_attrs) {
   std::string resource = as<std::string>(resource_);
-  int amount = as<int>(amount_);
-  
-  XPtr<Seize> ptr(new Seize(resource, amount), false);
+
+  XPtr<Seize> ptr(new Seize(resource, amount, provide_attrs), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Release__new(SEXP resource_, SEXP amount_) {
+SEXP Release__new(SEXP resource_, Function amount, bool provide_attrs) {
   std::string resource = as<std::string>(resource_);
-  int amount = as<int>(amount_);
   
-  XPtr<Release> ptr(new Release(resource, amount), false);
+  XPtr<Release> ptr(new Release(resource, amount, provide_attrs), false);
   return ptr;
 }
 

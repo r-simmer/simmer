@@ -170,26 +170,28 @@ BEGIN_RCPP
 END_RCPP
 }
 // Seize__new
-SEXP Seize__new(SEXP resource_, SEXP amount_);
-RcppExport SEXP simmer_Seize__new(SEXP resource_SEXP, SEXP amount_SEXP) {
+SEXP Seize__new(SEXP resource_, Function amount, bool provide_attrs);
+RcppExport SEXP simmer_Seize__new(SEXP resource_SEXP, SEXP amountSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type resource_(resource_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
-    __result = Rcpp::wrap(Seize__new(resource_, amount_));
+    Rcpp::traits::input_parameter< Function >::type amount(amountSEXP);
+    Rcpp::traits::input_parameter< bool >::type provide_attrs(provide_attrsSEXP);
+    __result = Rcpp::wrap(Seize__new(resource_, amount, provide_attrs));
     return __result;
 END_RCPP
 }
 // Release__new
-SEXP Release__new(SEXP resource_, SEXP amount_);
-RcppExport SEXP simmer_Release__new(SEXP resource_SEXP, SEXP amount_SEXP) {
+SEXP Release__new(SEXP resource_, Function amount, bool provide_attrs);
+RcppExport SEXP simmer_Release__new(SEXP resource_SEXP, SEXP amountSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type resource_(resource_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
-    __result = Rcpp::wrap(Release__new(resource_, amount_));
+    Rcpp::traits::input_parameter< Function >::type amount(amountSEXP);
+    Rcpp::traits::input_parameter< bool >::type provide_attrs(provide_attrsSEXP);
+    __result = Rcpp::wrap(Release__new(resource_, amount, provide_attrs));
     return __result;
 END_RCPP
 }

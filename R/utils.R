@@ -20,6 +20,7 @@ func_wrapper<-function(value){
   if(is.function(value)){
     primary_func <- value
   } else {
+    if(!is.numeric(value)) stop("Expecting a numeric value")
     primary_func <- function() value
   }
 }

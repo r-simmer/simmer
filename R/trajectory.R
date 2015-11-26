@@ -27,16 +27,16 @@ Trajectory <- R6Class("Trajectory",
     
     get_n_activities = function() { private$n_activities },
     
-    seize = function(resource, amount=1) {
+    seize = function(resource, amount=1, provide_attrs=FALSE) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
-      private$add_activity(Seize__new(resource, amount))
+      private$add_activity(Seize__new(resource, func_wrapper(amount), provide_attrs))
     },
     
-    release = function(resource, amount=1) {
+    release = function(resource, amount=1, provide_attrs=FALSE) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
-      private$add_activity(Release__new(resource, amount))
+      private$add_activity(Release__new(resource, func_wrapper(amount), provide_attrs))
     },
     
     timeout = function(duration, provide_attrs=FALSE) {
@@ -184,13 +184,14 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #' @param traj the trajectory object.
 #' @param resource the name of the resource.
 #' @param amount the amount to seize.
+#' @param provide_attrs should the attributes be provided to the value function (value has to be a function which accept a parameter)
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
 #' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{release}, \link{timeout}, 
 #' \link{branch}, \link{rollback}.
 #' @export
-seize <- function(traj, resource, amount=1) traj$seize(resource, amount)
+seize <- function(traj, resource, amount=1, provide_attrs=FALSE) traj$seize(resource, amount, provide_attrs)
 
 #' Add a release activity
 #'
@@ -199,13 +200,14 @@ seize <- function(traj, resource, amount=1) traj$seize(resource, amount)
 #' @param traj the trajectory object.
 #' @param resource the name of the resource.
 #' @param amount the amount to release.
+#' @param provide_attrs should the attributes be provided to the value function (value has to be a function which accept a parameter)
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
 #' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{timeout}, 
 #' \link{branch}, \link{rollback}.
 #' @export
-release <- function(traj, resource, amount=1) traj$release(resource, amount)
+release <- function(traj, resource, amount=1, provide_attrs=FALSE) traj$release(resource, amount, provide_attrs)
 
 #' Add a timeout activity
 #'

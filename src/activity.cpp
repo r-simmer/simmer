@@ -5,11 +5,26 @@
 #include "activity.h"
 
 double Seize::run(Arrival* arrival) {
-  return arrival->sim->get_resource(resource)->seize(arrival, amount);
+  if(provide_attrs)
+  {
+    return arrival->sim->get_resource(resource)->seize(arrival, Rcpp::as<int>(amount(Rcpp::wrap(*arrival->attributes))));  
+  }
+  else 
+  {
+    return arrival->sim->get_resource(resource)->seize(arrival, Rcpp::as<int>(amount()));
+  }
+  
 }
 
 double Release::run(Arrival* arrival) {
-  return arrival->sim->get_resource(resource)->release(arrival, amount);
+  if(provide_attrs)
+  {
+    return arrival->sim->get_resource(resource)->release(arrival, Rcpp::as<int>(amount(Rcpp::wrap(*arrival->attributes))));  
+  }
+  else 
+  {
+    return arrival->sim->get_resource(resource)->release(arrival, Rcpp::as<int>(amount()));
+  }
 }
 
 double Timeout::run(Arrival* arrival) {

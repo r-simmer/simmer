@@ -90,24 +90,36 @@ a %>% show_activity(); a <- a %>% get_next_activity()
 #################################
 
 t0 <- create_trajectory() %>%
-  set_attribute("health", 80) %>%
-  set_attribute("health", function(attrs){
-    attrs[["health"]] + 20}, provide_attrs = T) %>%
-  # set_attribute("health", 10) %>%
-  timeout(function(attrs){print(attrs); 2}, provide_attrs=T) %>% # has access to the attributes if provide_attrs = T
-  timeout(function() 2) %>% # but if provide_attrs=F no overhead is incurred
-  timeout(3) # even the function isnt required
+  set_attribute("health", function() sample(40:80,1)) %>%
+  set_attribute("nurses_to_seize", 
+                function(attrs){
+                  if(attrs[["health"]]<50) 2
+                  else 1
+                }, provide_attrs = TRUE) %>%
+  seize("nurse", 
+        function(attrs){
+          attrs[["nurses_to_seize"]]
+        }, provide_attrs = T) %>%
+  timeout(function(attrs){(100 - attrs[["health"]])},
+          provide_attrs = T) %>%
+  set_attribute("health", 
+                function(attrs){
+                  min(attrs[["health"]] + sample(attrs[["health"]]:100, 1), 100)},
+                provide_attrs=TRUE) %>%
+   release("nurse", 
+        function(attrs){
+          attrs[["nurses_to_seize"]]
+        }, provide_attrs = T) %>%
+  
+  ## some other functionality
+  ## simply print the attrs using a 0 timeout
+  timeout(function(attrs){print(attrs); 0}, provide_attrs=T) %>%
+  timeout(function() 0) %>% #  if provide_attrs=F no attrs are passed and minimal overhead is incurred
+  timeout(0) # doesn't have to be a function (will be converted to one)
 
-## where I would like to get
-#   timeout(function(attrs, attr_setter){
-#     to_heal<-100 - sample(attrs$health:100, 1)
-#     time_to_heal<- to_heal*10
-#     attr_setter("health", attrs$health + to_heal)
-#     
-#     time_to_heal
-#   })
-
-s<-simmer() %>%
-  add_generator("test", t0, at(0)) %>%
+env<-simmer() %>%
+  add_generator("test", t0, at(seq(0,1000,200))) %>%
+  add_resource("nurse", 2) %>%
   run()
 
+plot_resource_usage(env, "nurse", items="server", steps=T)

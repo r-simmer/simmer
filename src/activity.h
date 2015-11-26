@@ -64,21 +64,22 @@ private:
  */
 class Seize: public Activity {
 public:
-  Seize(std::string resource, int amount):
-    Activity("Seize", resource), amount(amount) {
+  Seize(std::string resource, Rcpp::Function amount, bool provide_attrs):
+    Activity("Seize", resource), amount(amount), provide_attrs(provide_attrs) {
     if (amount < 0)
       Rcpp::stop("not allowed to seize a negative amount");
   }
   
   void show(int indent=0) {
     Activity::show(indent);
-    Rcpp::Rcout << "amount: " << amount << " }" << std::endl;
+    Rcpp::Rcout << "amount: function() }" << std::endl;
   }
   
   double run(Arrival* arrival);
   
 private:
-  int amount;
+  Rcpp::Function amount;
+  bool provide_attrs;
 };
 
 /**
@@ -86,21 +87,22 @@ private:
  */
 class Release: public Activity {
 public:
-  Release(std::string resource, int amount):
-    Activity("Release", resource), amount(amount) {
+  Release(std::string resource, Rcpp::Function amount, bool provide_attrs):
+    Activity("Release", resource), amount(amount), provide_attrs(provide_attrs) {
     if (amount < 0)
       Rcpp::stop("not allowed to release a negative amount");
   }
   
   void show(int indent=0) {
     Activity::show(indent);
-    Rcpp::Rcout << "amount: " << amount << " }" << std::endl;
+    Rcpp::Rcout << "amount: function() }" << std::endl;
   }
   
   double run(Arrival* arrival);
   
 private:
-  int amount;
+  Rcpp::Function amount;
+  bool provide_attrs;
 };
 
 /**
@@ -113,7 +115,7 @@ public:
   
   void show(int indent=0) {
     Activity::show(indent);
-    // Rcpp::Rcout << "attr: function() }" << std::endl;
+    Rcpp::Rcout << ": function() }" << std::endl;
   }
   
   double run(Arrival* arrival);

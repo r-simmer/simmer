@@ -57,12 +57,12 @@ get_queue_count_ <- function(sim_, name_) {
     .Call('simmer_get_queue_count_', PACKAGE = 'simmer', sim_, name_)
 }
 
-Seize__new <- function(resource_, amount_) {
-    .Call('simmer_Seize__new', PACKAGE = 'simmer', resource_, amount_)
+Seize__new <- function(resource_, amount, provide_attrs) {
+    .Call('simmer_Seize__new', PACKAGE = 'simmer', resource_, amount, provide_attrs)
 }
 
-Release__new <- function(resource_, amount_) {
-    .Call('simmer_Release__new', PACKAGE = 'simmer', resource_, amount_)
+Release__new <- function(resource_, amount, provide_attrs) {
+    .Call('simmer_Release__new', PACKAGE = 'simmer', resource_, amount, provide_attrs)
 }
 
 SetAttribute__new <- function(key_, value, provide_attrs) {
