@@ -91,8 +91,11 @@ a %>% show_activity(); a <- a %>% get_next_activity()
 
 t0 <- create_trajectory() %>%
   set_attribute("health", 80) %>%
-  timeout(function(attrs){print(attrs); 2}) %>% # has access to the attributes
-  timeout(function() 2) %>% # but the attrs argument isnt required (but the same overhead is incurred!...)
+  set_attribute("health", function(attrs){
+    attrs[["health"]] + 20}, provide_attrs = T) %>%
+  # set_attribute("health", 10) %>%
+  timeout(function(attrs){print(attrs); 2}, provide_attrs=T) %>% # has access to the attributes if provide_attrs = T
+  timeout(function() 2) %>% # but if provide_attrs=F no overhead is incurred
   timeout(3) # even the function isnt required
 
 ## where I would like to get

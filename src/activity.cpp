@@ -13,11 +13,28 @@ double Release::run(Arrival* arrival) {
 }
 
 double Timeout::run(Arrival* arrival) {
-  return fabs(Rcpp::as<double>(duration(Rcpp::wrap(*arrival->attributes))));
+  
+  if(provide_attrs)
+  {
+    return fabs(Rcpp::as<double>(duration(Rcpp::wrap(*arrival->attributes))));  
+  }
+  else 
+  {
+    return fabs(Rcpp::as<double>(duration()));  
+  }
   
 }
 
 double SetAttribute::run(Arrival* arrival) {
-  arrival->attributes->insert( std::pair<std::string, double>(key, value) );
+  if(provide_attrs)
+  {
+    arrival->attributes->operator[](key) = Rcpp::as<double>(value(Rcpp::wrap(*arrival->attributes)));
+  }
+  else 
+  {
+    arrival->attributes->operator[](key) = Rcpp::as<double>(value());
+  }
+  
+  
   return SUCCESS;
 }

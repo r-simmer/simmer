@@ -39,12 +39,12 @@ Trajectory <- R6Class("Trajectory",
       private$add_activity(Release__new(resource, amount))
     },
     
-    timeout = function(duration) {
-      private$add_activity(Timeout__new(func_wrapper(duration)))
+    timeout = function(duration, provide_attrs=FALSE) {
+      private$add_activity(Timeout__new(func_wrapper(duration), provide_attrs))
     },
     
-    set_attribute = function(key, value) {
-      private$add_activity(SetAttribute__new(key, value))
+    set_attribute = function(key, value, provide_attrs=FALSE) {
+      private$add_activity(SetAttribute__new(as.character(key), func_wrapper(value), provide_attrs))
     },
     
     branch = function(option, merge, ...) {
@@ -215,16 +215,30 @@ release <- function(traj, resource, amount=1) traj$release(resource, amount)
 #' @param traj the trajectory object.
 #' @param duration a callable object (a function) that returns a numeric value 
 #' (negative values are automatically converted to positive ones)
+#' @param provide_attrs should the attributes be provided to the value function (value has to be a function which accept a parameter)
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
 #' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
 #' \link{branch}, \link{rollback}.
 #' @export
-timeout <- function(traj, duration) traj$timeout(duration)
+timeout <- function(traj, duration, provide_attrs=FALSE) traj$timeout(duration, provide_attrs)
 
+#' Add a set attribute activity
+#'
+#' Adds a new key/value attribute. The value should be numeric.
+#' 
+#' @param traj the trajectory object.
+#' @param key the attribute key (is coerced to a string)
+#' @param value the value (should be numeric or a function which returns a numeric)
+#' @param provide_attrs should the attributes be provided to the value function (value has to be a function which accept a parameter)
+#' @return The trajectory object.
+#' @seealso Other methods to deal with trajectories:
+#' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
+#' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
+#' \link{branch}, \link{rollback}.
 #' @export
-set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
+set_attribute <- function(traj, key, value, provide_attrs=FALSE) traj$set_attribute(key, value, provide_attrs)
 
 
 #' Add a branch activity

@@ -194,25 +194,27 @@ BEGIN_RCPP
 END_RCPP
 }
 // SetAttribute__new
-SEXP SetAttribute__new(SEXP key_, SEXP value_);
-RcppExport SEXP simmer_SetAttribute__new(SEXP key_SEXP, SEXP value_SEXP) {
+SEXP SetAttribute__new(SEXP key_, Function value, bool provide_attrs);
+RcppExport SEXP simmer_SetAttribute__new(SEXP key_SEXP, SEXP valueSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type key_(key_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type value_(value_SEXP);
-    __result = Rcpp::wrap(SetAttribute__new(key_, value_));
+    Rcpp::traits::input_parameter< Function >::type value(valueSEXP);
+    Rcpp::traits::input_parameter< bool >::type provide_attrs(provide_attrsSEXP);
+    __result = Rcpp::wrap(SetAttribute__new(key_, value, provide_attrs));
     return __result;
 END_RCPP
 }
 // Timeout__new
-SEXP Timeout__new(Function duration);
-RcppExport SEXP simmer_Timeout__new(SEXP durationSEXP) {
+SEXP Timeout__new(Function duration, bool provide_attrs);
+RcppExport SEXP simmer_Timeout__new(SEXP durationSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< Function >::type duration(durationSEXP);
-    __result = Rcpp::wrap(Timeout__new(duration));
+    Rcpp::traits::input_parameter< bool >::type provide_attrs(provide_attrsSEXP);
+    __result = Rcpp::wrap(Timeout__new(duration, provide_attrs));
     return __result;
 END_RCPP
 }

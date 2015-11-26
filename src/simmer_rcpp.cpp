@@ -149,17 +149,16 @@ SEXP Release__new(SEXP resource_, SEXP amount_) {
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new(SEXP key_, SEXP value_) {
+SEXP SetAttribute__new(SEXP key_, Function value, bool provide_attrs) { // TODO: look into (dis)advantages of using bool provide_attrs directly instead of SEXP provide_attrs
   std::string key = as<std::string>(key_);
-  double value = as<double>(value_);
   
-  XPtr<SetAttribute> ptr(new SetAttribute(key, value), false);
+  XPtr<SetAttribute> ptr(new SetAttribute(key, value, provide_attrs), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Timeout__new(Function duration) {
-  XPtr<Timeout> ptr(new Timeout(duration), false);
+SEXP Timeout__new(Function duration, bool provide_attrs) {
+  XPtr<Timeout> ptr(new Timeout(duration, provide_attrs), false);
   return ptr;
 }
 

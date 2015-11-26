@@ -108,8 +108,8 @@ private:
  */
 class SetAttribute: public Activity {
 public:
-  SetAttribute(std::string key, double value):
-  Activity("SetAttribute", "none"), key(key), value(value) {}
+  SetAttribute(std::string key, Rcpp::Function value, bool provide_attrs):
+  Activity("SetAttribute", "none"), key(key), value(value), provide_attrs(provide_attrs) {}
   
   void show(int indent=0) {
     Activity::show(indent);
@@ -120,7 +120,8 @@ public:
   
 private:
   std::string key;
-  double value;
+  Rcpp::Function value;
+  bool provide_attrs;
 };
 
 /**
@@ -128,8 +129,8 @@ private:
  */
 class Timeout: public Activity {
 public:
-  Timeout(Rcpp::Function duration):
-    Activity("Timeout", "none"), duration(duration) {}
+  Timeout(Rcpp::Function duration, bool provide_attrs):
+    Activity("Timeout", "none"), duration(duration), provide_attrs(provide_attrs) {}
   
   void show(int indent=0) {
     Activity::show(indent);
@@ -140,6 +141,7 @@ public:
   
 private:
   Rcpp::Function duration;
+  bool provide_attrs;
 };
 
 /**

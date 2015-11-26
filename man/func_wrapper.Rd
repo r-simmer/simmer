@@ -10,7 +10,7 @@ func_wrapper(value)
 \item{value}{should be a value or a functuon}
 }
 \value{
-a function whcih allows an attrs parameter
+a function which allows an attrs parameter
 }
 \description{
 Wrap a function / or value to be evaluated by the Rcpp backend

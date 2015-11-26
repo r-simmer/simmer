@@ -65,12 +65,12 @@ Release__new <- function(resource_, amount_) {
     .Call('simmer_Release__new', PACKAGE = 'simmer', resource_, amount_)
 }
 
-SetAttribute__new <- function(key_, value_) {
-    .Call('simmer_SetAttribute__new', PACKAGE = 'simmer', key_, value_)
+SetAttribute__new <- function(key_, value, provide_attrs) {
+    .Call('simmer_SetAttribute__new', PACKAGE = 'simmer', key_, value, provide_attrs)
 }
 
-Timeout__new <- function(duration) {
-    .Call('simmer_Timeout__new', PACKAGE = 'simmer', duration)
+Timeout__new <- function(duration, provide_attrs) {
+    .Call('simmer_Timeout__new', PACKAGE = 'simmer', duration, provide_attrs)
 }
 
 Branch__new <- function(option, merge_, trj_) {
