@@ -7,7 +7,7 @@
 double Seize::run(Arrival* arrival) {
   if(provide_attrs)
   {
-    return arrival->sim->get_resource(resource)->seize(arrival, Rcpp::as<int>(amount(Rcpp::wrap(*arrival->attributes))));  
+    return arrival->sim->get_resource(resource)->seize(arrival, Rcpp::as<int>(amount(Rcpp::wrap(arrival->attributes))));  
   }
   else 
   {
@@ -19,7 +19,7 @@ double Seize::run(Arrival* arrival) {
 double Release::run(Arrival* arrival) {
   if(provide_attrs)
   {
-    return arrival->sim->get_resource(resource)->release(arrival, Rcpp::as<int>(amount(Rcpp::wrap(*arrival->attributes))));  
+    return arrival->sim->get_resource(resource)->release(arrival, Rcpp::as<int>(amount(Rcpp::wrap(arrival->attributes))));  
   }
   else 
   {
@@ -31,7 +31,7 @@ double Timeout::run(Arrival* arrival) {
   
   if(provide_attrs)
   {
-    return fabs(Rcpp::as<double>(task(Rcpp::wrap(*arrival->attributes))));  
+    return fabs(Rcpp::as<double>(task(Rcpp::wrap(arrival->attributes))));  
   }
   else 
   {
@@ -43,11 +43,11 @@ double Timeout::run(Arrival* arrival) {
 double SetAttribute::run(Arrival* arrival) {
   if(provide_attrs)
   {
-    arrival->attributes->operator[](key) = Rcpp::as<double>(value(Rcpp::wrap(*arrival->attributes)));
+    arrival->attributes[key] = Rcpp::as<double>(value(Rcpp::wrap(arrival->attributes)));
   }
   else 
   {
-    arrival->attributes->operator[](key) = Rcpp::as<double>(value());
+    arrival->attributes[key] = Rcpp::as<double>(value());
   }
   
   

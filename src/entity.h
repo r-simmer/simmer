@@ -47,7 +47,7 @@ class Arrival: public Process {
 public:
   double start_time;    /**< generation time */
   double activity_time; /**< time spent doing something in the system (not waiting in a queue) */
-  std::map<std::string, double>* attributes;
+  std::map<std::string, double> attributes;
 
   
   /**
@@ -59,15 +59,10 @@ public:
    */
   Arrival(Simulator* sim, std::string name, bool mon, Activity* first_activity):
     Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity) {
-    attributes = new std::map<std::string, double>();
+    attributes = std::map<std::string, double>();
   }
   
   void activate();
-  ~Arrival(){
-    // not tested
-    attributes->clear();
-    delete attributes;
-  }
   
 private:
   Activity* activity; /**< current activity from an R trajectory */
