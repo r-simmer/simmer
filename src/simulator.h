@@ -49,6 +49,7 @@ public:
   std::vector<double> end_time;
   std::vector<double> activity_time;
   std::vector<bool> finished;
+  std::vector<std::map <std::string, double> > attributes;
 };
 
 /**

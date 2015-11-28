@@ -4,10 +4,12 @@
 \alias{get_mon_arrivals}
 \title{Get arrival statistics}
 \usage{
-get_mon_arrivals(env)
+get_mon_arrivals(env, include_attrs = FALSE)
 }
 \arguments{
 \item{env}{the simulation environment.}
+
+\item{include_attrs}{if FALSE returns a data.frame of the arrival's details, if set to TRUE returns a list of the same data but with the last known status of the attributes included}
 }
 \value{
 Returns a data frame.
