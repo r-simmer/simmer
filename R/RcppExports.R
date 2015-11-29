@@ -26,19 +26,27 @@ run_ <- function(sim_, until_) {
 }
 
 add_generator_ <- function(sim_, name_prefix_, first_activity_, dist_, mon_) {
-    invisible(.Call('simmer_add_generator_', PACKAGE = 'simmer', sim_, name_prefix_, first_activity_, dist_, mon_))
+    .Call('simmer_add_generator_', PACKAGE = 'simmer', sim_, name_prefix_, first_activity_, dist_, mon_)
 }
 
 add_resource_ <- function(sim_, name_, capacity_, queue_size_, mon_) {
-    invisible(.Call('simmer_add_resource_', PACKAGE = 'simmer', sim_, name_, capacity_, queue_size_, mon_))
+    .Call('simmer_add_resource_', PACKAGE = 'simmer', sim_, name_, capacity_, queue_size_, mon_)
 }
 
-get_mon_arrivals_ <- function(sim_) {
-    .Call('simmer_get_mon_arrivals_', PACKAGE = 'simmer', sim_)
+get_mon_arrivals_ <- function(sim_, name_) {
+    .Call('simmer_get_mon_arrivals_', PACKAGE = 'simmer', sim_, name_)
+}
+
+get_mon_attributes_ <- function(sim_, name_) {
+    .Call('simmer_get_mon_attributes_', PACKAGE = 'simmer', sim_, name_)
 }
 
 get_mon_resource_ <- function(sim_, name_) {
     .Call('simmer_get_mon_resource_', PACKAGE = 'simmer', sim_, name_)
+}
+
+get_n_generated_ <- function(sim_, name_) {
+    .Call('simmer_get_n_generated_', PACKAGE = 'simmer', sim_, name_)
 }
 
 get_capacity_ <- function(sim_, name_) {

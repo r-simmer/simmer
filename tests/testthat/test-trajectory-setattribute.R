@@ -22,19 +22,18 @@ test_that("an attribute is correctly set and returned to a function that needs i
   
 })
 
-test_that("attributes can be correctly retrieved using get_mon_arrivals()", {
+test_that("attributes can be correctly retrieved using get_mon_attributes()", {
   t0 <- create_trajectory() %>%
-    set_attribute("test", 123) %>%
-    timeout(function(attrs) print(attrs[["test"]]))
+    set_attribute("test", 123)
   
   env<-
     simmer() %>%
-    add_generator("entity", t0, at(0)) %>%
+    add_generator("entity", t0, at(0), mon=2) %>%
     run()
   
-  expect_equal({
-    get_mon_arrivals(env, include_attrs = TRUE)$attributes[[1]][["test"]]
-  }, 123)
+  attributes <- env %>% get_mon_attributes()
   
-  
+  expect_equal(nrow(attributes), 1)
+  expect_equal(attributes[1,]$key, factor("test"))
+  expect_equal(attributes[1,]$value, 123)
 })

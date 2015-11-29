@@ -107,13 +107,13 @@ t0 <- create_trajectory() %>%
   
   ## some other functionality
   ## simply print the attrs using a 0 timeout
-  timeout(function(attrs){print(attrs); 0}) %>%
-  timeout(function() 0) %>% #  if provide_attrs=F no attrs are passed and minimal overhead is incurred
-  timeout(0) # doesn't have to be a function (will be converted to one)
+  timeout(function(attrs){print(attrs); 0})
 
 env<-simmer() %>%
-  add_generator("test", t0, at(seq(0,1000,200))) %>%
+  add_generator("test", t0, at(seq(0,1000,200)), mon=2) %>%
   add_resource("nurse", 2) %>%
   run()
+
+attributes <- env %>% get_mon_attributes()
 
 plot_resource_usage(env, "nurse", items="server", steps=T)

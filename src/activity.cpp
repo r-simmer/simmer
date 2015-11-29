@@ -7,7 +7,7 @@
 template <class T>
 inline T execute_call(Rcpp::Function call, Arrival* arrival, bool provide_attrs) {
   if (provide_attrs)
-    return Rcpp::as<T>(call(Rcpp::wrap(arrival->attributes)));
+    return Rcpp::as<T>(call(Rcpp::wrap(*arrival->get_attributes())));
   else return Rcpp::as<T>(call());
 }
 
@@ -32,8 +32,7 @@ double Timeout::run(Arrival* arrival) {
 double SetAttribute::run(Arrival* arrival) {
   if (has_func)
     value = execute_call<double>(value_func, arrival, provide_attrs);
-  arrival->attributes[key] = value;
-  return 0;
+  return arrival->set_attribute(key, value);
 }
 
 double Rollback::run(Arrival* arrival) {

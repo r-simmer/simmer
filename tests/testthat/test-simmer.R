@@ -86,7 +86,9 @@ test_that("we can force some errors (just to complete coverage)", {
   expect_error(simmer(0))
   expect_error(simmer() %>% add_resource(0))
   
-  env <- simmer() %>% add_resource("dummy")
+  env <- simmer() %>% 
+    add_resource("dummy") %>% 
+    add_generator("dummy", create_trajectory()%>%timeout(0), function() 1)
   env$.__enclos_env__$private$sim_obj <- NULL
   
   expect_error(env %>% reset())

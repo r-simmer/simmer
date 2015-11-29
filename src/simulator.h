@@ -40,28 +40,6 @@ typedef std::priority_queue<Event*, std::vector<Event*>, EventOrder> PQueue;
 typedef std::map<std::string, Entity*> EntMap;
 
 /**
- * Arrival statistics.
- */
-class ArrStats {
-public:
-  std::vector<std::string> name;
-  std::vector<double> start_time;
-  std::vector<double> end_time;
-  std::vector<double> activity_time;
-  std::vector<bool> finished;
-  std::vector<std::map <std::string, double> > attributes;
-  
-  void clear() {
-    name.clear();
-    start_time.clear();
-    end_time.clear();
-    activity_time.clear();
-    finished.clear();
-    attributes.clear();
-  }
-};
-
-/**
  * The simulator.
  */
 class Simulator {
@@ -85,7 +63,6 @@ public:
     }
     resource_map.clear();
     generator_map.clear();
-    arrival_stats.clear();
   }
   
   /**
@@ -105,7 +82,6 @@ public:
       ((Generator*)itr->second)->reset();
       ((Generator*)itr->second)->activate();
     }
-    arrival_stats.clear();
   }
   
   inline double now() { return now_; }
@@ -149,27 +125,22 @@ public:
   void run(double until) { while ((now_ < until) && step()); }
   
   /**
-   * Entities notify the end of an arrival with this call.
-   * The simulator is in charge of gathering statistics and deleting the arrival.
-   * @param   arrival   a pointer to the ending arrival
-   * @param   finished  bool that indicates whether the arrival has finished its trajectory
-   */
-  void notify_end(Arrival* arrival, bool finished);
-  
-  /**
    * Add a generator of arrivals to the simulator.
    * @param   name_prefix     prefix for the arrival names
    * @param   first_activity  the first activity of a user-defined R trajectory
    * @param   dis             an user-defined R function that provides random numbers
-   * @param   mon             bool that indicates whether this entity must be monitored
+   * @param   mon             int that indicates whether this entity must be monitored
    */
-  void add_generator(std::string name_prefix, 
-                     Activity* first_activity, Rcpp::Function dist, bool mon) {
+  bool add_generator(std::string name_prefix, 
+                     Activity* first_activity, Rcpp::Function dist, int mon) {
     if (generator_map.find(name_prefix) == generator_map.end()) {
       Generator* gen = new Generator(this, name_prefix, mon, first_activity, dist);
       generator_map[name_prefix] = gen;
       gen->activate();
-    } else Rcpp::warning("generator " + name_prefix + " already defined");
+      return TRUE;
+    }
+    Rcpp::warning("generator " + name + " already defined");
+    return FALSE;
   }
   
   /**
@@ -179,11 +150,24 @@ public:
    * @param   queue_size  room in the queue (-1 means infinity)
    * @param   mon         bool that indicates whether this entity must be monitored
    */
-  void add_resource(std::string name, int capacity, int queue_size, bool mon) {
+  bool add_resource(std::string name, int capacity, int queue_size, bool mon) {
     if (resource_map.find(name) == resource_map.end()) {
       Resource* res = new Resource(this, name, mon, capacity, queue_size);
       resource_map[name] = res;
-    } else Rcpp::warning("resource " + name + " already defined");
+      return TRUE;
+    }
+    Rcpp::warning("resource " + name + " already defined");
+    return FALSE;
+  }
+  
+  /**
+   * Get a generator by name.
+   */
+  Generator* get_generator(std::string name) {
+    EntMap::iterator search = generator_map.find(name);
+    if (search == generator_map.end())
+      Rcpp::stop("generator '" + name + "' not found (typo?)");
+    return (Generator*)search->second;
   }
   
   /**
@@ -196,17 +180,11 @@ public:
     return (Resource*)search->second;
   }
   
-  /**
-   * Get the monitoring data from the arrivals.
-   */
-  ArrStats* get_mon_arrivals() { return &arrival_stats; }
-  
 private:
   double now_;              /**< simulation time */
   PQueue event_queue;       /**< the event queue */
   EntMap resource_map;      /**< map of resources */
   EntMap generator_map;     /**< map of generators */
-  ArrStats arrival_stats;   /**< arrival statistics */
   
   inline Event* get_next() {
     if (event_queue.empty()) return NULL;

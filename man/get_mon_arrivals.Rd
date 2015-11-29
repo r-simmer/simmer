@@ -4,12 +4,10 @@
 \alias{get_mon_arrivals}
 \title{Get arrival statistics}
 \usage{
-get_mon_arrivals(env, include_attrs = FALSE)
+get_mon_arrivals(env)
 }
 \arguments{
 \item{env}{the simulation environment.}
-
-\item{include_attrs}{if FALSE returns a data.frame of the arrival's details, if set to TRUE returns a list of the same data but with the last known status of the attributes included}
 }
 \value{
 Returns a data frame.
@@ -19,8 +17,9 @@ Gets the arrivals' monitored data (if any).
 }
 \seealso{
 Other methods to deal with a simulation environment:
-\link{simmer}, \link{now}, \link{peek}, \link{peek}, \link{onestep}, 
-\link{run}, \link{add_resource}, \link{add_generator}, \link{get_mon_resources}, 
-\link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+\link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
+\link{add_resource}, \link{add_generator}, \link{get_mon_attributes},
+\link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
+\link{get_server_count}, \link{get_queue_count}.
 }
 

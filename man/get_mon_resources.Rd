@@ -17,8 +17,9 @@ Gets the resources' monitored data (if any).
 }
 \seealso{
 Other methods to deal with a simulation environment:
-\link{simmer}, \link{now}, \link{peek}, \link{peek}, \link{onestep}, 
-\link{run}, \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, 
-\link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+\link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
+\link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
+\link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
+\link{get_server_count}, \link{get_queue_count}.
 }
 

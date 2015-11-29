@@ -122,6 +122,7 @@ envs <- mclapply(1:100, function(i) {
 This helper function brings the simulation data back to R and makes it accessible through the same methods that a ```simmer``` environment.
 
 ```{r, message=FALSE}
+envs[[1]] %>% get_n_generated("patient")
 envs[[1]] %>% get_capacity("doctor")
 envs[[1]] %>% get_queue_size("doctor")
 head(
