@@ -60,8 +60,12 @@ Simmer <- R6Class("Simmer",
       invisible(self)
     },
     
-    get_mon_arrivals = function() { 
-      as.data.frame(get_mon_arrivals_(private$sim_obj))
+    get_mon_arrivals = function(include_attrs=FALSE) {
+      if(include_attrs){
+        return(get_mon_arrivals_(private$sim_obj))
+      } else {
+        return(as.data.frame(get_mon_arrivals_(private$sim_obj)[-6]))
+      }
     },
     
     get_mon_resources = function() {
@@ -261,13 +265,14 @@ add_generator <- function(env, name_prefix, trajectory, dist, mon=TRUE)
 #' Gets the arrivals' monitored data (if any).
 #' 
 #' @param env the simulation environment.
+#' @param include_attrs if FALSE returns a data.frame of the arrival's details, if set to TRUE returns a list of the same data but with the last known status of the attributes included
 #' @return Returns a data frame.
 #' @seealso Other methods to deal with a simulation environment:
 #' \link{simmer}, \link{now}, \link{peek}, \link{peek}, \link{onestep}, 
 #' \link{run}, \link{add_resource}, \link{add_generator}, \link{get_mon_resources}, 
 #' \link{get_capacity}, \link{get_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
-get_mon_arrivals <- function(env) env$get_mon_arrivals()
+get_mon_arrivals <- function(env, include_attrs=FALSE) env$get_mon_arrivals(include_attrs)
 
 #' Get resource statistics
 #'

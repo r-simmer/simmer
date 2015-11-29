@@ -83,7 +83,8 @@ SEXP get_mon_arrivals_(SEXP sim_) {
                             Rcpp::Named("start_time") = stats->start_time,
                             Rcpp::Named("end_time") = stats->end_time,
                             Rcpp::Named("activity_time") = stats->activity_time,
-                            Rcpp::Named("finished") = stats->finished);
+                            Rcpp::Named("finished") = stats->finished,
+                            Rcpp::Named("attributes") = stats->attributes);
 }
 
 //[[Rcpp::export]]

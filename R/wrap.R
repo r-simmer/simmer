@@ -13,7 +13,7 @@ Simmer.wrap <- R6Class("Simmer.wrap",
       invisible(self)
     },
     
-    get_mon_arrivals = function() { private$arrivals },
+    get_mon_arrivals = function(include_attrs=FALSE) { private$arrivals },
     get_mon_resources = function() { private$resources },
     get_capacity = function(name) {
       if (!(name %in% names(private$capacity)))
