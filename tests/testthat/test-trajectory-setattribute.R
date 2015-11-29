@@ -37,3 +37,33 @@ test_that("attributes can be correctly retrieved using get_mon_attributes()", {
   expect_equal(attributes[1,]$key, factor("test"))
   expect_equal(attributes[1,]$value, 123)
 })
+
+test_that("the attribute dataframe is returned with the expected columns", {
+  t0 <- create_trajectory() %>%
+    set_attribute("test", 123)
+  
+  env<-
+    simmer() %>%
+    add_generator("entity", t0, at(0), mon=1) %>%
+    run()
+  
+  attributes <- env %>% get_mon_attributes()
+  
+  expect_true(all(sapply(colnames(attributes), function(x) x %in% colnames(attributes))))
+  
+})
+
+
+test_that("attributes are returned empty when mon level is <2", {
+  t0 <- create_trajectory() %>%
+    set_attribute("test", 123)
+  
+  env<-
+    simmer() %>%
+    add_generator("entity", t0, at(0), mon=1) %>%
+    run()
+
+  attributes <- env %>% get_mon_attributes()
+
+  expect_true(NROW(attributes) == 0)
+})
