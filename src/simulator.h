@@ -49,6 +49,14 @@ public:
   std::vector<double> end_time;
   std::vector<double> activity_time;
   std::vector<bool> finished;
+  
+  void clear() {
+    name.clear();
+    start_time.clear();
+    end_time.clear();
+    activity_time.clear();
+    finished.clear();
+  }
 };
 
 /**
@@ -64,10 +72,7 @@ public:
    * @param name    simulator name
    * @param verbose verbose flag
    */
-  Simulator(std::string name, bool verbose): 
-    name(name), verbose(verbose), now_(0) {
-    arrival_stats = new ArrStats();
-  }
+  Simulator(std::string name, bool verbose): name(name), verbose(verbose), now_(0) {}
   
   ~Simulator() {
     while (!event_queue.empty()) {
@@ -78,7 +83,7 @@ public:
     }
     resource_map.clear();
     generator_map.clear();
-    delete arrival_stats;
+    arrival_stats.clear();
   }
   
   /**
@@ -98,8 +103,7 @@ public:
       ((Generator*)itr->second)->reset();
       ((Generator*)itr->second)->activate();
     }
-    delete arrival_stats;
-    arrival_stats = new ArrStats();
+    arrival_stats.clear();
   }
   
   inline double now() { return now_; }
@@ -193,14 +197,14 @@ public:
   /**
    * Get the monitoring data from the arrivals.
    */
-  ArrStats* get_mon_arrivals() { return arrival_stats; }
+  ArrStats* get_mon_arrivals() { return &arrival_stats; }
   
 private:
   double now_;              /**< simulation time */
   PQueue event_queue;       /**< the event queue */
   EntMap resource_map;      /**< map of resources */
   EntMap generator_map;     /**< map of generators */
-  ArrStats* arrival_stats;  /**< arrival statistics */
+  ArrStats arrival_stats;   /**< arrival statistics */
   
   inline Event* get_next() {
     if (event_queue.empty()) return NULL;

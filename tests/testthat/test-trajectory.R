@@ -5,13 +5,14 @@ test_that("the activity chain grows as expected", {
     seize("nurse", 1) %>%
     timeout(function() rnorm(1, 15)) %>%
     branch(function() 1, T, create_trajectory()%>%timeout(function() 1)) %>%
+    set_attribute("dummy", 1) %>%
     rollback(1) %>%
     release("nurse", 1)
   
   head <- t0%>%get_head()
-  for (i in 1:4) head <- get_next_activity(head)
+  for (i in 1:5) head <- get_next_activity(head)
   tail <- t0%>%get_tail()
-  for (i in 1:4) tail <- get_prev_activity(tail)
+  for (i in 1:5) tail <- get_prev_activity(tail)
   
   expect_output(show_activity(head), "Release")
   expect_output(show_activity(t0%>%get_tail()), "Release")
@@ -42,26 +43,30 @@ test_that("the trajectory stores the right number of activities", {
             timeout(function() rnorm(1, 5)) %>%
             release("administration", 1)
         )
-    )
+    ) %>%
+    rollback(1) %>%
+    set_attribute("dummy", 1)
   
   expect_is(t0, "Trajectory")
-  expect_equal(t0%>%get_n_activities(), 9)
+  expect_equal(t0%>%get_n_activities(), 11)
   
   expect_output(t0%>%show_trajectory(), 
-"Trajectory: my trajectory, 9 activities
-{ Activity: Seize(nurse) | amount: function() }
+"Trajectory: my trajectory, 11 activities
+{ Activity: Seize(nurse) | amount: 1 }
 { Activity: Timeout(none) | task: function() }
-{ Activity: Release(nurse) | amount: function() }
+{ Activity: Release(nurse) | amount: 1 }
 { Activity: Branch(none) | merge: 1 }
   Trajectory: anonymous, 6 activities
-  { Activity: Seize(doctor) | amount: function() }
+  { Activity: Seize(doctor) | amount: 1 }
   { Activity: Timeout(none) | task: function() }
-  { Activity: Release(doctor) | amount: function() }
+  { Activity: Release(doctor) | amount: 1 }
   { Activity: Branch(none) | merge: 1 }
     Trajectory: anonymous, 3 activities
-    { Activity: Seize(administration) | amount: function() }
+    { Activity: Seize(administration) | amount: 1 }
     { Activity: Timeout(none) | task: function() }
-    { Activity: Release(administration) | amount: function() }", fixed = TRUE)
+    { Activity: Release(administration) | amount: 1 }
+{ Activity: Rollback(none) | amount: 1 (Branch), times: 1 }
+{ Activity: SetAttribute(none) | key: dummy, value: 1 }", fixed = TRUE)
 })
 
 test_that("the head/tail pointers are correctly placed", {

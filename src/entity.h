@@ -20,10 +20,10 @@ public:
   Simulator* sim;
   std::string name;
   
-	Entity(Simulator* sim, std::string name, bool mon): 
-	  sim(sim), name(name), mon(mon) {}
-	virtual ~Entity(){}
-	inline bool is_monitored() { return mon; }
+  Entity(Simulator* sim, std::string name, bool mon): 
+    sim(sim), name(name), mon(mon) {}
+  virtual ~Entity(){}
+  inline bool is_monitored() { return mon; }
 	
 private:
   bool mon;
@@ -40,6 +40,8 @@ public:
   inline virtual bool is_generator() { return 0; }
 };
 
+typedef std::map<std::string, double> Attr;
+
 /** 
  *  Arrival process.
  */
@@ -47,8 +49,7 @@ class Arrival: public Process {
 public:
   double start_time;    /**< generation time */
   double activity_time; /**< time spent doing something in the system (not waiting in a queue) */
-  std::map<std::string, double> attributes;
-
+  Attr attributes;      /**< user-defined (key, value) pairs */
   
   /**
    * Constructor.
@@ -60,11 +61,9 @@ public:
   Arrival(Simulator* sim, std::string name, bool mon, Activity* first_activity):
     Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity) {}
   
-  void activate();
+  ~Arrival() { attributes.clear(); }
   
-  ~Arrival(){
-    attributes.clear();
-  }
+  void activate();
   
 private:
   Activity* activity; /**< current activity from an R trajectory */
@@ -113,6 +112,12 @@ public:
   std::vector<double> time;
   std::vector<double> server;
   std::vector<double> queue;
+  
+  void clear() {
+    time.clear();
+    server.clear();
+    queue.clear();
+  }
 };
 
 /** 
@@ -131,17 +136,9 @@ public:
    */
   Resource(Simulator* sim, std::string name, bool mon, int capacity, int queue_size): 
     Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), server_count(0), 
-    queue_count(0) {
-    res_stats = new ResStats();
-  }
+    queue_count(0) {}
   
-  ~Resource() {
-    while (!queue.empty()) {
-      delete queue.front().first;
-      queue.pop();
-    }
-    delete res_stats;
-  }
+  ~Resource() { reset(); }
   
   /**
    * Reset the resource: server, queue and statistics.
@@ -153,8 +150,7 @@ public:
       delete queue.front().first;
       queue.pop();
     }
-    delete res_stats;
-    res_stats = new ResStats();
+    res_stats.clear();
   }
   
   /**
@@ -179,12 +175,12 @@ public:
    * Gather resource statistics.
    */
   void observe(double time) {
-    res_stats->time.push_back(time);
-    res_stats->server.push_back(server_count);
-    res_stats->queue.push_back(queue_count);
+    res_stats.time.push_back(time);
+    res_stats.server.push_back(server_count);
+    res_stats.queue.push_back(queue_count);
   }
   
-  ResStats* get_observations() { return res_stats; }
+  ResStats* get_observations() { return &res_stats; }
   int get_capacity() { return capacity; }
   int get_queue_size() { return queue_size; }
   int get_server_count() { return server_count; }
@@ -196,7 +192,7 @@ private:
   int server_count;     /**< number of arrivals being served */
   int queue_count;      /**< number of arrivals waiting */
   Queue queue;          /**< queue container */
-  ResStats* res_stats;  /**< resource statistics */
+  ResStats res_stats;   /**< resource statistics */
   
   inline bool room_in_server(int amount) { 
     if (capacity < 0) return 1;

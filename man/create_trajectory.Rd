@@ -53,6 +53,6 @@ t1 \%>\% show_trajectory()
 Other methods to deal with trajectories:
 \link{show_trajectory}, \link{get_head}, \link{get_tail},
 \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
-\link{branch}, \link{rollback}.
+\link{set_attribute}, \link{branch}, \link{rollback}.
 }
 

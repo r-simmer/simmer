@@ -9,9 +9,9 @@ set_attribute(traj, key, value)
 \arguments{
 \item{traj}{the trajectory object.}
 
-\item{key}{the attribute key (is coerced to a string)}
+\item{key}{the attribute key (is coerced to a string).}
 
-\item{value}{the value (should be numeric or a function which returns a numeric)}
+\item{value}{the value (should be numeric or a function which returns a numeric).}
 }
 \value{
 The trajectory object.
@@ -23,6 +23,6 @@ Adds a new key/value attribute. The value should be numeric.
 Other methods to deal with trajectories:
 \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
 \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
-\link{branch}, \link{rollback}.
+\link{timeout}, \link{branch}, \link{rollback}.
 }
 

@@ -10,7 +10,6 @@ evaluate_value<-function(value){
     error = function(err) value)
 }
 
-
 #' Wrap a function / or value to be evaluated by the Rcpp backend
 #'
 #' @param value should be a value or a functuon
@@ -24,7 +23,6 @@ func_wrapper<-function(value){
     primary_func <- function() value
   }
 }
-  
 
 #' Checks if attributes should be supplied
 #'
