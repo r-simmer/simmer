@@ -4,6 +4,8 @@
 #include <Rcpp.h>
 #include <queue>
 
+#include "stats.h"
+
 #define SUCCESS 0
 #define ENQUEUED -1
 #define REJECTED -2
@@ -72,44 +74,6 @@ private:
   Activity* activity; /**< current activity from an R trajectory */
   Generator* gen;     /**< parent generator */
   Attr attributes;    /**< user-defined (key, value) pairs */
-};
-
-/**
- * Attribute statistics.
- */
-class AttrStats {
-public:
-  std::vector<double> time;
-  std::vector<std::string> name;
-  std::vector<std::string> key;
-  std::vector<double> value;
-  
-  void clear() {
-    time.clear();
-    name.clear();
-    key.clear();
-    value.clear();
-  }
-};
-
-/**
- * Arrival statistics.
- */
-class ArrStats {
-public:
-  std::vector<std::string> name;
-  std::vector<double> start_time;
-  std::vector<double> end_time;
-  std::vector<double> activity_time;
-  std::vector<bool> finished;
-  
-  void clear() {
-    name.clear();
-    start_time.clear();
-    end_time.clear();
-    activity_time.clear();
-    finished.clear();
-  }
 };
 
 /**
@@ -188,22 +152,6 @@ private:
 };
 
 typedef std::queue<std::pair<Arrival*, int> > Queue;
-
-/**
- * Resource statistics.
- */
-class ResStats {
-public:
-  std::vector<double> time;
-  std::vector<double> server;
-  std::vector<double> queue;
-  
-  void clear() {
-    time.clear();
-    server.clear();
-    queue.clear();
-  }
-};
 
 /** 
  *  Generic resource, a passive entity that comprises server + FIFO queue.

@@ -2,6 +2,7 @@
 
 #include "activity.h"
 #include "entity.h"
+#include "stats.h"
 #include "simulator.h"
 
 using namespace Rcpp;
