@@ -60,7 +60,7 @@ env <- simmer(verbose=F) %>%
 })
 # 24 seconds! (Simpy: 30 seconds)
 
-plot_resource_usage(simmer, "server")
+plot_resource_usage(env, "server")
 
 #################################################################
 

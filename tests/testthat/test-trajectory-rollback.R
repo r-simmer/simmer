@@ -26,8 +26,7 @@ test_that("a rollback loops the correct number of times", {
 "sim: anonymous | time: 1 | arrival: dummy0 | activity: Rollback(none)
 sim: anonymous | time: 1 | arrival: dummy0 | activity: Rollback(none)
 sim: anonymous | time: 1 | arrival: dummy0 | activity: Rollback(none)
-sim: anonymous | time: 1 | arrival: dummy0 | activity: Rollback(none)
-sim: anonymous | time: 2 | arrival: dummy1 | activity: Rollback(none)", fixed=T)
+sim: anonymous | time: 1 | arrival: dummy0 | activity: Rollback(none)", fixed=T)
   
   t0 <- create_trajectory() %>% rollback(0, Inf)
   expect_output(t0%>%get_tail()%>%show_activity(), "Inf")

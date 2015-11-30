@@ -2,9 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot_attributes}
 \alias{plot_attributes}
-\title{Plot evolution of attribute data
- 
-Plot the evolution of user-supplied attribute data.}
+\title{Plot evolution of attribute data}
 \usage{
 plot_attributes(envs, keys = c())
 }
@@ -14,8 +12,6 @@ plot_attributes(envs, keys = c())
 \item{keys}{the keys of attributes you want to plot (if left empty, all attributes are shown)}
 }
 \description{
-Plot evolution of attribute data
- 
 Plot the evolution of user-supplied attribute data.
 }
 

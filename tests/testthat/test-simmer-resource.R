@@ -46,7 +46,7 @@ test_that("resource slots are correctly filled", {
   arrivals <- env%>%get_mon_arrivals()
   resources <- env%>%get_mon_resources()
   
-  expect_equal(arrivals[5,]$finished, FALSE)
+  expect_equal(arrivals[3,]$finished, FALSE)
   expect_equal(resources[5,]$server, 2)
   expect_equal(resources[5,]$queue, 2)
 })

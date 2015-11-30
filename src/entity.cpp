@@ -3,6 +3,10 @@
 #include "activity.h"
 
 inline void Arrival::activate() {
+  double delay;
+  bool flag = TRUE;
+  if (!activity) goto finish;
+  
   if (start_time < 0) start_time = sim->now();
   
   if (sim->verbose)
@@ -11,12 +15,9 @@ inline void Arrival::activate() {
       "arrival: " << name << " | " << "activity: " << 
       activity->name << "(" << activity->resource << ")" << std::endl;
   
-  bool flag = TRUE;
-  double delay = activity->run(this);
+  delay = activity->run(this);
   if (delay == REJECTED) goto reject;
-  
   activity = activity->get_next();
-  if (!activity) goto finish;
   if (delay == ENQUEUED) goto end;
   
   activity_time += delay;

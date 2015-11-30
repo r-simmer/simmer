@@ -30,8 +30,6 @@ test_that("a timeout is correctly monitored", {
     add_generator("entity", t1, at(0)) %>%
     run()
   
-  # skipping for now in order to merge new functionality to master, to be looked into further
-  #expect_equal(get_mon_arrivals(env0)[1,]$end_time, 3)
-  #expect_equal(get_mon_arrivals(env1)[1,]$end_time, 7)
-  
+  expect_equal(get_mon_arrivals(env0)[1,]$end_time, 3)
+  expect_equal(get_mon_arrivals(env1)[1,]$end_time, 7)
 })

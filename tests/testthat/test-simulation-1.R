@@ -3,7 +3,7 @@ context("simulation 1")
 test_that("a simple deterministic simulation with rejections behaves as expected", {
   t0 <- create_trajectory("") %>%
     seize("server", 1) %>%
-    timeout(function() 2) %>%
+    timeout(function() 1.5) %>%
     release("server", 1)
   
   env <- simmer() %>%
@@ -20,7 +20,7 @@ test_that("a simple deterministic simulation with rejections behaves as expected
   expect_equal(env%>%peek(), 2)
   
   n <- 1000
-  env%>%run(n)%>%onestep()%>%onestep()
+  env%>%run(n+1)
   arrivals <- env%>%get_mon_arrivals()
   resources <- env%>%get_mon_resources()
   
@@ -29,7 +29,7 @@ test_that("a simple deterministic simulation with rejections behaves as expected
   expect_equal(nrow(arrivals), n)
   expect_equal(nrow(subset(arrivals, finished)), n/2)
   expect_equal(nrow(subset(arrivals, !finished)), n/2)
-  expect_equal(sum(subset(arrivals, finished)$activity_time), n)
+  expect_equal(sum(subset(arrivals, finished)$activity_time), 1.5*n/2)
   expect_equal(sum(subset(arrivals, !finished)$activity_time), 0)
   
   expect_equal(nrow(resources), n*1.5)

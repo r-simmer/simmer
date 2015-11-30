@@ -168,7 +168,7 @@ plot_evolution_arrival_times <- function(envs, type=c("flow_time","activity_time
 }
 
 #' Plot evolution of attribute data
-#'  
+#' 
 #' Plot the evolution of user-supplied attribute data.
 #' 
 #' @param envs a single simmer environment or a list of environments representing several replications
@@ -176,6 +176,9 @@ plot_evolution_arrival_times <- function(envs, type=c("flow_time","activity_time
 #'
 #' @export
 plot_attributes<-function(envs, keys=c()){
+  # Hack to avoid spurious notes
+  key <- value <- replication <- NULL
+  
   if (!is.list(envs)) envs <- list(envs)
   
   monitor_data <- do.call(rbind, lapply(1:length(envs), function(i) {
