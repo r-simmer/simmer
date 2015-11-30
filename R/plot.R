@@ -187,7 +187,7 @@ plot_attributes<-function(envs, keys=c()){
   if(length(keys)>0) monitor_data <- monitor_data %>%  dplyr::filter(key %in% keys)
   
   ggplot2::ggplot(monitor_data) +
-    ggplot2::aes(x=time, y=value, group=replication) +
+    ggplot2::aes(x=time, y=value) +
     ggplot2::geom_line(alpha=.4, ggplot2::aes(group=replication)) + 
     ggplot2::stat_smooth() +
     ggplot2::facet_wrap(~key, scales="free_y") + ## probably better to use a facet_wrap as the y scales can differ significantly between attributes
