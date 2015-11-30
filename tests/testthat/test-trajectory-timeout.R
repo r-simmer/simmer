@@ -13,3 +13,24 @@ test_that("a task function that returns a non-numeric value fails", {
   
   expect_error(env%>%run(100))
 })
+
+test_that("a static timeout is correctly executed", {
+  t0 <- create_trajectory() %>%
+    timeout(3)
+  
+  t1 <- create_trajectory() %>%
+    timeout(3) %>%
+    timeout(4)
+  
+  env0 <- simmer() %>%
+    add_generator("entity", t0, at(0)) %>%
+    run()
+  
+  env1 <- simmer() %>%
+    add_generator("entity", t1, at(0)) %>%
+    run()
+  
+  expect_equal(get_mon_arrivals(env0)[1,]$end_time, 3)
+  expect_equal(get_mon_arrivals(env1)[1,]$end_time, 7)
+  
+})
