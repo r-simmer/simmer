@@ -15,7 +15,7 @@ add_generator(env, name_prefix, trajectory, dist, mon = 1)
 
 \item{dist}{a function modelling the interarrival times (returning a negative value stops the generator).}
 
-\item{mon}{whether the simulator must monitor the generated arrivals or not.}
+\item{mon}{whether the simulator must monitor the generated arrivals or not (0=no monitoring, 1=simple arrival monitoring, 2=level 1 + arrival attribute montoring)}
 }
 \value{
 Returns the simulation environment.

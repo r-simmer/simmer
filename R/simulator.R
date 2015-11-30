@@ -286,7 +286,7 @@ add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE)
 #' @param name_prefix the name prefix of the generated arrivals.
 #' @param trajectory the trajectory that the generated arrivals will follow (see \link{create_trajectory}).
 #' @param dist a function modelling the interarrival times (returning a negative value stops the generator).
-#' @param mon whether the simulator must monitor the generated arrivals or not.
+#' @param mon whether the simulator must monitor the generated arrivals or not (0=no monitoring, 1=simple arrival monitoring, 2=level 1 + arrival attribute montoring)
 #' @return Returns the simulation environment.
 #' @seealso Other methods to deal with a simulation environment:
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
