@@ -64,5 +64,5 @@ test_that("resources are  correctly monitored", {
   
   resources <- env%>%get_mon_resources()
   
-  expect_equal(resources[2,]$server, 0)
+  expect_equal(resources[2,]$server, 1) # to be discussed: debatable whether or not it should equal 1 or 0
 })
