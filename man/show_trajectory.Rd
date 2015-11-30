@@ -16,6 +16,6 @@ It can be used to visualise a trajectory's internal structure.
 Other methods to deal with trajectories:
 \link{create_trajectory}, \link{get_head}, \link{get_tail},
 \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
-\link{branch}, \link{rollback}.
+\link{set_attribute}, \link{branch}, \link{rollback}.
 }
 

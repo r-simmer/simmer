@@ -2,6 +2,7 @@
 
 #include "activity.h"
 #include "entity.h"
+#include "stats.h"
 #include "simulator.h"
 
 using namespace Rcpp;
@@ -52,38 +53,52 @@ void run_(SEXP sim_, SEXP until_) {
 }
 
 //[[Rcpp::export]]
-void add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_activity_, SEXP dist_, SEXP mon_) {
+bool add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_activity_, SEXP dist_, SEXP mon_) {
   XPtr<Simulator> sim(sim_);
   std::string name_prefix = as<std::string>(name_prefix_);
   XPtr<Activity> first_activity(first_activity_);
   Function dist(dist_);
-  bool mon = as<bool>(mon_);
+  int mon = as<int>(mon_);
   
-  sim->add_generator(name_prefix, first_activity, dist, mon);
+  return sim->add_generator(name_prefix, first_activity, dist, mon);
 }
 
 //[[Rcpp::export]]
-void add_resource_(SEXP sim_, SEXP name_, SEXP capacity_, SEXP queue_size_, SEXP mon_) {
+bool add_resource_(SEXP sim_, SEXP name_, SEXP capacity_, SEXP queue_size_, SEXP mon_) {
   XPtr<Simulator> sim(sim_);
   std::string name = as<std::string>(name_);
   int capacity = as<int>(capacity_);
   int queue_size = as<int>(queue_size_);
   bool mon = as<bool>(mon_);
   
-  sim->add_resource(name, capacity, queue_size, mon);
+  return sim->add_resource(name, capacity, queue_size, mon);
 }
 
 //[[Rcpp::export]]
-SEXP get_mon_arrivals_(SEXP sim_) {
+SEXP get_mon_arrivals_(SEXP sim_, SEXP name_) {
   XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
   
-  ArrStats* stats = sim->get_mon_arrivals();
+  ArrStats* stats = sim->get_generator(name)->get_arr_observations();
   
   return Rcpp::List::create(Rcpp::Named("name") = stats->name,
                             Rcpp::Named("start_time") = stats->start_time,
                             Rcpp::Named("end_time") = stats->end_time,
                             Rcpp::Named("activity_time") = stats->activity_time,
                             Rcpp::Named("finished") = stats->finished);
+}
+
+//[[Rcpp::export]]
+SEXP get_mon_attributes_(SEXP sim_, SEXP name_) {
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  
+  AttrStats* stats = sim->get_generator(name)->get_attr_observations();
+  
+  return Rcpp::List::create(Rcpp::Named("time") = stats->time,
+                            Rcpp::Named("name") = stats->name,
+                            Rcpp::Named("key") = stats->key,
+                            Rcpp::Named("value") = stats->value);
 }
 
 //[[Rcpp::export]]
@@ -96,6 +111,14 @@ SEXP get_mon_resource_(SEXP sim_, SEXP name_) {
   return Rcpp::List::create(Rcpp::Named("time") = stats->time,
                             Rcpp::Named("server") = stats->server,
                             Rcpp::Named("queue") = stats->queue);
+}
+
+//[[Rcpp::export]]
+int get_n_generated_(SEXP sim_, SEXP name_){
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  
+  return sim->get_generator(name)->get_n_generated();
 }
 
 //[[Rcpp::export]]
@@ -134,8 +157,17 @@ int get_queue_count_(SEXP sim_, SEXP name_){
 SEXP Seize__new(SEXP resource_, SEXP amount_) {
   std::string resource = as<std::string>(resource_);
   int amount = as<int>(amount_);
-  
+
   XPtr<Seize> ptr(new Seize(resource, amount), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP Seize__new_func(SEXP resource_, Function amount, SEXP provide_attrs_) {
+  std::string resource = as<std::string>(resource_);
+  bool provide_attrs = as<bool>(provide_attrs_);
+  
+  XPtr<Seize> ptr(new Seize(resource, amount, provide_attrs), false);
   return ptr;
 }
 
@@ -149,8 +181,46 @@ SEXP Release__new(SEXP resource_, SEXP amount_) {
 }
 
 //[[Rcpp::export]]
-SEXP Timeout__new(Function task) {
-  XPtr<Timeout> ptr(new Timeout(task), false);
+SEXP Release__new_func(SEXP resource_, Function amount, SEXP provide_attrs_) {
+  std::string resource = as<std::string>(resource_);
+  bool provide_attrs = as<bool>(provide_attrs_);
+  
+  XPtr<Release> ptr(new Release(resource, amount, provide_attrs), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP SetAttribute__new(SEXP key_, SEXP value_) {
+  std::string key = as<std::string>(key_);
+  double value = as<double>(value_);
+  
+  XPtr<SetAttribute> ptr(new SetAttribute(key, value), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP SetAttribute__new_func(SEXP key_, Function value, SEXP provide_attrs_) {
+  // TODO: look into (dis)advantages of using bool provide_attrs directly instead of SEXP provide_attrs
+  std::string key = as<std::string>(key_);
+  bool provide_attrs = as<bool>(provide_attrs_);
+  
+  XPtr<SetAttribute> ptr(new SetAttribute(key, value, provide_attrs), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP Timeout__new(SEXP delay_) {
+  double delay = as<double>(delay_);
+  
+  XPtr<Timeout> ptr(new Timeout(delay), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP Timeout__new_func(Function task, SEXP provide_attrs_) {
+  bool provide_attrs = as<bool>(provide_attrs_);
+  
+  XPtr<Timeout> ptr(new Timeout(task, provide_attrs), false);
   return ptr;
 }
 
@@ -164,7 +234,7 @@ SEXP Branch__new(Function option, SEXP merge_, SEXP trj_) {
 }
 
 //[[Rcpp::export]]
-SEXP Rollback__new_times(SEXP amount_, SEXP times_) {
+SEXP Rollback__new(SEXP amount_, SEXP times_) {
   int amount = as<int>(amount_);
   int times = as<int>(times_);
   
@@ -173,10 +243,11 @@ SEXP Rollback__new_times(SEXP amount_, SEXP times_) {
 }
 
 //[[Rcpp::export]]
-SEXP Rollback__new_check(SEXP amount_, Function check) {
+SEXP Rollback__new_func(SEXP amount_, Function check, SEXP provide_attrs_) {
   int amount = as<int>(amount_);
+  bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Rollback> ptr(new Rollback(amount, check), false);
+  XPtr<Rollback> ptr(new Rollback(amount, check, provide_attrs), false);
   return ptr;
 }
 

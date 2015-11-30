@@ -1,0 +1,164 @@
+---
+title: "Advanced trajectory usage"
+author: "Bart Smeets, Iñaki Ucar"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Trajectories define a order of events. Once an entity is generated it will start to follow the logic in the specified trajectory. Consider the following.
+
+```{r}
+library(simmer)
+
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  seize(resource = "doctor", amount = 1) %>%
+  timeout(3) %>%
+  release(resource = "doctor", amount = 1)
+  
+```
+
+Here we create a trajectory where a patient _seizes_ a doctor for 3 minutes and then _releases_ him again.
+
+This is a very straightforward example, however, most of the trajectory related function allow for more advanced usage. The different functions are introduced below.
+
+## set_attribute
+
+The ```set_attribute(trajectory, key, value)``` function set the ```value``` of attribute ```key```. Be aware that ```value``` can only be numeric.
+
+```{r}
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  set_attribute("my_key", 123) %>%
+  timeout(5) %>%
+  set_attribute("my_key", 456)
+
+env<-
+  simmer() %>%
+  add_generator("patient", patient_traj, at(0), mon = 2) %>%
+  run()
+
+get_mon_attributes(env)
+  
+```
+
+Above, a trajectory which _only_ sets attribute ```my_key``` to value ```123``` is launched by the generator once at time 0 (check ```?at```). Using ```get_mon_attribute``` we can look a the evolution of the value of ```my_key```.
+
+If you want to set an attribute that depends on another attribute, or on the current value of the attribute to be set, this is also possible. If, insted of a numeric value, you supply a function with 1 parameter, the current set of attributes is passed as a list to the function. Whatever your function supplies is set as the value of the specified attribute key. If supply a function without a parameter the function is simply evaluated (for each entity) and the returned value used. This means, that if you supply a function to the ```value``` parameter it has to be in the form of either ```function(){}``` or ```function(attrs){}```. Below you can see an example of this in practice.
+
+```{r}
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  set_attribute("my_key", 123) %>%
+  timeout(5) %>%
+  set_attribute("my_key", function(attrs) attrs[["my_key"]] + 1) %>%
+  timeout(5) %>%
+  set_attribute("dependent_key", function(attrs) ifelse(attrs[["my_key"]]<=123, 1, 0)) %>%
+  timeout(5) %>%
+  set_attribute("independent_key", function() runif(1))
+
+env<-
+  simmer() %>%
+  add_generator("patient", patient_traj, at(0), mon = 2) %>%
+  run()
+
+get_mon_attributes(env)
+  
+```
+
+## seize & release
+
+The ```seize(trajectory, resource, amount)``` function seizes a specified ```amount``` of resources of type ```resource```. Conversely, the ```release(trajectory, resource, amount)``` function releases a specified ```amount``` of resource of type ```resource```.  Be aware that in order to use these function in relation to a specific resource type you first have to create the resource type in your definition of the simulation environment (check ```?add_resource```). 
+
+Consider the following example:
+
+
+```{r}
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  seize(resource = "doctor", amount = 1) %>%
+  timeout(3) %>%
+  release(resource = "doctor", amount = 1)
+
+env<-
+  simmer() %>%
+  add_resource("doctor", capacity=1, mon = 1) %>%
+  add_generator("patient", patient_traj, at(0)) %>%
+  run()
+
+get_mon_resources(env)
+```
+
+Hence the ```mon=1``` argument (=default) to the ```add_resource``` which makes the simulation environment monitor resource usage. Using the ```get_mon_resources(env)``` function you can get access to the log of resource usage evolution.
+
+There are situations where you want to let the amount of resources seized/released be dependent on a specific function or on a previously set attribute. To achieve this you, instead of a numeric value, pass a funciton in the form of either ```function(){}``` or ```function(attrs){}``` to the ```amount``` parameter. If going for the latter, the current state of the entity's attributes will be passed to ```attrs``` as a list which you can inspect. This allows for the following:
+
+```{r}
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  set_attribute("health", function() sample(20:80, 1)) %>%
+  set_attribute("docs_to_seize", function(attrs) ifelse(attrs[["health"]]<50, 1, 2)) %>%
+  seize("doctor", function(attrs) attrs[["docs_to_seize"]]) %>%
+  timeout(3) %>%
+  release("doctor", function(attrs) attrs[["docs_to_seize"]])
+
+env<-
+  simmer() %>%
+  add_resource("doctor", capacity=2, mon = 1) %>%
+  add_generator("patient", patient_traj, at(0), mon=2) %>%
+  run()
+
+get_mon_resources(env)
+get_mon_attributes(env)
+
+```
+
+## timeout
+
+At it simplest, the ```timeout(trajectory, task)``` function times out the entity's trajectory with x time units. Consider the following minimal example where we simply supply a static value to the timeout's ```task``` parameter.
+
+```{r}
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  timeout(3)
+
+env<-
+  simmer() %>%
+  add_resource("doctor", capacity=2, mon = 1) %>%
+  add_generator("patient", patient_traj, at(0), mon=2) %>%
+  run()
+
+get_mon_arrivals(env)
+
+```
+
+Often however you want a timeout to be dependent on a distribution of for example an earlier set attribute. This is achieved by passing a function in to form of either ```function(){}``` or ```function(attrs){}``` to the ```task``` parameter. In the following example this functionality is demonstrated:
+
+```{r}
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  set_attribute("health", function() sample(20:80, 1)) %>%
+  # function based timeout
+  timeout(function() rpois(1, 10)) %>%
+  # attribute dependent timeout
+  timeout(function(attrs) (100 - attrs[["health"]]) * 2)
+
+env<-
+  simmer() %>%
+  add_generator("patient", patient_traj, at(0), mon=2) %>%
+  run()
+
+get_mon_arrivals(env)
+get_mon_attributes(env)
+
+```
+
+## branch
+
+## rollback
+
+## Bringing it all together

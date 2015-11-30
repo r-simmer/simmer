@@ -55,7 +55,7 @@ plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", 
     plot_obj <- plot_obj +
       ggplot2::geom_hline(y=system, lty=2, color="blue")
   }
-   
+  
   if(steps == T){
     plot_obj <- plot_obj +
       ggplot2::geom_step(ggplot2::aes(y=value, group=replication), alpha=.4)
@@ -101,8 +101,8 @@ plot_resource_utilization <- function(envs, resources) {
     dplyr::mutate(utilization = in_use / capacity / runtime) %>%
     dplyr::group_by(resource, capacity) %>%
     dplyr::summarise(Q25 = stats::quantile(utilization, .25),
-              Q50 = stats::quantile(utilization, .5),
-              Q75 = stats::quantile(utilization, .75))
+                     Q50 = stats::quantile(utilization, .5),
+                     Q75 = stats::quantile(utilization, .75))
   
   ggplot2::ggplot(monitor_data) +
     ggplot2::aes(x=resource, y=Q50, ymin=Q25, ymax=Q75) + 
@@ -136,7 +136,7 @@ plot_evolution_arrival_times <- function(envs, type=c("flow_time","activity_time
   monitor_data <- monitor_data %>%
     dplyr::mutate(flow_time = end_time - start_time,
                   waiting_time = flow_time - activity_time)
-
+  
   if(type=="flow_time"){
     ggplot2::ggplot(monitor_data) +
       ggplot2::aes(x=end_time, y=flow_time) +
@@ -165,4 +165,35 @@ plot_evolution_arrival_times <- function(envs, type=c("flow_time","activity_time
       ggplot2::ggtitle("Activity time evolution") +
       ggplot2::expand_limits(y=0)
   }
+}
+
+#' Plot evolution of attribute data
+#'  
+#' Plot the evolution of user-supplied attribute data.
+#' 
+#' @param envs a single simmer environment or a list of environments representing several replications
+#' @param keys the keys of attributes you want to plot (if left empty, all attributes are shown)
+#'
+#' @export
+plot_attributes<-function(envs, keys=c()){
+  if (!is.list(envs)) envs <- list(envs)
+  
+  monitor_data <- do.call(rbind, lapply(1:length(envs), function(i) {
+    stats <- envs[[i]] $ get_mon_attributes()
+    stats$replication <- i
+    stats
+  }))
+  
+  if(length(keys)>0) monitor_data <- monitor_data %>%  dplyr::filter(key %in% keys)
+  
+  ggplot2::ggplot(monitor_data) +
+    ggplot2::aes(x=time, y=value) +
+    ggplot2::geom_line(alpha=.4, ggplot2::aes(group=replication)) + 
+    ggplot2::stat_smooth() +
+    ggplot2::facet_wrap(~key, scales="free_y") + ## probably better to use a facet_wrap as the y scales can differ significantly between attributes
+    ggplot2::xlab("simulation time") +
+    ggplot2::ylab("value") +
+    ggplot2::ggtitle("Attribute evolution") +
+    ggplot2::expand_limits(y=0)
+  
 }

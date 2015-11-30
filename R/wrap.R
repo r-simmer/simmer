@@ -5,8 +5,12 @@ Simmer.wrap <- R6Class("Simmer.wrap",
       if (!inherits(env, "Simmer")) stop("not a simmer object")
       
       private$arrivals <- env$get_mon_arrivals()
+      private$attributes <- env$get_mon_attributes()
       private$resources <- env$get_mon_resources()
-      for (res in levels(factor(private$resources$resource))) {
+      for (gen in env$get_generators()) {
+        private$n_generated[[gen]] <- env$get_n_generated(gen)
+      }
+      for (res in env$get_resources()) {
         private$capacity[[res]] <- env$get_capacity(res)
         private$queue_size[[res]] <- env$get_queue_size(res)
       }
@@ -14,7 +18,13 @@ Simmer.wrap <- R6Class("Simmer.wrap",
     },
     
     get_mon_arrivals = function() { private$arrivals },
+    get_mon_attributes = function() { private$attributes },
     get_mon_resources = function() { private$resources },
+    get_n_generated = function(name) {
+      if (!(name %in% names(private$n_generated)))
+        stop("generator not found")
+      private$n_generated[[name]]
+    },
     get_capacity = function(name) {
       if (!(name %in% names(private$capacity)))
         stop("resource not found")
@@ -29,7 +39,9 @@ Simmer.wrap <- R6Class("Simmer.wrap",
   
   private = list(
     arrivals = NA,
+    attributes = NA,
     resources = NA,
+    n_generated = list(),
     capacity = list(),
     queue_size = list()
   )
@@ -45,8 +57,8 @@ Simmer.wrap <- R6Class("Simmer.wrap",
 #' @param env the simulation environment.
 #' @return Returns a simulation wrapper.
 #' @seealso Other methods to deal with a simulation wrapper:
-#' \link{get_mon_arrivals}, \link{get_mon_resources}, 
-#' \link{get_capacity}, \link{get_queue_size}.
+#' \link{get_mon_arrivals}, \link{get_mon_attributes}, \link{get_mon_resources}, 
+#' \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size}.
 #' @examples
 #' library(parallel)
 #' 

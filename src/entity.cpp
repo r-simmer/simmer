@@ -26,12 +26,12 @@ inline void Arrival::activate() {
 reject:
   flag = FALSE;
 finish:
-  sim->notify_end(this, flag);
+  gen->notify_end(sim->now(), this, flag);
 end:
   return;
 }
 
-void Generator::activate() {
+inline void Generator::activate() {
   // get the delay for the next arrival
   double delay = Rcpp::as<double>(dist());
   if (delay < 0) return;
@@ -39,13 +39,22 @@ void Generator::activate() {
   // format the name and create the next arrival
   char numstr[21];
   sprintf(numstr, "%d", count);
-  Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_activity);
+  Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_activity, this);
   
   // schedule this generator and the arrival
   sim->schedule(delay, this);
   sim->schedule(delay, arrival);
   
   count++;
+}
+
+int Arrival::set_attribute(std::string key, double value) {
+  attributes[key] = value;
+  
+  // monitoring
+  if (is_monitored() >= 2) gen->observe(sim->now(), this, key);
+  
+  return 0;
 }
 
 int Resource::seize(Arrival* arrival, int amount) {

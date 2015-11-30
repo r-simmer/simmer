@@ -19,6 +19,6 @@ It can be used to get the total number of activities defined inside a trajectory
 Other methods to deal with trajectories:
 \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
 \link{get_tail}, \link{seize}, \link{release}, \link{timeout}, 
-\link{branch}, \link{rollback}.
+\link{set_attribute}, \link{branch}, \link{rollback}.
 }
 

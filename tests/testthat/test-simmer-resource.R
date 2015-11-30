@@ -50,3 +50,19 @@ test_that("resource slots are correctly filled", {
   expect_equal(resources[5,]$server, 2)
   expect_equal(resources[5,]$queue, 2)
 })
+
+
+test_that("resources are  correctly monitored", {
+  t0 <- create_trajectory("") %>%
+    seize("server", 1) %>%
+    release("server", 1)
+  
+  env <- simmer() %>%
+    add_resource("server", 2) %>%
+    add_generator("customer", t0, at(0)) %>%
+    run()
+  
+  resources <- env%>%get_mon_resources()
+  
+  expect_equal(resources[2,]$server, 1) # to be discussed: debatable whether or not it should equal 1 or 0
+})

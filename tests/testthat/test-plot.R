@@ -50,3 +50,18 @@ test_that("multiple replication plots", {
   expect_is(plot_evolution_arrival_times(reps, type="activity_time"), "ggplot")
   expect_is(plot_evolution_arrival_times(reps, type="waiting_time"), "ggplot")
 })
+
+
+test_that("attributes are plottable", {
+  t0<-
+    create_trajectory() %>%
+    set_attribute("my_attr", function() runif(1))
+  
+  reps <- lapply(1:100, function(i) {
+    simmer() %>%
+      add_generator("frog", t0, function() rnorm(1, 10, 2), mon = 2) %>%
+      run(80)
+  })
+  
+  expect_is(plot_attributes(reps), "ggplot")
+})
