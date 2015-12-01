@@ -158,7 +158,7 @@ SEXP Seize__new(SEXP resource_, SEXP amount_) {
   std::string resource = as<std::string>(resource_);
   int amount = as<int>(amount_);
 
-  XPtr<Seize> ptr(new Seize(resource, amount), false);
+  XPtr<Seize<int> > ptr(new Seize<int>(resource, amount, 0), false);
   return ptr;
 }
 
@@ -167,7 +167,7 @@ SEXP Seize__new_func(SEXP resource_, Function amount, SEXP provide_attrs_) {
   std::string resource = as<std::string>(resource_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Seize> ptr(new Seize(resource, amount, provide_attrs), false);
+  XPtr<Seize<Function> > ptr(new Seize<Function>(resource, amount, provide_attrs), false);
   return ptr;
 }
 
@@ -176,7 +176,7 @@ SEXP Release__new(SEXP resource_, SEXP amount_) {
   std::string resource = as<std::string>(resource_);
   int amount = as<int>(amount_);
   
-  XPtr<Release> ptr(new Release(resource, amount), false);
+  XPtr<Release<int> > ptr(new Release<int>(resource, amount, 0), false);
   return ptr;
 }
 
@@ -185,7 +185,7 @@ SEXP Release__new_func(SEXP resource_, Function amount, SEXP provide_attrs_) {
   std::string resource = as<std::string>(resource_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Release> ptr(new Release(resource, amount, provide_attrs), false);
+  XPtr<Release<Function> > ptr(new Release<Function>(resource, amount, provide_attrs), false);
   return ptr;
 }
 
@@ -194,7 +194,7 @@ SEXP SetAttribute__new(SEXP key_, SEXP value_) {
   std::string key = as<std::string>(key_);
   double value = as<double>(value_);
   
-  XPtr<SetAttribute> ptr(new SetAttribute(key, value), false);
+  XPtr<SetAttribute<double> > ptr(new SetAttribute<double>(key, value, 0), false);
   return ptr;
 }
 
@@ -204,7 +204,7 @@ SEXP SetAttribute__new_func(SEXP key_, Function value, SEXP provide_attrs_) {
   std::string key = as<std::string>(key_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<SetAttribute> ptr(new SetAttribute(key, value, provide_attrs), false);
+  XPtr<SetAttribute<Function> > ptr(new SetAttribute<Function>(key, value, provide_attrs), false);
   return ptr;
 }
 
@@ -212,7 +212,7 @@ SEXP SetAttribute__new_func(SEXP key_, Function value, SEXP provide_attrs_) {
 SEXP Timeout__new(SEXP delay_) {
   double delay = as<double>(delay_);
   
-  XPtr<Timeout> ptr(new Timeout(delay), false);
+  XPtr<Timeout<double> > ptr(new Timeout<double>(delay, 0), false);
   return ptr;
 }
 
@@ -220,7 +220,7 @@ SEXP Timeout__new(SEXP delay_) {
 SEXP Timeout__new_func(Function task, SEXP provide_attrs_) {
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Timeout> ptr(new Timeout(task, provide_attrs), false);
+  XPtr<Timeout<Function> > ptr(new Timeout<Function>(task, provide_attrs), false);
   return ptr;
 }
 
@@ -238,7 +238,7 @@ SEXP Rollback__new(SEXP amount_, SEXP times_) {
   int amount = as<int>(amount_);
   int times = as<int>(times_);
   
-  XPtr<Rollback> ptr(new Rollback(amount, times), false);
+  XPtr<Rollback<int> > ptr(new Rollback<int>(amount, times, 0), false);
   return ptr;
 }
 
@@ -247,7 +247,7 @@ SEXP Rollback__new_func(SEXP amount_, Function check, SEXP provide_attrs_) {
   int amount = as<int>(amount_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Rollback> ptr(new Rollback(amount, check, provide_attrs), false);
+  XPtr<Rollback<Function> > ptr(new Rollback<Function>(amount, check, provide_attrs), false);
   return ptr;
 }
 
