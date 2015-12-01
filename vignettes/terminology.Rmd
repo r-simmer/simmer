@@ -1,0 +1,56 @@
+---
+title: "Terminology"
+author: "Bart Smeets, Iñaki Ucar"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Please find below a short explanation of the most important terminologies used in the docs.
+
+* __Arrivals__  
+   An arrival is created by a generator. An arrival can be considered a process which follows a number of activities specified in a trajectory.
+   
+* __Activity__ 
+
+* __Trajectories__
+   When a generator creates an arrival is couples the arrival to a trajectory. A trajectory can be defined as a interlinkage of activities which together form the trajectory. The arrival couples to the trajectory will (in general) start processing the activities in the trajectory in the specified order.
+
+* __Generators__  
+   A generator is a process  which creates arrivals with a given interval. These arrivals follow a specified trajectory.
+
+* __Resource__
+
+* __Queue__
+
+
+### Bringing it together
+
+```{r}
+library(simmer)
+
+# create a trajectory "my_trajectory"
+# this trajectory consists of 3 activities, a seize, timeout and release activity.
+t0<-
+  create_trajectory("my_trajectory") %>%
+  seize("operator", 1) %>%
+  timeout(rpois(1,50)) %>%
+  release("operator", 1)
+
+env<-simmer() %>%
+  # a resource operator is created with a capacity of 1
+  add_resource("operator", 1) %>%
+  # a generator which will create arrivals with interval rpois(1,40) is added,
+  # the arrivals will follow the trajectory specified in t0
+  add_generator("my_generator", 
+                trajectory = t0,
+                dist = function() rpois(1, 40)) %>%
+  run()
+  
+
+
+
+```
