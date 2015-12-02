@@ -162,6 +162,7 @@ Be aware that if you want the `timeout`'s `task` parameter to be evaluated dynam
 
 ## branch
 
+
 ## rollback
 
 The `rollback(trajectory, amount, times, check)` function allows one to rollback the trajectory with `amount` number of steps.
@@ -187,6 +188,8 @@ The `rollback` function also allows for a `check` parameter. You can pass a call
 ```{r}
 t0<-create_trajectory() %>%
   set_attribute("happiness", 0) %>%
+  # the timeout function is used simply to print something and returns 0,
+  # hence it is a dummy timeout
   timeout(function(attrs){
     cat(">> Happiness level is at: ", attrs[["happiness"]], " -- ")
     cat(ifelse(attrs[["happiness"]]<25,"PETE: I'm feeling crappy...",
@@ -194,7 +197,7 @@ t0<-create_trajectory() %>%
                   ifelse(attrs[["happiness"]]<75,"PETE: Just had a good espresso",
                          "PETE: Let's do this! (and stop this loop...)")))
     , "\n")
-    return(0) # in other words; this is a dummy timeout
+    return(0)
   }) %>%
   set_attribute("happiness", function(attrs) attrs[["happiness"]] + 25) %>%
   rollback(amount=2, check=function(attrs) attrs[["happiness"]] < 100)

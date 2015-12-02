@@ -189,14 +189,25 @@ plot_attributes<-function(envs, keys=c()){
   
   if(length(keys)>0) monitor_data <- monitor_data %>%  dplyr::filter(key %in% keys)
   
-  ggplot2::ggplot(monitor_data) +
+  plot_obj<-
+    ggplot2::ggplot(monitor_data) +
     ggplot2::aes(x=time, y=value) +
     ggplot2::geom_line(alpha=.4, ggplot2::aes(group=replication)) + 
     ggplot2::stat_smooth() +
-    ggplot2::facet_wrap(~key, scales="free_y") + ## probably better to use a facet_wrap as the y scales can differ significantly between attributes
     ggplot2::xlab("simulation time") +
     ggplot2::ylab("value") +
-    ggplot2::ggtitle("Attribute evolution") +
+    
     ggplot2::expand_limits(y=0)
+  
+  if(length(unique(monitor_data$key))>1){
+    plot_obj <- plot_obj + 
+      ggplot2::ggtitle("Attribute evolution") +
+      ggplot2::facet_wrap(~key, scales="free_y")
+  } else {
+    plot_obj <- plot_obj +
+      ggplot2::ggtitle(paste0("Attribute evolution: ", monitor_data$key[[1]]))
+  }
+  
+  plot_obj
   
 }
