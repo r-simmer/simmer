@@ -4,7 +4,7 @@ author: "Bart Smeets, Iñaki Ucar"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Terminology}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -12,19 +12,23 @@ vignette: >
 Please find below a short explanation of the most important terminologies used in the docs.
 
 * __Arrivals__  
-   An arrival is created by a generator. An arrival can be considered a process which follows a number of activities specified in a trajectory.
+   An arrival is created by a generator. An arrival can be considered a active process which has a number of activities associated to it. These activities conform to a trajectory specification.
    
 * __Activity__ 
+   Currently, the available activities consist of `seize`, `release`, `timeout`, `rollback` and `branch`. See their respective documentation for details.
 
 * __Trajectories__
-   When a generator creates an arrival is couples the arrival to a trajectory. A trajectory can be defined as a interlinkage of activities which together form the trajectory. The arrival couples to the trajectory will (in general) start processing the activities in the trajectory in the specified order.
+   When a generator creates an arrival is couples the arrival to a trajectory. A trajectory can be defined as a interlinkage of activities which together form the trajectory. Once an arrival is coupled to the trajectory it will (in general) start processing the activities in the trajectory in the specified order.
 
 * __Generators__  
    A generator is a process  which creates arrivals with a given interval. These arrivals follow a specified trajectory.
 
 * __Resource__
+   A resource is in essence a passive process. It has a specified capacity and can be seized and released by an active process.
+
 
 * __Queue__
+   A resource as an associated queue. If a resource is _busy_ requests for it will be added to the queue. The queue length can be specified in `add_resource`.
 
 
 ### Bringing it together
@@ -37,7 +41,7 @@ library(simmer)
 t0<-
   create_trajectory("my_trajectory") %>%
   seize("operator", 1) %>%
-  timeout(rpois(1,50)) %>%
+  timeout(function() rpois(1,50)) %>%
   release("operator", 1)
 
 env<-simmer() %>%
