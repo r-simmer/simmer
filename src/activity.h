@@ -15,7 +15,6 @@ class Activity {
 public:
   std::string name;
   std::string resource;
-  bool has_func;
   bool provide_attrs;
   int n;
   
@@ -23,11 +22,10 @@ public:
    * Constructor.
    * @param name          the name of the activity
    * @param resource      the resource associated
-   * @param has_func      whether the activity stores an R function
    * @param provide_attrs whether the activity should expose the arrival's attributes
    */
-  Activity(std::string name, std::string resource, bool has_func, bool provide_attrs): 
-    name(name), resource(resource), has_func(has_func), provide_attrs(provide_attrs), 
+  Activity(std::string name, std::string resource, bool provide_attrs): 
+    name(name), resource(resource), provide_attrs(provide_attrs), 
     n(1), next(NULL), prev(NULL) {}
   virtual ~Activity(){}
   
@@ -67,99 +65,66 @@ private:
 /**
  * Seize a resource.
  */
+template <class T>
 class Seize: public Activity {
 public:
-  Seize(std::string resource, int amount):
-    Activity("Seize", resource, 0, 0), amount(fabs(amount)), amount_func("gc") {}
-  Seize(std::string resource, Rcpp::Function amount, bool provide_attrs):
-    Activity("Seize", resource, 1, provide_attrs), amount(-1), amount_func(amount) {}
+  Seize(std::string resource, T amount, bool provide_attrs):
+    Activity("Seize", resource, provide_attrs), amount(amount) {}
   
-  void show(int indent=0) {
-    Activity::show(indent);
-    if (!has_func)
-      Rcpp::Rcout << "amount: " << amount << " }" << std::endl;
-    else Rcpp::Rcout << "amount: function() }" << std::endl;
-  }
-  
+  void show(int indent=0);
   double run(Arrival* arrival);
   
 private:
-  int amount;
-  Rcpp::Function amount_func;
+  T amount;
 };
 
 /**
  * Release a resource.
  */
+template <class T>
 class Release: public Activity {
 public:
-  Release(std::string resource, int amount):
-    Activity("Release", resource, 0, 0), amount(fabs(amount)), amount_func("gc") {}
-  Release(std::string resource, Rcpp::Function amount, bool provide_attrs):
-    Activity("Release", resource, 1, provide_attrs), amount(-1), amount_func(amount) {}
+  Release(std::string resource, T amount, bool provide_attrs):
+    Activity("Release", resource, provide_attrs), amount(amount) {}
   
-  void show(int indent=0) {
-    Activity::show(indent);
-    if (!has_func)
-      Rcpp::Rcout << "amount: " << amount << " }" << std::endl;
-    else Rcpp::Rcout << "amount: function() }" << std::endl;
-  }
-  
+  void show(int indent=0);
   double run(Arrival* arrival);
   
 private:
-  int amount;
-  Rcpp::Function amount_func;
+  T amount;
 };
 
 /**
  * Set attributes.
  */
+template <class T>
 class SetAttribute: public Activity {
 public:
-  SetAttribute(std::string key, double value):
-    Activity("SetAttribute", "none", 0, 0), key(key), value(value), value_func("gc") {}
-  SetAttribute(std::string key, Rcpp::Function value, bool provide_attrs):
-    Activity("SetAttribute", "none", 1, provide_attrs), key(key), value(0), value_func(value) {}
+  SetAttribute(std::string key, T value, bool provide_attrs):
+    Activity("SetAttribute", "none", provide_attrs), key(key), value(value) {}
   
-  void show(int indent=0) {
-    Activity::show(indent);
-    Rcpp::Rcout << "key: " << key << ", ";
-    if (!has_func)
-      Rcpp::Rcout << "value: " << value << " }" << std::endl;
-    else Rcpp::Rcout << "value: function() }" << std::endl;
-  }
-  
+  void show(int indent=0);
   double run(Arrival* arrival);
   
 private:
   std::string key;
-  double value;
-  Rcpp::Function value_func;
+  T value;
 };
 
 /**
  * Timeout.
  */
+template <class T>
 class Timeout: public Activity {
 public:
-  Timeout(double delay):
-    Activity("Timeout", "none", 0, 0), delay(fabs(delay)), task("gc") {}
-  Timeout(Rcpp::Function task, bool provide_attrs):
-    Activity("Timeout", "none", 1, provide_attrs), delay(-1), task(task) {}
+  Timeout(T delay, bool provide_attrs):
+    Activity("Timeout", "none", provide_attrs), delay(delay) {}
   
-  void show(int indent=0) {
-    Activity::show(indent);
-    if (!has_func)
-      Rcpp::Rcout << "delay: " << delay << " }" << std::endl;
-    else Rcpp::Rcout << "task: function() }" << std::endl;
-  }
-  
+  void show(int indent=0);
   double run(Arrival* arrival);
   
 private:
-  double delay;
-  Rcpp::Function task;
+  T delay;
 };
 
 /**
@@ -169,7 +134,7 @@ private:
 class Branch: public Activity {
 public:
   Branch(Rcpp::Function option, std::vector<bool> merge, std::vector<Rcpp::Environment> trj):
-    Activity("Branch", "none", 1, 0), option(option), merge(merge), trj(trj), selected(NULL) {
+    Activity("Branch", "none", 0), option(option), merge(merge), trj(trj), selected(NULL) {
     n = 0;
     for (unsigned int i = 0; i < trj.size(); i++) {
       Rcpp::Function get_head(trj[i]["get_head"]);
@@ -234,29 +199,16 @@ private:
 /**
  * Rollback to a previous activity.
  */
+template <class T>
 class Rollback: public Activity {
 public:
-  Rollback(int amount, int times):
-    Activity("Rollback", "none", 0, 0), amount(fabs(amount)), times(times), cached(NULL), 
-    selected(NULL), check("gc") /* dirty trick */ {}
-  Rollback(int amount, Rcpp::Function check, bool provide_attrs):
-    Activity("Rollback", "none", 1, provide_attrs), amount(fabs(amount)), times(-1),
-    cached(NULL), selected(NULL), check(check) {}
+  Rollback(int amount, T times, bool provide_attrs):
+    Activity("Rollback", "none", provide_attrs), amount(fabs(amount)), times(times),
+    cached(NULL), selected(NULL) {}
   
   ~Rollback() { pending.clear(); }
   
-  void show(int indent=0) {
-    if (!cached) cached = goback();
-    Activity::show(indent);
-    Rcpp::Rcout << "amount: " << amount << " (" << cached->name << "), ";
-    if (has_func)
-      Rcpp::Rcout << "check: function() }" << std::endl;
-    else if (!has_func && times >= 0)
-      Rcpp::Rcout << "times: " << times << " }" << std::endl;
-    else
-      Rcpp::Rcout << "times: Inf }" << std::endl;
-  }
-  
+  void show(int indent=0);
   double run(Arrival* arrival);
   
   Activity* get_next() {
@@ -270,9 +222,8 @@ public:
   
 private:
   int amount;
-  int times;
+  T times;
   Activity* cached, *selected;
-  Rcpp::Function check;
   std::map<Arrival*, int> pending;
   
   inline Activity* goback() {

@@ -1,2 +1,3 @@
  - inspect the queue (some kind of "advanced peek")
  - use Boost C++ (or C++11) to improve the efficiency
+ - change default behavior of `seize` and `release` (for version >=4.0.0, see issues #25, #27)
