@@ -1,49 +1,99 @@
 #' @importFrom R6 R6Class
 Simmer.wrap <- R6Class("Simmer.wrap",
   public = list(
+    name = NA,
+    
     initialize = function(env) {
       if (!inherits(env, "Simmer")) stop("not a simmer object")
       
+      self$name <- env$name
+      private$now_val <- env$now()
+      private$peek_val <- env$peek()
+      private$res <- env$get_resources()
+      private$gen <- env$get_generators()
       private$arrivals <- env$get_mon_arrivals()
       private$attributes <- env$get_mon_attributes()
       private$resources <- env$get_mon_resources()
-      for (gen in env$get_generators()) {
-        private$n_generated[[gen]] <- env$get_n_generated(gen)
+      for (name in names(private$gen)) {
+        private$n_generated[[name]] <- env$get_n_generated(name)
       }
-      for (res in env$get_resources()) {
-        private$capacity[[res]] <- env$get_capacity(res)
-        private$queue_size[[res]] <- env$get_queue_size(res)
+      for (name in names(private$res)) {
+        private$capacity[[name]] <- env$get_capacity(name)
+        private$queue_size[[name]] <- env$get_queue_size(name)
+        private$server_count[[name]] <- env$get_server_count(name)
+        private$queue_count[[name]] <- env$get_queue_count(name)
       }
       invisible(self)
     },
+    
+    print = function() {
+      cat(paste0(
+        "Simmer wrapper: ", self$name,
+        " | now: ", self$now(), " | next: ", self$peek(), "\n"
+      ))
+      for (name in names(private$res))
+        cat(paste0(
+          "{ Resource: ", name, 
+          " | monitored: ", private$res[[name]],
+          " | server status: ", self$get_server_count(name), 
+          "(", self$get_capacity(name), ")",
+          " | queue status: ", self$get_queue_count(name),
+          "(", self$get_queue_size(name), ") }\n"
+        ))
+      for (name in names(private$gen))
+        cat(paste0(
+          "{ Generator: ", name,
+          " | monitored: ", private$gen[[name]],
+          " | n_generated: ", self$get_n_generated(name), " }\n"
+        ))
+    },
+    
+    now = function() private$now_val,
+    peek = function() private$peek_val,
     
     get_mon_arrivals = function() { private$arrivals },
     get_mon_attributes = function() { private$attributes },
     get_mon_resources = function() { private$resources },
     get_n_generated = function(name) {
-      if (!(name %in% names(private$n_generated)))
+      if (!(name %in% names(private$gen)))
         stop("generator not found")
       private$n_generated[[name]]
     },
     get_capacity = function(name) {
-      if (!(name %in% names(private$capacity)))
+      if (!(name %in% names(private$res)))
         stop("resource not found")
       private$capacity[[name]]
     },
     get_queue_size = function(name) {
-      if (!(name %in% names(private$queue_size)))
+      if (!(name %in% names(private$res)))
         stop("resource not found")
       private$queue_size[[name]]
+    },
+    get_server_count = function(name) {
+      if (!(name %in% names(private$res)))
+        stop("resource not found")
+      private$server_count[[name]]
+    },
+    get_queue_count = function(name) {
+      if (!(name %in% names(private$res)))
+        stop("resource not found")
+      private$queue_count[[name]]
     }
   ),
   
   private = list(
+    now_val = NA,
+    peek_val = NA,
+    res = NA,
+    gen = NA,
     arrivals = NA,
     attributes = NA,
     resources = NA,
     n_generated = list(),
     capacity = list(),
-    queue_size = list()
+    queue_size = list(),
+    server_count = list(),
+    queue_count = list()
   )
 )
 
@@ -58,7 +108,8 @@ Simmer.wrap <- R6Class("Simmer.wrap",
 #' @return Returns a simulation wrapper.
 #' @seealso Other methods to deal with a simulation wrapper:
 #' \link{get_mon_arrivals}, \link{get_mon_attributes}, \link{get_mon_resources}, 
-#' \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size}.
+#' \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
+#' \link{get_server_count}, \link{get_queue_count}.
 #' @examples
 #' library(parallel)
 #' 

@@ -9,6 +9,8 @@ Trajectory <- R6Class("Trajectory",
       invisible(self)
     },
     
+    print = function() self$show(),
+    
     show = function(indent=0) {
       margin <- paste(rep(" ", indent), collapse="")
       cat(paste0(margin, "Trajectory: ", self$name, ", ",

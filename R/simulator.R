@@ -11,6 +11,28 @@ Simmer <- R6Class("Simmer",
       invisible(self)
     },
     
+    print = function() {
+      cat(paste0(
+        "Simmer environment: ", self$name,
+        " | now: ", self$now(), " | next: ", self$peek(), "\n"
+      ))
+      for (name in names(private$res))
+        cat(paste0(
+          "{ Resource: ", name, 
+          " | monitored: ", private$res[[name]],
+          " | server status: ", self$get_server_count(name), 
+          "(", self$get_capacity(name), ")",
+          " | queue status: ", self$get_queue_count(name),
+          "(", self$get_queue_size(name), ") }\n"
+        ))
+      for (name in names(private$gen))
+        cat(paste0(
+          "{ Generator: ", name,
+          " | monitored: ", private$gen[[name]],
+          " | n_generated: ", self$get_n_generated(name), " }\n"
+        ))
+    },
+    
     reset = function() { 
       reset_(private$sim_obj) 
       invisible(self)
@@ -46,7 +68,7 @@ Simmer <- R6Class("Simmer",
       mon <- evaluate_value(mon)
       
       ret <- add_resource_(private$sim_obj, name, capacity, queue_size, mon)
-      if (mon && ret) private$mon_res <- c(private$mon_res, name)
+      if (ret) private$res[[name]] <- mon
       invisible(self)
     },
     
@@ -57,15 +79,15 @@ Simmer <- R6Class("Simmer",
       mon <- evaluate_value(mon)
 
       ret <- add_generator_(private$sim_obj, name_prefix, trajectory$get_head(), dist, mon)
-      if (mon && ret) private$mon_gen <- c(private$mon_gen, name_prefix)
+      if (ret) private$gen[[name_prefix]] <- mon
       invisible(self)
     },
     
     get_mon_arrivals = function() {
-      if (length(private$mon_gen))
-        do.call(rbind, lapply(1:length(private$mon_gen), function(i) {
+      if (sum(private$gen>0))
+        do.call(rbind, lapply(names(private$gen[private$gen>0]), function(i) {
           monitor_data <- as.data.frame(
-            get_mon_arrivals_(private$sim_obj, private$mon_gen[[i]])
+            get_mon_arrivals_(private$sim_obj, i)
           )
         }))
       else data.frame(name = character(),
@@ -76,10 +98,10 @@ Simmer <- R6Class("Simmer",
     },
     
     get_mon_attributes = function() {
-      if (length(private$mon_gen))
-        do.call(rbind, lapply(1:length(private$mon_gen), function(i) {
+      if (sum(private$gen>0))
+        do.call(rbind, lapply(names(private$gen[private$gen>0]), function(i) {
           monitor_data <- as.data.frame(
-            get_mon_attributes_(private$sim_obj, private$mon_gen[[i]])
+            get_mon_attributes_(private$sim_obj, i)
           )
         }))
       else data.frame(time = numeric(),
@@ -89,15 +111,15 @@ Simmer <- R6Class("Simmer",
     },
     
     get_mon_resources = function() {
-      if (length(private$mon_res))
+      if (sum(private$res>0))
         do.call(rbind,
-          lapply(1:length(private$mon_res), function(i) {
+          lapply(names(private$res[private$res>0]), function(i) {
             monitor_data <- as.data.frame(
-              get_mon_resource_(private$sim_obj, private$mon_res[[i]])
+              get_mon_resource_(private$sim_obj, i)
             )
             tryCatch({
               monitor_data$system <- monitor_data$server + monitor_data$queue
-              monitor_data$resource <- private$mon_res[[i]]
+              monitor_data$resource <- i
             }, error = function(e) {
               monitor_data$system <<- numeric()
               monitor_data$resource <<- character()
@@ -137,14 +159,14 @@ Simmer <- R6Class("Simmer",
     },
     
     # not exposed, internal use
-    get_generators = function() { private$mon_gen },
-    get_resources = function() { private$mon_res }
+    get_generators = function() { private$gen },
+    get_resources = function() { private$res }
   ),
   
   private = list(
     sim_obj = NULL,
-    mon_res = NULL,
-    mon_gen = NULL
+    res = NULL,
+    gen = NULL
   )
 )
 
