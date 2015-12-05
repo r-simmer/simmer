@@ -14,11 +14,11 @@ test_that("the activity chain grows as expected", {
   tail <- t0%>%get_tail()
   for (i in 1:5) tail <- get_prev_activity(tail)
   
-  expect_output(show_activity(head), "Release")
-  expect_output(show_activity(t0%>%get_tail()), "Release")
+  expect_output(print_activity(head), "Release")
+  expect_output(print_activity(t0%>%get_tail()), "Release")
   expect_equal(get_next_activity(head), NULL)
-  expect_output(show_activity(tail), "Seize")
-  expect_output(show_activity(t0%>%get_head()), "Seize")
+  expect_output(print_activity(tail), "Seize")
+  expect_output(print_activity(t0%>%get_head()), "Seize")
   expect_equal(get_prev_activity(tail), NULL)
 })
 
@@ -50,7 +50,7 @@ test_that("the trajectory stores the right number of activities", {
   expect_is(t0, "Trajectory")
   expect_equal(t0%>%get_n_activities(), 11)
   
-  expect_output(t0%>%show_trajectory(), 
+  expect_output(t0, 
 "Trajectory: my trajectory, 11 activities
 { Activity: Seize(nurse) | amount: 1 }
 { Activity: Timeout(none) | task: function() }
@@ -77,14 +77,14 @@ test_that("the head/tail pointers are correctly placed", {
   
   t0%>%seize("nurse", 1)
   
-  expect_output(show_activity(t0%>%get_head()), "Seize")
-  expect_output(show_activity(t0%>%get_tail()), "Seize")
+  expect_output(print_activity(t0%>%get_head()), "Seize")
+  expect_output(print_activity(t0%>%get_tail()), "Seize")
   
   t0%>%timeout(function() rnorm(1, 15)) %>%
     release("nurse", 1)
   
-  expect_output(show_activity(t0%>%get_head()), "Seize")
-  expect_output(show_activity(t0%>%get_tail()), "Release")
+  expect_output(print_activity(t0%>%get_head()), "Seize")
+  expect_output(print_activity(t0%>%get_tail()), "Release")
 })
 
 test_that("we can force some errors (just to complete coverage)", {
@@ -93,7 +93,7 @@ test_that("we can force some errors (just to complete coverage)", {
   
   t0 <- create_trajectory() %>% timeout(function() {})
   t0$.__enclos_env__$private$head <- NULL
-  expect_error(t0 %>% show_trajectory())
+  expect_error(t0 %>% print)
   expect_error(t0$.__enclos_env__$private$add_activity(NULL))
   
   t0 <- create_trajectory() %>% timeout(function() {})

@@ -9,18 +9,16 @@ Trajectory <- R6Class("Trajectory",
       invisible(self)
     },
     
-    print = function() self$show(),
-    
-    show = function(indent=0) {
+    print = function(indent=0) {
       margin <- paste(rep(" ", indent), collapse="")
       cat(paste0(margin, "Trajectory: ", self$name, ", ",
                  private$n_activities, " activities\n"))
       ptr <- private$head
       while (!identical(ptr, private$tail)) {
-        activity_show_(ptr, indent)
+        activity_print_(ptr, indent)
         ptr <- activity_get_next_(ptr)
       }
-      if (!is.null(ptr)) activity_show_(ptr, indent)
+      if (!is.null(ptr)) activity_print_(ptr, indent)
     },
     
     get_head = function() { private$head },
@@ -104,7 +102,7 @@ Trajectory <- R6Class("Trajectory",
 #' @param name the name of the trajectory.
 #' @return Returns an environment that represents the trajectory.
 #' @seealso Other methods to deal with trajectories:
-#' \link{show_trajectory}, \link{get_head}, \link{get_tail},
+#' \link{get_head}, \link{get_tail},
 #' \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @examples
@@ -122,7 +120,7 @@ Trajectory <- R6Class("Trajectory",
 #'   timeout(function() rnorm(1, 5)) %>%
 #'   release("administration", 1)
 #' 
-#' t0 %>% show_trajectory()
+#' t0
 #' 
 #' t1 <- create_trajectory("trajectory with a branch") %>%
 #'   seize("server", 1) %>%
@@ -138,11 +136,11 @@ Trajectory <- R6Class("Trajectory",
 #'   release("server", 1) %>%
 #'   timeout(function() 2)
 #' 
-#' t1 %>% show_trajectory()
+#' t1
 #' @export
 create_trajectory <- function(name="anonymous") Trajectory$new(name)
 
-#' Show a trajectory
+#' Print a trajectory (deprecated)
 #'
 #' It can be used to visualise a trajectory's internal structure.
 #' 
@@ -152,7 +150,10 @@ create_trajectory <- function(name="anonymous") Trajectory$new(name)
 #' \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
-show_trajectory <- function(traj) traj$show()
+show_trajectory <- function(traj) {
+  .Deprecated("print")
+  traj
+}
 
 #' Get the first activity
 #'
@@ -161,7 +162,7 @@ show_trajectory <- function(traj) traj$show()
 #' @param traj the trajectory object.
 #' @return An external pointer to an activity object.
 #' @seealso Other methods to deal with trajectories:
-#' \link{create_trajectory}, \link{show_trajectory}, \link{get_tail},
+#' \link{create_trajectory}, \link{get_tail},
 #' \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
@@ -174,7 +175,7 @@ get_head <- function(traj) traj$get_head()
 #' @param traj the trajectory object.
 #' @return An external pointer to an activity object.
 #' @seealso Other methods to deal with trajectories:
-#' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
+#' \link{create_trajectory}, \link{get_head},
 #' \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
@@ -187,7 +188,7 @@ get_tail <- function(traj) traj$get_tail()
 #' @param traj the trajectory object.
 #' @return The number of activities in the trajectory.
 #' @seealso Other methods to deal with trajectories:
-#' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
+#' \link{create_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{seize}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
@@ -202,7 +203,7 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #' @param amount the amount to seize.
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
-#' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
+#' \link{create_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
@@ -217,7 +218,7 @@ seize <- function(traj, resource, amount=1) traj$seize(resource, amount)
 #' @param amount the amount to release.
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
-#' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
+#' \link{create_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
@@ -233,7 +234,7 @@ release <- function(traj, resource, amount=1) traj$release(resource, amount)
 #' (negative values are automatically coerced to positive).
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
-#' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
+#' \link{create_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
@@ -248,7 +249,7 @@ timeout <- function(traj, task) traj$timeout(task)
 #' @param value the value (should be numeric or a function which returns a numeric).
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
-#' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
+#' \link{create_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
 #' \link{timeout}, \link{branch}, \link{rollback}.
 #' @export
@@ -267,7 +268,7 @@ set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
 #' @param ... \code{n} trajectory objects describing each path.
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
-#' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
+#' \link{create_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
 #' \link{set_attribute}, \link{timeout}, \link{rollback}.
 #' @export
@@ -286,7 +287,7 @@ branch <- function(traj, option, merge, ...) traj$branch(option, merge, ...)
 #' function to check whether the rollback must be done or not.
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
-#' \link{create_trajectory}, \link{show_trajectory}, \link{get_head},
+#' \link{create_trajectory}, \link{get_head},
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release},
 #' \link{set_attribute}, \link{timeout}, \link{branch}.
 #' @export

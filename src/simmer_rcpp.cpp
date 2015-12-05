@@ -258,11 +258,11 @@ int activity_get_n_(SEXP activity_) {
 }
 
 //[[Rcpp::export]]
-void activity_show_(SEXP activity_, SEXP indent_) {
+void activity_print_(SEXP activity_, SEXP indent_) {
   XPtr<Activity> activity(activity_);
   int indent = as<int>(indent_);
   
-  return activity->show(indent);
+  return activity->print(indent);
 }
 
 //[[Rcpp::export]]
