@@ -1,10 +1,29 @@
 context("seize/release")
 
-test_that("a negative amount is converted to positive", {
-  t0 <- create_trajectory()
+test_that("resources are seized/released as expected", {
+  t0 <- create_trajectory() %>%
+    seize("dummy", -1) %>%
+    timeout(1) %>%
+    seize("dummy", function() 2) %>%
+    timeout(1) %>%
+    release("dummy", -1) %>%
+    timeout(1) %>%
+    release("dummy", function() 2) %>%
+    timeout(1) %>%
+    seize("dummy", 1)
   
-  expect_silent(t0%>%seize("nurse", -2))
-  expect_silent(t0%>%release("nurse", -10))
+  env <- simmer() %>%
+    add_resource("dummy", 3, 0) %>%
+    add_generator("arrival", t0, at(0))
+  
+  env %>% onestep() %>% onestep()
+  expect_equal(env %>% get_server_count("dummy"), 1)
+  env %>% onestep() %>% onestep()
+  expect_equal(env %>% get_server_count("dummy"), 3)
+  env %>% onestep() %>% onestep()
+  expect_equal(env %>% get_server_count("dummy"), 2)
+  env %>% onestep() %>% onestep()
+  expect_equal(env %>% get_server_count("dummy"), 0)
 })
 
 test_that("incorrect types fail", {

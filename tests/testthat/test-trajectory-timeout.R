@@ -16,11 +16,11 @@ test_that("a task function that returns a non-numeric value fails", {
 
 test_that("a timeout is correctly monitored", {
   t0 <- create_trajectory() %>%
-    timeout(3)
+    timeout(-3)
   
   t1 <- create_trajectory() %>%
     timeout(3) %>%
-    timeout(4)
+    timeout(function() 4)
   
   env0 <- simmer() %>%
     add_generator("entity", t0, at(0)) %>%

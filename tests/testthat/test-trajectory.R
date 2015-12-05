@@ -33,40 +33,45 @@ test_that("the trajectory stores the right number of activities", {
   
   t0 <- t0 %>%
     branch(function() 1, TRUE,
-      create_trajectory() %>%
-        seize("doctor", 1) %>%
-        timeout(function() rnorm(1, 20)) %>%
-        release("doctor", 1) %>%
-        branch(function() 1, TRUE, 
-          create_trajectory() %>%
-            seize("administration", 1) %>%
-            timeout(function() rnorm(1, 5)) %>%
-            release("administration", 1)
-        )
+           create_trajectory() %>%
+             seize("doctor", function() 1) %>%
+             timeout(function() rnorm(1, 20)) %>%
+             release("doctor", function() 1) %>%
+             branch(function() 1, TRUE, 
+                    create_trajectory() %>%
+                      seize("administration", 1) %>%
+                      timeout(1) %>%
+                      release("administration", 1)
+             )
     ) %>%
     rollback(1) %>%
-    set_attribute("dummy", 1)
+    rollback(1, check=function() FALSE) %>%
+    set_attribute("dummy", 1) %>%
+    set_attribute("dummy", function() 1)
   
   expect_is(t0, "Trajectory")
-  expect_equal(t0%>%get_n_activities(), 11)
+  expect_equal(t0%>%get_n_activities(), 13)
   
-  expect_output(t0, 
-"Trajectory: my trajectory, 11 activities
+  output <- "Trajectory: my trajectory, 13 activities
 { Activity: Seize(nurse) | amount: 1 }
 { Activity: Timeout(none) | task: function() }
 { Activity: Release(nurse) | amount: 1 }
 { Activity: Branch(none) | merge: 1 }
   Trajectory: anonymous, 6 activities
-  { Activity: Seize(doctor) | amount: 1 }
+  { Activity: Seize(doctor) | amount: function() }
   { Activity: Timeout(none) | task: function() }
-  { Activity: Release(doctor) | amount: 1 }
+  { Activity: Release(doctor) | amount: function() }
   { Activity: Branch(none) | merge: 1 }
     Trajectory: anonymous, 3 activities
     { Activity: Seize(administration) | amount: 1 }
-    { Activity: Timeout(none) | task: function() }
+    { Activity: Timeout(none) | delay: 1 }
     { Activity: Release(administration) | amount: 1 }
 { Activity: Rollback(none) | amount: 1 (Branch), times: 1 }
-{ Activity: SetAttribute(none) | key: dummy, value: 1 }", fixed = TRUE)
+{ Activity: Rollback(none) | amount: 1 (Rollback), check: function() }
+{ Activity: SetAttribute(none) | key: dummy, value: 1 }
+{ Activity: SetAttribute(none) | key: dummy, value: function() }"
+  
+  expect_output(t0, output, fixed = TRUE)
 })
 
 test_that("the head/tail pointers are correctly placed", {
@@ -88,6 +93,10 @@ test_that("the head/tail pointers are correctly placed", {
 })
 
 test_that("we can force some errors (just to complete coverage)", {
+  expect_warning(create_trajectory() %>% show_trajectory())
+  expect_warning(create_trajectory() %>% 
+                   timeout(1) %>% get_head() %>% show_activity())
+  
   expect_error(create_trajectory() %>% get_next_activity())
   expect_error(create_trajectory() %>% get_prev_activity())
   

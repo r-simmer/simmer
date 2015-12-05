@@ -96,5 +96,6 @@ test_that("we can force some errors (just to complete coverage)", {
   expect_error(env %>% peek())
   expect_error(env %>% onestep())
   expect_error(env %>% get_mon_arrivals())
+  expect_error(env %>% get_mon_attributes())
   expect_error(env %>% get_mon_resources())
 })
