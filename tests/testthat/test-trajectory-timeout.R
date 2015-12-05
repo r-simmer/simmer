@@ -1,9 +1,5 @@
 context("timeout")
 
-test_that("a non-function is correctly converted to a function by the value_to_func functions", {
-  expect_error(not(create_trajectory()%>%timeout(3)))
-})
-
 test_that("a task function that returns a non-numeric value fails", {
   t0 <- create_trajectory() %>%
     timeout(function() {})
@@ -32,4 +28,8 @@ test_that("a timeout is correctly monitored", {
   
   expect_equal(get_mon_arrivals(env0)[1,]$end_time, 3)
   expect_equal(get_mon_arrivals(env1)[1,]$end_time, 7)
+})
+
+test_that("incorrect types fail", {
+  expect_error(create_trajectory() %>% timeout("dummy"))
 })
