@@ -6,11 +6,11 @@
 */
 class ArrStats {
 public:
-  std::vector<std::string> name;
-  std::vector<double> start_time;
-  std::vector<double> end_time;
-  std::vector<double> activity_time;
-  std::vector<bool> finished;
+  VEC<std::string> name;
+  VEC<double> start_time;
+  VEC<double> end_time;
+  VEC<double> activity_time;
+  VEC<bool> finished;
   
   void clear() {
     name.clear();
@@ -26,10 +26,10 @@ public:
  */
 class AttrStats {
 public:
-  std::vector<double> time;
-  std::vector<std::string> name;
-  std::vector<std::string> key;
-  std::vector<double> value;
+  VEC<double> time;
+  VEC<std::string> name;
+  VEC<std::string> key;
+  VEC<double> value;
   
   void clear() {
     time.clear();
@@ -44,9 +44,9 @@ public:
  */
 class ResStats {
 public:
-  std::vector<double> time;
-  std::vector<double> server;
-  std::vector<double> queue;
+  VEC<double> time;
+  VEC<double> server;
+  VEC<double> queue;
   
   void clear() {
     time.clear();

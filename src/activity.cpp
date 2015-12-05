@@ -1,5 +1,3 @@
-#include <Rcpp.h>
-
 #include "entity.h"
 #include "simulator.h"
 #include "activity.h"

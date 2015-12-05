@@ -1,9 +1,7 @@
 #ifndef ACTIVITY_H
 #define ACTIVITY_H
 
-#include <Rcpp.h>
-#include <set>
-#include <map>
+#include "simmer.h"
 
 // forward declarations
 class Arrival;
@@ -133,7 +131,7 @@ private:
  */
 class Branch: public Activity {
 public:
-  Branch(Rcpp::Function option, std::vector<bool> merge, std::vector<Rcpp::Environment> trj):
+  Branch(Rcpp::Function option, VEC<bool> merge, VEC<Rcpp::Environment> trj):
     Activity("Branch", "none", 0), option(option), merge(merge), trj(trj), selected(NULL) {
     n = 0;
     for (unsigned int i = 0; i < trj.size(); i++) {
@@ -189,11 +187,11 @@ public:
   
 private:
   Rcpp::Function option;
-  std::vector<bool> merge;
-  std::vector<Rcpp::Environment> trj;
+  VEC<bool> merge;
+  VEC<Rcpp::Environment> trj;
   Activity* selected;
-  std::vector<Activity*> path;
-  std::set<Arrival*> pending;
+  VEC<Activity*> path;
+  SET<Arrival*> pending;
 };
 
 /**
@@ -224,7 +222,7 @@ private:
   int amount;
   T times;
   Activity* cached, *selected;
-  std::map<Arrival*, int> pending;
+  MAP<Arrival*, int> pending;
   
   inline Activity* goback() {
     int n = amount;

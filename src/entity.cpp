@@ -86,12 +86,10 @@ int Resource::release(Arrival* arrival, int amount) {
   
   // serve from the queue
   if (queue_count) {
-    Arrival* another_arrival = queue.front().first;
-    int another_amount = queue.front().second;
+    queue_count -= queue.front().second;
+    server_count += queue.front().second;
+    sim->schedule(0, queue.front().first);
     queue.pop();
-    queue_count -= another_amount;
-    server_count += another_amount;
-    sim->schedule(0, another_arrival);
   }
   return SUCCESS;
 }
