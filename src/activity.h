@@ -1,9 +1,7 @@
 #ifndef ACTIVITY_H
 #define ACTIVITY_H
 
-#include <Rcpp.h>
-#include <set>
-#include <map>
+#include "simmer.h"
 
 // forward declarations
 class Arrival;
@@ -33,7 +31,7 @@ public:
    * Print the activity info.
    * @param indent number of spaces at the beginning of each line
    */
-  virtual void show(int indent=0) {
+  virtual void print(int indent=0) {
     for (int i = 0; i < indent; ++i)
       Rcpp::Rcout << " ";
     Rcpp::Rcout << "{ Activity: " << name << "(" << resource << ") | ";
@@ -71,7 +69,7 @@ public:
   Seize(std::string resource, T amount, bool provide_attrs):
     Activity("Seize", resource, provide_attrs), amount(amount) {}
   
-  void show(int indent=0);
+  void print(int indent=0);
   double run(Arrival* arrival);
   
 private:
@@ -87,7 +85,7 @@ public:
   Release(std::string resource, T amount, bool provide_attrs):
     Activity("Release", resource, provide_attrs), amount(amount) {}
   
-  void show(int indent=0);
+  void print(int indent=0);
   double run(Arrival* arrival);
   
 private:
@@ -103,7 +101,7 @@ public:
   SetAttribute(std::string key, T value, bool provide_attrs):
     Activity("SetAttribute", "none", provide_attrs), key(key), value(value) {}
   
-  void show(int indent=0);
+  void print(int indent=0);
   double run(Arrival* arrival);
   
 private:
@@ -120,7 +118,7 @@ public:
   Timeout(T delay, bool provide_attrs):
     Activity("Timeout", "none", provide_attrs), delay(delay) {}
   
-  void show(int indent=0);
+  void print(int indent=0);
   double run(Arrival* arrival);
   
 private:
@@ -133,7 +131,7 @@ private:
  */
 class Branch: public Activity {
 public:
-  Branch(Rcpp::Function option, std::vector<bool> merge, std::vector<Rcpp::Environment> trj):
+  Branch(Rcpp::Function option, VEC<bool> merge, VEC<Rcpp::Environment> trj):
     Activity("Branch", "none", 0), option(option), merge(merge), trj(trj), selected(NULL) {
     n = 0;
     for (unsigned int i = 0; i < trj.size(); i++) {
@@ -155,12 +153,12 @@ public:
     pending.clear();
   }
   
-  void show(int indent=0) {
+  void print(int indent=0) {
     for (unsigned int i = 0; i < trj.size(); i++) {
-      Activity::show(indent);
+      Activity::print(indent);
       Rcpp::Rcout << "merge: " << merge[i] << " }" << std::endl;
-      Rcpp::Function show(trj[i]["show"]);
-      show(indent+2);
+      Rcpp::Function print(trj[i]["print"]);
+      print(indent+2);
     }
   }
   
@@ -189,11 +187,11 @@ public:
   
 private:
   Rcpp::Function option;
-  std::vector<bool> merge;
-  std::vector<Rcpp::Environment> trj;
+  VEC<bool> merge;
+  VEC<Rcpp::Environment> trj;
   Activity* selected;
-  std::vector<Activity*> path;
-  std::set<Arrival*> pending;
+  VEC<Activity*> path;
+  SET<Arrival*> pending;
 };
 
 /**
@@ -208,7 +206,7 @@ public:
   
   ~Rollback() { pending.clear(); }
   
-  void show(int indent=0);
+  void print(int indent=0);
   double run(Arrival* arrival);
   
   Activity* get_next() {
@@ -224,7 +222,7 @@ private:
   int amount;
   T times;
   Activity* cached, *selected;
-  std::map<Arrival*, int> pending;
+  MAP<Arrival*, int> pending;
   
   inline Activity* goback() {
     int n = amount;

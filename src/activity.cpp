@@ -1,5 +1,3 @@
-#include <Rcpp.h>
-
 #include "entity.h"
 #include "simulator.h"
 #include "activity.h"
@@ -12,14 +10,14 @@ inline T execute_call(Rcpp::Function call, Arrival* arrival, bool provide_attrs)
 }
 
 template <>
-void Seize<int>::show(int indent) {
-  Activity::show(indent);
+void Seize<int>::print(int indent) {
+  Activity::print(indent);
   Rcpp::Rcout << "amount: " << amount << " }" << std::endl;
 }
 
 template <>
-void Seize<Rcpp::Function>::show(int indent) {
-  Activity::show(indent);
+void Seize<Rcpp::Function>::print(int indent) {
+  Activity::print(indent);
   Rcpp::Rcout << "amount: function() }" << std::endl;
 }
 
@@ -35,14 +33,14 @@ double Seize<Rcpp::Function>::run(Arrival* arrival) {
 }
 
 template <>
-void Release<int>::show(int indent) {
-  Activity::show(indent);
+void Release<int>::print(int indent) {
+  Activity::print(indent);
   Rcpp::Rcout << "amount: " << amount << " }" << std::endl;
 }
 
 template <>
-void Release<Rcpp::Function>::show(int indent) {
-  Activity::show(indent);
+void Release<Rcpp::Function>::print(int indent) {
+  Activity::print(indent);
   Rcpp::Rcout << "amount: function() }" << std::endl;
 }
 
@@ -58,14 +56,14 @@ double Release<Rcpp::Function>::run(Arrival* arrival) {
 }
 
 template <>
-void Timeout<double>::show(int indent) {
-  Activity::show(indent);
+void Timeout<double>::print(int indent) {
+  Activity::print(indent);
   Rcpp::Rcout << "delay: " << delay << " }" << std::endl;
 }
 
 template <>
-void Timeout<Rcpp::Function>::show(int indent) {
-  Activity::show(indent);
+void Timeout<Rcpp::Function>::print(int indent) {
+  Activity::print(indent);
   Rcpp::Rcout << "task: function() }" << std::endl;
 }
 
@@ -78,14 +76,14 @@ double Timeout<Rcpp::Function>::run(Arrival* arrival) {
 }
 
 template <>
-void SetAttribute<double>::show(int indent) {
-  Activity::show(indent);
+void SetAttribute<double>::print(int indent) {
+  Activity::print(indent);
   Rcpp::Rcout << "key: " << key << ", value: " << value << " }" << std::endl;
 }
 
 template <>
-void SetAttribute<Rcpp::Function>::show(int indent) {
-  Activity::show(indent);
+void SetAttribute<Rcpp::Function>::print(int indent) {
+  Activity::print(indent);
   Rcpp::Rcout << "key: " << key << ", value: function() }" << std::endl;
 }
 
@@ -101,9 +99,9 @@ double SetAttribute<Rcpp::Function>::run(Arrival* arrival) {
 }
 
 template <>
-void Rollback<int>::show(int indent) {
+void Rollback<int>::print(int indent) {
   if (!cached) cached = goback();
-  Activity::show(indent);
+  Activity::print(indent);
   Rcpp::Rcout << "amount: " << amount << " (" << cached->name << "), ";
   if (times >= 0)
     Rcpp::Rcout << "times: " << times << " }" << std::endl;
@@ -112,9 +110,9 @@ void Rollback<int>::show(int indent) {
 }
 
 template <>
-void Rollback<Rcpp::Function>::show(int indent) {
+void Rollback<Rcpp::Function>::print(int indent) {
   if (!cached) cached = goback();
-  Activity::show(indent);
+  Activity::print(indent);
   Rcpp::Rcout << "amount: " << amount << " (" << cached->name << "), ";
   Rcpp::Rcout << "check: function() }" << std::endl;
 }

@@ -25,7 +25,7 @@ Adds a new activity that defines n alternative paths to the tail of a trajectory
 }
 \seealso{
 Other methods to deal with trajectories:
-\link{create_trajectory}, \link{show_trajectory}, \link{get_head},
+\link{create_trajectory}, \link{get_head},
 \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
 \link{set_attribute}, \link{timeout}, \link{rollback}.
 }

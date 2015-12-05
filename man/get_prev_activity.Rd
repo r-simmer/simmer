@@ -17,6 +17,6 @@ It takes an external pointer to an activity an returns the previous activity.
 }
 \seealso{
 Other methods to deal with activities: 
-\link{show_activity}, \link{get_next_activity}.
+\link{print_activity}, \link{get_next_activity}.
 }
 

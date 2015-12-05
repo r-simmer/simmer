@@ -1,5 +1,4 @@
-#include <Rcpp.h>
-
+#include "simmer.h"
 #include "activity.h"
 #include "entity.h"
 #include "stats.h"
@@ -226,8 +225,8 @@ SEXP Timeout__new_func(Function task, SEXP provide_attrs_) {
 
 //[[Rcpp::export]]
 SEXP Branch__new(Function option, SEXP merge_, SEXP trj_) {
-  std::vector<bool> merge = as<std::vector<bool> >(merge_);
-  std::vector<Environment> trj = as<std::vector<Environment> >(trj_);
+  VEC<bool> merge = as<VEC<bool> >(merge_);
+  VEC<Environment> trj = as<VEC<Environment> >(trj_);
   
   XPtr<Branch> ptr(new Branch(option, merge, trj), false);
   return ptr;
@@ -259,11 +258,11 @@ int activity_get_n_(SEXP activity_) {
 }
 
 //[[Rcpp::export]]
-void activity_show_(SEXP activity_, SEXP indent_) {
+void activity_print_(SEXP activity_, SEXP indent_) {
   XPtr<Activity> activity(activity_);
   int indent = as<int>(indent_);
   
-  return activity->show(indent);
+  return activity->print(indent);
 }
 
 //[[Rcpp::export]]

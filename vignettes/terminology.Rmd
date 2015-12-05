@@ -1,0 +1,64 @@
+---
+title: "Terminology"
+author: "Bart Smeets, Iñaki Ucar"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Terminology}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Please find below a short explanation of the most important terminologies used in the docs.
+
+* __Arrival__ 
+   An arrival is created by a generator. An arrival can be considered a process, an active entity which has a number of activities associated to it and (in general) a limited lifetime in the system. These activities conform to a trajectory specification.
+
+* __Trajectory__
+   When a generator creates an arrival, it couples the arrival to a given trajectory. A trajectory is defined as an interlinkage of activities which together form the arrivals' lifetime in the system. Once an arrival is coupled to the trajectory, it will (in general) start processing the activities in the trajectory in the specified order and, eventually, leave the system.
+   
+* __Activity__ 
+   There are different kinds of activities that allow arrivals to interact with resources, perform custom tasks while spending time in the system, move back and forth through the trajectory dynamically... Currently, the set of available activities consist of `seize`, `release`, `timeout`, `set_attribute`, `rollback` and `branch`. See their respective documentation for details.
+
+* __Generator__ 
+   A generator is a process which creates arrivals with a given interarrival time pattern. These arrivals follow a specified trajectory.
+
+* __Resource__
+   A resource is in essence a passive entity. It comprises two parts:
+    + __Server__ 
+      Conceptually, it represents the resource itself. It has a specified capacity and can be seized and released by an arrival.
+    + __Queue__ 
+      When an arrival tries to seize a resource (tries to access its server) and it is _busy_, this arrival is appended to the queue (of a given length) if there is room for it. If not, the arrival is rejected and immediately leaves the system.
+
+
+## Bringing it together
+
+```{r}
+library(simmer)
+
+# create a trajectory "my_trajectory"
+# this trajectory consists of 3 activities, a seize, timeout and release activity.
+t0<-
+  create_trajectory("my_trajectory") %>%
+  # seize one unit of the resource called "operator"
+  seize("operator", 1) %>%
+  # spend some (stochastic) time holding that resource
+  timeout(function() rpois(1,50)) %>%
+  # release the previously seized unit of "operator"
+  release("operator", 1)
+
+env<-simmer() %>%
+  # a resource called "operator"" is created with a capacity of 1 and an infinite queue size
+  add_resource("operator", 1, Inf) %>%
+  # this generator will create arrivals at each interval rpois(1,40) during
+  # the simulation lifetime (while "dist" returns positive time values)
+  # the arrivals will follow the trajectory specified in t0
+  add_generator("my_generator", 
+                trajectory = t0,
+                dist = function() rpois(1, 40)) %>%
+  run()
+  
+
+
+
+```

@@ -42,9 +42,9 @@ inline void Generator::activate() {
   sprintf(numstr, "%d", count);
   Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_activity, this);
   
-  // schedule this generator and the arrival
-  sim->schedule(delay, this);
+  // schedule the arrival and the generator itself
   sim->schedule(delay, arrival);
+  sim->schedule(delay, this);
   
   count++;
 }
@@ -86,12 +86,10 @@ int Resource::release(Arrival* arrival, int amount) {
   
   // serve from the queue
   if (queue_count) {
-    Arrival* another_arrival = queue.front().first;
-    int another_amount = queue.front().second;
+    queue_count -= queue.front().second;
+    server_count += queue.front().second;
+    sim->schedule(0, queue.front().first);
     queue.pop();
-    queue_count -= another_amount;
-    server_count += another_amount;
-    sim->schedule(0, another_arrival);
   }
   return SUCCESS;
 }

@@ -4,12 +4,12 @@ author: "Bart Smeets, Iñaki Ucar"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Advanced trajectory usage}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-Trajectories define a order of events. Once an entity is generated it will start to follow the logic in the specified trajectory. Consider the following.
+When a generator creates an arrival, it couples the arrival to a given trajectory. A trajectory is defined as an interlinkage of activities which together form the arrivals' lifetime in the system. Once an arrival is coupled to the trajectory, it will (in general) start processing the activities in the trajectory in the specified order and, eventually, leave the system. Consider the following:
 
 ```{r}
 library(simmer)
@@ -24,11 +24,11 @@ patient_traj<-
 
 Here we create a trajectory where a patient _seizes_ a doctor for 3 minutes and then _releases_ him again.
 
-This is a very straightforward example, however, most of the trajectory related function allow for more advanced usage. The different functions are introduced below.
+This is a very straightforward example, however, most of the trajectory-related functions allow for more advanced usage. The different functions are introduced below.
 
 ## set_attribute
 
-The ```set_attribute(trajectory, key, value)``` function set the ```value``` of attribute ```key```. Be aware that ```value``` can only be numeric.
+The `set_attribute(trajectory, key, value)` function set the `value` of an arrival's attribute `key`. Be aware that `value` can only be numeric.
 
 ```{r}
 patient_traj<-
@@ -46,9 +46,9 @@ get_mon_attributes(env)
   
 ```
 
-Above, a trajectory which _only_ sets attribute ```my_key``` to value ```123``` is launched by the generator once at time 0 (check ```?at```). Using ```get_mon_attribute``` we can look a the evolution of the value of ```my_key```.
+Above, a trajectory which _only_ sets attribute `my_key` to value `123` is launched once by an arrival generated at time 0 (check `?at`). Using `get_mon_attributes` we can look at the evolution of the value of `my_key`.
 
-If you want to set an attribute that depends on another attribute, or on the current value of the attribute to be set, this is also possible. If, insted of a numeric value, you supply a function with 1 parameter, the current set of attributes is passed as a list to the function. Whatever your function supplies is set as the value of the specified attribute key. If supply a function without a parameter the function is simply evaluated (for each entity) and the returned value used. This means, that if you supply a function to the ```value``` parameter it has to be in the form of either ```function(){}``` or ```function(attrs){}```. Below you can see an example of this in practice.
+If you want to set an attribute that depends on another attribute, or on the current value of the attribute to be set, this is also possible. In fact, if, instead of a numeric value, you supply a function with one parameter, the current set of attributes is passed as a list to that function. Whatever (numeric value) your function returns is set as the value of the specified attribute key. If the supplied function has no parameters, it is evaluated in the same way, but the attribute list is not accesible in the function body. This means that, if you supply a function to the `value` parameter, it has to be in the form of either `function(attrs){}` (first case) or `function(){}` (second case). Below, you can see an example of this in practice.
 
 ```{r}
 patient_traj<-
@@ -72,7 +72,7 @@ get_mon_attributes(env)
 
 ## seize & release
 
-The ```seize(trajectory, resource, amount)``` function seizes a specified ```amount``` of resources of type ```resource```. Conversely, the ```release(trajectory, resource, amount)``` function releases a specified ```amount``` of resource of type ```resource```.  Be aware that in order to use these function in relation to a specific resource type you first have to create the resource type in your definition of the simulation environment (check ```?add_resource```). 
+The `seize(trajectory, resource, amount)` function seizes a specified `amount` of resources of type `resource`. Conversely, the `release(trajectory, resource, amount)` function releases a specified `amount` of resource of type `resource`. Be aware that, in order to use these functions in relation to a specific resource type, you have to create that resource type in your definition of the simulation environment (check `?add_resource`). 
 
 Consider the following example:
 
@@ -93,9 +93,9 @@ env<-
 get_mon_resources(env)
 ```
 
-Hence the ```mon=1``` argument (=default) to the ```add_resource``` which makes the simulation environment monitor resource usage. Using the ```get_mon_resources(env)``` function you can get access to the log of resource usage evolution.
+Here the `mon=1` argument (=default) of `add_resource` makes the simulation environment monitor the resource usage. Using the `get_mon_resources(env)` function you can get access to the log of the usage evolution of resources.
 
-There are situations where you want to let the amount of resources seized/released be dependent on a specific function or on a previously set attribute. To achieve this you, instead of a numeric value, pass a funciton in the form of either ```function(){}``` or ```function(attrs){}``` to the ```amount``` parameter. If going for the latter, the current state of the entity's attributes will be passed to ```attrs``` as a list which you can inspect. This allows for the following:
+There are situations where you want to let the amount of resources seized/released be dependent on a specific function or on a previously set attribute. To achieve this, you can pass a function in the form of either `function(){}` or `function(attrs){}` to the `amount` parameter instead of a numeric value. If going for the latter, the current state of the arrival's attributes will be passed to `attrs` as a list which you can inspect. This allows for the following:
 
 ```{r}
 patient_traj<-
@@ -119,7 +119,7 @@ get_mon_attributes(env)
 
 ## timeout
 
-At it simplest, the ```timeout(trajectory, task)``` function times out the entity's trajectory with x time units. Consider the following minimal example where we simply supply a static value to the timeout's ```task``` parameter.
+At its simplest, the `timeout(trajectory, task)` function delays the arrival's advance through the trajectory for a specified amount of time. Consider the following minimal example where we simply supply a static value to the timeout's `task` parameter.
 
 ```{r}
 patient_traj<-
@@ -136,15 +136,15 @@ get_mon_arrivals(env)
 
 ```
 
-Often however you want a timeout to be dependent on a distribution of for example an earlier set attribute. This is achieved by passing a function in to form of either ```function(){}``` or ```function(attrs){}``` to the ```task``` parameter. In the following example this functionality is demonstrated:
+Often, however, you want a timeout to be dependent on a distribution or, for example, an earlier set attribute. This is achieved by passing a function in to form of either `function(){}` or `function(attrs){}` to the `task` parameter. In the following example this functionality is demonstrated:
 
 ```{r}
 patient_traj<-
   create_trajectory(name = "patient_trajectory") %>%
   set_attribute("health", function() sample(20:80, 1)) %>%
-  # function based timeout
+  # distribution-based timeout
   timeout(function() rpois(1, 10)) %>%
-  # attribute dependent timeout
+  # attribute-dependent timeout
   timeout(function(attrs) (100 - attrs[["health"]]) * 2)
 
 env<-
@@ -157,8 +157,59 @@ get_mon_attributes(env)
 
 ```
 
+Be aware that if you want the `timeout`'s `task` parameter to be evaluated dynamically, you should supply a callable function. For example in `timeout(function() rpois(1, 10))`, `rpois(1, 10)` will be evaluated every time the timeout activity is executed. However, if you supply it in the form of `timeout(rpois(1, 10))`, it will only be evaluated at initalization and will remain static after that.
+
+Of course, this `task`, supplied as a function, may be as complex as you need and, for instance, check a resource's status, interact with other entities in your simulation model... The same applies to all previous activities when they accept a function as a parameter.
+
 ## branch
 
+
 ## rollback
+
+The `rollback(trajectory, amount, times, check)` function allows an arrival to rollback the trajectory an `amount` number of steps.
+
+Consider the following where a string is printed in the timeout function. After the first run, the trajectory is rolled back 3 times.
+
+```{r}
+t0<-create_trajectory() %>%
+  timeout(function(){
+    print("Hello!")
+    0}) %>%
+  rollback(amount=1, times=3)
+
+
+simmer() %>%
+  add_generator("hello_sayer", t0, at(0)) %>% 
+  run()
+
+```
+
+The `rollback` function also accepts an optional `check` parameter which overrides the default amount-based behaviour. This parameter must be a function that returns a logical value. Each time an arrival reaches the activity, this `check` is evaluated to determine whether the `rollback` with `amount` steps must be performed or not. Consider the following example:
+
+```{r}
+t0<-create_trajectory() %>%
+  set_attribute("happiness", 0) %>%
+  # the timeout function is used simply to print something and returns 0,
+  # hence it is a dummy timeout
+  timeout(function(attrs){
+    cat(">> Happiness level is at: ", attrs[["happiness"]], " -- ")
+    cat(ifelse(attrs[["happiness"]]<25,"PETE: I'm feeling crappy...",
+           ifelse(attrs[["happiness"]]<50,"PETE: Feelin' a bit moody",
+                  ifelse(attrs[["happiness"]]<75,"PETE: Just had a good espresso",
+                         "PETE: Let's do this! (and stop this loop...)")))
+    , "\n")
+    return(0)
+  }) %>%
+  set_attribute("happiness", function(attrs) attrs[["happiness"]] + 25) %>%
+  rollback(amount=2, check=function(attrs) attrs[["happiness"]] < 100)
+
+
+simmer() %>%
+  add_generator("mood_swinger", t0, at(0)) %>% 
+  run()
+
+```
+
+
 
 ## Bringing it all together

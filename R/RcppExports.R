@@ -113,8 +113,8 @@ activity_get_n_ <- function(activity_) {
     .Call('simmer_activity_get_n_', PACKAGE = 'simmer', activity_)
 }
 
-activity_show_ <- function(activity_, indent_) {
-    invisible(.Call('simmer_activity_show_', PACKAGE = 'simmer', activity_, indent_))
+activity_print_ <- function(activity_, indent_) {
+    invisible(.Call('simmer_activity_print_', PACKAGE = 'simmer', activity_, indent_))
 }
 
 activity_get_next_ <- function(activity_) {

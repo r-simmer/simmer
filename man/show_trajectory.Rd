@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory.R
 \name{show_trajectory}
 \alias{show_trajectory}
-\title{Show a trajectory}
+\title{Print a trajectory (deprecated)}
 \usage{
 show_trajectory(traj)
 }

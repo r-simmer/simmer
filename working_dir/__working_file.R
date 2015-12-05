@@ -118,3 +118,4 @@ attributes <- env %>% get_mon_attributes()
 
 plot_resource_usage(env, "nurse", items="server", steps=T)
 plot_attributes(env)
+plot_attributes(env, "health")
