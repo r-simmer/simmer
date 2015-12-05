@@ -42,9 +42,9 @@ inline void Generator::activate() {
   sprintf(numstr, "%d", count);
   Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_activity, this);
   
-  // schedule this generator and the arrival
-  sim->schedule(delay, this);
+  // schedule the arrival and the generator itself
   sim->schedule(delay, arrival);
+  sim->schedule(delay, this);
   
   count++;
 }

@@ -17,7 +17,7 @@ typedef struct Event {
   Event(double time, Process* process): time(time), process(process) {}
   
   bool operator<(const Event& other) const {
-    return time > other.time;
+    return time >= other.time;
   }
 } Event;
 
