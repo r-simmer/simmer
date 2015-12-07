@@ -21,7 +21,7 @@ inline void Arrival::activate() {
   if (delay == ENQUEUED) goto end;
   
   activity_time += delay;
-  sim->schedule(delay, this);
+  sim->schedule(delay, this, activity ? activity->priority : 0);
   goto end;
   
 reject:
@@ -58,7 +58,7 @@ int Arrival::set_attribute(std::string key, double value) {
   return 0;
 }
 
-int Resource::seize(Arrival* arrival, int amount) {
+int Resource::seize(Arrival* arrival, int amount, int priority) {
   // monitoring
   if (is_monitored()) observe(sim->now());
   
@@ -70,7 +70,7 @@ int Resource::seize(Arrival* arrival, int amount) {
   // enqueue
   else if (room_in_queue(amount)) {
     queue_count += amount;
-    queue.push(std::make_pair(arrival, amount));
+    queue.push((RQItem){arrival, amount, priority, sim->now()});
     return ENQUEUED;
   }
   // reject
@@ -86,9 +86,9 @@ int Resource::release(Arrival* arrival, int amount) {
   
   // serve from the queue
   if (queue_count) {
-    queue_count -= queue.front().second;
-    server_count += queue.front().second;
-    sim->schedule(0, queue.front().first);
+    queue_count -= queue.top().amount;
+    server_count += queue.top().amount;
+    sim->schedule(0, queue.top().arrival);
     queue.pop();
   }
   return SUCCESS;

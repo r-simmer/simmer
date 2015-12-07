@@ -15,16 +15,19 @@ public:
   std::string resource;
   bool provide_attrs;
   int n;
+  int priority;
   
   /**
    * Constructor.
    * @param name          the name of the activity
    * @param resource      the resource associated
    * @param provide_attrs whether the activity should expose the arrival's attributes
+   * @param priority      resource accessing priority
    */
-  Activity(std::string name, std::string resource, bool provide_attrs): 
+  Activity(std::string name, std::string resource, bool provide_attrs, int priority = 0): 
     name(name), resource(resource), provide_attrs(provide_attrs), 
-    n(1), next(NULL), prev(NULL) {}
+    n(1), priority(priority), next(NULL), prev(NULL)  {}
+  
   virtual ~Activity(){}
   
   /**
@@ -66,8 +69,8 @@ private:
 template <class T>
 class Seize: public Activity {
 public:
-  Seize(std::string resource, T amount, bool provide_attrs):
-    Activity("Seize", resource, provide_attrs), amount(amount) {}
+  Seize(std::string resource, T amount, bool provide_attrs, int priority):
+    Activity("Seize", resource, provide_attrs, fabs(priority)), amount(amount) {}
   
   void print(int indent=0);
   double run(Arrival* arrival);
@@ -83,7 +86,7 @@ template <class T>
 class Release: public Activity {
 public:
   Release(std::string resource, T amount, bool provide_attrs):
-    Activity("Release", resource, provide_attrs), amount(amount) {}
+    Activity("Release", resource, provide_attrs, -1), amount(amount) {}
   
   void print(int indent=0);
   double run(Arrival* arrival);

@@ -25,7 +25,7 @@ public:
     sim(sim), name(name), mon(fabs(mon)) {}
   virtual ~Entity(){}
   inline int is_monitored() { return mon; }
-	
+  
 private:
   int mon;
 };
@@ -50,7 +50,7 @@ class Arrival: public Process {
 public:
   double start_time;    /**< generation time */
   double activity_time; /**< time spent doing something in the system (not waiting in a queue) */
-  
+
   /**
    * Constructor.
    * @param sim             a pointer to the simulator
@@ -67,7 +67,7 @@ public:
   
   int set_attribute(std::string key, double value);
   inline Attr* get_attributes() { return &attributes; }
-  
+
 private:
   Activity* activity; /**< current activity from an R trajectory */
   Generator* gen;     /**< parent generator */
@@ -90,7 +90,7 @@ public:
    */
   Generator(Simulator* sim, std::string name_prefix, int mon,
             Activity* first_activity, Rcpp::Function dist): 
-    Process(sim, name_prefix, mon), count(0), first_activity(first_activity), dist(dist) {}
+  Process(sim, name_prefix, mon), count(0), first_activity(first_activity), dist(dist) {}
   
   ~Generator() { reset(); }
   
@@ -142,69 +142,83 @@ public:
   int get_n_generated() { return count; }
   
 private:
-  int count;  /**< number of arrivals generated */
+  int count;                /**< number of arrivals generated */
   Activity* first_activity;
   Rcpp::Function dist;
-  ArrStats arr_stats;   /**< arrival statistics */
+  ArrStats arr_stats;       /**< arrival statistics */
   AttrStats attr_stats;     /**< attribute statistics */
 };
 
-typedef QUEUE<std::pair<Arrival*, int> > ArrQueue;
+struct RQItem {
+  Arrival* arrival;
+  int amount;
+  int priority;
+  double arrived_at;
+  
+  bool operator<(const RQItem& other) const {
+    if(priority == other.priority)
+      return arrived_at > other.arrived_at;
+    return priority < other.priority;
+  }
+};
+
+typedef PQUEUE<RQItem> RPQueue;
 
 /** 
- *  Generic resource, a passive entity that comprises server + FIFO queue.
- */
+*  Generic resource, a passive entity that comprises server + FIFO queue.
+*/
 class Resource: public Entity {
 public:
   
   /**
-   * Constructor.
-   * @param sim         a pointer to the simulator
-   * @param name        the name
-   * @param mon         int that indicates whether this entity must be monitored
-   * @param capacity    server capacity (-1 means infinity)
-   * @param queue_size  room in the queue (-1 means infinity)
-   */
+  * Constructor.
+  * @param sim         a pointer to the simulator
+  * @param name        the name
+  * @param mon         int that indicates whether this entity must be monitored
+  * @param capacity    server capacity (-1 means infinity)
+  * @param queue_size  room in the queue (-1 means infinity)
+  */
   Resource(Simulator* sim, std::string name, int mon, int capacity, int queue_size): 
-    Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), server_count(0), 
-    queue_count(0) {}
+  Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), server_count(0), 
+  queue_count(0) {}
   
   ~Resource() { reset(); }
   
   /**
-   * Reset the resource: server, queue and statistics.
-   */
+  * Reset the resource: server, queue and statistics.
+  */
   void reset() {
     server_count = 0;
     queue_count = 0;
     while (!queue.empty()) {
-      delete queue.front().first;
+      delete queue.top().arrival;
       queue.pop();
     }
     res_stats.clear();
   }
   
   /**
-   * Seize resources.
-   * @param   arrival a pointer to the arrival trying to seize resources
-   * @param   amount  the amount of resources needed
-   * 
-   * @return  SUCCESS, ENQUEUED, REJECTED
-   */
-  int seize(Arrival* arrival, int amount);
+  * Seize resources.
+  * @param   arrival  a pointer to the arrival trying to seize resources
+  * @param   amount   the amount of resources needed
+  * @param   priority resource accessing priority
+  * 
+  * @return  SUCCESS, ENQUEUED, REJECTED
+  */
+  int seize(Arrival* arrival, int amount, int priority);
   
   /**
-   * Release resources.
-   * @param   arrival a pointer to the arrival that releases resources
-   * @param   amount  the amount of resources released
-   * 
-   * @return  SUCCESS
-   */
+  * Release resources.
+  * @param   arrival a pointer to the arrival that releases resources
+  * @param   amount  the amount of resources released
+  * 
+  * @return  SUCCESS
+  */
   int release(Arrival* arrival, int amount);
   
   /**
-   * Gather resource statistics.
-   */
+  * Gather resource statistics.
+  */
   inline void observe(double time) {
     res_stats.time.push_back(time);
     res_stats.server.push_back(server_count);
@@ -222,7 +236,7 @@ private:
   int queue_size;
   int server_count;     /**< number of arrivals being served */
   int queue_count;      /**< number of arrivals waiting */
-  ArrQueue queue;       /**< queue container */
+  RPQueue queue;        /**< queue container */
   ResStats res_stats;   /**< resource statistics */
   
   inline bool room_in_server(int amount) { 

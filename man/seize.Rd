@@ -4,7 +4,7 @@
 \alias{seize}
 \title{Add a seize activity}
 \usage{
-seize(traj, resource, amount = 1)
+seize(traj, resource, amount = 1, priority = 0)
 }
 \arguments{
 \item{traj}{the trajectory object.}
@@ -12,6 +12,8 @@ seize(traj, resource, amount = 1)
 \item{resource}{the name of the resource.}
 
 \item{amount}{the amount to seize.}
+
+\item{priority}{the priority of the seize (a higher integer equals higher priority, defaults to 0)}
 }
 \value{
 The trajectory object.
