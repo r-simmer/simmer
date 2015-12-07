@@ -23,13 +23,13 @@ void Seize<Rcpp::Function>::print(int indent) {
 
 template <>
 double Seize<int>::run(Arrival* arrival) {
-  return arrival->sim->get_resource(resource)->seize(arrival, amount);
+  return arrival->sim->get_resource(resource)->seize(arrival, amount, priority);
 }
 
 template <>
 double Seize<Rcpp::Function>::run(Arrival* arrival) {
   return arrival->sim->get_resource(resource)->seize(arrival, 
-                                    execute_call<int>(amount, arrival, provide_attrs));
+                                    execute_call<int>(amount, arrival, provide_attrs), priority);
 }
 
 template <>
