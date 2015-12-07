@@ -30,6 +30,7 @@ Trajectory <- R6Class("Trajectory",
     seize = function(resource, amount=1, priority=0) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
+      priority <- evaluate_value(priority)
       if (is.function(amount))
         private$add_activity(Seize__new_func(resource, amount, needs_attrs(amount), priority))
       else private$add_activity(Seize__new(resource, amount, priority))

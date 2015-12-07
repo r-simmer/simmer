@@ -70,7 +70,7 @@ template <class T>
 class Seize: public Activity {
 public:
   Seize(std::string resource, T amount, bool provide_attrs, int priority):
-    Activity("Seize", resource, provide_attrs, priority), amount(amount) {}
+    Activity("Seize", resource, provide_attrs, fabs(priority)), amount(amount) {}
   
   void print(int indent=0);
   double run(Arrival* arrival);
@@ -86,7 +86,7 @@ template <class T>
 class Release: public Activity {
 public:
   Release(std::string resource, T amount, bool provide_attrs):
-    Activity("Release", resource, provide_attrs), amount(amount) {}
+    Activity("Release", resource, provide_attrs, -1), amount(amount) {}
   
   void print(int indent=0);
   double run(Arrival* arrival);

@@ -61,7 +61,6 @@ public:
   Arrival(Simulator* sim, std::string name, int mon, Activity* first_activity, Generator* gen):
     Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity), gen(gen) {}
   
-  
   ~Arrival() { attributes.clear(); }
   
   void activate();
@@ -157,11 +156,9 @@ struct RQItem {
   double arrived_at;
   
   bool operator<(const RQItem& other) const {
-    if(priority == other.priority){
+    if(priority == other.priority)
       return arrived_at > other.arrived_at;
-    } else {
-      return priority < other.priority;    
-    }
+    return priority < other.priority;
   }
 };
 

@@ -13,9 +13,12 @@ class Activity;
 struct Event {
   double time;
   Process* process;
+  int priority;
   
   bool operator<(const Event& other) const {
-    return time >= other.time;
+    if (time == other.time)
+      return priority > other.priority;
+    return time > other.time;
   }
 };
 
@@ -69,11 +72,12 @@ public:
   
   /**
    * Schedule a future event.
-   * @param   delay   delay from now()
-   * @param   process the process to schedule
+   * @param   delay     delay from now()
+   * @param   process   the process to schedule
+   * @param   priority  additional key to execute releases before seizes if they coincide
    */
-  inline void schedule(double delay, Process* process) {
-    event_queue.push((Event){now_ + delay, process});
+  inline void schedule(double delay, Process* process, int priority=0) {
+    event_queue.push((Event){now_ + delay, process, priority});
   }
   
   /**

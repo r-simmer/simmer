@@ -21,7 +21,7 @@ inline void Arrival::activate() {
   if (delay == ENQUEUED) goto end;
   
   activity_time += delay;
-  sim->schedule(delay, this);
+  sim->schedule(delay, this, activity ? activity->priority : 0);
   goto end;
   
 reject:
