@@ -22,11 +22,11 @@ public:
    * @param name          the name of the activity
    * @param resource      the resource associated
    * @param provide_attrs whether the activity should expose the arrival's attributes
+   * @param priority      resource accessing priority
    */
   Activity(std::string name, std::string resource, bool provide_attrs, int priority = 0): 
     name(name), resource(resource), provide_attrs(provide_attrs), 
     n(1), priority(priority), next(NULL), prev(NULL)  {}
-  
   
   virtual ~Activity(){}
   

@@ -49,30 +49,30 @@ typedef MAP<std::string, double> Attr;
 class Arrival: public Process {
 public:
   double start_time;    /**< generation time */
-double activity_time; /**< time spent doing something in the system (not waiting in a queue) */
+  double activity_time; /**< time spent doing something in the system (not waiting in a queue) */
 
-/**
- * Constructor.
- * @param sim             a pointer to the simulator
- * @param name            the name
- * @param mon             int that indicates whether this entity must be monitored
- * @param first_activity  the first activity of a user-defined R trajectory
- */
-Arrival(Simulator* sim, std::string name, int mon, Activity* first_activity, Generator* gen):
-  Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity), gen(gen) {}
-
-
-~Arrival() { attributes.clear(); }
-
-void activate();
-
-int set_attribute(std::string key, double value);
-inline Attr* get_attributes() { return &attributes; }
+  /**
+   * Constructor.
+   * @param sim             a pointer to the simulator
+   * @param name            the name
+   * @param mon             int that indicates whether this entity must be monitored
+   * @param first_activity  the first activity of a user-defined R trajectory
+   */
+  Arrival(Simulator* sim, std::string name, int mon, Activity* first_activity, Generator* gen):
+    Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity), gen(gen) {}
+  
+  
+  ~Arrival() { attributes.clear(); }
+  
+  void activate();
+  
+  int set_attribute(std::string key, double value);
+  inline Attr* get_attributes() { return &attributes; }
 
 private:
   Activity* activity; /**< current activity from an R trajectory */
-Generator* gen;     /**< parent generator */
-Attr attributes;    /**< user-defined (key, value) pairs */
+  Generator* gen;     /**< parent generator */
+  Attr attributes;    /**< user-defined (key, value) pairs */
 };
 
 /**
@@ -143,14 +143,14 @@ public:
   int get_n_generated() { return count; }
   
 private:
-  int count;  /**< number of arrivals generated */
+  int count;                /**< number of arrivals generated */
   Activity* first_activity;
   Rcpp::Function dist;
-  ArrStats arr_stats;   /**< arrival statistics */
+  ArrStats arr_stats;       /**< arrival statistics */
   AttrStats attr_stats;     /**< attribute statistics */
 };
 
-struct RQItem{
+struct RQItem {
   Arrival* arrival;
   int amount;
   int priority;
@@ -164,7 +164,6 @@ struct RQItem{
     }
   }
 };
-
 
 typedef PQUEUE<RQItem> RPQueue;
 
@@ -203,8 +202,9 @@ public:
   
   /**
   * Seize resources.
-  * @param   arrival a pointer to the arrival trying to seize resources
-  * @param   amount  the amount of resources needed
+  * @param   arrival  a pointer to the arrival trying to seize resources
+  * @param   amount   the amount of resources needed
+  * @param   priority resource accessing priority
   * 
   * @return  SUCCESS, ENQUEUED, REJECTED
   */
@@ -239,8 +239,7 @@ private:
   int queue_size;
   int server_count;     /**< number of arrivals being served */
   int queue_count;      /**< number of arrivals waiting */
-  RPQueue queue;          /**< queue container */
-  
+  RPQueue queue;        /**< queue container */
   ResStats res_stats;   /**< resource statistics */
   
   inline bool room_in_server(int amount) { 
