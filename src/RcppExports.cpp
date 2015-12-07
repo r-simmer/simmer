@@ -345,14 +345,14 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// activity_show_
-void activity_show_(SEXP activity_, SEXP indent_);
-RcppExport SEXP simmer_activity_show_(SEXP activity_SEXP, SEXP indent_SEXP) {
+// activity_print_
+void activity_print_(SEXP activity_, SEXP indent_);
+RcppExport SEXP simmer_activity_print_(SEXP activity_SEXP, SEXP indent_SEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type indent_(indent_SEXP);
-    activity_show_(activity_, indent_);
+    activity_print_(activity_, indent_);
     return R_NilValue;
 END_RCPP
 }

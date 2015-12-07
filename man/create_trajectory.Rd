@@ -31,7 +31,7 @@ t0 <- create_trajectory("my trajectory") \%>\%
   timeout(function() rnorm(1, 5)) \%>\%
   release("administration", 1)
 
-t0 \%>\% show_trajectory()
+t0
 
 t1 <- create_trajectory("trajectory with a branch") \%>\%
   seize("server", 1) \%>\%
@@ -47,11 +47,11 @@ t1 <- create_trajectory("trajectory with a branch") \%>\%
   release("server", 1) \%>\%
   timeout(function() 2)
 
-t1 \%>\% show_trajectory()
+t1
 }
 \seealso{
 Other methods to deal with trajectories:
-\link{show_trajectory}, \link{get_head}, \link{get_tail},
+\link{get_head}, \link{get_tail},
 \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
 \link{set_attribute}, \link{branch}, \link{rollback}.
 }

@@ -17,7 +17,7 @@ It can be used to get the total number of activities defined inside a trajectory
 }
 \seealso{
 Other methods to deal with trajectories:
-\link{create_trajectory}, \link{show_trajectory}, \link{get_head},
+\link{create_trajectory}, \link{get_head},
 \link{get_tail}, \link{seize}, \link{release}, \link{timeout}, 
 \link{set_attribute}, \link{branch}, \link{rollback}.
 }

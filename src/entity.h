@@ -1,9 +1,7 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include <Rcpp.h>
-#include <queue>
-
+#include "simmer.h"
 #include "stats.h"
 
 #define SUCCESS 0
@@ -43,7 +41,7 @@ public:
   inline virtual bool is_generator() { return 0; }
 };
 
-typedef std::map<std::string, double> Attr;
+typedef MAP<std::string, double> Attr;
 
 /** 
  *  Arrival process.
@@ -240,6 +238,7 @@ private:
   int server_count;     /**< number of arrivals being served */
   int queue_count;      /**< number of arrivals waiting */
   RPQueue queue;          /**< queue container */
+
   ResStats res_stats;   /**< resource statistics */
   
   inline bool room_in_server(int amount) { 

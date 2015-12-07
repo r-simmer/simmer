@@ -1,10 +1,7 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
-#include <Rcpp.h>
-#include <queue>
-#include <map>
-
+#include "simmer.h"
 #include "entity.h"
 
 // forward declarations
@@ -13,31 +10,17 @@ class Activity;
 /**
  * Event container. Encapsulates future processes in the event queue.
  */
-class Event {
-public:
+struct Event {
   double time;
   Process* process;
   
-  /**
-   * Constructor.
-   * @param time    time of occurrence in the future
-   * @param process a pointer to the process to activate
-   */
-  Event(double time, Process* process): time(time), process(process) {}
-};
-
-/**
- * Custom event ordering operator for the event queue (earlier events first).
- * I don't really understand this operator, but it works this way. :-P
- */
-struct EventOrder {
-  bool operator()(const Event* lhs, const Event* rhs) const {
-    return lhs->time > rhs->time;
+  bool operator<(const Event& other) const {
+    return time >= other.time;
   }
 };
 
-typedef std::priority_queue<Event*, std::vector<Event*>, EventOrder> PQueue;
-typedef std::map<std::string, Entity*> EntMap;
+typedef PQUEUE<Event> PQueue;
+typedef MAP<std::string, Entity*> EntMap;
 
 /**
  * The simulator.
@@ -56,9 +39,8 @@ public:
   
   ~Simulator() {
     while (!event_queue.empty()) {
-      if (!event_queue.top()->process->is_generator())
-        delete event_queue.top()->process;
-      delete event_queue.top();
+      if (!event_queue.top().process->is_generator())
+        delete event_queue.top().process;
       event_queue.pop();
     }
     resource_map.clear();
@@ -71,16 +53,15 @@ public:
   void reset() {
     now_ = 0;
     while (!event_queue.empty()) {
-      if (!event_queue.top()->process->is_generator())
-        delete event_queue.top()->process;
-      delete event_queue.top();
+      if (!event_queue.top().process->is_generator())
+        delete event_queue.top().process;
       event_queue.pop();
     }
-    for (EntMap::iterator itr = resource_map.begin(); itr != resource_map.end(); ++itr)
-      ((Resource*)itr->second)->reset();
-    for (EntMap::iterator itr = generator_map.begin(); itr != generator_map.end(); ++itr) {
-      ((Generator*)itr->second)->reset();
-      ((Generator*)itr->second)->activate();
+    foreach_ (EntMap::value_type& itr, resource_map)
+      ((Resource*)itr.second)->reset();
+    foreach_ (EntMap::value_type& itr, generator_map) {
+      ((Generator*)itr.second)->reset();
+      ((Generator*)itr.second)->activate();
     }
   }
   
@@ -92,8 +73,7 @@ public:
    * @param   process the process to schedule
    */
   inline void schedule(double delay, Process* process) {
-    Event* ev = new Event(now_ + delay, process);
-    event_queue.push(ev);
+    event_queue.push((Event){now_ + delay, process});
   }
   
   /**
@@ -101,7 +81,7 @@ public:
    */
   double peek() { 
     if (!event_queue.empty())
-      return event_queue.top()->time;
+      return event_queue.top().time;
     else return -1;
   }
   
@@ -109,11 +89,10 @@ public:
    * Process the next event. Only one step, a giant leap for mankind.
    */
   inline bool step() {
-    Event* ev = get_next();
-    if (!ev) return 0;
-    now_ = ev->time;
-    ev->process->activate();
-    delete ev;
+    if (event_queue.empty()) return 0;
+    now_ = event_queue.top().time;
+    event_queue.top().process->activate();
+    event_queue.pop();
     return 1;
     // ... and that's it! :D
   }
@@ -185,13 +164,6 @@ private:
   PQueue event_queue;       /**< the event queue */
   EntMap resource_map;      /**< map of resources */
   EntMap generator_map;     /**< map of generators */
-  
-  inline Event* get_next() {
-    if (event_queue.empty()) return NULL;
-    Event* ev = event_queue.top();
-    event_queue.pop();
-    return ev;
-  }
 };
 
 #endif

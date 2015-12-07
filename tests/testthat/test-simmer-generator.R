@@ -17,11 +17,21 @@ test_that("an empty trajectory fails", {
 })
 
 test_that("a dist that returns a non-numeric value fails", {
-  t0 <- create_trajectory()%>%timeout(function() 1)
+  t0 <- create_trajectory()%>%timeout(1)
   
   expect_error(simmer()%>%add_generator("customer", t0, function() {}))
 })
 
+test_that("generates the expected amount", {
+  t0 <- create_trajectory()%>%timeout(1)
+  
+  env <- simmer() %>%
+    add_generator("customer", t0, at(c(0, 1, 2))) %>%
+    run(10)
+  
+  expect_error(env %>% get_n_generated("asdf"))
+  expect_equal(env %>% get_n_generated("customer"), 3)
+})
 
 context("generator - convenience funcs")
 

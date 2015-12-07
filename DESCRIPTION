@@ -24,7 +24,9 @@ Suggests:
     knitr,
     rmarkdown,
     covr
-LinkingTo: Rcpp (>= 0.12.0)
+LinkingTo:
+    Rcpp (>= 0.12.0),
+    BH (>= 1.58.0-1)
 License: MIT + file LICENSE
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
