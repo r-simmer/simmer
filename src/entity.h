@@ -25,7 +25,7 @@ public:
     sim(sim), name(name), mon(fabs(mon)) {}
   virtual ~Entity(){}
   inline int is_monitored() { return mon; }
-	
+  
 private:
   int mon;
 };
@@ -49,30 +49,30 @@ typedef MAP<std::string, double> Attr;
 class Arrival: public Process {
 public:
   double start_time;    /**< generation time */
-  double activity_time; /**< time spent doing something in the system (not waiting in a queue) */
-  
-  /**
-   * Constructor.
-   * @param sim             a pointer to the simulator
-   * @param name            the name
-   * @param mon             int that indicates whether this entity must be monitored
-   * @param first_activity  the first activity of a user-defined R trajectory
-   */
-  Arrival(Simulator* sim, std::string name, int mon, Activity* first_activity, Generator* gen):
-    Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity), gen(gen) {}
-  
-  
-  ~Arrival() { attributes.clear(); }
-  
-  void activate();
-  
-  int set_attribute(std::string key, double value);
-  inline Attr* get_attributes() { return &attributes; }
-  
+double activity_time; /**< time spent doing something in the system (not waiting in a queue) */
+
+/**
+ * Constructor.
+ * @param sim             a pointer to the simulator
+ * @param name            the name
+ * @param mon             int that indicates whether this entity must be monitored
+ * @param first_activity  the first activity of a user-defined R trajectory
+ */
+Arrival(Simulator* sim, std::string name, int mon, Activity* first_activity, Generator* gen):
+  Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity), gen(gen) {}
+
+
+~Arrival() { attributes.clear(); }
+
+void activate();
+
+int set_attribute(std::string key, double value);
+inline Attr* get_attributes() { return &attributes; }
+
 private:
   Activity* activity; /**< current activity from an R trajectory */
-  Generator* gen;     /**< parent generator */
-  Attr attributes;    /**< user-defined (key, value) pairs */
+Generator* gen;     /**< parent generator */
+Attr attributes;    /**< user-defined (key, value) pairs */
 };
 
 /**
@@ -91,7 +91,7 @@ public:
    */
   Generator(Simulator* sim, std::string name_prefix, int mon,
             Activity* first_activity, Rcpp::Function dist): 
-    Process(sim, name_prefix, mon), count(0), first_activity(first_activity), dist(dist) {}
+  Process(sim, name_prefix, mon), count(0), first_activity(first_activity), dist(dist) {}
   
   ~Generator() { reset(); }
   
@@ -155,48 +155,42 @@ struct RQItem{
   int amount;
   int priority;
   double arrived_at;
-};
   
-
-struct ResourceOrder {
-  bool operator()(const RQItem lhs, const RQItem rhs) const {
-    if(lhs.priority == rhs.priority)
-    {
-      return lhs.arrived_at > rhs.arrived_at; 
-    }
-    else 
-    {
-      return lhs.priority < rhs.priority;  
+  bool operator<(const RQItem& other) const {
+    if(priority == other.priority){
+      return arrived_at > other.arrived_at;
+    } else {
+      return priority < other.priority;    
     }
   }
 };
 
 
-typedef std::priority_queue<RQItem, std::vector<RQItem>, ResourceOrder > RPQueue;
+typedef PQUEUE<RQItem> RPQueue;
 
 /** 
- *  Generic resource, a passive entity that comprises server + FIFO queue.
- */
+*  Generic resource, a passive entity that comprises server + FIFO queue.
+*/
 class Resource: public Entity {
 public:
   
   /**
-   * Constructor.
-   * @param sim         a pointer to the simulator
-   * @param name        the name
-   * @param mon         int that indicates whether this entity must be monitored
-   * @param capacity    server capacity (-1 means infinity)
-   * @param queue_size  room in the queue (-1 means infinity)
-   */
+  * Constructor.
+  * @param sim         a pointer to the simulator
+  * @param name        the name
+  * @param mon         int that indicates whether this entity must be monitored
+  * @param capacity    server capacity (-1 means infinity)
+  * @param queue_size  room in the queue (-1 means infinity)
+  */
   Resource(Simulator* sim, std::string name, int mon, int capacity, int queue_size): 
-    Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), server_count(0), 
-    queue_count(0) {}
+  Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), server_count(0), 
+  queue_count(0) {}
   
   ~Resource() { reset(); }
   
   /**
-   * Reset the resource: server, queue and statistics.
-   */
+  * Reset the resource: server, queue and statistics.
+  */
   void reset() {
     server_count = 0;
     queue_count = 0;
@@ -208,26 +202,26 @@ public:
   }
   
   /**
-   * Seize resources.
-   * @param   arrival a pointer to the arrival trying to seize resources
-   * @param   amount  the amount of resources needed
-   * 
-   * @return  SUCCESS, ENQUEUED, REJECTED
-   */
+  * Seize resources.
+  * @param   arrival a pointer to the arrival trying to seize resources
+  * @param   amount  the amount of resources needed
+  * 
+  * @return  SUCCESS, ENQUEUED, REJECTED
+  */
   int seize(Arrival* arrival, int amount, int priority);
   
   /**
-   * Release resources.
-   * @param   arrival a pointer to the arrival that releases resources
-   * @param   amount  the amount of resources released
-   * 
-   * @return  SUCCESS
-   */
+  * Release resources.
+  * @param   arrival a pointer to the arrival that releases resources
+  * @param   amount  the amount of resources released
+  * 
+  * @return  SUCCESS
+  */
   int release(Arrival* arrival, int amount);
   
   /**
-   * Gather resource statistics.
-   */
+  * Gather resource statistics.
+  */
   inline void observe(double time) {
     res_stats.time.push_back(time);
     res_stats.server.push_back(server_count);
@@ -246,7 +240,7 @@ private:
   int server_count;     /**< number of arrivals being served */
   int queue_count;      /**< number of arrivals waiting */
   RPQueue queue;          /**< queue container */
-
+  
   ResStats res_stats;   /**< resource statistics */
   
   inline bool room_in_server(int amount) { 
