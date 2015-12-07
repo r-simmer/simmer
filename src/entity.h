@@ -52,7 +52,6 @@ class Arrival: public Process {
 public:
   double start_time;    /**< generation time */
   double activity_time; /**< time spent doing something in the system (not waiting in a queue) */
-  Activity* activity; /**< current activity from an R trajectory */
   
   /**
    * Constructor.
@@ -73,6 +72,7 @@ public:
   inline Attr* get_attributes() { return &attributes; }
   
 private:
+  Activity* activity; /**< current activity from an R trajectory */
   Generator* gen;     /**< parent generator */
   Attr attributes;    /**< user-defined (key, value) pairs */
 };
@@ -208,7 +208,7 @@ public:
    * 
    * @return  SUCCESS, ENQUEUED, REJECTED
    */
-  int seize(Arrival* arrival, int amount);
+  int seize(Arrival* arrival, int amount, int priority);
   
   /**
    * Release resources.

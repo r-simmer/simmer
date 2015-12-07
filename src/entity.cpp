@@ -58,7 +58,7 @@ int Arrival::set_attribute(std::string key, double value) {
   return 0;
 }
 
-int Resource::seize(Arrival* arrival, int amount) {
+int Resource::seize(Arrival* arrival, int amount, int priority) {
   // monitoring
   if (is_monitored()) observe(sim->now());
   
@@ -70,7 +70,7 @@ int Resource::seize(Arrival* arrival, int amount) {
   // enqueue
   else if (room_in_queue(amount)) {
     queue_count += amount;
-    queue.push((RQItem){arrival, amount, arrival->activity->priority});
+    queue.push((RQItem){arrival, amount, priority});
     return ENQUEUED;
   }
   // reject
