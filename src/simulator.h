@@ -10,16 +10,14 @@ class Activity;
 /**
  * Event container. Encapsulates future processes in the event queue.
  */
-typedef struct Event {
+struct Event {
   double time;
   Process* process;
-  
-  Event(double time, Process* process): time(time), process(process) {}
   
   bool operator<(const Event& other) const {
     return time >= other.time;
   }
-} Event;
+};
 
 typedef PQUEUE<Event> PQueue;
 typedef MAP<std::string, Entity*> EntMap;
@@ -75,7 +73,7 @@ public:
    * @param   process the process to schedule
    */
   inline void schedule(double delay, Process* process) {
-    event_queue.push(Event(now_ + delay, process));
+    event_queue.push((Event){now_ + delay, process});
   }
   
   /**
