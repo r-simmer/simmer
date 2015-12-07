@@ -70,7 +70,7 @@ int Resource::seize(Arrival* arrival, int amount) {
   // enqueue
   else if (room_in_queue(amount)) {
     queue_count += amount;
-    queue.push(std::make_pair(arrival, amount));
+    queue.push((RQItem){arrival, amount, arrival->activity->priority});
     return ENQUEUED;
   }
   // reject
@@ -86,8 +86,8 @@ int Resource::release(Arrival* arrival, int amount) {
   
   // serve from the queue
   if (queue_count) {
-    Arrival* another_arrival = queue.front().first;
-    int another_amount = queue.front().second;
+    Arrival* another_arrival = queue.top().arrival;
+    int another_amount = queue.top().amount;
     queue.pop();
     queue_count -= another_amount;
     server_count += another_amount;

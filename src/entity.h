@@ -52,6 +52,7 @@ class Arrival: public Process {
 public:
   double start_time;    /**< generation time */
   double activity_time; /**< time spent doing something in the system (not waiting in a queue) */
+  Activity* activity; /**< current activity from an R trajectory */
   
   /**
    * Constructor.
@@ -63,6 +64,7 @@ public:
   Arrival(Simulator* sim, std::string name, int mon, Activity* first_activity, Generator* gen):
     Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity), gen(gen) {}
   
+  
   ~Arrival() { attributes.clear(); }
   
   void activate();
@@ -71,7 +73,6 @@ public:
   inline Attr* get_attributes() { return &attributes; }
   
 private:
-  Activity* activity; /**< current activity from an R trajectory */
   Generator* gen;     /**< parent generator */
   Attr attributes;    /**< user-defined (key, value) pairs */
 };
@@ -151,7 +152,21 @@ private:
   AttrStats attr_stats;     /**< attribute statistics */
 };
 
-typedef std::queue<std::pair<Arrival*, int> > Queue;
+struct RQItem{
+  Arrival* arrival;
+  int amount;
+  int priority;
+};
+  
+
+struct ResourceOrder {
+  bool operator()(const RQItem lhs, const RQItem rhs) const {
+    return lhs.priority < rhs.priority;
+  }
+};
+
+
+typedef std::priority_queue<RQItem, std::vector<RQItem>, ResourceOrder > RPQueue;
 
 /** 
  *  Generic resource, a passive entity that comprises server + FIFO queue.
@@ -180,7 +195,7 @@ public:
     server_count = 0;
     queue_count = 0;
     while (!queue.empty()) {
-      delete queue.front().first;
+      delete queue.top().arrival;
       queue.pop();
     }
     res_stats.clear();
@@ -224,7 +239,7 @@ private:
   int queue_size;
   int server_count;     /**< number of arrivals being served */
   int queue_count;      /**< number of arrivals waiting */
-  Queue queue;          /**< queue container */
+  RPQueue queue;          /**< queue container */
   ResStats res_stats;   /**< resource statistics */
   
   inline bool room_in_server(int amount) { 

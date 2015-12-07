@@ -66,3 +66,50 @@ test_that("resources are  correctly monitored", {
   
   expect_equal(resources[2,]$server, 1) # to be discussed: debatable whether or not it should equal 1 or 0
 })
+
+test_that("priority queues are adhered to", {
+  ### first run
+  t0 <- create_trajectory("nonprior") %>%
+    seize("server", 1, priority=0) %>%
+    timeout(2) %>%
+    release("server", 1)
+  
+  t1 <- create_trajectory("prior") %>%
+    seize("server", 1, priority=1) %>%
+    timeout(2) %>%
+    release("server", 1)
+  
+  env <- simmer() %>%
+    add_resource("server", 1) %>%
+    add_generator("__nonprior", t0, at(c(0, 1))) %>%
+    add_generator("__prior", t1, at(1)) %>% # should be served second
+    run()
+  
+  resources <-
+    env%>%get_mon_arrivals()
+    
+  expect_equal(resources[resources$name=="__prior0",]$end_time, 4) 
+  
+    ### second run
+  t0 <- create_trajectory("nonprior") %>%
+    seize("server", 1, priority=0) %>%
+    timeout(2) %>%
+    release("server", 1)
+  
+  t1 <- create_trajectory("prior") %>%
+    seize("server", 1, priority=1) %>%
+    timeout(2) %>%
+    release("server", 1)
+  
+  env <- simmer() %>%
+    add_resource("server", 1) %>%
+    add_generator("__nonprior", t0, at(c(0, 0))) %>%
+    add_generator("__prior", t1, at(1)) %>% # should be served second
+    run()
+  
+  resources <-
+    env%>%get_mon_arrivals()
+    
+  expect_equal(resources[resources$name=="__prior0",]$end_time, 4) 
+  
+})

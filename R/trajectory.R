@@ -29,12 +29,12 @@ Trajectory <- R6Class("Trajectory",
     
     get_n_activities = function() { private$n_activities },
     
-    seize = function(resource, amount=1) {
+    seize = function(resource, amount=1, priority=0) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
       if (is.function(amount))
-        private$add_activity(Seize__new_func(resource, amount, needs_attrs(amount)))
-      else private$add_activity(Seize__new(resource, amount))
+        private$add_activity(Seize__new_func(resource, amount, needs_attrs(amount), priority))
+      else private$add_activity(Seize__new(resource, amount, priority))
     },
     
     release = function(resource, amount=1) {
@@ -206,7 +206,7 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #' \link{get_tail}, \link{get_n_activities}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
-seize <- function(traj, resource, amount=1) traj$seize(resource, amount)
+seize <- function(traj, resource, amount=1, priority=0) traj$seize(resource, amount, priority)
 
 #' Add a release activity
 #'

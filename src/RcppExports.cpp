@@ -197,27 +197,29 @@ BEGIN_RCPP
 END_RCPP
 }
 // Seize__new
-SEXP Seize__new(SEXP resource_, SEXP amount_);
-RcppExport SEXP simmer_Seize__new(SEXP resource_SEXP, SEXP amount_SEXP) {
+SEXP Seize__new(SEXP resource_, SEXP amount_, SEXP priority_);
+RcppExport SEXP simmer_Seize__new(SEXP resource_SEXP, SEXP amount_SEXP, SEXP priority_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type resource_(resource_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
-    __result = Rcpp::wrap(Seize__new(resource_, amount_));
+    Rcpp::traits::input_parameter< SEXP >::type priority_(priority_SEXP);
+    __result = Rcpp::wrap(Seize__new(resource_, amount_, priority_));
     return __result;
 END_RCPP
 }
 // Seize__new_func
-SEXP Seize__new_func(SEXP resource_, Function amount, SEXP provide_attrs_);
-RcppExport SEXP simmer_Seize__new_func(SEXP resource_SEXP, SEXP amountSEXP, SEXP provide_attrs_SEXP) {
+SEXP Seize__new_func(SEXP resource_, Function amount, SEXP provide_attrs_, SEXP priority_);
+RcppExport SEXP simmer_Seize__new_func(SEXP resource_SEXP, SEXP amountSEXP, SEXP provide_attrs_SEXP, SEXP priority_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type resource_(resource_SEXP);
     Rcpp::traits::input_parameter< Function >::type amount(amountSEXP);
     Rcpp::traits::input_parameter< SEXP >::type provide_attrs_(provide_attrs_SEXP);
-    __result = Rcpp::wrap(Seize__new_func(resource_, amount, provide_attrs_));
+    Rcpp::traits::input_parameter< SEXP >::type priority_(priority_SEXP);
+    __result = Rcpp::wrap(Seize__new_func(resource_, amount, provide_attrs_, priority_));
     return __result;
 END_RCPP
 }
