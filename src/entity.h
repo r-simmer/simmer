@@ -154,12 +154,20 @@ struct RQItem{
   Arrival* arrival;
   int amount;
   int priority;
+  double arrived_at;
 };
   
 
 struct ResourceOrder {
   bool operator()(const RQItem lhs, const RQItem rhs) const {
-    return lhs.priority < rhs.priority;
+    if(lhs.priority == rhs.priority)
+    {
+      return lhs.arrived_at > rhs.arrived_at; 
+    }
+    else 
+    {
+      return lhs.priority < rhs.priority;  
+    }
   }
 };
 

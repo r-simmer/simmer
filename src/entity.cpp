@@ -70,7 +70,7 @@ int Resource::seize(Arrival* arrival, int amount, int priority) {
   // enqueue
   else if (room_in_queue(amount)) {
     queue_count += amount;
-    queue.push((RQItem){arrival, amount, priority});
+    queue.push((RQItem){arrival, amount, priority, sim->now()});
     return ENQUEUED;
   }
   // reject

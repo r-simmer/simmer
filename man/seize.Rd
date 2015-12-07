@@ -12,6 +12,8 @@ seize(traj, resource, amount = 1, priority = 0)
 \item{resource}{the name of the resource.}
 
 \item{amount}{the amount to seize.}
+
+\item{the}{priority of the seize (a higher integer equals higher priority, defaults to 0)}
 }
 \value{
 The trajectory object.

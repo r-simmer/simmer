@@ -201,7 +201,7 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #' @param traj the trajectory object.
 #' @param resource the name of the resource.
 #' @param amount the amount to seize.
-#' @oaram the priority of the seize (a higher integer equals higher priority, defaults to 0)
+#' @param the priority of the seize (a higher integer equals higher priority, defaults to 0)
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
 #' \link{create_trajectory}, \link{get_head},
