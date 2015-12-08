@@ -23,7 +23,7 @@ Simmer.wrap <- R6Class("Simmer.wrap",
         private$server_count[[name]] <- env$get_server_count(name)
         private$queue_count[[name]] <- env$get_queue_count(name)
       }
-      invisible(self)
+      self
     },
     
     print = function() {

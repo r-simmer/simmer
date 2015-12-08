@@ -8,7 +8,7 @@ Simmer <- R6Class("Simmer",
     initialize = function(name="anonymous", verbose=FALSE) {
       self$name <- evaluate_value(name)
       private$sim_obj <- Simulator__new(name, evaluate_value(verbose))
-      invisible(self)
+      self
     },
     
     print = function() {
@@ -35,7 +35,7 @@ Simmer <- R6Class("Simmer",
     
     reset = function() { 
       reset_(private$sim_obj) 
-      invisible(self)
+      self
     },
     
     now = function() { now_(private$sim_obj) },
@@ -48,7 +48,7 @@ Simmer <- R6Class("Simmer",
     
     step = function() {
       step_(private$sim_obj)
-      invisible(self)
+      self
     },
     
     run = function(until=1000) {
@@ -56,7 +56,7 @@ Simmer <- R6Class("Simmer",
       if(!is.finite(until)) until <- 1000
       
       run_(private$sim_obj, until)
-      invisible(self)
+      self
     },
     
     add_resource = function(name, capacity=1, queue_size=Inf, mon=TRUE) {
@@ -69,7 +69,7 @@ Simmer <- R6Class("Simmer",
       
       ret <- add_resource_(private$sim_obj, name, capacity, queue_size, mon)
       if (ret) private$res[[name]] <- mon
-      invisible(self)
+      self
     },
     
     add_generator = function(name_prefix, trajectory, dist, mon=1) {
@@ -80,7 +80,7 @@ Simmer <- R6Class("Simmer",
 
       ret <- add_generator_(private$sim_obj, name_prefix, trajectory$get_head(), dist, mon)
       if (ret) private$gen[[name_prefix]] <- mon
-      invisible(self)
+      self
     },
     
     get_mon_arrivals = function() {
