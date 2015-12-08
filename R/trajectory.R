@@ -6,7 +6,7 @@ Trajectory <- R6Class("Trajectory",
     
     initialize = function(name="anonymous") { 
       self$name <- evaluate_value(name)
-      invisible(self)
+      self
     },
     
     print = function(indent=0) {
@@ -90,7 +90,7 @@ Trajectory <- R6Class("Trajectory",
         activity_chain_(private$tail, activity)
       private$tail <- activity
       private$n_activities <- private$n_activities + activity_get_n_(activity)
-      invisible(self)
+      self
     }
   )
 )
