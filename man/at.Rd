@@ -2,18 +2,18 @@
 % Please edit documentation in R/convenience_funcs.R
 \name{at}
 \alias{at}
-\title{generate arrivals at specific times (generator convenience function)}
+\title{Arrivals at specific times}
 \usage{
 at(...)
 }
 \arguments{
-\item{...}{a vector or multiple paramters of times at which to initiate an arrival}
+\item{...}{a vector or multiple parameters of times at which to initiate an arrival.}
 }
 \value{
-returns a generator function
+Returns a generator function.
 }
 \description{
-generate arrivals at specific times (generator convenience function)
+Generator convenience function to generate arrivals at specific times.
 }
 \examples{
 t0 <- create_trajectory("my trajectory") \%>\%
@@ -34,7 +34,7 @@ env <- simmer("SuperDuperSim") \%>\%
   add_resource("nurse", 1) \%>\%
   add_resource("doctor", 2) \%>\%
   add_resource("administration", 1) \%>\%
-  add_generator("patient", t0, at(c(0,10,30)))
+  add_generator("patient", t0, at(0, c(1,10,30), 40, 43))
 }
 \seealso{
 \link{add_generator}
