@@ -3,4 +3,6 @@
  - change default behavior of `seize` and `release` (for version >=4.0.0, see issues #25, #27)
  - implement batch/separate activities
  - implement a parallel branch activity
- - del_generator(), del_resource()
+ - del_generator, del_resource
+ - add[del]_container (see simpy.resources.container)
+ - add[del]_store (see simpy.resources.store)
