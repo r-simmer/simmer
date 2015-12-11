@@ -6,3 +6,4 @@
  - del_generator, del_resource
  - add[del]_container (see simpy.resources.container)
  - add[del]_store (see simpy.resources.store)
+ - monitoring: start/activity/end time per resource
