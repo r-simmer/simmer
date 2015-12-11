@@ -49,3 +49,14 @@ test_that("at returns the correct values", {
   expect_equal(gen_func(), -1)
   
 })
+
+test_that("from returns the correct values", {
+  gen_func<-from(5, function() 1)
+  expect_equal(gen_func(), 5)
+  expect_equal(gen_func(), 1)
+  
+  gen_func2<-from(5, function() 1, arrive = FALSE)
+  expect_equal(gen_func2(), 6)
+  expect_equal(gen_func2(), 1)
+  
+})
