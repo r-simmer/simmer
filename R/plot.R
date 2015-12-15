@@ -45,15 +45,15 @@ plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", 
   
   if("server" %in% items){
     plot_obj <- plot_obj +
-      ggplot2::geom_hline(y=capacity, lty=2, color="red")
+      ggplot2::geom_hline(yintercept=capacity, lty=2, color="red")
   }
   if("queue" %in% items && queue_size >= 0){
     plot_obj <- plot_obj +
-      ggplot2::geom_hline(y=queue_size, lty=2, color="green")
+      ggplot2::geom_hline(yintercept=queue_size, lty=2, color="green")
   }
   if("system" %in% items && queue_size >= 0){
     plot_obj <- plot_obj +
-      ggplot2::geom_hline(y=system, lty=2, color="blue")
+      ggplot2::geom_hline(yintercept=system, lty=2, color="blue")
   }
   
   if(steps == T){
