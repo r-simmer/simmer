@@ -177,7 +177,7 @@ plot_evolution_arrival_times <- function(envs, type=c("flow_time","activity_time
 #' @export
 plot_attributes<-function(envs, keys=c()){
   # Hack to avoid spurious notes
-  key <- value <- replication <- NULL
+  time <- key <- value <- replication <- NULL
   
   if (!is.list(envs)) envs <- list(envs)
   

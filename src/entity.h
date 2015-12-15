@@ -155,6 +155,9 @@ struct RQItem {
   int priority;
   double arrived_at;
   
+  RQItem(Arrival* arrival, int amount, int priority, double arrived_at):
+    arrival(arrival), amount(amount), priority(priority), arrived_at(arrived_at) {}
+  
   bool operator<(const RQItem& other) const {
     if(priority == other.priority)
       return arrived_at > other.arrived_at;

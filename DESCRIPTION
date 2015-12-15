@@ -14,7 +14,8 @@ Depends:
 Imports:
     Rcpp,
     R6,
-    magrittr
+    magrittr,
+    methods
 Suggests:
     dplyr,
     tidyr,

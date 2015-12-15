@@ -15,6 +15,9 @@ struct Event {
   Process* process;
   int priority;
   
+  Event(double time, Process* process, int priority):
+    time(time), process(process), priority(priority) {}
+  
   bool operator<(const Event& other) const {
     if (time == other.time)
       return priority > other.priority;
@@ -77,7 +80,7 @@ public:
    * @param   priority  additional key to execute releases before seizes if they coincide
    */
   inline void schedule(double delay, Process* process, int priority=0) {
-    event_queue.push((Event){now_ + delay, process, priority});
+    event_queue.push(Event(now_ + delay, process, priority));
   }
   
   /**
