@@ -40,8 +40,8 @@ test_that("resource slots are correctly filled", {
   
   env <- simmer() %>%
     add_resource("server", 2, 2) %>%
-    add_generator("customer", t0, function() 1) %>%
-    run(5.5)
+    add_generator("customer", t0, at(1:5)) %>%
+    run()
   
   arrivals <- env%>%get_mon_arrivals()
   resources <- env%>%get_mon_resources()
@@ -87,10 +87,8 @@ test_that("priority queues are adhered to (1)", {
   arrs <-
     env%>%get_mon_arrivals()
     
-  expect_equal(arrs[arrs$name=="__prior0",]$end_time, 4) 
-  
+  expect_equal(arrs[arrs$name=="__prior0",]$end_time, 4)
 })
-
 
 test_that("priority queues are adhered to (2)", {
   t0 <- create_trajectory("nonprior") %>%
@@ -113,10 +111,7 @@ test_that("priority queues are adhered to (2)", {
     env%>%get_mon_arrivals()
     
   expect_equal(arrs[arrs$name=="__prior0",]$end_time, 4) 
-  
 })
-
-
 
 test_that("priority queues are adhered to and same level priorities are processed FIFO", {
   t0 <- create_trajectory("_t0_prior") %>%
@@ -143,6 +138,5 @@ test_that("priority queues are adhered to and same level priorities are processe
     
   expect_equal(as.character(arrs_ordered$name), 
                 c("_t0_prior0", "_t1_prior0", "_t0_prior1", "_t1_prior1", 
-                  "_t0_prior2", "_t1_prior2", "_t0_prior3", "_t1_prior3")) 
-  
+                  "_t0_prior2", "_t1_prior2", "_t0_prior3", "_t1_prior3"))
 })

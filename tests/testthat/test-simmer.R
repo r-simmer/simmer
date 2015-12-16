@@ -33,18 +33,9 @@ test_that("the simulator is reset", {
 })
 
 test_that("the simulator stops if there are no more events", {
-  onlyone <- function(){
-    generate <- 1
-    function() {
-      if (generate) {
-        generate <<- 0
-        return(1)
-      } else return(-1)
-    }
-  }
   env <- simmer() %>%
     add_resource("server", 1) %>%
-    add_generator("entity", t0, onlyone()) %>%
+    add_generator("entity", t0, at(1)) %>%
     run(10)
   
   expect_equal(env%>%now(), 1)
@@ -53,7 +44,7 @@ test_that("the simulator stops if there are no more events", {
 test_that("a negative simulation time is converted to positive", {
   env <- simmer() %>%
     add_resource("server", 1) %>%
-    add_generator("entity", t0, function() 1) %>%
+    add_generator("entity", t0, at(10)) %>%
     run(-10)
   
   expect_equal(env%>%now(), 10)
@@ -76,8 +67,8 @@ test_that("there is verbose output", {
   expect_output(
   env <- simmer(verbose=TRUE) %>%
     add_resource("server", 1) %>%
-    add_generator("entity", t0, function() 1) %>%
-    run(2),
+    add_generator("entity", t0, at(1)) %>%
+    run(),
   "sim: anonymous | time: 1 | arrival: entity0 | activity: Seize(server)
   sim: anonymous | time: 1 | arrival: entity0 | activity: Release(server)")
 })

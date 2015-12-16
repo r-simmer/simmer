@@ -1,6 +1,8 @@
 context("simulation 1")
 
 test_that("a simple deterministic simulation with rejections behaves as expected", {
+  n <- 100
+  
   t0 <- create_trajectory("") %>%
     seize("server", 1) %>%
     timeout(function() 1.5) %>%
@@ -8,7 +10,7 @@ test_that("a simple deterministic simulation with rejections behaves as expected
   
   env <- simmer() %>%
     add_resource("server", 1, queue_size=0) %>%
-    add_generator("entity", t0, function() 1)
+    add_generator("entity", t0, at(1:n))
   
   expect_warning(env%>%add_generator("entity", t0, function() 2))
   expect_equal(env%>%now(), 0)
@@ -19,13 +21,12 @@ test_that("a simple deterministic simulation with rejections behaves as expected
   expect_equal(env%>%now(), 1)
   expect_equal(env%>%peek(), 2)
   
-  n <- 100
-  env%>%run(n+1)
+  env%>%run()
   arrivals <- env%>%get_mon_arrivals()
   resources <- env%>%get_mon_resources()
   
-  expect_equal(env%>%now(), n+1)
-  expect_equal(env%>%peek(), n+1)
+  expect_equal(env%>%now(), n+0.5)
+  expect_equal(env%>%peek(), Inf)
   expect_equal(nrow(arrivals), n)
   expect_equal(nrow(subset(arrivals, finished)), n/2)
   expect_equal(nrow(subset(arrivals, !finished)), n/2)
@@ -34,6 +35,5 @@ test_that("a simple deterministic simulation with rejections behaves as expected
   
   expect_equal(nrow(resources), n*1.5)
   expect_equal(sum(resources$server), n)
-  expect_equal(mean(resources$server), 2/3)
   expect_equal(sum(resources$queue), 0)
 })
