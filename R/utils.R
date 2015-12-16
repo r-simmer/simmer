@@ -2,6 +2,10 @@
 #' @export
 magrittr::`%>%`
 
+.onUnload <- function (libpath) {
+  library.dynam.unload("simmer", libpath)
+}
+
 evaluate_value<-function(value){
   tryCatch(
     {

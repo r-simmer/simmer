@@ -108,7 +108,12 @@ public:
    * Executes steps until the given criterion is met.
    * @param   until   time of ending
    */
-  void run(double until) { while ((now_ < until) && step()); }
+  void run(double until) {
+    long int nsteps = 0;
+    while ((now_ < until) && step())
+      if (++nsteps % 100000 == 0)
+        Rcpp::checkUserInterrupt();
+  }
   
   /**
    * Add a generator of arrivals to the simulator.

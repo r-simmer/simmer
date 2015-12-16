@@ -68,11 +68,11 @@ void Timeout<Rcpp::Function>::print(int indent) {
 }
 
 template <>
-double Timeout<double>::run(Arrival* arrival) { return fabs(delay); }
+double Timeout<double>::run(Arrival* arrival) { return std::abs(delay); }
 
 template <>
 double Timeout<Rcpp::Function>::run(Arrival* arrival) {
-  return fabs(execute_call<double>(delay, arrival, provide_attrs));
+  return std::abs(execute_call<double>(delay, arrival, provide_attrs));
 }
 
 template <>

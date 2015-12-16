@@ -70,7 +70,7 @@ template <class T>
 class Seize: public Activity {
 public:
   Seize(std::string resource, T amount, bool provide_attrs, int priority):
-    Activity("Seize", resource, provide_attrs, fabs(priority)), amount(amount) {}
+    Activity("Seize", resource, provide_attrs, std::abs(priority)), amount(amount) {}
   
   void print(int indent=0);
   double run(Arrival* arrival);
@@ -204,7 +204,7 @@ template <class T>
 class Rollback: public Activity {
 public:
   Rollback(int amount, T times, bool provide_attrs):
-    Activity("Rollback", "none", provide_attrs), amount(fabs(amount)), times(times),
+    Activity("Rollback", "none", provide_attrs), amount(std::abs(amount)), times(times),
     cached(NULL), selected(NULL) {}
   
   ~Rollback() { pending.clear(); }

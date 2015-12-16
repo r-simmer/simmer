@@ -32,7 +32,7 @@ end:
   return;
 }
 
-inline void Generator::activate() {
+void Generator::activate() {
   // get the delay for the next arrival
   double delay = Rcpp::as<double>(dist());
   if (delay < 0) return;

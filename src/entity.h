@@ -22,7 +22,7 @@ public:
   std::string name;
   
   Entity(Simulator* sim, std::string name, int mon): 
-    sim(sim), name(name), mon(fabs(mon)) {}
+    sim(sim), name(name), mon(std::abs(mon)) {}
   virtual ~Entity(){}
   inline int is_monitored() { return mon; }
   
@@ -35,10 +35,13 @@ private:
  */
 class Process: public Entity {
 public:
-  Process(Simulator* sim, std::string name, int mon): Entity(sim, name, mon) {}
+  Process(Simulator* sim, std::string name, int mon, bool is_gen=false): 
+    Entity(sim, name, mon), is_gen(is_gen) {}
   virtual ~Process(){}
   virtual void activate() = 0;
-  inline virtual bool is_generator() { return 0; }
+  inline bool is_generator() { return is_gen; }
+private:
+  bool is_gen;
 };
 
 typedef MAP<std::string, double> Attr;
@@ -90,7 +93,7 @@ public:
    */
   Generator(Simulator* sim, std::string name_prefix, int mon,
             Activity* first_activity, Rcpp::Function dist): 
-  Process(sim, name_prefix, mon), count(0), first_activity(first_activity), dist(dist) {}
+    Process(sim, name_prefix, mon, true), count(0), first_activity(first_activity), dist(dist) {}
   
   ~Generator() { reset(); }
   
@@ -104,7 +107,6 @@ public:
   }
   
   void activate();
-  inline bool is_generator() { return 1; }
   
   /**
    * Gather attribute statistics.
