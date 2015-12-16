@@ -2,8 +2,9 @@ language: r
 sudo: required
 warnings_are_errors: true
 env:
-  - PKG_CXXFLAGS+="-Wall -Wno-unused -pedantic"
-  - CXX=clang++
+  global:
+    - PKG_CXXFLAGS+="-Wall -Wno-unused -pedantic"
+    - CXX=clang++
 
 r_binary_packages:
   - Rcpp
