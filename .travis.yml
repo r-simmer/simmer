@@ -1,18 +1,21 @@
 language: r
 sudo: required
 warnings_are_errors: true
+compiler: clang
+env:
+  - PKG_CXXFLAGS="-Wall -Wno-unused -pedantic"
 
 r_binary_packages:
- - Rcpp
- - R6
- - magrittr
- - dplyr
- - tidyr
- - ggplot2
- - scales
- - testthat
- - knitr
- - rmarkdown
+  - Rcpp
+  - R6
+  - magrittr
+  - dplyr
+  - tidyr
+  - ggplot2
+  - scales
+  - testthat
+  - knitr
+  - rmarkdown
 
 after_success:
- - Rscript -e 'library(covr);coveralls()'
+  - Rscript -e 'library(covr);coveralls()'
