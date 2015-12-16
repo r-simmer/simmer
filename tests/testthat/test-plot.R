@@ -55,7 +55,8 @@ test_that("multiple replication plots", {
 test_that("attributes are plottable", {
   t0<-
     create_trajectory() %>%
-    set_attribute("my_attr", function() runif(1))
+    set_attribute("my_attr1", function() runif(1)) %>%
+    set_attribute("my_attr2", function() runif(1))
   
   reps <- lapply(1:100, function(i) {
     simmer() %>%
@@ -63,5 +64,6 @@ test_that("attributes are plottable", {
       run(80)
   })
   
+  expect_is(plot_attributes(reps, "my_attr1"), "ggplot")
   expect_is(plot_attributes(reps), "ggplot")
 })
