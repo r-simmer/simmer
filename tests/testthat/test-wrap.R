@@ -8,12 +8,12 @@ test_that("the wrapper behaves as expected", {
   
   env <- simmer() %>%
     add_resource("server", 1, 0) %>%
-    add_generator("dummy", t0, function() 1, mon=2) %>%
-    run(10.5) %>%
+    add_generator("dummy", t0, at(1:10), mon=2) %>%
+    run() %>%
     wrap()
   
-  expect_equal(env%>%now(), 11)
-  expect_equal(env%>%peek(), 11)
+  expect_equal(env%>%now(), 10)
+  expect_equal(env%>%peek(), Inf)
   
   arrivals <- env%>%get_mon_arrivals()
   attributes <- env%>%get_mon_attributes()
@@ -23,7 +23,7 @@ test_that("the wrapper behaves as expected", {
   expect_equal(nrow(attributes), 10)
   expect_equal(nrow(resources), 20)
   expect_error(env%>%get_n_generated("asdf"))
-  expect_equal(env%>%get_n_generated("dummy"), 12)
+  expect_equal(env%>%get_n_generated("dummy"), 10)
   expect_error(env%>%get_capacity("asdf"))
   expect_equal(env%>%get_capacity("server"), 1)
   expect_error(env%>%get_queue_size("asdf"))
