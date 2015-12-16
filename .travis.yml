@@ -3,7 +3,7 @@ sudo: required
 warnings_are_errors: true
 env:
   global:
-    - PKG_CXXFLAGS+="-Wall -Wno-unused -pedantic"
+    - PKG_CXXFLAGS += "-Wall -Wno-unused -pedantic"
     - CXX=clang++
     - _R_CHECK_CRAN_INCOMING_=FALSE
     - ASAN="-fsanitize=address -fno-omit-frame-pointer"
