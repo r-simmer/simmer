@@ -4,6 +4,8 @@
 ^README\.Rmd$
 ^README\.md$
 ^README-.*\.png$
+^cran-comments\.md$
+NEWS\.md
 working_dir
 .gitignore
 .git
