@@ -30,16 +30,18 @@ test_that("a rollback loops the correct number of times", {
   t0 <- create_trajectory() %>% rollback(0, 3)
   t1 <- create_trajectory() %>% rollback(0, check=three_times())
   
-  env0 <- simmer(verbose=TRUE) %>% add_generator("dummy", t0, function() 1)
-  env1 <- simmer(verbose=TRUE) %>% add_generator("dummy", t1, function() 1)
+  env0 <- simmer(verbose=TRUE) %>% add_generator("dummy", t0, at(0))
+  env1 <- simmer(verbose=TRUE) %>% add_generator("dummy", t1, at(0))
   
-  output <- "sim: anonymous | time: 1 | arrival: dummy0 | activity: Rollback(none)
-sim: anonymous | time: 1 | arrival: dummy0 | activity: Rollback(none)
-sim: anonymous | time: 1 | arrival: dummy0 | activity: Rollback(none)
-sim: anonymous | time: 1 | arrival: dummy0 | activity: Rollback(none)"
+  output <- paste0(".*(",
+    ".*time: 0.*dummy0.*Rollback",
+    ".*time: 0.*dummy0.*Rollback",
+    ".*time: 0.*dummy0.*Rollback",
+    ".*time: 0.*dummy0.*Rollback",
+  ").*")
   
-  expect_output(env0%>%run(2), output, fixed=T)
-  expect_output(env1%>%run(2), output, fixed=T)
+  expect_output(env0%>%run(), output)
+  expect_output(env1%>%run(), output)
   
   t0 <- create_trajectory() %>% rollback(0, Inf)
   expect_output(t0%>%get_tail()%>%print_activity(), "Inf")

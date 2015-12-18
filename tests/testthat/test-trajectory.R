@@ -52,26 +52,28 @@ test_that("the trajectory stores the right number of activities", {
   expect_is(t0, "Trajectory")
   expect_equal(t0%>%get_n_activities(), 13)
   
-  output <- "Trajectory: my trajectory, 13 activities
-{ Activity: Seize(nurse) | amount: 1 }
-{ Activity: Timeout(none) | task: function() }
-{ Activity: Release(nurse) | amount: 1 }
-{ Activity: Branch(none) | merge: 1 }
-  Trajectory: anonymous, 6 activities
-  { Activity: Seize(doctor) | amount: function() }
-  { Activity: Timeout(none) | task: function() }
-  { Activity: Release(doctor) | amount: function() }
-  { Activity: Branch(none) | merge: 1 }
-    Trajectory: anonymous, 3 activities
-    { Activity: Seize(administration) | amount: 1 }
-    { Activity: Timeout(none) | delay: 1 }
-    { Activity: Release(administration) | amount: 1 }
-{ Activity: Rollback(none) | amount: 1 (Branch), times: 1 }
-{ Activity: Rollback(none) | amount: 1 (Rollback), check: function() }
-{ Activity: SetAttribute(none) | key: dummy, value: 1 }
-{ Activity: SetAttribute(none) | key: dummy, value: function() }"
+  output <- paste0(".*(",
+    "13 activities", 
+    ".*Seize.*nurse.*1", 
+    ".*Timeout.*function", 
+    ".*Release.*nurse.*1", 
+    ".*Branch.*1", 
+      ".*6 activities", 
+      ".*Seize.*doctor.*function", 
+      ".*Timeout.*function", 
+      ".*Release.*doctor.*function", 
+      ".*Branch.*1", 
+        ".*3 activities", 
+        ".*Seize.*administration.*1", 
+        ".*Timeout.*1", 
+        ".*Release.*administration.*1", 
+    ".*Rollback.*1.*Branch.*1", 
+    ".*Rollback.*1.*Rollback.*function", 
+    ".*SetAttribute.*1", 
+    ".*SetAttribute.*function", 
+  ").*")
   
-  expect_output(t0, output, fixed = TRUE)
+  expect_output(t0, output)
 })
 
 test_that("the head/tail pointers are correctly placed", {

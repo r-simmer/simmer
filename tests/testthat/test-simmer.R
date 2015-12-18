@@ -64,13 +64,18 @@ test_that("a stopped simulation can be resumed", {
 })
 
 test_that("there is verbose output", {
+  output <- paste0(".*(",
+    ".*sim.*dummy.*time: 1.*arrival0.*Seize.*server",
+    ".*sim.*dummy.*time: 1.*arrival0.*Release.*server",
+  ").*")
+  
   expect_output(
-  env <- simmer(verbose=TRUE) %>%
-    add_resource("server", 1) %>%
-    add_generator("entity", t0, at(1)) %>%
-    run(),
-  "sim: anonymous | time: 1 | arrival: entity0 | activity: Seize(server)
-  sim: anonymous | time: 1 | arrival: entity0 | activity: Release(server)")
+    env <- simmer("dummy", verbose=TRUE) %>%
+      add_resource("server", 1) %>%
+      add_generator("arrival", t0, at(1)) %>%
+      run(),
+    output
+  )
 })
 
 test_that("we can force some errors (just to complete coverage)", {
