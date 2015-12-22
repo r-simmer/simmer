@@ -1,3 +1,9 @@
+## simmer 3.1.1.9000
+
+Minor changes and fixes:
+
+* `get_mon_*` functions accept a single simulation environment as well as a list of environments representing several replications (5ee2725). A new column (`replication`) in the resulting data frame indicates the corresponding replication number.
+
 ## simmer 3.1.1
 
 New features:
