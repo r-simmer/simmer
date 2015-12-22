@@ -4,10 +4,9 @@ TBD
 
 ## Test environments
 
-* Fedora 23 + Clang (local), R 3.2.2
-* Debian docker + Clang + SAN (local), R devel
+* Fedora 23 + Clang (local), R 3.2.2 and devel
 * Ubuntu 12.04 + GCC (on travis-ci), R 3.2.3
-* win-builder (R devel and release)
+* win-builder, R release and devel
 
 ## R CMD check results
 
