@@ -11,15 +11,7 @@ plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", 
   # Hack to avoid spurious notes
   resource <- item <- value <- replication <- time <- NULL
   
-  if (!is.list(envs)) envs <- list(envs)
-  
-  monitor_data <- do.call(rbind, lapply(1:length(envs), function(i) {
-    stats <- envs[[i]] $ get_mon_resources()
-    stats$replication <- i
-    stats
-  }))
-  
-  monitor_data <- monitor_data %>% 
+  monitor_data <- envs %>% get_mon_resources() %>% 
     dplyr::filter(resource == resource_name) %>%
     tidyr::gather(item, value, 2:4) %>%
     dplyr::mutate(item = factor(item)) %>%
@@ -28,8 +20,10 @@ plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", 
     dplyr::mutate(mean = cumsum(value * diff(c(0,time))) / time) %>% 
     dplyr::ungroup()
   
-  queue_size <- envs[[1]] $ get_queue_size(resource_name)
-  capacity <- envs[[1]] $ get_capacity(resource_name)
+  if (is.list(envs)) env <- envs[[1]]
+  else env <- envs
+  queue_size <- env $ get_queue_size(resource_name)
+  capacity <- env $ get_capacity(resource_name)
   system <- capacity + queue_size
   
   plot_obj<-
@@ -76,21 +70,16 @@ plot_resource_utilization <- function(envs, resources) {
   resource <- item <- value <- replication <- capacity <- runtime <- 
     in_use <- utilization <- Q25 <- Q50 <- Q75 <- time <- NULL
   
-  if (!is.list(envs)) envs <- list(envs)
+  if (is.list(envs)) env <- envs[[1]]
+  else env <- envs
   
-  monitor_data <- do.call(rbind, lapply(1:length(envs), function(i) {
-    stats <- envs[[i]] $ get_mon_resources()
-    stats$replication <- i
-    stats
-  }))
-  
-  monitor_data <- monitor_data %>% 
+  monitor_data <- envs %>% get_mon_resources() %>% 
     dplyr::filter(resource %in% resources) %>%
     tidyr::gather(item, value, 2:4) %>%
     dplyr::mutate(item = factor(item)) %>%
     dplyr::filter(item == "server") %>%
     dplyr::group_by(resource) %>%
-    dplyr::mutate(capacity = get_capacity(envs[[1]], resource[[1]])) %>% 
+    dplyr::mutate(capacity = get_capacity(env, resource[[1]])) %>% 
     dplyr::group_by(replication) %>%
     dplyr::mutate(runtime = max(time)) %>%
     dplyr::group_by(resource, replication, capacity, runtime) %>%
@@ -125,15 +114,7 @@ plot_evolution_arrival_times <- function(envs, type=c("flow_time","activity_time
   end_time <- start_time <- flow_time <- activity_time <- 
     replication <- waiting_time <- NULL
   
-  if (!is.list(envs)) envs <- list(envs)
-  
-  monitor_data <- do.call(rbind, lapply(1:length(envs), function(i) {
-    stats <- envs[[i]] $ get_mon_arrivals()
-    stats$replication <- i
-    stats
-  }))
-  
-  monitor_data <- monitor_data %>%
+  monitor_data <- envs %>% get_mon_arrivals() %>%
     dplyr::mutate(flow_time = end_time - start_time,
                   waiting_time = flow_time - activity_time)
   
@@ -179,13 +160,7 @@ plot_attributes<-function(envs, keys=c()){
   # Hack to avoid spurious notes
   time <- key <- value <- replication <- NULL
   
-  if (!is.list(envs)) envs <- list(envs)
-  
-  monitor_data <- do.call(rbind, lapply(1:length(envs), function(i) {
-    stats <- envs[[i]] $ get_mon_attributes()
-    stats$replication <- i
-    stats
-  }))
+  monitor_data <- envs %>% get_mon_attributes()
   
   if(length(keys)>0) monitor_data <- monitor_data %>%  dplyr::filter(key %in% keys)
   

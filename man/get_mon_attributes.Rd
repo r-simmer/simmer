@@ -7,7 +7,7 @@
 get_mon_attributes(env)
 }
 \arguments{
-\item{env}{the simulation environment.}
+\item{env}{the simulation environment (or a list of environments).}
 }
 \value{
 Returns a data frame.

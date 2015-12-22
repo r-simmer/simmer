@@ -323,7 +323,7 @@ add_generator <- function(env, name_prefix, trajectory, dist, mon=1)
 #'
 #' Gets the arrivals' monitored data (if any).
 #' 
-#' @param env the simulation environment.
+#' @param env the simulation environment (or a list of environments).
 #' @return Returns a data frame.
 #' @seealso Other methods to deal with a simulation environment:
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
@@ -331,13 +331,13 @@ add_generator <- function(env, name_prefix, trajectory, dist, mon=1)
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
 #' \link{get_server_count}, \link{get_queue_count}.
 #' @export
-get_mon_arrivals <- function(env) env$get_mon_arrivals()
+get_mon_arrivals <- function(env) envs_apply(env, "get_mon_arrivals")
 
 #' Get attribute statistics
 #'
 #' Gets the arrivals' attributes over time (if any).
 #' 
-#' @param env the simulation environment.
+#' @param env the simulation environment (or a list of environments).
 #' @return Returns a data frame.
 #' @seealso Other methods to deal with a simulation environment:
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
@@ -345,13 +345,13 @@ get_mon_arrivals <- function(env) env$get_mon_arrivals()
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
 #' \link{get_server_count}, \link{get_queue_count}.
 #' @export
-get_mon_attributes <- function(env) env$get_mon_attributes()
+get_mon_attributes <- function(env) envs_apply(env, "get_mon_attributes")
 
 #' Get resource statistics
 #'
 #' Gets the resources' monitored data (if any).
 #' 
-#' @param env the simulation environment.
+#' @param env the simulation environment (or a list of environments).
 #' @return Returns a data frame.
 #' @seealso Other methods to deal with a simulation environment:
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
@@ -359,7 +359,7 @@ get_mon_attributes <- function(env) env$get_mon_attributes()
 #' \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
 #' \link{get_server_count}, \link{get_queue_count}.
 #' @export
-get_mon_resources <- function(env) env$get_mon_resources()
+get_mon_resources <- function(env) envs_apply(env, "get_mon_resources")
 
 #' Get the number of arrivals generated
 #'
