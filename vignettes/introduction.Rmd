@@ -126,10 +126,10 @@ envs[[1]] %>% get_n_generated("patient")
 envs[[1]] %>% get_capacity("doctor")
 envs[[1]] %>% get_queue_size("doctor")
 head(
-  envs[[1]] %>% get_mon_resources()
+  envs %>% get_mon_resources()
 )
 head(
-  envs[[1]] %>% get_mon_arrivals()
+  envs %>% get_mon_arrivals()
 )
 ```
 
