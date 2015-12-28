@@ -36,19 +36,24 @@ test_that("a non-existent resource fails", {
 
 test_that("resource slots are correctly filled", {
   t0 <- create_trajectory("") %>%
-    seize("server", 1)
+    seize("server", 1) %>%
+    set_attribute("dummy", 1)
   
   env <- simmer() %>%
     add_resource("server", 2, 2) %>%
-    add_generator("customer", t0, at(1:5)) %>%
+    add_generator("customer", t0, at(1:5), mon=2) %>%
     run()
   
   arrivals <- env%>%get_mon_arrivals()
+  arrivals_res <- env%>%get_mon_arrivals(TRUE)
   resources <- env%>%get_mon_resources()
+  attributes <- env%>%get_mon_attributes()
   
   expect_equal(arrivals[3,]$finished, FALSE)
+  expect_equal(nrow(arrivals_res), 0)
   expect_equal(resources[5,]$server, 2)
   expect_equal(resources[5,]$queue, 2)
+  expect_equal(sum(attributes$value), 2)
 })
 
 

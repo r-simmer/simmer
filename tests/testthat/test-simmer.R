@@ -15,6 +15,7 @@ test_that("an empty environment behaves as expected", {
 
 t0 <- create_trajectory("") %>%
   seize("server", 1) %>%
+  set_attribute("dummy", 1) %>%
   release("server", 1)
 
 test_that("the simulator is reset", {
@@ -24,12 +25,16 @@ test_that("the simulator is reset", {
     run(100) %>%
     reset()
   arrivals <- env%>%get_mon_arrivals()
+  arrivals_res <- env%>%get_mon_arrivals(TRUE)
   resources <- env%>%get_mon_resources()
+  attributes <- env%>%get_mon_attributes()
   
   expect_equal(env%>%now(), 0)
   expect_equal(env%>%peek(), 1)
   expect_equal(nrow(arrivals), 0)
+  expect_equal(nrow(arrivals_res), 0)
   expect_equal(nrow(resources), 0)
+  expect_equal(nrow(attributes), 0)
 })
 
 test_that("the simulator stops if there are no more events", {
@@ -84,7 +89,7 @@ test_that("we can force some errors (just to complete coverage)", {
   
   env <- simmer() %>% 
     add_resource("dummy") %>% 
-    add_generator("dummy", create_trajectory()%>%timeout(0), function() 1, mon=Inf)
+    add_generator("dummy", create_trajectory()%>%timeout(0), function() 1, mon=1000)
   env$.__enclos_env__$private$sim_obj <- NULL
   
   expect_error(env %>% reset())
@@ -92,6 +97,7 @@ test_that("we can force some errors (just to complete coverage)", {
   expect_error(env %>% peek())
   expect_error(env %>% onestep())
   expect_error(env %>% get_mon_arrivals())
+  expect_error(env %>% get_mon_arrivals(TRUE))
   expect_error(env %>% get_mon_attributes())
   expect_error(env %>% get_mon_resources())
 })

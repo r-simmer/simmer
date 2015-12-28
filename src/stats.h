@@ -16,7 +16,11 @@ class StatsMap {
   
 public:
   template <typename T>
-  inline VEC<T> get(std::string key) { return boost::get< VEC<T> >(map[key]); }
+  inline VEC<T> get(std::string key) {
+    if (map.find(key) != map.end())
+      return boost::get< VEC<T> >(map[key]);
+    return VEC<T>();
+  }
   
   template <typename T>
   inline void insert(std::string key, T value) {
