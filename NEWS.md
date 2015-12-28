@@ -1,8 +1,13 @@
 ## simmer 3.1.1.9000
 
+New features:
+
+* Monitor arrivals' start/activity/end times on a per-resource basis (#38). So far, the function `get_mon_arrivals()` returned the start/activity/end times per arrival for the whole trajectory. This behaviour remains, but additionally, `get_mon_arrivals(per_resource = TRUE)` returns these times per resource, so that it is possible to retrieve queueing/system times per resource.
+
 Minor changes and fixes:
 
 * `get_mon_*` functions accept a single simulation environment as well as a list of environments representing several replications (5ee2725). A new column (`replication`) in the resulting data frame indicates the corresponding replication number.
+* Monitoring subsystem refactored (as a consequence of #38).
 
 ## simmer 3.1.1
 
