@@ -8,30 +8,30 @@
 class Activity;
 
 /**
- * Event container. Encapsulates future processes in the event queue.
- */
-struct Event {
-  double time;
-  Process* process;
-  int priority;
-  
-  Event(double time, Process* process, int priority):
-    time(time), process(process), priority(priority) {}
-  
-  bool operator<(const Event& other) const {
-    if (time == other.time)
-      return priority > other.priority;
-    return time > other.time;
-  }
-};
-
-typedef PQUEUE<Event> PQueue;
-typedef MAP<std::string, Entity*> EntMap;
-
-/**
  * The simulator.
  */
 class Simulator {
+  /**
+   * Event container. Encapsulates future processes in the event queue.
+   */
+  struct Event {
+    double time;
+    Process* process;
+    int priority;
+    
+    Event(double time, Process* process, int priority):
+      time(time), process(process), priority(priority) {}
+    
+    bool operator<(const Event& other) const {
+      if (time == other.time)
+        return priority > other.priority;
+      return time > other.time;
+    }
+  };
+  
+  typedef PQUEUE<Event> PQueue;
+  typedef MAP<std::string, Entity*> EntMap;
+  
 public:
   std::string name;
   bool verbose;
@@ -49,8 +49,6 @@ public:
         delete event_queue.top().process;
       event_queue.pop();
     }
-    resource_map.clear();
-    generator_map.clear();
   }
   
   /**

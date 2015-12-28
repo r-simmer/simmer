@@ -66,7 +66,7 @@ private:
 /**
  * Seize a resource.
  */
-template <class T>
+template <typename T>
 class Seize: public Activity {
 public:
   Seize(std::string resource, T amount, bool provide_attrs, int priority):
@@ -82,7 +82,7 @@ private:
 /**
  * Release a resource.
  */
-template <class T>
+template <typename T>
 class Release: public Activity {
 public:
   Release(std::string resource, T amount, bool provide_attrs):
@@ -98,7 +98,7 @@ private:
 /**
  * Set attributes.
  */
-template <class T>
+template <typename T>
 class SetAttribute: public Activity {
 public:
   SetAttribute(std::string key, T value, bool provide_attrs):
@@ -115,7 +115,7 @@ private:
 /**
  * Timeout.
  */
-template <class T>
+template <typename T>
 class Timeout: public Activity {
 public:
   Timeout(T delay, bool provide_attrs):
@@ -148,12 +148,6 @@ public:
       Rcpp::Function get_n_activities(trj[i]["get_n_activities"]);
       n += Rcpp::as<int>(get_n_activities());
     }
-  }
-  
-  ~Branch() {
-    merge.clear();
-    path.clear();
-    pending.clear();
   }
   
   void print(int indent=0) {
@@ -200,14 +194,12 @@ private:
 /**
  * Rollback to a previous activity.
  */
-template <class T>
+template <typename T>
 class Rollback: public Activity {
 public:
   Rollback(int amount, T times, bool provide_attrs):
     Activity("Rollback", "none", provide_attrs), amount(std::abs(amount)), times(times),
     cached(NULL), selected(NULL) {}
-  
-  ~Rollback() { pending.clear(); }
   
   void print(int indent=0);
   double run(Arrival* arrival);

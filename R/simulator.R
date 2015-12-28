@@ -98,7 +98,7 @@ Simmer <- R6Class("Simmer",
     },
     
     get_mon_attributes = function() {
-      if (sum(private$gen>0))
+      if (sum(private$gen>1))
         do.call(rbind, lapply(names(private$gen[private$gen>0]), function(i) {
           monitor_data <- as.data.frame(
             get_mon_attributes_(private$sim_obj, i)

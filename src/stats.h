@@ -1,58 +1,37 @@
 #ifndef STATS_H
 #define STATS_H
 
-/**
-* Arrival statistics.
-*/
-class ArrStats {
-public:
-  VEC<std::string> name;
-  VEC<double> start_time;
-  VEC<double> end_time;
-  VEC<double> activity_time;
-  VEC<bool> finished;
-  
-  void clear() {
-    name.clear();
-    start_time.clear();
-    end_time.clear();
-    activity_time.clear();
-    finished.clear();
-  }
-};
+#include "simmer.h"
+#include <boost/variant.hpp>
 
-/**
- * Attribute statistics.
- */
-class AttrStats {
-public:
-  VEC<double> time;
-  VEC<std::string> name;
-  VEC<std::string> key;
-  VEC<double> value;
+class StatsMap {
+  typedef boost::variant< VEC<bool>, VEC<int>, VEC<double>, VEC<std::string> > StatsVec;
+  typedef MAP<std::string, StatsVec> StatsContainer;
   
-  void clear() {
-    time.clear();
-    name.clear();
-    key.clear();
-    value.clear();
-  }
-};
-
-/**
- * Resource statistics.
- */
-class ResStats {
-public:
-  VEC<double> time;
-  VEC<double> server;
-  VEC<double> queue;
+  class clear_vec: public boost::static_visitor<> {
+  public:
+    template <typename T>
+    void operator()(T & operand) const { operand.clear(); }
+  };
   
-  void clear() {
-    time.clear();
-    server.clear();
-    queue.clear();
+public:
+  template <typename T>
+  inline VEC<T> get(std::string key) { return boost::get< VEC<T> >(map[key]); }
+  
+  template <typename T>
+  inline void insert(std::string key, T value) {
+    if (map.find(key) == map.end())
+      map.insert(std::pair< std::string, VEC<T> >(key, VEC<T>()));
+    boost::get< VEC<T> >(map[key]).push_back(value);
   }
+  
+  void clear() { 
+    foreach_ (StatsContainer::value_type& itr, map)
+      boost::apply_visitor(clear_vec(), itr.second);
+  }
+  
+private:
+  StatsContainer map;
 };
 
 #endif

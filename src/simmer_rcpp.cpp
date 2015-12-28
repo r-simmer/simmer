@@ -78,13 +78,15 @@ SEXP get_mon_arrivals_(SEXP sim_, SEXP name_) {
   XPtr<Simulator> sim(sim_);
   std::string name = as<std::string>(name_);
   
-  ArrStats* stats = sim->get_generator(name)->get_arr_observations();
+  StatsMap* stats = sim->get_generator(name)->get_traj_observations();
   
-  return Rcpp::List::create(Rcpp::Named("name") = stats->name,
-                            Rcpp::Named("start_time") = stats->start_time,
-                            Rcpp::Named("end_time") = stats->end_time,
-                            Rcpp::Named("activity_time") = stats->activity_time,
-                            Rcpp::Named("finished") = stats->finished);
+  return Rcpp::List::create(
+    Rcpp::Named("name")           = stats->get<std::string>("name"),
+    Rcpp::Named("start_time")     = stats->get<double>("start_time"),
+    Rcpp::Named("end_time")       = stats->get<double>("end_time"),
+    Rcpp::Named("activity_time")  = stats->get<double>("activity_time"),
+    Rcpp::Named("finished")       = stats->get<bool>("finished")
+  );
 }
 
 //[[Rcpp::export]]
@@ -92,12 +94,14 @@ SEXP get_mon_attributes_(SEXP sim_, SEXP name_) {
   XPtr<Simulator> sim(sim_);
   std::string name = as<std::string>(name_);
   
-  AttrStats* stats = sim->get_generator(name)->get_attr_observations();
+  StatsMap* stats = sim->get_generator(name)->get_attr_observations();
   
-  return Rcpp::List::create(Rcpp::Named("time") = stats->time,
-                            Rcpp::Named("name") = stats->name,
-                            Rcpp::Named("key") = stats->key,
-                            Rcpp::Named("value") = stats->value);
+  return Rcpp::List::create(
+    Rcpp::Named("time")   = stats->get<double>("time"),
+    Rcpp::Named("name")   = stats->get<std::string>("name"),
+    Rcpp::Named("key")    = stats->get<std::string>("key"),
+    Rcpp::Named("value")  = stats->get<double>("value")
+  );
 }
 
 //[[Rcpp::export]]
@@ -105,11 +109,13 @@ SEXP get_mon_resource_(SEXP sim_, SEXP name_) {
   XPtr<Simulator> sim(sim_);
   std::string name = as<std::string>(name_);
   
-  ResStats* stats = sim->get_resource(name)->get_observations();
+  StatsMap* stats = sim->get_resource(name)->get_observations();
   
-  return Rcpp::List::create(Rcpp::Named("time") = stats->time,
-                            Rcpp::Named("server") = stats->server,
-                            Rcpp::Named("queue") = stats->queue);
+  return Rcpp::List::create(
+    Rcpp::Named("time")   = stats->get<double>("time"),
+    Rcpp::Named("server") = stats->get<int>("server"),
+    Rcpp::Named("queue")  = stats->get<int>("queue")
+  );
 }
 
 //[[Rcpp::export]]

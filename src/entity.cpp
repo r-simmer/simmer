@@ -7,7 +7,7 @@ inline void Arrival::activate() {
   bool flag = TRUE;
   if (!activity) goto finish;
   
-  if (start_time < 0) start_time = sim->now();
+  if (lifetime.start < 0) lifetime.start = sim->now();
   
   if (sim->verbose)
     Rcpp::Rcout <<
@@ -20,7 +20,7 @@ inline void Arrival::activate() {
   activity = activity->get_next();
   if (delay == ENQUEUED) goto end;
   
-  activity_time += delay;
+  lifetime.activity += delay;
   sim->schedule(delay, this, activity ? activity->priority : 0);
   goto end;
   
@@ -30,6 +30,10 @@ finish:
   gen->notify_end(sim->now(), this, flag);
 end:
   return;
+}
+
+inline void Arrival::leaving(std::string name, double time) {
+  gen->notify_release(time, this, name);
 }
 
 void Generator::activate() {
@@ -64,22 +68,33 @@ int Resource::seize(Arrival* arrival, int amount, int priority) {
   
   // serve now
   if (room_in_server(amount)) {
+    if (arrival->is_monitored()) {
+      arrival->set_start(this->name, sim->now());
+      arrival->set_activity(this->name, sim->now());
+    }
     server_count += amount;
     return SUCCESS;
   }
   // enqueue
-  else if (room_in_queue(amount)) {
+  if (room_in_queue(amount)) {
+    if (arrival->is_monitored())
+      arrival->set_start(this->name, sim->now());
     queue_count += amount;
     queue.push(RQItem(arrival, amount, priority, sim->now()));
     return ENQUEUED;
   }
   // reject
-  else return REJECTED;
+  return REJECTED;
 }
 
 int Resource::release(Arrival* arrival, int amount) {
   // monitoring
   if (is_monitored()) observe(sim->now());
+  if (arrival->is_monitored()) {
+    double last = arrival->get_activity(this->name);
+    arrival->set_activity(this->name, sim->now() - last);
+    arrival->leaving(this->name, sim->now());
+  }
   
   // departure
   server_count -= amount;
@@ -89,6 +104,8 @@ int Resource::release(Arrival* arrival, int amount) {
     queue_count -= queue.top().amount;
     server_count += queue.top().amount;
     sim->schedule(0, queue.top().arrival);
+    if (queue.top().arrival->is_monitored())
+      queue.top().arrival->set_activity(this->name, sim->now());
     queue.pop();
   }
   return SUCCESS;

@@ -50,10 +50,14 @@ typedef MAP<std::string, double> Attr;
  *  Arrival process.
  */
 class Arrival: public Process {
+  struct ArrTime {
+    double start;
+    double activity;
+    ArrTime(): start(-1), activity(0) {}
+  };
+  typedef MAP<std::string, ArrTime> ResTime;
+  
 public:
-  double start_time;    /**< generation time */
-  double activity_time; /**< time spent doing something in the system (not waiting in a queue) */
-
   /**
    * Constructor.
    * @param sim             a pointer to the simulator
@@ -62,16 +66,28 @@ public:
    * @param first_activity  the first activity of a user-defined R trajectory
    */
   Arrival(Simulator* sim, std::string name, int mon, Activity* first_activity, Generator* gen):
-    Process(sim, name, mon), start_time(-1), activity_time(0), activity(first_activity), gen(gen) {}
-  
-  ~Arrival() { attributes.clear(); }
+    Process(sim, name, mon), activity(first_activity), gen(gen) {}
   
   void activate();
   
   int set_attribute(std::string key, double value);
   inline Attr* get_attributes() { return &attributes; }
+  
+  inline void set_start(double start) { lifetime.start = start; }
+  inline void set_start(std::string name, double start) { restime[name].start = start; }
+  inline double get_start() { return lifetime.start; }
+  inline double get_start(std::string name) { return restime[name].start; }
+  
+  inline void set_activity(double act) { lifetime.activity = act; }
+  inline void set_activity(std::string name, double act) { restime[name].activity = act; }
+  inline double get_activity() { return lifetime.activity; }
+  inline double get_activity(std::string name) { return restime[name].activity; }
+  
+  void leaving(std::string name, double time);
 
 private:
+  ArrTime lifetime;   /**< time spent in the whole trajectory */
+  ResTime restime;    /**< time spent in resources */
   Activity* activity; /**< current activity from an R trajectory */
   Generator* gen;     /**< parent generator */
   Attr attributes;    /**< user-defined (key, value) pairs */
@@ -82,7 +98,6 @@ private:
  */
 class Generator: public Process {
 public:
-  
   /**
    * Constructor.
    * @param sim             a pointer to the simulator
@@ -95,15 +110,14 @@ public:
             Activity* first_activity, Rcpp::Function dist): 
     Process(sim, name_prefix, mon, true), count(0), first_activity(first_activity), dist(dist) {}
   
-  ~Generator() { reset(); }
-  
   /**
    * Reset the generator: counter, statistics.
    */
   void reset() { 
     count = 0;
+    traj_stats.clear();
+    res_stats.clear();
     attr_stats.clear();
-    arr_stats.clear();
   }
   
   void activate();
@@ -113,42 +127,59 @@ public:
    */
   inline void observe(double time, Arrival* arrival, std::string key) {
     Attr* attributes = arrival->get_attributes();
-    attr_stats.time.push_back(time);
-    attr_stats.name.push_back(arrival->name);
-    attr_stats.key.push_back(key);
-    attr_stats.value.push_back((*attributes)[key]);
+    attr_stats.insert("time",   time);
+    attr_stats.insert("name",   arrival->name);
+    attr_stats.insert("key",    key);
+    attr_stats.insert("value",  (*attributes)[key]);
   }
   
   /**
    * Arrivals notify their end with this call.
    * The generator is in charge of gathering statistics and deleting the arrival.
+   * @param   time      ending time
    * @param   arrival   a pointer to the ending arrival
    * @param   finished  bool that indicates whether the arrival has finished its trajectory
    */
   inline void notify_end(double time, Arrival* arrival, bool finished) {
     if (is_monitored() >= 1) {
-      arr_stats.name.push_back(arrival->name);
-      arr_stats.start_time.push_back(arrival->start_time);
-      arr_stats.end_time.push_back(time);
-      arr_stats.activity_time.push_back(arrival->activity_time);
-      arr_stats.finished.push_back(finished);
+      traj_stats.insert("name",           arrival->name);
+      traj_stats.insert("start_time",     arrival->get_start());
+      traj_stats.insert("end_time",       time);
+      traj_stats.insert("activity_time",  arrival->get_activity());
+      traj_stats.insert("finished",       finished);
     }
     delete arrival;
   }
   
   /**
+   * Arrivals notify resource releases with this call.
+   * @param   time      ending time
+   * @param   arrival   a pointer to the arrival
+   * @param   resource  name of the resource released
+   */
+  inline void notify_release(double time, Arrival* arrival, std::string resource) {
+    res_stats.insert("name",          arrival->name);
+    res_stats.insert("start_time",    arrival->get_start(resource));
+    res_stats.insert("end_time",      time);
+    res_stats.insert("activity_time", arrival->get_activity(resource));
+    res_stats.insert("resource",      resource);
+  }
+  
+  /**
    * Get the monitoring data.
    */
-  ArrStats* get_arr_observations() { return &arr_stats; }
-  AttrStats* get_attr_observations() { return &attr_stats; }
+  StatsMap* get_traj_observations() { return &traj_stats; }
+  StatsMap* get_res_observations() { return &res_stats; }
+  StatsMap* get_attr_observations() { return &attr_stats; }
   int get_n_generated() { return count; }
   
 private:
   int count;                /**< number of arrivals generated */
   Activity* first_activity;
   Rcpp::Function dist;
-  ArrStats arr_stats;       /**< arrival statistics */
-  AttrStats attr_stats;     /**< attribute statistics */
+  StatsMap traj_stats;      /**< arrival statistics per trajectory */
+  StatsMap res_stats;       /**< arrival statistics per resource */
+  StatsMap attr_stats;      /**< attribute statistics */
 };
 
 struct RQItem {
@@ -167,14 +198,13 @@ struct RQItem {
   }
 };
 
-typedef PQUEUE<RQItem> RPQueue;
-
 /** 
 *  Generic resource, a passive entity that comprises server + FIFO queue.
 */
 class Resource: public Entity {
-public:
+  typedef PQUEUE<RQItem> RPQueue;
   
+public:
   /**
   * Constructor.
   * @param sim         a pointer to the simulator
@@ -184,8 +214,8 @@ public:
   * @param queue_size  room in the queue (-1 means infinity)
   */
   Resource(Simulator* sim, std::string name, int mon, int capacity, int queue_size): 
-  Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), server_count(0), 
-  queue_count(0) {}
+    Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), server_count(0), 
+    queue_count(0) {}
   
   ~Resource() { reset(); }
   
@@ -225,12 +255,12 @@ public:
   * Gather resource statistics.
   */
   inline void observe(double time) {
-    res_stats.time.push_back(time);
-    res_stats.server.push_back(server_count);
-    res_stats.queue.push_back(queue_count);
+    res_stats.insert("time",    time);
+    res_stats.insert("server",  server_count);
+    res_stats.insert("queue",   queue_count);
   }
   
-  ResStats* get_observations() { return &res_stats; }
+  StatsMap* get_observations() { return &res_stats; }
   int get_capacity() { return capacity; }
   int get_queue_size() { return queue_size; }
   int get_server_count() { return server_count; }
@@ -242,7 +272,7 @@ private:
   int server_count;     /**< number of arrivals being served */
   int queue_count;      /**< number of arrivals waiting */
   RPQueue queue;        /**< queue container */
-  ResStats res_stats;   /**< resource statistics */
+  StatsMap res_stats;   /**< resource statistics */
   
   inline bool room_in_server(int amount) { 
     if (capacity < 0) return 1;
