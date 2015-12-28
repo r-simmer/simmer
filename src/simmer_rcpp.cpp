@@ -90,6 +90,22 @@ SEXP get_mon_arrivals_(SEXP sim_, SEXP name_) {
 }
 
 //[[Rcpp::export]]
+SEXP get_mon_arrivals_per_resource_(SEXP sim_, SEXP name_) {
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  
+  StatsMap* stats = sim->get_generator(name)->get_res_observations();
+  
+  return Rcpp::List::create(
+    Rcpp::Named("name")           = stats->get<std::string>("name"),
+    Rcpp::Named("start_time")     = stats->get<double>("start_time"),
+    Rcpp::Named("end_time")       = stats->get<double>("end_time"),
+    Rcpp::Named("activity_time")  = stats->get<double>("activity_time"),
+    Rcpp::Named("resource")       = stats->get<std::string>("resource")
+  );
+}
+
+//[[Rcpp::export]]
 SEXP get_mon_attributes_(SEXP sim_, SEXP name_) {
   XPtr<Simulator> sim(sim_);
   std::string name = as<std::string>(name_);

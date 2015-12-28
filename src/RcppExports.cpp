@@ -112,6 +112,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// get_mon_arrivals_per_resource_
+SEXP get_mon_arrivals_per_resource_(SEXP sim_, SEXP name_);
+RcppExport SEXP simmer_get_mon_arrivals_per_resource_(SEXP sim_SEXP, SEXP name_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
+    __result = Rcpp::wrap(get_mon_arrivals_per_resource_(sim_, name_));
+    return __result;
+END_RCPP
+}
 // get_mon_attributes_
 SEXP get_mon_attributes_(SEXP sim_, SEXP name_);
 RcppExport SEXP simmer_get_mon_attributes_(SEXP sim_SEXP, SEXP name_SEXP) {
