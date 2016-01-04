@@ -23,14 +23,18 @@ test_that("a simple deterministic simulation with rejections behaves as expected
   
   env%>%run()
   arrivals <- env%>%get_mon_arrivals()
+  arrivals_res <- env%>%get_mon_arrivals(TRUE)
   resources <- env%>%get_mon_resources()
   
   expect_equal(env%>%now(), n+0.5)
   expect_equal(env%>%peek(), Inf)
   expect_equal(nrow(arrivals), n)
+  expect_equal(nrow(arrivals_res), n/2)
+  expect_true(arrivals_res[1,]$resource == "server")
   expect_equal(nrow(subset(arrivals, finished)), n/2)
   expect_equal(nrow(subset(arrivals, !finished)), n/2)
   expect_equal(sum(subset(arrivals, finished)$activity_time), 1.5*n/2)
+  expect_equal(sum(arrivals_res$activity_time), 1.5*n/2)
   expect_equal(sum(subset(arrivals, !finished)$activity_time), 0)
   
   expect_equal(nrow(resources), n*1.5)

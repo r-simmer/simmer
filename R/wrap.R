@@ -12,6 +12,7 @@ Simmer.wrap <- R6Class("Simmer.wrap",
       private$res <- env$get_resources()
       private$gen <- env$get_generators()
       private$arrivals <- env$get_mon_arrivals()
+      private$arrivals_res <- env$get_mon_arrivals(TRUE)
       private$attributes <- env$get_mon_attributes()
       private$resources <- env$get_mon_resources()
       for (name in names(private$gen)) {
@@ -51,7 +52,10 @@ Simmer.wrap <- R6Class("Simmer.wrap",
     now = function() private$now_val,
     peek = function() private$peek_val,
     
-    get_mon_arrivals = function() { private$arrivals },
+    get_mon_arrivals = function(per_resource=FALSE) {
+      if (per_resource) private$arrivals_res
+      else private$arrivals 
+    },
     get_mon_attributes = function() { private$attributes },
     get_mon_resources = function() { private$resources },
     get_n_generated = function(name) {
@@ -87,6 +91,7 @@ Simmer.wrap <- R6Class("Simmer.wrap",
     res = NA,
     gen = NA,
     arrivals = NA,
+    arrivals_res = NA,
     attributes = NA,
     resources = NA,
     n_generated = list(),

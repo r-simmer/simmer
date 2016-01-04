@@ -16,10 +16,12 @@ test_that("the wrapper behaves as expected", {
   expect_equal(env%>%peek(), Inf)
   
   arrivals <- env%>%get_mon_arrivals()
+  arrivals_res <- env%>%get_mon_arrivals(TRUE)
   attributes <- env%>%get_mon_attributes()
   resources <- env%>%get_mon_resources()
   
   expect_equal(nrow(arrivals), 10)
+  expect_equal(nrow(arrivals_res), 10)
   expect_equal(nrow(attributes), 10)
   expect_equal(nrow(resources), 20)
   expect_error(env%>%get_n_generated("asdf"))

@@ -37,6 +37,10 @@ get_mon_arrivals_ <- function(sim_, name_) {
     .Call('simmer_get_mon_arrivals_', PACKAGE = 'simmer', sim_, name_)
 }
 
+get_mon_arrivals_per_resource_ <- function(sim_, name_) {
+    .Call('simmer_get_mon_arrivals_per_resource_', PACKAGE = 'simmer', sim_, name_)
+}
+
 get_mon_attributes_ <- function(sim_, name_) {
     .Call('simmer_get_mon_attributes_', PACKAGE = 'simmer', sim_, name_)
 }

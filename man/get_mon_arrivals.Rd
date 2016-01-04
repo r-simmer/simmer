@@ -4,10 +4,12 @@
 \alias{get_mon_arrivals}
 \title{Get arrival statistics}
 \usage{
-get_mon_arrivals(env)
+get_mon_arrivals(env, per_resource = FALSE)
 }
 \arguments{
 \item{env}{the simulation environment (or a list of environments).}
+
+\item{per_resource}{whether the activity should be reported on a per-resource basis (by default: FALSE).}
 }
 \value{
 Returns a data frame.

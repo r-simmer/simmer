@@ -2,7 +2,7 @@
 #include "simulator.h"
 #include "activity.h"
 
-template <class T>
+template <typename T>
 inline T execute_call(Rcpp::Function call, Arrival* arrival, bool provide_attrs) {
   if (provide_attrs)
     return Rcpp::as<T>(call(Rcpp::wrap(*arrival->get_attributes())));
