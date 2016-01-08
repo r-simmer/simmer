@@ -1,6 +1,6 @@
 Package: simmer
 Type: Package
-Version: 3.1.1.9000
+Version: 3.1.2.9000
 Title: Just Let it Simmer
 Description: Discrete-Event Simulation (DES) package for R.
 Encoding: UTF-8

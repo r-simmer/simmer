@@ -1,4 +1,4 @@
-## simmer 3.1.1.9000
+## simmer 3.1.2
 
 New features:
 
@@ -6,6 +6,7 @@ New features:
 
 Minor changes and fixes:
 
+* Fix testing ERRORs reported on platforms using clang and Sparc Solaris.
 * `get_mon_*` functions accept a single simulation environment as well as a list of environments representing several replications (5ee2725). A new column (`replication`) in the resulting data frame indicates the corresponding replication number.
 * Monitoring subsystem refactored (as a consequence of #38).
 
