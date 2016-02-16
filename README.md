@@ -1,8 +1,8 @@
 simmer
 ======
 
-[![Build Status](https://travis-ci.org/Bart6114/simmer.svg?branch=master)](https://travis-ci.org/Bart6114/simmer)
-[![Coverage Status](https://coveralls.io/repos/Bart6114/simmer/badge.svg?branch=master&service=github)](https://coveralls.io/github/Bart6114/simmer?branch=master)
+[![Build Status](https://travis-ci.org/Enchufa2/simmer.svg?branch=master)](https://travis-ci.org/Enchufa2/simmer)
+[![Coverage Status](https://coveralls.io/repos/Enchufa2/simmer/badge.svg?branch=master&service=github)](https://coveralls.io/github/Enchufa2/simmer?branch=master)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/simmer)](http://cran.r-project.org/package=simmer)
 [![Downloads](http://cranlogs.r-pkg.org/badges/simmer)](http://cran.rstudio.com/package=simmer)
 
@@ -24,7 +24,7 @@ install.packages("simmer")
 The installation from GitHub requires the [devtools](https://github.com/hadley/devtools) package.
 
 ``` r
-devtools::install_github("Bart6114/simmer")
+devtools::install_github("Enchufa2/simmer")
 ```
 
 Please note that the package contains some C++ code and thus you need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows).
