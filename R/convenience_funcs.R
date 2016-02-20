@@ -5,7 +5,8 @@
 #' @param ... a vector or multiple parameters of times at which to initiate an arrival.
 #'
 #' @return Returns a generator function.
-#' @seealso \link{add_generator}
+#' @seealso \link{add_generator}, \link{every}, \link{from}, 
+#' \link{to}, \link{from_to}.
 #' @export
 #'
 #' @examples
@@ -35,7 +36,8 @@ at <- function(...) {
 #' @param ... a vector or multiple parameters of intervals between arrivals.
 #'
 #' @return Returns a generator function.
-#' @seealso \link{add_generator}
+#' @seealso \link{add_generator}, \link{at}, \link{from}, 
+#' \link{to}, \link{from_to}.
 #' @export
 #'
 #' @examples
@@ -69,7 +71,8 @@ every <- function(...) {
 #' \code{start_time}).
 #' 
 #' @return Returns a generator function.
-#' @seealso \link{add_generator}
+#' @seealso \link{add_generator}, \link{at}, \link{every}, 
+#' \link{to}, \link{from_to}.
 #' @export
 #'
 #' @examples
@@ -101,7 +104,8 @@ from <- function(start_time, dist, arrive=TRUE) {
 #' @param dist a function modelling the interarrival times.
 #'
 #' @return Returns a generator function.
-#' @seealso \link{add_generator}
+#' @seealso \link{add_generator}, \link{at}, \link{every}, \link{from}, 
+#' \link{from_to}.
 #' @export
 #'
 #' @examples
@@ -136,7 +140,8 @@ to <- function(stop_time, dist) {
 #' \code{start_time}).
 #' 
 #' @return Returns a generator function.
-#' @seealso \link{add_generator}
+#' @seealso \link{add_generator}, \link{at}, \link{every}, \link{from}, 
+#' \link{to}.
 #' @export
 #'
 #' @examples

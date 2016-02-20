@@ -7,11 +7,18 @@
 plot_resource_utilization(envs, resources)
 }
 \arguments{
-\item{envs}{a single simmer environment or a list of environments representing several replications}
+\item{envs}{a single simmer environment or a list of environments representing several replications.}
 
-\item{resources}{a character vector with at least one resource specified - e.g. "c('res1','res2')"}
+\item{resources}{a character vector with at least one resource specified - e.g. "c('res1','res2')".}
+}
+\value{
+a ggplot2 object.
 }
 \description{
 Plot the utilization of specified resources in the simulation.
+}
+\seealso{
+\link{plot_resource_usage}, 
+\link{plot_evolution_arrival_times}, \link{plot_attributes}.
 }
 

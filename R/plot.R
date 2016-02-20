@@ -2,10 +2,14 @@
 #' 
 #' Plot the usage of a resource over the simulation time frame.
 #' 
-#' @param envs a single simmer environment or a list of environments representing several replications
-#' @param resource_name the name of the resource (character value)
-#' @param items the components of the resource to be plotted
-#' @param steps adds the changes in the resource usage
+#' @param envs a single simmer environment or a list of environments representing several replications.
+#' @param resource_name the name of the resource (character value).
+#' @param items the components of the resource to be plotted.
+#' @param steps adds the changes in the resource usage.
+#' 
+#' @return a ggplot2 object.
+#' @seealso \link{plot_resource_utilization},
+#' \link{plot_evolution_arrival_times}, \link{plot_attributes}.
 #' @export
 plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", "system"), steps = FALSE) {
   # Hack to avoid spurious notes
@@ -62,8 +66,12 @@ plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", 
 #' 
 #' Plot the utilization of specified resources in the simulation.
 #' 
-#' @param envs a single simmer environment or a list of environments representing several replications
-#' @param resources a character vector with at least one resource specified - e.g. "c('res1','res2')"
+#' @param envs a single simmer environment or a list of environments representing several replications.
+#' @param resources a character vector with at least one resource specified - e.g. "c('res1','res2')".
+#' 
+#' @return a ggplot2 object.
+#' @seealso \link{plot_resource_usage}, 
+#' \link{plot_evolution_arrival_times}, \link{plot_attributes}.
 #' @export
 plot_resource_utilization <- function(envs, resources) {
   # Hack to avoid spurious notes
@@ -106,8 +114,12 @@ plot_resource_utilization <- function(envs, resources) {
 #' 
 #' Plot the evolution of arrival related times (flow, activity and waiting time).
 #' 
-#' @param envs a single simmer environment or a list of environments representing several replications
-#' @param type one of c("flow_time","activity_time","waiting_time")
+#' @param envs a single simmer environment or a list of environments representing several replications.
+#' @param type one of c("flow_time","activity_time","waiting_time").
+#' 
+#' @return a ggplot2 object.
+#' @seealso \link{plot_resource_usage}, \link{plot_resource_utilization},
+#' \link{plot_attributes}.
 #' @export
 plot_evolution_arrival_times <- function(envs, type=c("flow_time","activity_time","waiting_time")){
   # Hack to avoid spurious notes
@@ -152,11 +164,14 @@ plot_evolution_arrival_times <- function(envs, type=c("flow_time","activity_time
 #' 
 #' Plot the evolution of user-supplied attribute data.
 #' 
-#' @param envs a single simmer environment or a list of environments representing several replications
-#' @param keys the keys of attributes you want to plot (if left empty, all attributes are shown)
+#' @param envs a single simmer environment or a list of environments representing several replications.
+#' @param keys the keys of attributes you want to plot (if left empty, all attributes are shown).
 #'
+#' @return a ggplot2 object.
+#' @seealso \link{plot_resource_usage}, \link{plot_resource_utilization},
+#' \link{plot_evolution_arrival_times}.
 #' @export
-plot_attributes<-function(envs, keys=c()){
+plot_attributes <- function(envs, keys=c()) {
   # Hack to avoid spurious notes
   time <- key <- value <- replication <- NULL
   

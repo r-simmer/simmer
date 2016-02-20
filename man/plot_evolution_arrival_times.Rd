@@ -8,11 +8,18 @@ plot_evolution_arrival_times(envs, type = c("flow_time", "activity_time",
   "waiting_time"))
 }
 \arguments{
-\item{envs}{a single simmer environment or a list of environments representing several replications}
+\item{envs}{a single simmer environment or a list of environments representing several replications.}
 
-\item{type}{one of c("flow_time","activity_time","waiting_time")}
+\item{type}{one of c("flow_time","activity_time","waiting_time").}
+}
+\value{
+a ggplot2 object.
 }
 \description{
 Plot the evolution of arrival related times (flow, activity and waiting time).
+}
+\seealso{
+\link{plot_resource_usage}, \link{plot_resource_utilization},
+\link{plot_attributes}.
 }
 

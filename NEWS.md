@@ -4,6 +4,11 @@ Important fix:
 
 * In previous versions, resources were monitored **before** performing the corresponding seize/release activity, before changing the status of the system. Thus, `t=3, queue=2` meant that, until `t=3`, the queue had 2 customers, and at `t=3` the system changed (because of a new arrival or a new departure). The idea was to keep the values and time vectors aligned (see #28). But from this moment on, the resources are monitored **after** changing the status of the system. This is more consistent with what a user would expect, and more consistent with the behaviour of other related R functions (e.g., see `stepfun`, from the `stats` package). Wrapping up and from now on, `t=3, queue=2` means that some event happened at `t=3` whose immediate and subsequent result was a queue with 2 customers.
 
+Minor changes and fixes:
+
+* Add `every`, `to` and `from_to` convenience functions (8e524cd).
+* Remove deprecated functions `show_activity` and `show_trajectory`.
+
 ## simmer 3.1.2
 
 New features:

@@ -110,11 +110,14 @@ Simmer.wrap <- R6Class("Simmer.wrap",
 #' simulation backend is destroyed when the threads exit.
 #' 
 #' @param env the simulation environment.
+#' 
 #' @return Returns a simulation wrapper.
 #' @seealso Other methods to deal with a simulation wrapper:
 #' \link{get_mon_arrivals}, \link{get_mon_attributes}, \link{get_mon_resources}, 
 #' \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
 #' \link{get_server_count}, \link{get_queue_count}.
+#' @export
+#' 
 #' @examples
 #' library(parallel)
 #' 
@@ -132,5 +135,4 @@ Simmer.wrap <- R6Class("Simmer.wrap",
 #' })
 #' 
 #' plot_resource_usage(envs, "server")
-#' @export
 wrap <- function(env) Simmer.wrap$new(env)

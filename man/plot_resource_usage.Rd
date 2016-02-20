@@ -8,15 +8,22 @@ plot_resource_usage(envs, resource_name, items = c("queue", "server",
   "system"), steps = FALSE)
 }
 \arguments{
-\item{envs}{a single simmer environment or a list of environments representing several replications}
+\item{envs}{a single simmer environment or a list of environments representing several replications.}
 
-\item{resource_name}{the name of the resource (character value)}
+\item{resource_name}{the name of the resource (character value).}
 
-\item{items}{the components of the resource to be plotted}
+\item{items}{the components of the resource to be plotted.}
 
-\item{steps}{adds the changes in the resource usage}
+\item{steps}{adds the changes in the resource usage.}
+}
+\value{
+a ggplot2 object.
 }
 \description{
 Plot the usage of a resource over the simulation time frame.
+}
+\seealso{
+\link{plot_resource_utilization},
+\link{plot_evolution_arrival_times}, \link{plot_attributes}.
 }
 

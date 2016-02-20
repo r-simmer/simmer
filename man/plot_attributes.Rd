@@ -7,11 +7,18 @@
 plot_attributes(envs, keys = c())
 }
 \arguments{
-\item{envs}{a single simmer environment or a list of environments representing several replications}
+\item{envs}{a single simmer environment or a list of environments representing several replications.}
 
-\item{keys}{the keys of attributes you want to plot (if left empty, all attributes are shown)}
+\item{keys}{the keys of attributes you want to plot (if left empty, all attributes are shown).}
+}
+\value{
+a ggplot2 object.
 }
 \description{
 Plot the evolution of user-supplied attribute data.
+}
+\seealso{
+\link{plot_resource_usage}, \link{plot_resource_utilization},
+\link{plot_evolution_arrival_times}.
 }
 
