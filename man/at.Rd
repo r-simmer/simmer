@@ -16,25 +16,10 @@ Returns a generator function.
 Generator convenience function to generate arrivals at specific times.
 }
 \examples{
-t0 <- create_trajectory("my trajectory") \%>\%
-  ## add an intake activity
-  seize("nurse", 1) \%>\%
-  timeout(function() rnorm(1, 15)) \%>\%
-  release("nurse", 1) \%>\%
-  ## add a consultation activity
-  seize("doctor", 1) \%>\%
-  timeout(function() rnorm(1, 20)) \%>\%
-  release("doctor", 1) \%>\%
-  ## add a planning activity
-  seize("administration", 1) \%>\%
-  timeout(function() rnorm(1, 5)) \%>\%
-  release("administration", 1)
-  
-env <- simmer("SuperDuperSim") \%>\%
-  add_resource("nurse", 1) \%>\%
-  add_resource("doctor", 2) \%>\%
-  add_resource("administration", 1) \%>\%
-  add_generator("patient", t0, at(0, c(1,10,30), 40, 43))
+t0 <- create_trajectory() \%>\% timeout(0)
+env <- simmer(verbose=T) \%>\%
+  add_generator("dummy", t0, at(0, c(1,10,30), 40, 43)) \%>\%
+  run(100)
 }
 \seealso{
 \link{add_generator}
