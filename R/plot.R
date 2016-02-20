@@ -9,15 +9,15 @@
 #' @export
 plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", "system"), steps = FALSE) {
   # Hack to avoid spurious notes
-  resource <- item <- value <- replication <- time <- NULL
+  resource <- item <- value <- server <- queue <- system <- replication <- time <- NULL
   
   monitor_data <- envs %>% get_mon_resources() %>% 
     dplyr::filter(resource == resource_name) %>%
-    tidyr::gather(item, value, 2:4) %>%
+    tidyr::gather(item, value, server, queue, system) %>%
     dplyr::mutate(item = factor(item)) %>%
     dplyr::filter(item %in% items) %>%
     dplyr::group_by(resource, replication, item) %>%
-    dplyr::mutate(mean = cumsum(value * diff(c(0,time))) / time) %>% 
+    dplyr::mutate(mean = c(0, cumsum(head(value, -1) * diff(time))) / time) %>% 
     dplyr::ungroup()
   
   if (is.list(envs)) env <- envs[[1]]
@@ -67,7 +67,7 @@ plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", 
 #' @export
 plot_resource_utilization <- function(envs, resources) {
   # Hack to avoid spurious notes
-  resource <- item <- value <- replication <- capacity <- runtime <- 
+  resource <- item <- value <- server <- queue <- system <- replication <- capacity <- runtime <- 
     in_use <- utilization <- Q25 <- Q50 <- Q75 <- time <- NULL
   
   if (is.list(envs)) env <- envs[[1]]
@@ -75,7 +75,7 @@ plot_resource_utilization <- function(envs, resources) {
   
   monitor_data <- envs %>% get_mon_resources() %>% 
     dplyr::filter(resource %in% resources) %>%
-    tidyr::gather(item, value, 2:4) %>%
+    tidyr::gather(item, value, server, queue, system) %>%
     dplyr::mutate(item = factor(item)) %>%
     dplyr::filter(item == "server") %>%
     dplyr::group_by(resource) %>%
@@ -162,12 +162,12 @@ plot_attributes<-function(envs, keys=c()){
   
   monitor_data <- envs %>% get_mon_attributes()
   
-  if(length(keys)>0) monitor_data <- monitor_data %>%  dplyr::filter(key %in% keys)
+  if(length(keys)>0) monitor_data <- monitor_data %>% dplyr::filter(key %in% keys)
   
   plot_obj<-
     ggplot2::ggplot(monitor_data) +
     ggplot2::aes(x=time, y=value) +
-    ggplot2::geom_line(alpha=.4, ggplot2::aes(group=replication)) + 
+    ggplot2::geom_step(alpha=.4, ggplot2::aes(group=replication)) + 
     ggplot2::stat_smooth() +
     ggplot2::xlab("simulation time") +
     ggplot2::ylab("value") +

@@ -1,6 +1,6 @@
 ## Release summary
 
-This release adds an important new feature requested by our users. Also, the ERRORs reported on some platforms (platforms using clang and Sparc Solaris) should be fixed because, although we were unable to reproduce them, they seemed to be nothing more than weak test designs.
+The GitHub repository has been transferred from one author to the other (Bart -> Iñaki), and so the corresponding URLs (URL and BugReports) have changed in the DESCRIPTION file.
 
 ## Test environments
 

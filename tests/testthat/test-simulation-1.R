@@ -37,7 +37,7 @@ test_that("a simple deterministic simulation with rejections behaves as expected
   expect_equal(sum(arrivals_res$activity_time), 1.5*n/2)
   expect_equal(sum(subset(arrivals, !finished)$activity_time), 0)
   
-  expect_equal(nrow(resources), n*1.5)
-  expect_equal(sum(resources$server), n)
+  expect_equal(nrow(resources), n)
+  expect_equal(sum(resources$server), n/2)
   expect_equal(sum(resources$queue), 0)
 })

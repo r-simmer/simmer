@@ -56,16 +56,12 @@ void Generator::activate() {
 int Arrival::set_attribute(std::string key, double value) {
   attributes[key] = value;
   
-  // monitoring
   if (is_monitored() >= 2) gen->observe(sim->now(), this, key);
-  
   return 0;
 }
 
 int Resource::seize(Arrival* arrival, int amount, int priority) {
-  // monitoring
-  if (is_monitored()) observe(sim->now());
-  
+  int status;
   // serve now
   if (room_in_server(amount)) {
     if (arrival->is_monitored()) {
@@ -73,30 +69,30 @@ int Resource::seize(Arrival* arrival, int amount, int priority) {
       arrival->set_activity(this->name, sim->now());
     }
     server_count += amount;
-    return SUCCESS;
+    status = SUCCESS;
   }
   // enqueue
-  if (room_in_queue(amount)) {
+  else if (room_in_queue(amount)) {
     if (arrival->is_monitored())
       arrival->set_start(this->name, sim->now());
     queue_count += amount;
     queue.push(RQItem(arrival, amount, priority, sim->now()));
-    return ENQUEUED;
+    status = ENQUEUED;
   }
   // reject
-  return REJECTED;
+  else return REJECTED;
+  
+  if (is_monitored()) observe(sim->now());
+  return status;
 }
 
 int Resource::release(Arrival* arrival, int amount) {
-  // monitoring
-  if (is_monitored()) observe(sim->now());
+  // departure
   if (arrival->is_monitored()) {
     double last = arrival->get_activity(this->name);
     arrival->set_activity(this->name, sim->now() - last);
     arrival->leaving(this->name, sim->now());
   }
-  
-  // departure
   server_count -= amount;
   
   // serve from the queue
@@ -108,5 +104,7 @@ int Resource::release(Arrival* arrival, int amount) {
       queue.top().arrival->set_activity(this->name, sim->now());
     queue.pop();
   }
+  
+  if (is_monitored()) observe(sim->now());
   return SUCCESS;
 }

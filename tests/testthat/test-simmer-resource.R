@@ -51,8 +51,8 @@ test_that("resource slots are correctly filled", {
   
   expect_equal(arrivals[3,]$finished, FALSE)
   expect_equal(nrow(arrivals_res), 0)
-  expect_equal(resources[5,]$server, 2)
-  expect_equal(resources[5,]$queue, 2)
+  expect_equal(resources[4,]$server, 2)
+  expect_equal(resources[4,]$queue, 2)
   expect_equal(sum(attributes$value), 2)
 })
 
@@ -69,7 +69,8 @@ test_that("resources are  correctly monitored", {
   
   resources <- env%>%get_mon_resources()
   
-  expect_equal(resources[2,]$server, 1) # to be discussed: debatable whether or not it should equal 1 or 0
+  expect_equal(resources[1,]$server, 1)
+  expect_equal(resources[2,]$server, 0)
 })
 
 test_that("priority queues are adhered to (1)", {

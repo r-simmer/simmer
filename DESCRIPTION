@@ -17,6 +17,7 @@ Imports:
     magrittr,
     methods
 Suggests:
+    parallel,
     dplyr,
     tidyr,
     ggplot2,
