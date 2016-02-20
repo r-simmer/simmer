@@ -17,7 +17,7 @@ Generator convenience function to generate arrivals at specific times.
 }
 \examples{
 t0 <- create_trajectory() \%>\% timeout(0)
-env <- simmer(verbose=T) \%>\%
+env <- simmer(verbose=TRUE) \%>\%
   add_generator("dummy", t0, at(0, c(1,10,30), 40, 43)) \%>\%
   run(100)
 }

@@ -11,7 +11,7 @@
 #'
 #' @examples
 #' t0 <- create_trajectory() %>% timeout(0)
-#' env <- simmer(verbose=T) %>%
+#' env <- simmer(verbose=TRUE) %>%
 #'   add_generator("dummy", t0, at(0, c(1,10,30), 40, 43)) %>%
 #'   run(100)
 at <- function(...) {
@@ -42,7 +42,7 @@ at <- function(...) {
 #'
 #' @examples
 #' t0 <- create_trajectory() %>% timeout(0)
-#' env <- simmer(verbose=T) %>%
+#' env <- simmer(verbose=TRUE) %>%
 #'   add_generator("dummy", t0, every(1, 2, 1)) %>%
 #'   run(10)
 every <- function(...) {
@@ -77,7 +77,7 @@ every <- function(...) {
 #'
 #' @examples
 #' t0 <- create_trajectory() %>% timeout(0)
-#' env <- simmer(verbose=T) %>%
+#' env <- simmer(verbose=TRUE) %>%
 #'   add_generator("dummy", t0, from(5, function() runif(1, 1, 2))) %>%
 #'   run(10)
 from <- function(start_time, dist, arrive=TRUE) {
@@ -110,7 +110,7 @@ from <- function(start_time, dist, arrive=TRUE) {
 #'
 #' @examples
 #' t0 <- create_trajectory() %>% timeout(0)
-#' env <- simmer(verbose=T) %>%
+#' env <- simmer(verbose=TRUE) %>%
 #'   add_generator("dummy", t0, to(5, function() runif(1, 1, 2))) %>%
 #'   run(10)
 to <- function(stop_time, dist) {
@@ -146,7 +146,7 @@ to <- function(stop_time, dist) {
 #'
 #' @examples
 #' t0 <- create_trajectory() %>% timeout(0)
-#' env <- simmer(verbose=T) %>%
+#' env <- simmer(verbose=TRUE) %>%
 #'   add_generator("dummy", t0, from_to(5, 10, function() runif(1, 1, 2))) %>%
 #'   run(100)
 from_to <- function(start_time, stop_time, dist, arrive=TRUE){

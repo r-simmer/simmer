@@ -95,10 +95,6 @@ test_that("the head/tail pointers are correctly placed", {
 })
 
 test_that("we can force some errors (just to complete coverage)", {
-  expect_warning(create_trajectory() %>% show_trajectory())
-  expect_warning(create_trajectory() %>% 
-                   timeout(1) %>% get_head() %>% show_activity())
-  
   expect_error(create_trajectory() %>% get_next_activity())
   expect_error(create_trajectory() %>% get_prev_activity())
   
