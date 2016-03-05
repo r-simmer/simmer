@@ -8,6 +8,7 @@ Minor changes and fixes:
 
 * Add `every`, `to` and `from_to` convenience functions (8e524cd).
 * Remove deprecated functions `show_activity` and `show_trajectory`.
+* Fix compatibility with the upcoming version of `testthat` (#41).
 
 ## simmer 3.1.2
 

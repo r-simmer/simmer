@@ -73,7 +73,7 @@ test_that("the trajectory stores the right number of activities", {
     ".*SetAttribute.*function", 
   ").*")
   
-  expect_output(t0, output)
+  expect_output(print(t0), output)
 })
 
 test_that("the head/tail pointers are correctly placed", {
