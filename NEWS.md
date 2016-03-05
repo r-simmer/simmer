@@ -9,6 +9,7 @@ Minor changes and fixes:
 * Add `every`, `to` and `from_to` convenience functions (8e524cd).
 * Remove deprecated functions `show_activity` and `show_trajectory`.
 * Fix compatibility with the upcoming version of `testthat` (#41).
+* Fix colour scale in `plot_resource_usage` (6b034a7).
 
 ## simmer 3.1.2
 
