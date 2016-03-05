@@ -29,30 +29,18 @@ plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", 
   queue_size <- env $ get_queue_size(resource_name)
   capacity <- env $ get_capacity(resource_name)
   system <- capacity + queue_size
+  limits <- data.frame(item = c("queue", "server", "system"),
+                       value = c(queue_size, capacity, system))
   
   plot_obj<-
     ggplot2::ggplot(monitor_data) +
     ggplot2::aes(x=time, color=item) +
     ggplot2::geom_line(ggplot2::aes(y=mean, group=interaction(replication, item))) +
     ggplot2::ggtitle(paste("Resource usage:", resource_name)) +
-    ggplot2::scale_y_continuous(breaks=seq(0,1000,1)) +
-    ggplot2::scale_color_discrete(limits=levels(monitor_data$item)) +
     ggplot2::ylab("in use") +
     ggplot2::xlab("time") +
-    ggplot2::expand_limits(y=0)
-  
-  if("server" %in% items){
-    plot_obj <- plot_obj +
-      ggplot2::geom_hline(yintercept=capacity, lty=2, color="red")
-  }
-  if("queue" %in% items && queue_size >= 0){
-    plot_obj <- plot_obj +
-      ggplot2::geom_hline(yintercept=queue_size, lty=2, color="green")
-  }
-  if("system" %in% items && queue_size >= 0){
-    plot_obj <- plot_obj +
-      ggplot2::geom_hline(yintercept=system, lty=2, color="blue")
-  }
+    ggplot2::expand_limits(y=0) +
+    ggplot2::geom_hline(ggplot2::aes(yintercept=value, color=item), limits, lty=2)
   
   if(steps == T){
     plot_obj <- plot_obj +
@@ -186,7 +174,6 @@ plot_attributes <- function(envs, keys=c()) {
     ggplot2::stat_smooth() +
     ggplot2::xlab("simulation time") +
     ggplot2::ylab("value") +
-    
     ggplot2::expand_limits(y=0)
   
   if(length(unique(monitor_data$key))>1){
