@@ -63,14 +63,17 @@ bool add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_activity_, SEXP dis
 }
 
 //[[Rcpp::export]]
-bool add_resource_(SEXP sim_, SEXP name_, SEXP capacity_, SEXP queue_size_, SEXP mon_) {
+bool add_resource_(SEXP sim_, SEXP name_, SEXP capacity_, SEXP queue_size_, SEXP mon_,
+                   SEXP preemptive_, SEXP preempt_order_) {
   XPtr<Simulator> sim(sim_);
   std::string name = as<std::string>(name_);
   int capacity = as<int>(capacity_);
   int queue_size = as<int>(queue_size_);
   bool mon = as<bool>(mon_);
+  bool preemptive = as<bool>(preemptive_);
+  std::string preempt_order = as<std::string>(preempt_order_);
   
-  return sim->add_resource(name, capacity, queue_size, mon);
+  return sim->add_resource(name, capacity, queue_size, mon, preemptive, preempt_order);
 }
 
 //[[Rcpp::export]]
@@ -175,22 +178,31 @@ int get_queue_count_(SEXP sim_, SEXP name_){
 }
 
 //[[Rcpp::export]]
-SEXP Seize__new(SEXP resource_, SEXP amount_, SEXP priority_) {
+SEXP Seize__new(SEXP resource_, SEXP amount_, 
+                SEXP priority_, SEXP preemptible_, SEXP restart_) {
   std::string resource = as<std::string>(resource_);
   int amount = as<int>(amount_);
   int priority = as<int>(priority_);
+  int preemptible = as<int>(preemptible_);
+  bool restart = as<bool>(restart_);
 
-  XPtr<Seize<int> > ptr(new Seize<int>(resource, amount, 0, priority), false);
+  XPtr<Seize<int> > ptr(new Seize<int>(resource, amount, 0, 
+                                       priority, preemptible, restart), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Seize__new_func(SEXP resource_, Function amount, SEXP provide_attrs_, SEXP priority_) {
+SEXP Seize__new_func(SEXP resource_, Function amount, SEXP provide_attrs_, 
+                     SEXP priority_, SEXP preemptible_, SEXP restart_) {
   std::string resource = as<std::string>(resource_);
   bool provide_attrs = as<bool>(provide_attrs_);
   int priority = as<int>(priority_);
+  int preemptible = as<int>(preemptible_);
+  bool restart = as<bool>(restart_);
   
-  XPtr<Seize<Function> > ptr(new Seize<Function>(resource, amount, provide_attrs, priority), false);
+  XPtr<Seize<Function> > 
+    ptr(new Seize<Function>(resource, amount, provide_attrs, 
+                            priority, preemptible, restart), false);
   return ptr;
 }
 

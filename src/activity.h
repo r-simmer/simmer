@@ -69,14 +69,18 @@ private:
 template <typename T>
 class Seize: public Activity {
 public:
-  Seize(std::string resource, T amount, bool provide_attrs, int priority):
-    Activity("Seize", resource, provide_attrs, std::abs(priority)), amount(amount) {}
+  Seize(std::string resource, T amount, bool provide_attrs, 
+        int priority, int preemptible, bool restart):
+    Activity("Seize", resource, provide_attrs, std::abs(priority)), 
+    amount(amount), preemptible(std::abs(preemptible)), restart(restart) {}
   
   void print(int indent=0);
   double run(Arrival* arrival);
   
 private:
   T amount;
+  int preemptible;
+  bool restart;
 };
 
 /**

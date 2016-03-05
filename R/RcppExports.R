@@ -29,8 +29,8 @@ add_generator_ <- function(sim_, name_prefix_, first_activity_, dist_, mon_) {
     .Call('simmer_add_generator_', PACKAGE = 'simmer', sim_, name_prefix_, first_activity_, dist_, mon_)
 }
 
-add_resource_ <- function(sim_, name_, capacity_, queue_size_, mon_) {
-    .Call('simmer_add_resource_', PACKAGE = 'simmer', sim_, name_, capacity_, queue_size_, mon_)
+add_resource_ <- function(sim_, name_, capacity_, queue_size_, mon_, preemptive_, preempt_order_) {
+    .Call('simmer_add_resource_', PACKAGE = 'simmer', sim_, name_, capacity_, queue_size_, mon_, preemptive_, preempt_order_)
 }
 
 get_mon_arrivals_ <- function(sim_, name_) {
@@ -69,12 +69,12 @@ get_queue_count_ <- function(sim_, name_) {
     .Call('simmer_get_queue_count_', PACKAGE = 'simmer', sim_, name_)
 }
 
-Seize__new <- function(resource_, amount_, priority_) {
-    .Call('simmer_Seize__new', PACKAGE = 'simmer', resource_, amount_, priority_)
+Seize__new <- function(resource_, amount_, priority_, preemptible_, restart_) {
+    .Call('simmer_Seize__new', PACKAGE = 'simmer', resource_, amount_, priority_, preemptible_, restart_)
 }
 
-Seize__new_func <- function(resource_, amount, provide_attrs_, priority_) {
-    .Call('simmer_Seize__new_func', PACKAGE = 'simmer', resource_, amount, provide_attrs_, priority_)
+Seize__new_func <- function(resource_, amount, provide_attrs_, priority_, preemptible_, restart_) {
+    .Call('simmer_Seize__new_func', PACKAGE = 'simmer', resource_, amount, provide_attrs_, priority_, preemptible_, restart_)
 }
 
 Release__new <- function(resource_, amount_) {

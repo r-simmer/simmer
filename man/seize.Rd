@@ -4,7 +4,8 @@
 \alias{seize}
 \title{Add a seize activity}
 \usage{
-seize(traj, resource, amount = 1, priority = 0)
+seize(traj, resource, amount = 1, priority = 0, preemptible = 0,
+  restart = FALSE)
 }
 \arguments{
 \item{traj}{the trajectory object.}
@@ -13,7 +14,15 @@ seize(traj, resource, amount = 1, priority = 0)
 
 \item{amount}{the amount to seize.}
 
-\item{priority}{the priority of the seize (a higher integer equals higher priority, defaults to 0)}
+\item{priority}{the priority of the seize (a higher integer equals higher 
+priority; defaults to the minimum priority, which is 0).}
+
+\item{preemptible}{if the seize occurs in a preemptive resource, this parameter 
+establishes the minimum incoming priority that can preempt this arrival (a seize 
+with a priority equal to `preemptible` or more gains the resource; by default, 
+any seize may cause preemption in a preemptive resource).}
+
+\item{restart}{whether the activity must be restarted after a preemption.}
 }
 \value{
 The trajectory object.

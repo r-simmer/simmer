@@ -27,13 +27,17 @@ Trajectory <- R6Class("Trajectory",
     
     get_n_activities = function() { private$n_activities },
     
-    seize = function(resource, amount=1, priority=0) {
+    seize = function(resource, amount=1, priority=0, preemptible=0, restart=FALSE) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
       priority <- evaluate_value(priority)
+      preemptible <- evaluate_value(preemptible)
+      restart <- evaluate_value(restart)
       if (is.function(amount))
-        private$add_activity(Seize__new_func(resource, amount, needs_attrs(amount), priority))
-      else private$add_activity(Seize__new(resource, amount, priority))
+        private$add_activity(Seize__new_func(resource, amount, needs_attrs(amount), 
+                                             priority, preemptible, restart))
+      else private$add_activity(Seize__new(resource, amount, 
+                                           priority, preemptible, restart))
     },
     
     release = function(resource, amount=1) {
@@ -192,7 +196,13 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #' @param traj the trajectory object.
 #' @param resource the name of the resource.
 #' @param amount the amount to seize.
-#' @param priority the priority of the seize (a higher integer equals higher priority, defaults to 0)
+#' @param priority the priority of the seize (a higher integer equals higher 
+#' priority; defaults to the minimum priority, which is 0).
+#' @param preemptible if the seize occurs in a preemptive resource, this parameter 
+#' establishes the minimum incoming priority that can preempt this arrival (a seize 
+#' with a priority equal to `preemptible` or more gains the resource; by default, 
+#' any seize may cause preemption in a preemptive resource).
+#' @param restart whether the activity must be restarted after a preemption.
 #' 
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:
@@ -200,7 +210,8 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #' \link{get_tail}, \link{get_n_activities}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
-seize <- function(traj, resource, amount=1, priority=0) traj$seize(resource, amount, priority)
+seize <- function(traj, resource, amount=1, priority=0, preemptible=0, restart=FALSE)
+  traj$seize(resource, amount, priority, preemptible, restart)
 
 #' Add a release activity
 #'

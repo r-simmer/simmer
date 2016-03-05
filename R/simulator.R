@@ -59,15 +59,19 @@ Simmer <- R6Class("Simmer",
       self
     },
     
-    add_resource = function(name, capacity=1, queue_size=Inf, mon=TRUE) {
+    add_resource = function(name, capacity=1, queue_size=Inf, mon=TRUE,
+                            preemptive=FALSE, preempt_order="fifo") {
       name <- evaluate_value(name)
       capacity <- evaluate_value(capacity)
       queue_size <- evaluate_value(queue_size)
       if (is.infinite(capacity)) capacity <- -1
       if (is.infinite(queue_size)) queue_size <- -1
       mon <- evaluate_value(mon)
+      preemptive <- evaluate_value(preemptive)
+      preempt_order <- evaluate_value(preempt_order)
       
-      ret <- add_resource_(private$sim_obj, name, capacity, queue_size, mon)
+      ret <- add_resource_(private$sim_obj, name, capacity, queue_size, mon,
+                           preemptive, preempt_order)
       if (ret) private$res[[name]] <- mon
       self
     },
@@ -311,6 +315,12 @@ run <- function(env, until=1000) env$run(until)
 #' @param capacity the capacity of the server.
 #' @param queue_size the size of the queue.
 #' @param mon whether the simulator must monitor this resource or not.
+#' @param preemptive whether arrivals in the server can be preempted or not.
+#' @param preempt_order if the resource is preemptive and preemption occurs with 
+#' more than one arrival in the server, this parameter defines which arrival should 
+#' be preempted first. It must be `fifo` (First In First Out: older preemptible 
+#' tasks are preempted first) or `lifo` (Last In First Out: newer preemptible tasks 
+#' are preempted first).
 #' 
 #' @return Returns the simulation environment.
 #' @seealso Other methods to deal with a simulation environment:
@@ -319,8 +329,9 @@ run <- function(env, until=1000) env$run(until)
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
 #' \link{get_server_count}, \link{get_queue_count}.
 #' @export
-add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE)
-  env$add_resource(name, capacity, queue_size, mon)
+add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE,
+                         preemptive=FALSE, preempt_order="fifo")
+  env$add_resource(name, capacity, queue_size, mon, preemptive, preempt_order)
 
 #' Add a generator
 #'

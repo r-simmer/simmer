@@ -118,7 +118,7 @@ public:
    * @param   name_prefix     prefix for the arrival names
    * @param   first_activity  the first activity of a user-defined R trajectory
    * @param   dis             an user-defined R function that provides random numbers
-   * @param   mon             int that indicates whether this entity must be monitored
+   * @param   mon             monitoring level
    */
   bool add_generator(std::string name_prefix, 
                      Activity* first_activity, Rcpp::Function dist, int mon) {
@@ -134,12 +134,15 @@ public:
   
   /**
    * Add a resource to the simulator.
-   * @param   name        the name
-   * @param   capacity    server capacity (-1 means infinity)
-   * @param   queue_size  room in the queue (-1 means infinity)
-   * @param   mon         bool that indicates whether this entity must be monitored
+   * @param   name          the name
+   * @param   capacity      server capacity (-1 means infinity)
+   * @param   queue_size    room in the queue (-1 means infinity)
+   * @param   mon           whether this entity must be monitored
+   * @param   preemptive    whether the resource is preemptive
+   * @param   preempt_order fifo or lifo
    */
-  bool add_resource(std::string name, int capacity, int queue_size, bool mon) {
+  bool add_resource(std::string name, int capacity, int queue_size, bool mon,
+                    bool preemptive, std::string preempt_order) {
     if (resource_map.find(name) == resource_map.end()) {
       Resource* res = new Resource(this, name, mon, capacity, queue_size);
       resource_map[name] = res;

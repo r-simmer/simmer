@@ -4,7 +4,8 @@
 \alias{add_resource}
 \title{Add a resource}
 \usage{
-add_resource(env, name, capacity = 1, queue_size = Inf, mon = TRUE)
+add_resource(env, name, capacity = 1, queue_size = Inf, mon = TRUE,
+  preemptive = FALSE, preempt_order = "fifo")
 }
 \arguments{
 \item{env}{the simulation environment.}
@@ -16,6 +17,14 @@ add_resource(env, name, capacity = 1, queue_size = Inf, mon = TRUE)
 \item{queue_size}{the size of the queue.}
 
 \item{mon}{whether the simulator must monitor this resource or not.}
+
+\item{preemptive}{whether arrivals in the server can be preempted or not.}
+
+\item{preempt_order}{if the resource is preemptive and preemption occurs with 
+more than one arrival in the server, this parameter defines which arrival should 
+be preempted first. It must be `fifo` (First In First Out: older preemptible 
+tasks are preempted first) or `lifo` (Last In First Out: newer preemptible tasks 
+are preempted first).}
 }
 \value{
 Returns the simulation environment.
