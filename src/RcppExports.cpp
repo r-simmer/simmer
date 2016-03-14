@@ -315,15 +315,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // Branch__new
-SEXP Branch__new(Function option, SEXP merge_, SEXP trj_);
-RcppExport SEXP simmer_Branch__new(SEXP optionSEXP, SEXP merge_SEXP, SEXP trj_SEXP) {
+SEXP Branch__new(Function option, SEXP provide_attrs_, SEXP merge_, SEXP trj_);
+RcppExport SEXP simmer_Branch__new(SEXP optionSEXP, SEXP provide_attrs_SEXP, SEXP merge_SEXP, SEXP trj_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< Function >::type option(optionSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type provide_attrs_(provide_attrs_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type merge_(merge_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type trj_(trj_SEXP);
-    __result = Rcpp::wrap(Branch__new(option, merge_, trj_));
+    __result = Rcpp::wrap(Branch__new(option, provide_attrs_, merge_, trj_));
     return __result;
 END_RCPP
 }

@@ -69,7 +69,7 @@ Trajectory <- R6Class("Trajectory",
         stop("the number of elements does not match")
       for (i in trj) if (!inherits(i, "Trajectory"))
         stop("not a trajectory")
-      private$add_activity(Branch__new(option, merge, trj))
+      private$add_activity(Branch__new(option, needs_attrs(option), merge, trj))
     },
     
     rollback = function(amount, times=1, check) {

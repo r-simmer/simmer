@@ -138,8 +138,8 @@ private:
  */
 class Branch: public Activity {
 public:
-  Branch(Rcpp::Function option, VEC<bool> merge, VEC<Rcpp::Environment> trj):
-    Activity("Branch", "none", 0), option(option), merge(merge), trj(trj), selected(NULL) {
+  Branch(Rcpp::Function option, bool provide_attrs, VEC<bool> merge, VEC<Rcpp::Environment> trj):
+    Activity("Branch", "none", provide_attrs), option(option), merge(merge), trj(trj), selected(NULL) {
     n = 0;
     for (unsigned int i = 0; i < trj.size(); i++) {
       Rcpp::Function get_head(trj[i]["get_head"]);
@@ -163,19 +163,7 @@ public:
     }
   }
   
-  double run(Arrival* arrival) {
-    if (pending.find(arrival) != pending.end())
-      pending.erase(arrival);
-    else {
-      unsigned int i = Rcpp::as<unsigned int>(option());
-      if (i < 1 || i > path.size())
-        Rcpp::stop("index out of range");
-      selected = path[i-1];
-      if (merge[i-1])
-        pending.insert(arrival);
-    }
-    return 0;
-  }
+  double run(Arrival* arrival);
   
   Activity* get_next() {
     if (selected) {

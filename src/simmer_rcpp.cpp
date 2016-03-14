@@ -260,11 +260,12 @@ SEXP Timeout__new_func(Function task, SEXP provide_attrs_) {
 }
 
 //[[Rcpp::export]]
-SEXP Branch__new(Function option, SEXP merge_, SEXP trj_) {
+SEXP Branch__new(Function option, SEXP provide_attrs_, SEXP merge_, SEXP trj_) {
+  bool provide_attrs = as<bool>(provide_attrs_);
   VEC<bool> merge = as<VEC<bool> >(merge_);
   VEC<Environment> trj = as<VEC<Environment> >(trj_);
   
-  XPtr<Branch> ptr(new Branch(option, merge, trj), false);
+  XPtr<Branch> ptr(new Branch(option, provide_attrs, merge, trj), false);
   return ptr;
 }
 

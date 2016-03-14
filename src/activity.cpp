@@ -98,6 +98,20 @@ double SetAttribute<Rcpp::Function>::run(Arrival* arrival) {
                                 execute_call<double>(value, arrival, provide_attrs));
 }
 
+double Branch::run(Arrival* arrival) {
+  if (pending.find(arrival) != pending.end())
+    pending.erase(arrival);
+  else {
+    unsigned int i = execute_call<unsigned int>(option, arrival, provide_attrs);
+    if (i < 1 || i > path.size())
+      Rcpp::stop("index out of range");
+    selected = path[i-1];
+    if (merge[i-1])
+      pending.insert(arrival);
+  }
+  return 0;
+}
+
 template <>
 void Rollback<int>::print(int indent) {
   if (!cached) cached = goback();
