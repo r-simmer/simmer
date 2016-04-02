@@ -12,6 +12,7 @@
 #' \link{plot_evolution_arrival_times}, \link{plot_attributes}.
 #' @export
 plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", "system"), steps = FALSE) {
+  checkInstall(c("dplyr", "tidyr", "ggplot2", "scales"))
   # Hack to avoid spurious notes
   resource <- item <- value <- server <- queue <- system <- replication <- time <- NULL
   
@@ -62,6 +63,7 @@ plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", 
 #' \link{plot_evolution_arrival_times}, \link{plot_attributes}.
 #' @export
 plot_resource_utilization <- function(envs, resources) {
+  checkInstall(c("dplyr", "tidyr", "ggplot2", "scales"))
   # Hack to avoid spurious notes
   resource <- item <- value <- server <- queue <- system <- replication <- capacity <- runtime <- 
     in_use <- utilization <- Q25 <- Q50 <- Q75 <- time <- NULL
@@ -110,6 +112,7 @@ plot_resource_utilization <- function(envs, resources) {
 #' \link{plot_attributes}.
 #' @export
 plot_evolution_arrival_times <- function(envs, type=c("flow_time","activity_time","waiting_time")){
+  checkInstall(c("dplyr", "tidyr", "ggplot2", "scales"))
   # Hack to avoid spurious notes
   end_time <- start_time <- flow_time <- activity_time <- 
     replication <- waiting_time <- NULL
@@ -160,6 +163,7 @@ plot_evolution_arrival_times <- function(envs, type=c("flow_time","activity_time
 #' \link{plot_evolution_arrival_times}.
 #' @export
 plot_attributes <- function(envs, keys=c()) {
+  checkInstall(c("dplyr", "tidyr", "ggplot2", "scales"))
   # Hack to avoid spurious notes
   time <- key <- value <- replication <- NULL
   

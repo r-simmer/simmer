@@ -36,3 +36,26 @@ envs_apply <- function(envs, method, ...) {
     stats
   }))
 }
+
+checkInstall <- function(pkgs) {
+  good <- rep(TRUE, length(pkgs))
+  for (i in seq(along = pkgs)) {
+    tested <- try(find.package(pkgs[i]), silent = TRUE)
+    if (class(tested)[1] == "try-error") good[i] <- FALSE
+  }
+  if (any(!good)) {
+    pkList <- paste(pkgs[!good], collapse = ", ")
+    cat(paste("simmer's plotting capabilities depend on ",
+              ifelse(sum(!good) > 1, "missing packages (", "a missing package ("),
+              pkList,
+              ").\nWould you like to try to install",
+              ifelse(sum(!good) > 1, " them", " it"),
+              " now?",
+              sep = ""))
+    if(interactive()) {
+      if (menu(c("yes", "no")) == 1)
+        install.packages(pkgs[!good])
+      else stop()
+    } else stop()
+  }
+}
