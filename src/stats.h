@@ -6,7 +6,7 @@
 
 class StatsMap {
   typedef boost::variant< VEC<bool>, VEC<int>, VEC<double>, VEC<std::string> > StatsVec;
-  typedef MAP<std::string, StatsVec> StatsContainer;
+  typedef UMAP<std::string, StatsVec> StatsContainer;
   
   class clear_vec: public boost::static_visitor<> {
   public:

@@ -202,7 +202,7 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #' establishes the minimum incoming priority that can preempt this arrival (a seize 
 #' with a priority equal to `preemptible` or more gains the resource; by default, 
 #' any seize may cause preemption in a preemptive resource).
-#' @param restart whether the activity must be restarted after a preemption.
+#' @param restart whether the activity must be restarted after being preempted.
 #' 
 #' @return The trajectory object.
 #' @seealso Other methods to deal with trajectories:

@@ -18,7 +18,8 @@ add_resource(env, name, capacity = 1, queue_size = Inf, mon = TRUE,
 
 \item{mon}{whether the simulator must monitor this resource or not.}
 
-\item{preemptive}{whether arrivals in the server can be preempted or not.}
+\item{preemptive}{whether arrivals in the server can be preempted or not based
+on seize priorities.}
 
 \item{preempt_order}{if the resource is preemptive and preemption occurs with 
 more than one arrival in the server, this parameter defines which arrival should 

@@ -22,7 +22,7 @@ establishes the minimum incoming priority that can preempt this arrival (a seize
 with a priority equal to `preemptible` or more gains the resource; by default, 
 any seize may cause preemption in a preemptive resource).}
 
-\item{restart}{whether the activity must be restarted after a preemption.}
+\item{restart}{whether the activity must be restarted after being preempted.}
 }
 \value{
 The trajectory object.

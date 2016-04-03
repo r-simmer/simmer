@@ -69,6 +69,8 @@ Simmer <- R6Class("Simmer",
       mon <- evaluate_value(mon)
       preemptive <- evaluate_value(preemptive)
       preempt_order <- evaluate_value(preempt_order)
+      if (!preempt_order %in% c("fifo", "lifo"))
+        stop("preempt order '", preempt_order, "' not supported")
       
       ret <- add_resource_(private$sim_obj, name, capacity, queue_size, mon,
                            preemptive, preempt_order)
@@ -315,7 +317,8 @@ run <- function(env, until=1000) env$run(until)
 #' @param capacity the capacity of the server.
 #' @param queue_size the size of the queue.
 #' @param mon whether the simulator must monitor this resource or not.
-#' @param preemptive whether arrivals in the server can be preempted or not.
+#' @param preemptive whether arrivals in the server can be preempted or not based
+#' on seize priorities.
 #' @param preempt_order if the resource is preemptive and preemption occurs with 
 #' more than one arrival in the server, this parameter defines which arrival should 
 #' be preempted first. It must be `fifo` (First In First Out: older preemptible 

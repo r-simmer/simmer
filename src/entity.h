@@ -31,20 +31,24 @@ private:
 };
 
 /** 
- * Abstract class for processes, active entities that need a method activate().
+ * Abstract class for processes, active entities that need a method run().
  */
 class Process: public Entity {
 public:
-  Process(Simulator* sim, std::string name, int mon, bool is_gen=false): 
-    Entity(sim, name, mon), is_gen(is_gen) {}
+  Process(Simulator* sim, std::string name, int mon, bool generator=false): 
+    Entity(sim, name, mon), generator(generator), active(true) {}
   virtual ~Process(){}
-  virtual void activate() = 0;
-  inline bool is_generator() { return is_gen; }
+  virtual void run() = 0;
+  inline virtual void activate() { active = true; }
+  inline virtual void deactivate() { active = false; }
+  inline bool is_generator() { return generator; }
+  inline bool is_active() { return active; }
 private:
-  bool is_gen;
+  bool generator;
+  bool active;
 };
 
-typedef MAP<std::string, double> Attr;
+typedef UMAP<std::string, double> Attr;
 
 /** 
  *  Arrival process.
@@ -55,7 +59,7 @@ class Arrival: public Process {
     double activity;
     ArrTime(): start(-1), activity(0) {}
   };
-  typedef MAP<std::string, ArrTime> ResTime;
+  typedef UMAP<std::string, ArrTime> ResTime;
   
 public:
   /**
@@ -66,24 +70,26 @@ public:
    * @param first_activity  the first activity of a user-defined R trajectory
    */
   Arrival(Simulator* sim, std::string name, int mon, Activity* first_activity, Generator* gen):
-    Process(sim, name, mon), activity(first_activity), gen(gen) {}
+    Process(sim, name, mon), activity(first_activity), gen(gen), 
+    busy_until(-1), remaining(0), scheduled(NULL) {}
   
+  void run();
   void activate();
+  void deactivate();
   
   int set_attribute(std::string key, double value);
   inline Attr* get_attributes() { return &attributes; }
   
-  inline void set_start(double start) { lifetime.start = start; }
   inline void set_start(std::string name, double start) { restime[name].start = start; }
-  inline double get_start() { return lifetime.start; }
   inline double get_start(std::string name) { return restime[name].start; }
+  inline double get_start() { return lifetime.start; }
   
-  inline void set_activity(double act) { lifetime.activity = act; }
   inline void set_activity(std::string name, double act) { restime[name].activity = act; }
-  inline double get_activity() { return lifetime.activity; }
   inline double get_activity(std::string name) { return restime[name].activity; }
+  inline double get_activity() { return lifetime.activity; }
   
-  void leaving(std::string name, double time);
+  void leave(std::string name, double time);
+  void reject(double time);
 
 private:
   ArrTime lifetime;   /**< time spent in the whole trajectory */
@@ -91,6 +97,9 @@ private:
   Activity* activity; /**< current activity from an R trajectory */
   Generator* gen;     /**< parent generator */
   Attr attributes;    /**< user-defined (key, value) pairs */
+  double busy_until;  /**< next scheduled event time */
+  double remaining;   /**< time remaining in a deactivated arrival */
+  void* scheduled;    /**< pointer to the next scheduled event */
 };
 
 /**
@@ -120,7 +129,7 @@ public:
     attr_stats.clear();
   }
   
-  void activate();
+  void run();
   
   /**
    * Gather attribute statistics.
@@ -182,28 +191,52 @@ private:
   StatsMap attr_stats;      /**< attribute statistics */
 };
 
-struct RQItem {
+struct RSeize {
+  double arrived_at;
   Arrival* arrival;
   int amount;
   int priority;
-  double arrived_at;
+  int preemptible;
+  bool restart;
   
-  RQItem(Arrival* arrival, int amount, int priority, double arrived_at):
-    arrival(arrival), amount(amount), priority(priority), arrived_at(arrived_at) {}
-  
-  bool operator<(const RQItem& other) const {
-    if(priority == other.priority)
-      return arrived_at > other.arrived_at;
-    return priority < other.priority;
+  RSeize(double arrived_at, Arrival* arrival, int amount, int priority, 
+         int preemptible, bool restart):
+    arrived_at(arrived_at), arrival(arrival), amount(amount), priority(priority),
+    preemptible(preemptible), restart(restart) {}
+};
+
+struct RQComp {
+  bool operator()(const RSeize& lhs, const RSeize& rhs) const {
+    if (lhs.priority == rhs.priority)
+      return lhs.arrived_at < rhs.arrived_at;
+    return lhs.priority > rhs.priority;
   }
 };
 
+struct RSCompFIFO {
+  bool operator()(const RSeize& lhs, const RSeize& rhs) const {
+    if (lhs.preemptible == rhs.preemptible)
+      return lhs.arrived_at < rhs.arrived_at;
+    return lhs.preemptible < rhs.preemptible;
+  }
+};
+
+struct RSCompLIFO {
+  bool operator()(const RSeize& lhs, const RSeize& rhs) const {
+    if (lhs.preemptible == rhs.preemptible)
+      return lhs.arrived_at > rhs.arrived_at;
+    return lhs.preemptible < rhs.preemptible;
+  }
+};
+
+typedef MSET<RSeize, RQComp> RPQueue;
+typedef MSET<RSeize, RSCompFIFO> FIFO;
+typedef MSET<RSeize, RSCompLIFO> LIFO;
+
 /** 
-*  Generic resource, a passive entity that comprises server + FIFO queue.
+*  Generic resource, a passive entity that comprises server + a priority queue.
 */
 class Resource: public Entity {
-  typedef PQUEUE<RQItem> RPQueue;
-  
 public:
   /**
   * Constructor.
@@ -225,10 +258,9 @@ public:
   void reset() {
     server_count = 0;
     queue_count = 0;
-    while (!queue.empty()) {
-      delete queue.top().arrival;
-      queue.pop();
-    }
+    foreach_(RPQueue::value_type& itr, queue)
+      delete itr.arrival;
+    queue.clear();
     res_stats.clear();
   }
   
@@ -240,7 +272,7 @@ public:
   * 
   * @return  SUCCESS, ENQUEUED, REJECTED
   */
-  int seize(Arrival* arrival, int amount, int priority);
+  int seize(Arrival* arrival, int amount, int priority, int preemptible, bool restart);
   
   /**
   * Release resources.
@@ -266,7 +298,7 @@ public:
   int get_server_count() { return server_count; }
   int get_queue_count() { return queue_count; }
   
-private:
+protected:
   int capacity;
   int queue_size;
   int server_count;     /**< number of arrivals being served */
@@ -274,13 +306,92 @@ private:
   RPQueue queue;        /**< queue container */
   StatsMap res_stats;   /**< resource statistics */
   
-  inline bool room_in_server(int amount) { 
-    if (capacity < 0) return 1;
-    return server_count + amount <= capacity; 
+  virtual inline bool room_in_server(int amount, int priority) {
+    if (capacity < 0) return true;
+    return server_count + amount <= capacity;
   }
-  inline bool room_in_queue(int amount) { 
-    if (queue_size < 0) return 1;
-    return queue_count + amount <= queue_size;
+  
+  virtual inline bool room_in_queue(int amount, int priority) {
+    if (queue_size < 0) return true;
+    if (queue_count + amount <= queue_size) return true;
+    if (queue_size > 0 && priority > (--queue.end())->priority) return true;
+    return false;
+  }
+  
+  virtual inline void insert_in_server(double time, Arrival* arrival, int amount, 
+                               int priority, int preemptible, bool restart) {
+    server_count += amount;
+  }
+  
+  virtual inline void insert_in_queue(double time, Arrival* arrival, int amount, 
+                              int priority, int preemptible, bool restart) {
+    if (queue_size > 0) while (queue_count + amount > queue_size) {
+      RPQueue::iterator last = --queue.end();
+      last->arrival->reject(time);
+      queue_count -= last->amount;
+      queue.erase(last);
+    }
+    queue_count += amount;
+    queue.emplace(time, arrival, amount, priority, preemptible, restart);
+    /////////
+    Rcpp::Rcout << "insert_in_queue: " << arrival->name << std::endl;
+    Rcpp::Rcout << "queue: " << queue.size() << " | ";
+    foreach_ (RPQueue::value_type& itr, queue) {
+      Rcpp::Rcout << itr.arrival->name << " ";
+    }
+    Rcpp::Rcout << std::endl;
+  }
+};
+
+/** 
+*  Preemptive resource.
+*/
+template <typename T>
+class PreemptiveResource: public Resource {
+public:
+  /**
+  * Constructor.
+  * @param preempt_order  "fifo" or "lifo"
+  */
+  PreemptiveResource(Simulator* sim, std::string name, int mon, int capacity, int queue_size):
+    Resource(sim, name, mon, capacity, queue_size) {}
+  
+  ~PreemptiveResource() { reset(); }
+  
+  void reset() {
+    Resource::reset();
+    server.clear();
+  }
+  
+protected:
+  T server;       /**< server container */
+  
+  virtual inline bool room_in_server(int amount, int priority) {
+    if (capacity < 0) return true;
+    if (server_count + amount <= capacity) return true;
+    int count = 0;
+    foreach_ (typename T::value_type& itr, server) {
+      if (priority > itr.preemptible) {
+        count += itr.amount;
+    }
+      else break;
+      if (count >= amount) return true;
+    }
+    return false;
+  }
+  
+  virtual inline void insert_in_server(double time, Arrival* arrival, int amount, 
+                               int priority, int preemptible, bool restart) {
+    if (capacity > 0) while (server_count + amount > capacity) {
+      typename T::iterator first = server.begin();
+      first->arrival->deactivate();
+      insert_in_queue(first->arrived_at, first->arrival, first->amount, 
+                      first->priority, first->preemptible, first->restart);
+      server_count -= first->amount;
+      server.erase(first);
+    }
+    server_count += amount;
+    server.emplace(time, arrival, amount, priority, preemptible, restart);
   }
 };
 

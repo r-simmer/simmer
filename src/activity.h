@@ -71,7 +71,7 @@ class Seize: public Activity {
 public:
   Seize(std::string resource, T amount, bool provide_attrs, 
         int priority, int preemptible, bool restart):
-    Activity("Seize", resource, provide_attrs, std::abs(priority)), 
+    Activity("Seize", resource, provide_attrs, std::abs(priority)),
     amount(amount), preemptible(std::abs(preemptible)), restart(restart) {}
   
   void print(int indent=0);
@@ -180,7 +180,7 @@ private:
   VEC<Rcpp::Environment> trj;
   Activity* selected;
   VEC<Activity*> path;
-  SET<Arrival*> pending;
+  USET<Arrival*> pending;
 };
 
 /**
@@ -209,7 +209,7 @@ private:
   int amount;
   T times;
   Activity* cached, *selected;
-  MAP<Arrival*, int> pending;
+  UMAP<Arrival*, int> pending;
   
   inline Activity* goback() {
     int n = amount;

@@ -2,41 +2,60 @@
 #include "simulator.h"
 #include "activity.h"
 
-inline void Arrival::activate() {
+inline void Arrival::run() {
   double delay;
-  bool flag = TRUE;
+  
+  if (!is_active()) goto end;
   if (!activity) goto finish;
-  
   if (lifetime.start < 0) lifetime.start = sim->now();
-  
-  if (sim->verbose)
-    Rcpp::Rcout <<
-      "sim: " << sim->name << " | " << "time: " << sim->now() << " | " <<
-      "arrival: " << name << " | " << "activity: " << 
-      activity->name << "(" << activity->resource << ")" << std::endl;
+  if (sim->verbose) Rcpp::Rcout <<
+    "sim: " << sim->name << " | " << "time: " << sim->now() << " | " <<
+    "arrival: " << name << " | " << "activity: " << 
+    activity->name << "(" << activity->resource << ")" << std::endl;
   
   delay = activity->run(this);
-  if (delay == REJECTED) goto reject;
+  if (delay == REJECTED) goto end;
   activity = activity->get_next();
   if (delay == ENQUEUED) goto end;
   
+  busy_until = sim->now() + delay;
   lifetime.activity += delay;
-  sim->schedule(delay, this, activity ? activity->priority : 0);
+  scheduled = sim->schedule(delay, this, activity ? activity->priority : 0);
   goto end;
   
-reject:
-  flag = FALSE;
 finish:
-  gen->notify_end(sim->now(), this, flag);
+  gen->notify_end(sim->now(), this, true);
 end:
   return;
 }
 
-inline void Arrival::leaving(std::string name, double time) {
+inline void Arrival::activate() {
+  Process::activate();
+  busy_until = sim->now() + remaining;
+  Rcpp::Rcout << "activate: " << this->name << " " << sim->now() << " " << remaining << std::endl;
+  scheduled = sim->schedule(remaining, this, activity ? activity->priority : 0);
+  remaining = 0;
+}
+
+inline void Arrival::deactivate() {
+  Process::deactivate();
+  if (scheduled) sim->unschedule(scheduled);
+  remaining = busy_until - sim->now();
+  Rcpp::Rcout << "deactivate: " << this->name << " " << sim->now() << " " << remaining << std::endl;
+}
+
+inline void Arrival::leave(std::string name, double time) {
   gen->notify_release(time, this, name);
 }
 
-void Generator::activate() {
+void Arrival::reject(double time) {
+  Rcpp::Rcout << "reject: " << this->name << " " << sim->now() << std::endl;
+  gen->notify_end(time, this, false);
+}
+
+void Generator::run() {
+  if (!is_active()) return;
+  
   // get the delay for the next arrival
   double delay = Rcpp::as<double>(dist());
   if (delay < 0) return;
@@ -60,27 +79,29 @@ int Arrival::set_attribute(std::string key, double value) {
   return 0;
 }
 
-int Resource::seize(Arrival* arrival, int amount, int priority) {
+int Resource::seize(Arrival* arrival, int amount, int priority, int preemptible, bool restart) {
   int status;
   // serve now
-  if (room_in_server(amount)) {
+  if (room_in_server(amount, priority)) {
     if (arrival->is_monitored()) {
       arrival->set_start(this->name, sim->now());
       arrival->set_activity(this->name, sim->now());
     }
-    server_count += amount;
+    insert_in_server(sim->now(), arrival, amount, priority, preemptible, restart);
     status = SUCCESS;
   }
   // enqueue
-  else if (room_in_queue(amount)) {
+  else if (room_in_queue(amount, priority)) {
     if (arrival->is_monitored())
       arrival->set_start(this->name, sim->now());
-    queue_count += amount;
-    queue.push(RQItem(arrival, amount, priority, sim->now()));
+    insert_in_queue(sim->now(), arrival, amount, priority, preemptible, restart);
     status = ENQUEUED;
   }
   // reject
-  else return REJECTED;
+  else {
+    arrival->reject(sim->now());
+    return REJECTED;
+  }
   
   if (is_monitored()) observe(sim->now());
   return status;
@@ -91,18 +112,22 @@ int Resource::release(Arrival* arrival, int amount) {
   if (arrival->is_monitored()) {
     double last = arrival->get_activity(this->name);
     arrival->set_activity(this->name, sim->now() - last);
-    arrival->leaving(this->name, sim->now());
+    arrival->leave(this->name, sim->now());
   }
   server_count -= amount;
   
-  // serve from the queue
+  // serve another
   if (queue_count) {
-    queue_count -= queue.top().amount;
-    server_count += queue.top().amount;
-    sim->schedule(0, queue.top().arrival);
-    if (queue.top().arrival->is_monitored())
-      queue.top().arrival->set_activity(this->name, sim->now());
-    queue.pop();
+    RPQueue::iterator first = queue.begin();
+    if (room_in_server(first->amount, first->priority)) {
+      if (first->arrival->is_monitored())
+        first->arrival->set_activity(this->name, sim->now());
+      first->arrival->activate();
+      insert_in_server(first->arrived_at, first->arrival, first->amount, 
+                       first->priority, first->preemptible, first->restart);
+      queue_count -= first->amount;
+      queue.erase(first);
+    }
   }
   
   if (is_monitored()) observe(sim->now());
