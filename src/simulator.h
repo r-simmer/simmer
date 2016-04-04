@@ -24,12 +24,12 @@ class Simulator {
     
     bool operator<(const Event& other) const {
       if (time == other.time)
-        return priority < other.priority;
-      return time < other.time;
+        return priority > other.priority;
+      return time > other.time;
     }
   };
   
-  typedef MSET<Event> PQueue;
+  typedef PQUEUE<Event> PQueue;
   typedef UMAP<std::string, Entity*> EntMap;
   
 public:
@@ -44,9 +44,10 @@ public:
   Simulator(std::string name, bool verbose): name(name), verbose(verbose), now_(0) {}
   
   ~Simulator() {
-    foreach_(PQueue::value_type& itr, event_queue) {
-      if (!itr.process->is_generator())
-        delete itr.process;
+    while (!event_queue.empty()) {
+      if (!event_queue.top().process->is_generator())
+        delete event_queue.top().process;
+      event_queue.pop();
     }
   }
   
@@ -55,9 +56,10 @@ public:
    */
   void reset() {
     now_ = 0;
-    foreach_(PQueue::value_type& itr, event_queue) {
-      if (!itr.process->is_generator())
-        delete itr.process;
+    while (!event_queue.empty()) {
+      if (!event_queue.top().process->is_generator())
+        delete event_queue.top().process;
+      event_queue.pop();
     }
     foreach_ (EntMap::value_type& itr, resource_map)
       ((Resource*)itr.second)->reset();
@@ -75,17 +77,8 @@ public:
    * @param   process   the process to schedule
    * @param   priority  additional key to execute releases before seizes if they coincide
    */
-  inline void* schedule(double delay, Process* process, int priority=0) {
-    PQueue::iterator itr = event_queue.emplace(now_ + delay, process, priority);
-    return (void *)(&(*itr));
-  }
-  
-  /**
-   * Unschedule a future event.
-   * @param   ptr       pointer to the element
-   */
-  inline void unschedule(void* ptr) {
-    event_queue.erase(*((Event*)ptr));
+  inline void schedule(double delay, Process* process, int priority=0) {
+    event_queue.push(Event(now_ + delay, process, priority));
   }
   
   /**
@@ -93,7 +86,7 @@ public:
    */
   double peek() { 
     if (!event_queue.empty())
-      return event_queue.begin()->time;
+      return event_queue.top().time;
     else return -1;
   }
   
@@ -102,9 +95,9 @@ public:
    */
   inline bool step() {
     if (event_queue.empty()) return 0;
-    now_ = event_queue.begin()->time;
-    event_queue.begin()->process->run();
-    event_queue.erase(event_queue.begin());
+    now_ = event_queue.top().time;
+    event_queue.top().process->run();
+    event_queue.pop();
     return 1;
     // ... and that's it! :D
   }

@@ -20,7 +20,7 @@ inline void Arrival::run() {
   
   busy_until = sim->now() + delay;
   lifetime.activity += delay;
-  scheduled = sim->schedule(delay, this, activity ? activity->priority : 0);
+  sim->schedule(delay, this, activity ? activity->priority : 0);
   goto end;
   
 finish:
@@ -33,13 +33,12 @@ inline void Arrival::activate() {
   Process::activate();
   busy_until = sim->now() + remaining;
   Rcpp::Rcout << "activate: " << this->name << " " << sim->now() << " " << remaining << std::endl;
-  scheduled = sim->schedule(remaining, this, activity ? activity->priority : 0);
+  sim->schedule(remaining, this, activity ? activity->priority : 0);
   remaining = 0;
 }
 
 inline void Arrival::deactivate() {
   Process::deactivate();
-  if (scheduled) sim->unschedule(scheduled);
   remaining = busy_until - sim->now();
   Rcpp::Rcout << "deactivate: " << this->name << " " << sim->now() << " " << remaining << std::endl;
 }
@@ -114,19 +113,20 @@ int Resource::release(Arrival* arrival, int amount) {
     arrival->set_activity(this->name, sim->now() - last);
     arrival->leave(this->name, sim->now());
   }
-  server_count -= amount;
+  remove_from_server(arrival, amount);
   
   // serve another
-  if (queue_count) {
-    RPQueue::iterator first = queue.begin();
-    if (room_in_server(first->amount, first->priority)) {
-      if (first->arrival->is_monitored())
-        first->arrival->set_activity(this->name, sim->now());
-      first->arrival->activate();
-      insert_in_server(first->arrived_at, first->arrival, first->amount, 
-                       first->priority, first->preemptible, first->restart);
-      queue_count -= first->amount;
-      queue.erase(first);
+  RPQueue* queue_ptr = get_queue_ptr();
+  if (queue_ptr) {
+    RPQueue::iterator next = queue_ptr->begin();
+    if (room_in_server(next->amount, next->priority)) {
+      if (next->arrival->is_monitored())
+        next->arrival->set_activity(this->name, sim->now());
+      next->arrival->activate();
+      insert_in_server(next->arrived_at, next->arrival, next->amount,
+                       next->priority, next->preemptible, next->restart);
+      queue_count -= next->amount;
+      queue_ptr->erase(next);
     }
   }
   

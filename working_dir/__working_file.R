@@ -140,3 +140,24 @@ env <- simmer(verbose=TRUE) %>%
 
 get_mon_arrivals(env)
 get_mon_arrivals(env, per_resource = TRUE)
+
+#################################
+
+t0 <- create_trajectory() %>%
+  seize("dummy", 1) %>%
+  timeout(10) %>%
+  release("dummy", 1)
+
+t1 <- create_trajectory() %>%
+  seize("dummy", 1, priority=1, preemptible=1) %>%
+  timeout(10) %>%
+  release("dummy", 1)
+
+env <- simmer(verbose=TRUE) %>%
+  add_generator("p0a", t0, at(0)) %>%
+  add_generator("p1a", t1, at(2)) %>%
+  add_resource("dummy", 1, 0, preemptive=TRUE) %>%
+  run()
+
+get_mon_arrivals(env)
+get_mon_arrivals(env, per_resource = TRUE)

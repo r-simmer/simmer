@@ -70,8 +70,7 @@ public:
    * @param first_activity  the first activity of a user-defined R trajectory
    */
   Arrival(Simulator* sim, std::string name, int mon, Activity* first_activity, Generator* gen):
-    Process(sim, name, mon), activity(first_activity), gen(gen), 
-    busy_until(-1), remaining(0), scheduled(NULL) {}
+    Process(sim, name, mon), activity(first_activity), gen(gen), busy_until(-1), remaining(0) {}
   
   void run();
   void activate();
@@ -88,6 +87,8 @@ public:
   inline double get_activity(std::string name) { return restime[name].activity; }
   inline double get_activity() { return lifetime.activity; }
   
+  inline double get_remaining() { return remaining; }
+  
   void leave(std::string name, double time);
   void reject(double time);
 
@@ -99,7 +100,6 @@ private:
   Attr attributes;    /**< user-defined (key, value) pairs */
   double busy_until;  /**< next scheduled event time */
   double remaining;   /**< time remaining in a deactivated arrival */
-  void* scheduled;    /**< pointer to the next scheduled event */
 };
 
 /**
@@ -207,8 +207,11 @@ struct RSeize {
 
 struct RQComp {
   bool operator()(const RSeize& lhs, const RSeize& rhs) const {
-    if (lhs.priority == rhs.priority)
+    if (lhs.priority == rhs.priority) {
+      if (lhs.arrived_at == rhs.arrived_at)
+        return lhs.arrival->get_remaining() > rhs.arrival->get_remaining();
       return lhs.arrived_at < rhs.arrived_at;
+    }
     return lhs.priority > rhs.priority;
   }
 };
@@ -323,6 +326,10 @@ protected:
     server_count += amount;
   }
   
+  virtual inline void remove_from_server(Arrival* arrival, int amount) {
+    server_count -= amount;
+  }
+  
   virtual inline void insert_in_queue(double time, Arrival* arrival, int amount, 
                               int priority, int preemptible, bool restart) {
     if (queue_size > 0) while (queue_count + amount > queue_size) {
@@ -340,6 +347,11 @@ protected:
       Rcpp::Rcout << itr.arrival->name << " ";
     }
     Rcpp::Rcout << std::endl;
+  }
+  
+  virtual inline RPQueue* get_queue_ptr() {
+    if (queue_count) return &queue;
+    return NULL;
   }
 };
 
@@ -364,7 +376,8 @@ public:
   }
   
 protected:
-  T server;       /**< server container */
+  T server;           /**< server container */
+  RPQueue preempted;  /**< preempted arrivals */
   
   virtual inline bool room_in_server(int amount, int priority) {
     if (capacity < 0) return true;
@@ -385,13 +398,26 @@ protected:
     if (capacity > 0) while (server_count + amount > capacity) {
       typename T::iterator first = server.begin();
       first->arrival->deactivate();
-      insert_in_queue(first->arrived_at, first->arrival, first->amount, 
-                      first->priority, first->preemptible, first->restart);
+      preempted.insert((*first));
+      queue_count += first->amount;
       server_count -= first->amount;
       server.erase(first);
     }
     server_count += amount;
     server.emplace(time, arrival, amount, priority, preemptible, restart);
+  }
+  
+  virtual inline void remove_from_server(Arrival* arrival, int amount) {
+    typename T::iterator itr = server.begin();
+    while (itr->arrival != arrival) ++itr;
+    server.erase(itr);
+    server_count -= amount;
+  }
+  
+  virtual inline RPQueue* get_queue_ptr() {
+    if (!preempted.empty()) return &preempted;
+    if (queue_count) return &queue;
+    return NULL;
   }
 };
 

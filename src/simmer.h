@@ -11,6 +11,7 @@
 
 #define VEC std::vector
 #define QUEUE std::queue
+#define PQUEUE boost::heap::priority_queue
 #define MSET boost::container::multiset
 #define USET boost::unordered_set
 #define UMAP boost::unordered_map
