@@ -119,7 +119,8 @@ int Resource::release(Arrival* arrival, int amount) {
   remove_from_server(arrival, amount);
   
   // serve another
-  if (queue_count) serve_from_queue(sim->now());
+  while (queue_count) 
+    if (!try_serve_from_queue(sim->now())) break;
   
   if (is_monitored()) observe(sim->now());
   return SUCCESS;

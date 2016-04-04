@@ -122,6 +122,8 @@ plot_attributes(env, "health")
 
 #################################
 
+# segfault!
+
 t0 <- create_trajectory() %>%
   seize("dummy", 1, restart=FALSE) %>%
   timeout(10) %>%
@@ -149,14 +151,14 @@ t0 <- create_trajectory() %>%
   release("dummy", 1)
 
 t1 <- create_trajectory() %>%
-  seize("dummy", 1, priority=1, preemptible=1) %>%
+  seize("dummy", 2, priority=1, preemptible=1) %>%
   timeout(10) %>%
-  release("dummy", 1)
+  release("dummy", 2)
 
 env <- simmer(verbose=TRUE) %>%
-  add_generator("p0a", t0, at(0)) %>%
+  add_generator("p0a", t0, at(0, 0)) %>%
   add_generator("p1a", t1, at(2, 15)) %>%
-  add_resource("dummy", 1, 0, preemptive=TRUE) %>%
+  add_resource("dummy", 2, preemptive=TRUE) %>%
   run()
 
 get_mon_arrivals(env)
