@@ -15,7 +15,8 @@ Imports:
     Rcpp,
     R6,
     magrittr,
-    methods
+    methods,
+    utils
 Suggests:
     parallel,
     dplyr,

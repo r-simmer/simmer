@@ -37,6 +37,7 @@ envs_apply <- function(envs, method, ...) {
   }))
 }
 
+#' @importFrom utils head install.packages menu
 checkInstall <- function(pkgs) {
   good <- rep(TRUE, length(pkgs))
   for (i in seq(along = pkgs)) {
