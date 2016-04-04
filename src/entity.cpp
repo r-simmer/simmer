@@ -81,7 +81,6 @@ int Arrival::set_attribute(std::string key, double value) {
 }
 
 int Resource::seize(Arrival* arrival, int amount, int priority, int preemptible, bool restart) {
-  Rcpp::Rcout << arrival->name << " " << restart << std::endl;
   int status;
   // serve now
   if (room_in_server(amount, priority)) {

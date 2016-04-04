@@ -430,7 +430,11 @@ protected:
   
   virtual inline bool try_serve_from_queue(double time) {
     RPQueue::iterator next;
-    if (!preempted.empty()) next = preempted.begin();
+    bool flag = false;
+    if (!preempted.empty()) {
+      next = preempted.begin();
+      flag = true;
+    }
     else next = queue.begin();
     if (room_in_server(next->amount, next->priority)) {
       if (next->arrival->is_monitored()) {
@@ -441,7 +445,7 @@ protected:
       insert_in_server(next->arrived_at, next->arrival, next->amount,
                        next->priority, next->preemptible, next->restart);
       queue_count -= next->amount;
-      if (!preempted.empty()) preempted.erase(next);
+      if (flag) preempted.erase(next);
       else queue.erase(next);
       return true;
     }

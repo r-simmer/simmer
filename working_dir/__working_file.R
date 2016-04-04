@@ -122,8 +122,6 @@ plot_attributes(env, "health")
 
 #################################
 
-# segfault!
-
 t0 <- create_trajectory() %>%
   seize("dummy", 1, restart=FALSE) %>%
   timeout(10) %>%
