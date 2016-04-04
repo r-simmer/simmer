@@ -387,7 +387,6 @@ public:
 protected:
   RPQueue preempted;    /**< preempted arrivals */
   T server;             /**< server container */
-  //RPQueue queue;        // Why is this necessary???
   
   virtual inline bool room_in_server(int amount, int priority) {
     if (capacity < 0) return true;
