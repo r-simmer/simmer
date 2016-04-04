@@ -148,7 +148,7 @@ public:
       if (!preemptive)
         res = new Resource(this, name, mon, capacity, queue_size);
       else {
-        if (preempt_order.compare("fifo"))
+        if (preempt_order.compare("fifo") == 0)
           res = new PreemptiveResource<FIFO>(this, name, mon, capacity, queue_size);
         else
           res = new PreemptiveResource<LIFO>(this, name, mon, capacity, queue_size);

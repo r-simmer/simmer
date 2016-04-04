@@ -7,7 +7,7 @@ This version implements two major features, several minor fixes and improvements
 ## Test environments
 
 * Fedora 23 + clang (local), R 3.2.3 and devel
-* Ubuntu 12.04 + GCC (on travis-ci), R 3.2.3
+* Ubuntu 12.04 + GCC (on travis-ci), R 3.2.4
 * win-builder, R release and devel
 
 ## R CMD check results

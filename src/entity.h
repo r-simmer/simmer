@@ -327,7 +327,7 @@ protected:
     if (queue_size < 0) return true;
     if (queue_count + amount <= queue_size) return true;
     int count = 0;
-    foreach_ (RPQueue::value_type& itr, queue) {
+    foreach_r_ (RPQueue::value_type& itr, queue) {
       if (priority > itr.priority)
         count += itr.amount;
       else break;
