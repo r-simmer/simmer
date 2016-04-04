@@ -123,7 +123,7 @@ plot_attributes(env, "health")
 #################################
 
 t0 <- create_trajectory() %>%
-  seize("dummy", 1) %>%
+  seize("dummy", 1, restart=TRUE) %>%
   timeout(10) %>%
   release("dummy", 1)
 

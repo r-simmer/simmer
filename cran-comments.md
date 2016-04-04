@@ -2,6 +2,8 @@
 
 The GitHub repository has been transferred from one author to the other (Bart -> Iñaki), and so the corresponding URLs (URL and BugReports) have changed in the DESCRIPTION file.
 
+This version implements two major features, several minor fixes and improvements (including compatibility issues with the new version of `testthat`), and removes two functions which were deprecated in previous releases.
+
 ## Test environments
 
 * Fedora 23 + clang (local), R 3.2.3 and devel

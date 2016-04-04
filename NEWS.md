@@ -4,13 +4,21 @@
 
 But from this moment on, the resources are monitored **after** changing the status of the system. This is more consistent with what a user would expect, and more consistent with the behaviour of other related R functions (e.g., see `stepfun`, from the `stats` package). Wrapping up and from now on, `t=3, queue=2` means that some event happened at `t=3` whose immediate and subsequent result was a queue with 2 customers.
 
+New features:
+
+* Add preemption functionality (#34). Preemption comes into play when a resource is specified as `preemptive=TRUE`. Arrivals in the server can be preempted on a `preempt_order="fifo"` or `preempt_order="lifo"` basis. Each `seize` has three basic properties:
+    * `priority`: already present in previous versions.
+    * `preemptible`: another `seize` with a `priority` value greater than this may preempt the present `seize`.
+    * `restart`: whether the current task (a `timeout` activity, for instance) should be restarted if the arrival is preempted.
+
 Minor changes and fixes:
 
-* Add `every`, `to` and `from_to` convenience functions (8e524cd).
 * Remove deprecated functions `show_activity` and `show_trajectory`.
-* Fix compatibility with the upcoming version of `testthat` (#41).
+* Add `every`, `to` and `from_to` convenience functions (8e524cd).
 * Fix colour scale in `plot_resource_usage` (6b034a7).
+* Fix compatibility with the upcoming version of `testthat` (#41).
 * The `branch` activity now provides attributes to its `option` function, as the other activities (#42).
+* Implement error handling in `plot_*` functions (#44).
 
 ## simmer 3.1.2
 
