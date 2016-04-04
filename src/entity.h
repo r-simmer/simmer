@@ -314,20 +314,26 @@ protected:
     return server_count + amount <= capacity;
   }
   
-  virtual inline bool room_in_queue(int amount, int priority) {
-    if (queue_size < 0) return true;
-    if (queue_count + amount <= queue_size) return true;
-    if (queue_size > 0 && priority > (--queue.end())->priority) return true;
-    return false;
-  }
-  
   virtual inline void insert_in_server(double time, Arrival* arrival, int amount, 
-                               int priority, int preemptible, bool restart) {
+                                       int priority, int preemptible, bool restart) {
     server_count += amount;
   }
   
   virtual inline void remove_from_server(Arrival* arrival, int amount) {
     server_count -= amount;
+  }
+  
+  virtual inline bool room_in_queue(int amount, int priority) {
+    if (queue_size < 0) return true;
+    if (queue_count + amount <= queue_size) return true;
+    int count = 0;
+    foreach_ (RPQueue::value_type& itr, queue) {
+      if (priority > itr.priority)
+        count += itr.amount;
+      else break;
+      if (count >= amount) return true;
+    }
+    return false;
   }
   
   virtual inline void insert_in_queue(double time, Arrival* arrival, int amount, 
@@ -342,9 +348,19 @@ protected:
     queue.emplace(time, arrival, amount, priority, preemptible, restart);
   }
   
-  virtual inline RPQueue* get_queue_ptr() {
-    if (!queue_count) return NULL;
-    return &queue;
+  virtual inline void serve_from_queue(double time) {
+    RPQueue::iterator next = queue.begin();
+    if (room_in_server(next->amount, next->priority)) {
+      if (next->arrival->is_monitored()) {
+        double last = next->arrival->get_activity(this->name);
+        next->arrival->set_activity(this->name, time - last);
+      }
+      next->arrival->activate();
+      insert_in_server(next->arrived_at, next->arrival, next->amount,
+                       next->priority, next->preemptible, next->restart);
+      queue_count -= next->amount;
+      queue.erase(next);
+    }
   }
 };
 
@@ -369,17 +385,17 @@ public:
   }
   
 protected:
-  T server;           /**< server container */
-  RPQueue preempted;  /**< preempted arrivals */
+  RPQueue preempted;    /**< preempted arrivals */
+  T server;             /**< server container */
+  //RPQueue queue;        // Why is this necessary???
   
   virtual inline bool room_in_server(int amount, int priority) {
     if (capacity < 0) return true;
     if (server_count + amount <= capacity) return true;
     int count = 0;
     foreach_ (typename T::value_type& itr, server) {
-      if (priority > itr.preemptible) {
+      if (priority > itr.preemptible)
         count += itr.amount;
-    }
       else break;
       if (count >= amount) return true;
     }
@@ -411,13 +427,22 @@ protected:
     server_count -= amount;
   }
   
-  virtual inline RPQueue* get_queue_ptr() {
-    if (!queue_count) return NULL;
-    if (queue.empty()) return &preempted;
-    if (preempted.empty()) return &queue;
-    if (preempted.begin()->priority > queue.begin()->priority)
-      return &preempted;
-    return &queue;
+  virtual inline void serve_from_queue(double time) {
+    RPQueue::iterator next;
+    if (!preempted.empty()) next = preempted.begin();
+    else next = queue.begin();
+    if (room_in_server(next->amount, next->priority)) {
+      if (next->arrival->is_monitored()) {
+        double last = next->arrival->get_activity(this->name);
+        next->arrival->set_activity(this->name, time - last);
+      }
+      next->arrival->activate();
+      insert_in_server(next->arrived_at, next->arrival, next->amount,
+                       next->priority, next->preemptible, next->restart);
+      queue_count -= next->amount;
+      if (!preempted.empty()) preempted.erase(next);
+      else queue.erase(next);
+    }
   }
 };
 

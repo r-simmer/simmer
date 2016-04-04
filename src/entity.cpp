@@ -113,21 +113,7 @@ int Resource::release(Arrival* arrival, int amount) {
   remove_from_server(arrival, amount);
   
   // serve another
-  RPQueue* queue_ptr = get_queue_ptr();
-  if (queue_ptr) {
-    RPQueue::iterator next = queue_ptr->begin();
-    if (room_in_server(next->amount, next->priority)) {
-      if (next->arrival->is_monitored()) {
-        double last = next->arrival->get_activity(this->name);
-        next->arrival->set_activity(this->name, sim->now() - last);
-      }
-      next->arrival->activate();
-      insert_in_server(next->arrived_at, next->arrival, next->amount,
-                       next->priority, next->preemptible, next->restart);
-      queue_count -= next->amount;
-      queue_ptr->erase(next);
-    }
-  }
+  if (queue_count) serve_from_queue(sim->now());
   
   if (is_monitored()) observe(sim->now());
   return SUCCESS;
