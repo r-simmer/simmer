@@ -58,7 +58,7 @@ env <- simmer(verbose=F) %>%
   add_generator("customer", mm1, function() rexp(1, 60), mon=F) %>%
   run(10000)
 })
-# 24 seconds! (Simpy: 30 seconds)
+# 26 seconds (Simpy: 30 seconds)
 
 plot_resource_usage(env, "server")
 

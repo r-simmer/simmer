@@ -32,7 +32,6 @@ end:
 inline void Arrival::activate() {
   Process::activate();
   busy_until = sim->now() + remaining;
-  Rcpp::Rcout << "activate: " << this->name << " " << sim->now() << " " << remaining << std::endl;
   sim->schedule(remaining, this, activity ? activity->priority : 0);
   remaining = 0;
 }
@@ -40,7 +39,6 @@ inline void Arrival::activate() {
 inline void Arrival::deactivate() {
   Process::deactivate();
   remaining = busy_until - sim->now();
-  Rcpp::Rcout << "deactivate: " << this->name << " " << sim->now() << " " << remaining << std::endl;
 }
 
 inline void Arrival::leave(std::string name, double time) {
@@ -48,7 +46,6 @@ inline void Arrival::leave(std::string name, double time) {
 }
 
 void Arrival::reject(double time) {
-  Rcpp::Rcout << "reject: " << this->name << " " << sim->now() << std::endl;
   gen->notify_end(time, this, false);
 }
 
@@ -120,8 +117,10 @@ int Resource::release(Arrival* arrival, int amount) {
   if (queue_ptr) {
     RPQueue::iterator next = queue_ptr->begin();
     if (room_in_server(next->amount, next->priority)) {
-      if (next->arrival->is_monitored())
-        next->arrival->set_activity(this->name, sim->now());
+      if (next->arrival->is_monitored()) {
+        double last = next->arrival->get_activity(this->name);
+        next->arrival->set_activity(this->name, sim->now() - last);
+      }
       next->arrival->activate();
       insert_in_server(next->arrived_at, next->arrival, next->amount,
                        next->priority, next->preemptible, next->restart);

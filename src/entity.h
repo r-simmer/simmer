@@ -340,18 +340,11 @@ protected:
     }
     queue_count += amount;
     queue.emplace(time, arrival, amount, priority, preemptible, restart);
-    /////////
-    Rcpp::Rcout << "insert_in_queue: " << arrival->name << std::endl;
-    Rcpp::Rcout << "queue: " << queue.size() << " | ";
-    foreach_ (RPQueue::value_type& itr, queue) {
-      Rcpp::Rcout << itr.arrival->name << " ";
-    }
-    Rcpp::Rcout << std::endl;
   }
   
   virtual inline RPQueue* get_queue_ptr() {
-    if (queue_count) return &queue;
-    return NULL;
+    if (!queue_count) return NULL;
+    return &queue;
   }
 };
 
@@ -398,6 +391,10 @@ protected:
     if (capacity > 0) while (server_count + amount > capacity) {
       typename T::iterator first = server.begin();
       first->arrival->deactivate();
+      if (first->arrival->is_monitored()) {
+        double last = first->arrival->get_activity(this->name);
+        first->arrival->set_activity(this->name, time - last);
+      }
       preempted.insert((*first));
       queue_count += first->amount;
       server_count -= first->amount;
@@ -415,9 +412,12 @@ protected:
   }
   
   virtual inline RPQueue* get_queue_ptr() {
-    if (!preempted.empty()) return &preempted;
-    if (queue_count) return &queue;
-    return NULL;
+    if (!queue_count) return NULL;
+    if (queue.empty()) return &preempted;
+    if (preempted.empty()) return &queue;
+    if (preempted.begin()->priority > queue.begin()->priority)
+      return &preempted;
+    return &queue;
   }
 };
 
