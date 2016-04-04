@@ -36,9 +36,14 @@ inline void Arrival::activate() {
   remaining = 0;
 }
 
-inline void Arrival::deactivate() {
-  Process::deactivate();
+inline void Arrival::deactivate(bool restart) {
+  Process::deactivate(restart);
   remaining = busy_until - sim->now();
+  if (remaining && restart) {
+    lifetime.activity -= remaining;
+    remaining = 0;
+    activity = activity->get_prev();
+  }
 }
 
 inline void Arrival::leave(std::string name, double time) {
@@ -76,6 +81,7 @@ int Arrival::set_attribute(std::string key, double value) {
 }
 
 int Resource::seize(Arrival* arrival, int amount, int priority, int preemptible, bool restart) {
+  Rcpp::Rcout << arrival->name << " " << restart << std::endl;
   int status;
   // serve now
   if (room_in_server(amount, priority)) {

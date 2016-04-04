@@ -123,7 +123,7 @@ plot_attributes(env, "health")
 #################################
 
 t0 <- create_trajectory() %>%
-  seize("dummy", 1, restart=TRUE) %>%
+  seize("dummy", 1, restart=FALSE) %>%
   timeout(10) %>%
   release("dummy", 1)
 
@@ -132,7 +132,7 @@ t1 <- create_trajectory() %>%
   timeout(10) %>%
   release("dummy", 1)
 
-env <- simmer(verbose=TRUE) %>%
+env <- simmer(verbose=F) %>%
   add_generator("p0a", t0, at(0, 0)) %>%
   add_generator("p1a", t1, at(2, 3)) %>%
   add_resource("dummy", 1, 2, preemptive=TRUE) %>%
@@ -144,7 +144,7 @@ get_mon_arrivals(env, per_resource = TRUE)
 #################################
 
 t0 <- create_trajectory() %>%
-  seize("dummy", 1) %>%
+  seize("dummy", 1, restart=TRUE) %>%
   timeout(10) %>%
   release("dummy", 1)
 
@@ -155,7 +155,7 @@ t1 <- create_trajectory() %>%
 
 env <- simmer(verbose=TRUE) %>%
   add_generator("p0a", t0, at(0)) %>%
-  add_generator("p1a", t1, at(2)) %>%
+  add_generator("p1a", t1, at(2, 15)) %>%
   add_resource("dummy", 1, 0, preemptive=TRUE) %>%
   run()
 

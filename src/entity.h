@@ -40,7 +40,7 @@ public:
   virtual ~Process(){}
   virtual void run() = 0;
   inline virtual void activate() { active = true; }
-  inline virtual void deactivate() { active = false; }
+  inline virtual void deactivate(bool restart) { active = false; }
   inline bool is_generator() { return generator; }
   inline bool is_active() { return active; }
 private:
@@ -74,7 +74,7 @@ public:
   
   void run();
   void activate();
-  void deactivate();
+  void deactivate(bool restart);
   
   int set_attribute(std::string key, double value);
   inline Attr* get_attributes() { return &attributes; }
@@ -405,7 +405,7 @@ protected:
                                int priority, int preemptible, bool restart) {
     if (capacity > 0) while (server_count + amount > capacity) {
       typename T::iterator first = server.begin();
-      first->arrival->deactivate();
+      first->arrival->deactivate(first->restart);
       if (first->arrival->is_monitored()) {
         double last = first->arrival->get_activity(this->name);
         first->arrival->set_activity(this->name, time - last);
