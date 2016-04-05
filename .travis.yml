@@ -19,4 +19,4 @@ r_binary_packages:
   - rmarkdown
 
 after_success:
-  - Rscript -e 'library(covr); coveralls(exclusions=list("./src/RcppExports.cpp" = c(242, 267, 292, 315), "./R/utils.R" = seq(47, 59)))'
+  - Rscript -e 'library(covr); coveralls(exclusions=list("./src/RcppExports.cpp" = c(242, 267, 292, 315), "./R/utils.R" = seq(48, 60)))'

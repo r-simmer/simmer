@@ -1,4 +1,6 @@
-## simmer 3.1.2.9000
+## simmer 3.2.0.9000
+
+## simmer 3.2.0
 
 **Important fix:** In previous versions, resources were monitored **before** performing the corresponding seize/release activity, before changing the status of the system. Thus, `t=3, queue=2` meant that, until `t=3`, the queue had 2 customers, and at `t=3` the system changed (because of a new arrival or a new departure). The idea was to keep the values and time vectors aligned (see #28).
 
