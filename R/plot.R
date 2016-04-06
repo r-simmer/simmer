@@ -45,7 +45,7 @@ plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", 
   
   if(steps == T){
     plot_obj <- plot_obj +
-      ggplot2::geom_step(ggplot2::aes(y=value, group=replication), alpha=.4)
+      ggplot2::geom_step(ggplot2::aes(y=value, group=interaction(replication, item)), alpha=.4)
   }
   
   plot_obj

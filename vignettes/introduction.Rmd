@@ -2,7 +2,9 @@
 title: "Introduction to simmer"
 author: "Bart Smeets, Iñaki Ucar"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: yes
 vignette: >
   %\VignetteIndexEntry{Introduction to simmer}
   %\VignetteEngine{knitr::rmarkdown}

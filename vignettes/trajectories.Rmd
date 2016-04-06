@@ -1,19 +1,32 @@
 ---
-title: "Advanced trajectory usage"
+title: "Advanced Trajectory Usage"
 author: "Bart Smeets, Iñaki Ucar"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: yes
 vignette: >
-  %\VignetteIndexEntry{Advanced trajectory usage}
+  %\VignetteIndexEntry{Advanced Trajectory Usage}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = T, comment = "#>", 
+                      fig.width = 6, fig.height = 4, fig.align = "center")
+library(ggplot2)
+theme_set(theme_bw())
+```
+
+```{r, message=FALSE}
+library(simmer)
+library(ggplot2)
+library(dplyr)
+```
+
 When a generator creates an arrival, it couples the arrival to a given trajectory. A trajectory is defined as an interlinkage of activities which together form the arrivals' lifetime in the system. Once an arrival is coupled to the trajectory, it will (in general) start processing the activities in the trajectory in the specified order and, eventually, leave the system. Consider the following:
 
 ```{r}
-library(simmer)
-
 patient_traj<-
   create_trajectory(name = "patient_trajectory") %>%
   seize(resource = "doctor", amount = 1) %>%
@@ -163,7 +176,38 @@ Of course, this `task`, supplied as a function, may be as complex as you need an
 
 ## branch
 
-in progress...
+Sometimes you may need to count how many times a certain trajectory in a certain branch is entered, or how much time arrivals spend inside that trajectory. For these situations, it is handy to use resources with infinite capacity just for _accounting_ purposes, like in the example below.
+
+```{r, message = FALSE}
+t0 <- create_trajectory() %>%
+  branch(function() sample(c(1, 2), 1), c(T, T),
+        create_trajectory() %>%
+          seize("branch1", 1) %>%
+          # do stuff here
+          timeout(function() rexp(1, 1)) %>%
+          release("branch1", 1),
+        create_trajectory() %>%
+          seize("branch2", 1) %>%
+          # do stuff here
+          timeout(function() rexp(1, 1/2)) %>%
+          release("branch2", 1))
+
+env <- simmer() %>%
+  add_generator("dummy", t0, at(rep(0, 1000))) %>%
+  # Resources with infinite capacity, just for accounting purposes
+  add_resource("branch1", Inf) %>%
+  add_resource("branch2", Inf) %>%
+  run()
+
+arrivals <- get_mon_arrivals(env, per_resource = T)
+
+# Times that each branch was entered
+arrivals %>% count(resource)
+
+# The `activity_time` is the total time inside each branch for each arrival
+# Let's see the distributions
+ggplot(arrivals) + geom_histogram(aes(x=activity_time)) + facet_wrap(~resource)
+```
 
 ## rollback
 
