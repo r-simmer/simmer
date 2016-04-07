@@ -1,0 +1,151 @@
+---
+title: "Continuous-Time Markov Chains"
+author: "Iñaki Ucar"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    includes:
+        in_header: includes/xyjax.html
+vignette: >
+  %\VignetteIndexEntry{Continuous-Time Markov Chains}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = T, comment = "#>", 
+                      fig.width = 6, fig.height = 4, fig.align = "center")
+library(ggplot2)
+theme_set(theme_bw())
+```
+
+```{r, message=FALSE}
+library(simmer)
+library(ggplot2)
+set.seed(1234)
+```
+
+## Example 1
+
+A gas station has a single pump and no space for vehicles to wait (if a vehicle arrives and the pump is not available, it leaves). Vehicles arrive to the gas station following a Poisson process with a rate of 3 every 20 minutes, of which 75% are cars and 25% are motorcycles. The refuelling time can be modelled with an exponential random variable with mean 8 minutes for cars and 3 minutes for motorcycles.
+
+This problem is described by the following continuous-time Markov chain:
+
+$$\xymatrix{
+*=<15mm,8mm>[o][F]{car} \ar@/^/[r]^{1/8} &
+*=<15mm,8mm>[o][F]{empty} \ar@/^/[l]^{0.75\cdot 3/20} \ar@/^/[r]^{0.25\cdot 3/20}  &
+*=<15mm,8mm>[o][F]{m/cycle} \ar@/^/[l]^{1/3}
+}\qquad\qquad
+Q = \begin{pmatrix}
+-1/8 & 1/8 & 0 \\
+0.75\cdot 3/20 & -3/20 & 0.25\cdot 3/20 \\
+0 & 1/3 & -1/3 
+\end{pmatrix}$$
+
+The chain is irreducible and recurrent. To theoretically find the steady state distribution, we have to solve the balance equations
+
+$$pQ = 0$$
+
+with the constraint
+
+$$\sum_i p_i = 1$$
+
+There are $\operatorname{dim}(Q)-1$ independent columns, so the latter constraint is equivalent to substitute any column by ones and match it to one at the other side of the equation, that is:
+
+$$p\cdot\begin{pmatrix}
+1 & 1/8 & 0 \\
+1 & -3/20 & 0.25\cdot 3/20 \\
+1 & 1/3 & -1/3 
+\end{pmatrix} = (1, 0, 0)$$
+
+The solution $p$ represents the probability of being at each state in the long-term. Therefore, we can calculate the average number of customers in the system by summing these probabilities multiplied by the number of customers at each state. In our case, 
+
+$$N = 1\cdot p_1 + 0\cdot p_2 + 1\cdot p_3$$
+
+```{r}
+# Arrival rate
+lambda <- 3/20
+# Service rate (cars, motorcycles)
+mu <- c(1/8, 1/3)
+# Probability of car
+p <- 0.75
+
+# Theoretical resolution
+A <- matrix(c(1,   mu[1],            0,
+              1, -lambda, (1-p)*lambda,
+              1,   mu[2],       -mu[2]), byrow=T, ncol=3)
+B <- c(1, 0, 0)
+P <- solve(t(A), B)
+N_average_theor <- sum(P * c(1, 0, 1)); N_average_theor
+```
+
+Now, we are going to simulate the system with `simmer` and verify that it converges to the theoretical solution. There are various options for selecting the model. As a first approach, due to the properties of Poisson processes, we can break down the problem into two trajectories (one for each type of vehicle), which differ in their service time only, and therefore two generators with rates $\lambda_\mathrm{car} = p\lambda$ and $\lambda_\mathrm{mcycle} = (1-p)\lambda$.
+
+```{r}
+option.1 <- function(t) {
+  car <- create_trajectory() %>%
+    seize("pump", amount=1) %>%
+    timeout(function() rexp(1, mu[1])) %>%
+    release("pump", amount=1)
+  
+  mcycle <- create_trajectory() %>%
+    seize("pump", amount=1) %>%
+    timeout(function() rexp(1, mu[2])) %>%
+    release("pump", amount=1)
+  
+  simmer() %>%
+    add_resource("pump", capacity=1, queue_size=0) %>%
+    add_generator("car", car, function() rexp(1, p*lambda)) %>%
+    add_generator("mcycle", mcycle, function() rexp(1, (1-p)*lambda)) %>%
+    run(until=t)
+}
+```
+
+Other arrival processes may not have this property, so we would define a single generator for all kind of vehicles and a single trajectory as follows. In order to distinguish between cars and motorcycles, we could define a branch after seizing the resource to select the proper service time.
+
+```{r}
+option.2 <- function(t) {
+  vehicle <- create_trajectory() %>%
+    seize("pump", amount=1) %>%
+    branch(function() sample(c(1, 2), 1, prob=c(p, 1-p)), c(T, T), 
+           create_trajectory("car") %>%
+             timeout(function() rexp(1, mu[1])),
+           create_trajectory("mcycle") %>%
+             timeout(function() rexp(1, mu[2]))) %>%
+    release("pump", amount=1)
+  
+  simmer() %>%
+    add_resource("pump", capacity=1, queue_size=0) %>%
+    add_generator("vehicle", vehicle, function() rexp(1, lambda)) %>%
+    run(until=t)
+}
+```
+
+But this option adds an unnecessary overhead since there is an additional call to an R function to select the branch, and therefore performance decreases. A much better option is to select the service time directly inside the `timeout` function.
+
+```{r}
+option.3 <- function(t) {
+  vehicle <- create_trajectory() %>%
+    seize("pump", amount=1) %>%
+    timeout(function() {
+      if (runif(1) < p) rexp(1, mu[1])  # car
+      else rexp(1, mu[2])               # mcycle
+    }) %>%
+    release("pump", amount=1)
+  
+  simmer() %>%
+    add_resource("pump", capacity=1, queue_size=0) %>%
+    add_generator("vehicle", vehicle, function() rexp(1, lambda)) %>%
+    run(until=t)
+}
+```
+
+This `option.3` is equivalent to `option.1` in terms of performance. But, of course, the three of them lead us to the same result. For instance,
+
+```{r}
+gas.station <- option.3(5000)
+
+# Evolution + theoretical value
+graph <- plot_resource_usage(gas.station, "pump", items="system")
+graph + geom_hline(yintercept=N_average_theor)
+```
