@@ -3,6 +3,8 @@
 Minor changes and fixes:
 
 * Fix steps grouping in `plot_resource_usage` (8da9b97).
+* New vignette on queueing systems.
+* New vignette on Continuous-Time Markov Chains.
 
 ## simmer 3.2.0
 
