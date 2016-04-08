@@ -6,3 +6,5 @@
  - del_generator, del_resource
  - add[del]_container (see simpy.resources.container)
  - add[del]_store (see simpy.resources.store)
+ - try_seize activity?
+ - open an organization on GitHub, split the package into core and graphics (release 4.0.0?)

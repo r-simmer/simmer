@@ -4,8 +4,6 @@ author: "Iñaki Ucar"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
-    includes:
-        in_header: includes/xyjax.html
     toc: yes
 vignette: >
   %\VignetteIndexEntry{Continuous-Time Markov Chains}
@@ -19,6 +17,14 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
 library(ggplot2)
 theme_set(theme_bw())
 ```
+
+<script type="text/x-mathjax-config">
+  MathJax.Ajax.config.path["Contrib"] = "https://cdn.mathjax.org/mathjax/contrib";
+  MathJax.Hub.Config({
+    TeX: {extensions: ["[Contrib]/xyjax/xypic.js","AMSmath.js","AMSsymbols.js"]},
+    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+  });
+</script>
 
 ```{r, message=FALSE}
 library(simmer)
