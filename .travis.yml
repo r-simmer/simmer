@@ -3,7 +3,7 @@ sudo: required
 warnings_are_errors: true
 env:
   global:
-    - PKG_CXXFLAGS+="-Wall -Wno-unused -pedantic"
+    - PKG_CXXFLAGS+="-O0 -fprofile-arcs -ftest-coverage -Wall -Wno-unused -pedantic"
     - _R_CHECK_CRAN_INCOMING_=FALSE
 
 r_binary_packages:
