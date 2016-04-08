@@ -3,7 +3,7 @@ sudo: required
 warnings_are_errors: true
 env:
   global:
-    - PKG_CXXFLAGS="-O0 -fprofile-arcs -ftest-coverage -Wall -Wno-unused -pedantic"
+    - PKG_CXXFLAGS="-Wall -Wno-unused -pedantic"
     - _R_CHECK_CRAN_INCOMING_=FALSE
 
 r_binary_packages:
@@ -19,4 +19,4 @@ r_binary_packages:
   - rmarkdown
 
 after_success:
-  - Rscript -e 'library(covr); coveralls(exclusions=list("./src/RcppExports.cpp" = c(242, 267, 292, 315), "./R/utils.R" = seq(48, 60)))'
+  - Rscript -e 'library(covr); options(covr.flags = c(CPPFLAGS = "-O0 -g -coverage -fno-inline", LDFLAGS = "-coverage")); coveralls(exclusions=list("./src/RcppExports.cpp" = c(242, 267, 292, 315), "./R/utils.R" = seq(48, 60)))'
