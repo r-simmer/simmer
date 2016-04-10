@@ -14,6 +14,7 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
                       fig.width = 6, fig.height = 4, fig.align = "center")
 library(ggplot2)
 theme_set(theme_bw())
+knitr::read_demo("terminology", "simmer")
 ```
 
 Please find below a short explanation of the most important terminologies used in the docs.
@@ -41,10 +42,6 @@ Please find below a short explanation of the most important terminologies used i
 ## From terminology to model
 
 In the simulation model below we create a __trajectory__ which we will call `my trajectory`. This trajectory consists of three consecutive __activities__; a `seize`, `timeout` and `release` event. In the `seize` and `release` events a associated __resource__ type is specified. In this case the resource type is called `operator`. 
-
-```{r, cache=FALSE, include=FALSE}
-knitr::read_demo("vignette-terminology-example", "simmer")
-```
 
 ```{r create-trajectory}
 ```

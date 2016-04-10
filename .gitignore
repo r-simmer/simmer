@@ -27,3 +27,5 @@
 *.out
 *.app
 inst/doc
+# OSX-specific
+.DS_Store
