@@ -19,8 +19,8 @@ r_binary_packages:
   - rmarkdown
 
 after_success:
-  - echo 'library(covr)
-          options(covr.flags = c(CPPFLAGS = "-O0 -g -coverage -fno-inline", LDFLAGS = "-coverage"))
+  - echo 'library(covr);
+          options(covr.flags = c(CPPFLAGS = "-O0 -g -coverage -fno-inline", LDFLAGS = "-coverage"));
           coveralls(exclusions=list("./src/RcppExports.cpp" = c(242, 267, 292, 315),
-                                    "./R/utils.R" = seq(48, 60)))
+                                    "./R/utils.R" = seq(48, 60)));
     ' | Rscript -
