@@ -14,7 +14,7 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
                       fig.width = 6, fig.height = 4, fig.align = "center")
 library(ggplot2)
 theme_set(theme_bw())
-knitr::read_demo("terminology", "simmer")
+knitr::read_demo("B-terminology", "simmer")
 ```
 
 Please find below a short explanation of the most important terminologies used in the docs.

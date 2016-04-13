@@ -1,5 +1,5 @@
-terminology   to accompany the 'Terminology' vignette
-continuous-time-markov-chains   two examples to accompany the 'Continous Time Markov Chains' vignette
-introduction-examples examples   to accompany the 'Introduction' vignette
-queueing-systems   to accompany the 'Queueing Systems' vignette
-trajectories   to accompany the 'Trajectories' vignette
+A-introduction      examples from the 'Introduction' vignette
+B-terminology       examples from the 'Terminology' vignette
+C-trajectories      examples from the 'Trajectories' vignette
+D-queueing-systems  examples from the 'Queueing Systems' vignette
+E-ctmc              examples from the 'Continuous-Time Markov Chains' vignette

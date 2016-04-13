@@ -16,7 +16,7 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
                       fig.width = 6, fig.height = 4, fig.align = "center")
 library(ggplot2)
 theme_set(theme_bw())
-knitr::read_demo("trajectories", "simmer")
+knitr::read_demo("C-trajectories", "simmer")
 ```
 
 ```{r setup, message=FALSE}
