@@ -16,14 +16,10 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
                       fig.width = 6, fig.height = 4, fig.align = "center")
 library(ggplot2)
 theme_set(theme_bw())
+knitr::read_demo("queueing-systems", "simmer")
 ```
 
-```{r, message=FALSE}
-library(simmer)
-library(ggplot2)
-library(dplyr)
-library(parallel)
-set.seed(1234)
+```{r setup, message=FALSE}
 ```
 
 ## The M/M/1 system
@@ -42,84 +38,42 @@ Whenever $\rho < 1$. If that is not true, it means that the system is unstable: 
 
 The simulation of an M/M/1 system is quite simple using `simmer`:
 
-```{r}
-lambda <- 2
-mu <- 4
-rho <- lambda/mu # = 2/4
-
-mm1.trajectory <- create_trajectory() %>%
-  seize("resource", amount=1) %>%
-  timeout(function() rexp(1, mu)) %>%
-  release("resource", amount=1)
-
-mm1.env <- simmer() %>%
-  add_resource("resource", capacity=1, queue_size=Inf) %>%
-  add_generator("arrival", mm1.trajectory, function() rexp(1, lambda)) %>% 
-  run(until=2000)
+```{r part1}
 ```
 
 Our package provides convenience plotting functions to quickly visualise the usage of a resource over time, for instance. Down below, we can see how the simulation converges to the theoretical average number of customers in the system.
 
-```{r}
-# Evolution of the average number of customers in the system
-graph <- plot_resource_usage(mm1.env, "resource", items="system")
-
-# Theoretical value
-mm1.N <- rho/(1-rho)
-graph + geom_hline(yintercept=mm1.N)
+```{r part2}
 ```
 
 It is possible also to visualise, for instance, the instantaneous usage of individual elements by playing with the parameters `items` and `steps`.
 
-```{r}
-plot_resource_usage(mm1.env, "resource", items=c("queue", "server"), steps=TRUE) +
-  xlim(0, 20) + ylim(0, 4)
+```{r part3}
 ```
 
 Experimentally, we obtain the time spent by each customer in the system and we compare the average with the theoretical expression.
 
-```{r}
-mm1.arrivals <- get_mon_arrivals(mm1.env)
-mm1.t_system <- mm1.arrivals$end_time - mm1.arrivals$start_time
-
-mm1.T <- mm1.N / lambda
-mm1.T ; mean(mm1.t_system)
+```{r part4}
 ```
 
 It seems that it matches the theoretical value pretty well. But of course we are picky, so let's take a closer look, just to be sure. Replication can be done with standard R tools:
 
-```{r}
-envs <- mclapply(1:1000, function(i) {
-  simmer() %>%
-    add_resource("resource", capacity=1, queue_size=Inf) %>%
-    add_generator("arrival", mm1.trajectory, function() rexp(1, lambda)) %>%
-    run(1000/lambda) %>%
-    wrap()
-})
+```{r part5}
 ```
 
 Parallelizing has the shortcoming that we lose the underlying C++ objects when each thread finishes, but the `wrap` function does all the magic for us retrieving the monitored data. Let's perform a simple test:
 
-```{r}
-t_system <- get_mon_arrivals(envs) %>%
-  mutate(t_system = end_time - start_time) %>%
-  group_by(replication) %>%
-  summarise(mean = mean(t_system))
-
-t.test(t_system$mean)
+```{r part6}
 ```
 
 Finally, the inverse of the mean difference between arrivals is the effective rate, which matches (approx.) the real lambda because there are no rejections.
 
-```{r}
-lambda; 1/mean(diff(mm1.arrivals$start_time))
+```{r part7}
 ```
 
 Moreover, an M/M/1 satisfies that the distribution of the time spent in the system is, in turn, an exponential random variable with average $T$.
 
-```{r}
-qqplot(mm1.t_system, rexp(1000, 1/mm1.T))
-abline(0, 1, lty=2, col="red")
+```{r part8}
 ```
 
 ## M/M/c/k systems
@@ -128,36 +82,17 @@ An M/M/c/k system keeps exponential arrivals and service times, but has more tha
 
 This is the simulation of an M/M/2/3 system (2 server, 1 position in queue). Note that the trajectory is identical to the M/M/1 case.
 
-```{r}
-lambda <- 2
-mu <- 4
-
-mm23.trajectory <- create_trajectory() %>%
-  seize("server", amount=1) %>%
-  timeout(function() rexp(1, mu)) %>%
-  release("server", amount=1)
-
-mm23.env <- simmer() %>%
-  add_resource("server", capacity=2, queue_size=1) %>%
-  add_generator("arrival", mm23.trajectory, function() rexp(1, lambda)) %>%
-  run(until=2000)
+```{r part9}
 ```
 
 In this case, there are rejections when the queue is full.
 
-```{r}
-mm23.arrivals <- get_mon_arrivals(mm23.env)
-mm23.arrivals %>%
-  summarise(rejection_rate = sum(!finished)/length(finished))
+```{r part10}
 ```
 
 Despite this, the time spent in the system still follows an exponential random variable, as in the M/M/1 case, but the average has dropped.
 
-```{r}
-mm23.t_system <- mm23.arrivals$end_time - mm23.arrivals$start_time
-# Comparison with M/M/1 times
-qqplot(mm1.t_system, mm23.t_system)
-abline(0, 1, lty=2, col="red")
+```{r part11}
 ```
 
 ## Queueing networks
