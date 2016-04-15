@@ -233,7 +233,7 @@ limits <- data.frame(item = c("queue", "server", "system"), value = c(1, 1, 2))
 
 graph <- gas.station %>% get_mon_resources() %>% 
   gather(item, value, server, queue, system) %>%
-  mutate(value = round(value * 2/5),                  # scaling here <------
+  mutate(value = round(value * 2/5),                  # rescaling here <------
          item = factor(item)) %>%
   filter(item %in% "system") %>%
   group_by(resource, replication, item) %>%

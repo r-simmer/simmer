@@ -131,28 +131,54 @@ $$N = 2(p_1 + p_5) + p_2 + p_4$$
 ```{r example2-part1}
 ```
 
+As in the first example, we can simulate this chain by breaking down the problem into two trajectories (one for each type of vehicle and service rate) and two generators. But in order to disallow cars to stay in the pump's queue, we need to introduce a little trick in the cars' `seize`: the argument `amount` is a function that returns 1 if the pump is vacant and 2 otherwise. This implies that the car gets rejected, because there is only one position in queue and that `seize` is requesting two positions. Note also that the environment `env` must be defined __before__ running, as it is needed inside the trajectory.
+
 ```{r example2-part2}
 ```
+
+The same idea using a branch, with a single generator and a single trajectory.
 
 ```{r example2-part3}
 ```
 
+We may also avoid messing up things with branches and subtrajectories. We can decide the type of vehicle and set it as an attribute of the arrival with `set_attribute`. Then, every activity's function is able to retrieve those attributes as a named list. Although the branch option is a little bit faster, this one is nicer, because there are no subtrajectories involved.
+
 ```{r example2-part4}
 ```
+
+But if performance is a requirement, we can play cleverly with the resource capacity and the queue size, and with the amounts requested in each `seize`, in order to model the problem without checking the status of the resource. Think about this:
+
+* A resource with `capacity=3` and `queue_size=2`.
+* A car always tries to seize `amount=3`.
+* A motorcycle always tries to seize `amount=2`.
+
+In these conditions, we have the following possibilities:
+
+* Pump empty.
+* One car (3 units) in the server [and optionally one motorcycle (2 units) in the queue].
+* One motorcycle (2 units) in the server [and optionally one motorcycle (2 units) in the queue].
+
+Just as expected! So, let's try:
 
 ```{r example2-part5}
 ```
 
+We are still wasting time in the `branch` decision. We can mix this solution above with the `option.1` to gain extra performance:
+
 ```{r example2-part6}
 ```
+
+Options 1, 2 and 3 are slower, but they give us the correct numbers, because the parameters (capacity, queue size, amounts) in the model remain unchanged compared to the problem. For instance,
 
 ```{r example2-part7}
 ```
 
+However, it is not the case in options 4 and 5. The parameters of these models are _adulterated_ to fit our performance purposes. Therefore, we need to extract the RAW data, rescale the numbers and plot them. And, of course, we get the same figure:
+
 ```{r example2-part8}
 ```
 
-And these are some performance results:
+Finally, these are some performance results:
 
 ```{r example2-part9, eval=FALSE}
 ```
