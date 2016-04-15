@@ -325,10 +325,10 @@ SEXP activity_get_prev_(SEXP activity_) {
 }
 
 //[[Rcpp::export]]
-void activity_chain_(SEXP activity_, SEXP the_next_) {
-  XPtr<Activity> activity(activity_);
-  XPtr<Activity> the_next(the_next_);
+void activity_chain_(SEXP first_, SEXP second_) {
+  XPtr<Activity> first(first_);
+  XPtr<Activity> second(second_);
   
-  activity->set_next(the_next);
-  the_next->set_prev(activity);
+  first->set_next(second);
+  second->set_prev(first);
 }

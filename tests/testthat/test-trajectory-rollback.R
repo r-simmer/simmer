@@ -14,6 +14,19 @@ test_that("a rollback points to the correct activity", {
     branch(function() 1, T, create_trajectory()%>%timeout(function() 1)) %>%
     rollback(30)
   expect_output(t0%>%get_tail()%>%print_activity(), "Seize")
+  
+  t0 <- create_trajectory() %>%
+    seize("dummy", 1) %>%
+    branch(function() 1, T, 
+           create_trajectory() %>% 
+             rollback(1))
+  
+  env <- simmer() %>%
+    add_resource("dummy", 2, 0) %>%
+    add_generator("one", t0, at(0)) %>%
+    run()
+  
+  expect_equal(env%>%get_server_count("dummy"), 2)
 })
 
 test_that("a rollback loops the correct number of times", {

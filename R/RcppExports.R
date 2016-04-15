@@ -129,7 +129,7 @@ activity_get_prev_ <- function(activity_) {
     .Call('simmer_activity_get_prev_', PACKAGE = 'simmer', activity_)
 }
 
-activity_chain_ <- function(activity_, the_next_) {
-    invisible(.Call('simmer_activity_chain_', PACKAGE = 'simmer', activity_, the_next_))
+activity_chain_ <- function(first_, second_) {
+    invisible(.Call('simmer_activity_chain_', PACKAGE = 'simmer', first_, second_))
 }
 

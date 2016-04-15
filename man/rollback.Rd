@@ -9,8 +9,7 @@ rollback(traj, amount, times = 1, check)
 \arguments{
 \item{traj}{the trajectory object.}
 
-\item{amount}{the amount of activities to roll back (of the same level; it does
-not go into branches).}
+\item{amount}{the amount of activities (of the same or parent trajectories) to roll back.}
 
 \item{times}{the number of repetitions until an arrival may continue.}
 

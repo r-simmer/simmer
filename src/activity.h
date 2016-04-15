@@ -141,15 +141,12 @@ public:
   Branch(Rcpp::Function option, bool provide_attrs, VEC<bool> merge, VEC<Rcpp::Environment> trj):
     Activity("Branch", "none", provide_attrs), option(option), merge(merge), trj(trj), selected(NULL) {
     n = 0;
-    for (unsigned int i = 0; i < trj.size(); i++) {
-      Rcpp::Function get_head(trj[i]["get_head"]);
-      path.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_head()));
-      if (merge[i]) {
-        Rcpp::Function get_tail(trj[i]["get_tail"]);
-        Rcpp::XPtr<Activity> tail(get_tail());
-        tail->set_next(this);
-      }
-      Rcpp::Function get_n_activities(trj[i]["get_n_activities"]);
+    foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
+      Rcpp::Function get_head(itr["get_head"]);
+      Rcpp::Function get_tail(itr["get_tail"]);
+      heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_head()));
+      tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_tail()));
+      Rcpp::Function get_n_activities(itr["get_n_activities"]);
       n += Rcpp::as<int>(get_n_activities());
     }
   }
@@ -165,6 +162,19 @@ public:
   
   double run(Arrival* arrival);
   
+  void set_prev(Activity* activity) {
+    Activity::set_prev(activity);
+    foreach_ (VEC<Activity*>::value_type& itr, heads)
+      itr->set_prev(activity);
+  }
+  
+  void set_next(Activity* activity) {
+    Activity::set_next(activity);
+    for (unsigned int i = 0; i < tails.size(); i++) {
+      if (merge[i]) tails[i]->set_next(activity);
+    }
+  }
+  
   Activity* get_next() {
     if (selected) {
       Activity* aux = selected;
@@ -179,8 +189,8 @@ private:
   VEC<bool> merge;
   VEC<Rcpp::Environment> trj;
   Activity* selected;
-  VEC<Activity*> path;
-  USET<Arrival*> pending;
+  VEC<Activity*> heads;
+  VEC<Activity*> tails;
 };
 
 /**

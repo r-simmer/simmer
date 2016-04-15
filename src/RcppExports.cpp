@@ -398,13 +398,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // activity_chain_
-void activity_chain_(SEXP activity_, SEXP the_next_);
-RcppExport SEXP simmer_activity_chain_(SEXP activity_SEXP, SEXP the_next_SEXP) {
+void activity_chain_(SEXP first_, SEXP second_);
+RcppExport SEXP simmer_activity_chain_(SEXP first_SEXP, SEXP second_SEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type the_next_(the_next_SEXP);
-    activity_chain_(activity_, the_next_);
+    Rcpp::traits::input_parameter< SEXP >::type first_(first_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type second_(second_SEXP);
+    activity_chain_(first_, second_);
     return R_NilValue;
 END_RCPP
 }

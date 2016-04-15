@@ -287,8 +287,7 @@ branch <- function(traj, option, merge, ...) traj$branch(option, merge, ...)
 #' Adds a new activity that goes backwards in the trajectory.
 #' 
 #' @param traj the trajectory object.
-#' @param amount the amount of activities to roll back (of the same level; it does
-#' not go into branches).
+#' @param amount the amount of activities (of the same or parent trajectories) to roll back.
 #' @param times the number of repetitions until an arrival may continue.
 #' @param check a callable object (a function) that must return a boolean. If
 #' present, the \code{times} parameter is ignored, and the activity uses this
