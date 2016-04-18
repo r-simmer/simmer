@@ -3,6 +3,7 @@
 
 // [[Rcpp::depends(BH)]]
 #include <Rcpp.h>
+
 #include <queue>
 #include <boost/heap/priority_queue.hpp>
 #include <boost/container/set.hpp>
@@ -20,5 +21,8 @@
 
 #define foreach_    BOOST_FOREACH
 #define foreach_r_  BOOST_REVERSE_FOREACH
+
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 
 #endif

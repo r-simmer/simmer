@@ -67,7 +67,7 @@ public:
     }
   }
   
-  inline double now() { return now_; }
+  double now() { return now_; }
   
   /**
    * Schedule a future event.
@@ -75,7 +75,7 @@ public:
    * @param   process   the process to schedule
    * @param   priority  additional key to execute releases before seizes if they coincide
    */
-  inline void schedule(double delay, Process* process, int priority=0) {
+  void schedule(double delay, Process* process, int priority=0) {
     event_queue.push(Event(now_ + delay, process, priority));
   }
   
@@ -91,7 +91,7 @@ public:
   /**
    * Process the next event. Only one step, a giant leap for mankind.
    */
-  inline bool step() {
+  bool step() {
     if (event_queue.empty()) return 0;
     now_ = event_queue.top().time;
     event_queue.top().process->run();
@@ -155,6 +155,36 @@ public:
       return TRUE;
     }
     Rcpp::warning("resource " + name + " already defined");
+    return FALSE;
+  }
+  
+  /**
+   * Add a process that manages the capacity or the queue_size of a resource
+   * given a scheduling.
+   * @param   name      the resource name
+   * @param   param     "capacity" or "queue_size"
+   * @param   duration  vector of durations until the next value change
+   * @param   value     vector of values
+   */
+  bool add_resource_manager(std::string name, std::string param, 
+                            VEC<double> duration, VEC<int> value) {
+    if (process_map.find(name) == process_map.end()) {
+      EntMap::iterator search = resource_map.find(name);
+      if (search == resource_map.end())
+        Rcpp::stop("resource '" + name + "' not found (typo?)");
+      Resource* res = (Resource*)search->second;
+      
+      Manager<int>* manager;
+      if (param.compare("capacity") == 0)
+        manager = new Manager<int>(this, name + "_" + param, duration, value,
+                                   boost::bind(&Resource::set_capacity, res, _1));
+      else manager = new Manager<int>(this, name + "_" + param, duration, value, 
+                                      boost::bind(&Resource::set_queue_size, res, _1));
+      process_map[name + "_" + param] = manager;
+      manager->run();
+      return TRUE;
+    }
+    Rcpp::warning("process " + name + " already defined");
     return FALSE;
   }
   

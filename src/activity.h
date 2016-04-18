@@ -221,7 +221,7 @@ private:
   Activity* cached, *selected;
   UMAP<Arrival*, int> pending;
   
-  inline Activity* goback() {
+  Activity* goback() {
     int n = amount;
     Activity* ptr = this;
     while (ptr->get_prev() && n--)

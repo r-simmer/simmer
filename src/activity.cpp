@@ -3,7 +3,7 @@
 #include "activity.h"
 
 template <typename T>
-inline T execute_call(Rcpp::Function call, Arrival* arrival, bool provide_attrs) {
+T execute_call(Rcpp::Function call, Arrival* arrival, bool provide_attrs) {
   if (provide_attrs)
     return Rcpp::as<T>(call(Rcpp::wrap(*arrival->get_attributes())));
   else return Rcpp::as<T>(call());

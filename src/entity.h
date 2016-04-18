@@ -22,8 +22,8 @@ public:
   Entity(Simulator* sim, std::string name, int mon): 
     sim(sim), name(name), mon(std::abs(mon)) {}
   virtual ~Entity() { reset(); }
-  inline virtual void reset() {}
-  inline int is_monitored() { return mon; }
+  virtual void reset() {}
+  int is_monitored() { return mon; }
   
 private:
   int mon;

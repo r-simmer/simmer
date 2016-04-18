@@ -99,14 +99,16 @@ public:
   /**
   * Gather resource statistics.
   */
-  inline void observe(double time) {
+  void observe(double time) {
     res_stats.insert("time",    time);
     res_stats.insert("server",  server_count);
     res_stats.insert("queue",   queue_count);
   }
   
   StatsMap* get_observations() { return &res_stats; }
+  void set_capacity(int value) { capacity = value; } // monitoring!
   int get_capacity() { return capacity; }
+  void set_queue_size(int value) { queue_size = value; }
   int get_queue_size() { return queue_size; }
   int get_server_count() { return server_count; }
   int get_queue_count() { return queue_count; }
@@ -119,21 +121,21 @@ protected:
   RPQueue queue;        /**< queue container */
   StatsMap res_stats;   /**< resource statistics */
   
-  virtual inline bool room_in_server(int amount, int priority) {
+  virtual bool room_in_server(int amount, int priority) {
     if (capacity < 0) return true;
     return server_count + amount <= capacity;
   }
   
-  virtual inline void insert_in_server(double time, Arrival* arrival, int amount, 
+  virtual void insert_in_server(double time, Arrival* arrival, int amount, 
                                        int priority, int preemptible, bool restart) {
     server_count += amount;
   }
   
-  virtual inline void remove_from_server(Arrival* arrival, int amount) {
+  virtual void remove_from_server(Arrival* arrival, int amount) {
     server_count -= amount;
   }
   
-  virtual inline bool room_in_queue(int amount, int priority) {
+  virtual bool room_in_queue(int amount, int priority) {
     if (queue_size < 0) return true;
     if (queue_count + amount <= queue_size) return true;
     int count = 0;
@@ -146,7 +148,7 @@ protected:
     return false;
   }
   
-  virtual inline void insert_in_queue(double time, Arrival* arrival, int amount, 
+  virtual void insert_in_queue(double time, Arrival* arrival, int amount, 
                               int priority, int preemptible, bool restart) {
     if (queue_size > 0) while (queue_count + amount > queue_size) {
       RPQueue::iterator last = --queue.end();
@@ -158,7 +160,7 @@ protected:
     queue.emplace(time, arrival, amount, priority, preemptible, restart);
   }
   
-  virtual inline bool try_serve_from_queue(double time) {
+  virtual bool try_serve_from_queue(double time) {
     RPQueue::iterator next = queue.begin();
     if (room_in_server(next->amount, next->priority)) {
       if (next->arrival->is_monitored()) {
@@ -199,7 +201,7 @@ protected:
   RPQueue preempted;    /**< preempted arrivals */
   T server;             /**< server container */
   
-  virtual inline bool room_in_server(int amount, int priority) {
+  virtual bool room_in_server(int amount, int priority) {
     if (capacity < 0) return true;
     if (server_count + amount <= capacity) return true;
     int count = 0;
@@ -212,7 +214,7 @@ protected:
     return false;
   }
   
-  virtual inline void insert_in_server(double time, Arrival* arrival, int amount, 
+  virtual void insert_in_server(double time, Arrival* arrival, int amount, 
                                int priority, int preemptible, bool restart) {
     if (capacity > 0) while (server_count + amount > capacity) {
       typename T::iterator first = server.begin();
@@ -230,14 +232,14 @@ protected:
     server.emplace(time, arrival, amount, priority, preemptible, restart);
   }
   
-  virtual inline void remove_from_server(Arrival* arrival, int amount) {
+  virtual void remove_from_server(Arrival* arrival, int amount) {
     typename T::iterator itr = server.begin();
     while (itr->arrival != arrival) ++itr;
     server.erase(itr);
     server_count -= amount;
   }
   
-  virtual inline bool try_serve_from_queue(double time) {
+  virtual bool try_serve_from_queue(double time) {
     RPQueue::iterator next;
     bool flag = false;
     if (!preempted.empty()) {

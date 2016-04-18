@@ -16,13 +16,30 @@ public:
     Entity(sim, name, mon), arrival(arrival), active(true) {}
   virtual ~Process(){}
   virtual void run() = 0;
-  inline virtual void activate() { active = true; }
-  inline virtual void deactivate(bool restart) { active = false; }
-  inline bool is_arrival() { return arrival; }
-  inline bool is_active() { return active; }
+  virtual void activate() { active = true; }
+  virtual void deactivate(bool restart) { active = false; }
+  bool is_arrival() { return arrival; }
+  bool is_active() { return active; }
 private:
   bool arrival;
   bool active;
+};
+
+template <typename T>
+class Manager: public Process {
+  typedef boost::function<void (T)> Setter;
+  
+public:
+  Manager(Simulator* sim, std::string name, VEC<double> duration, VEC<T> value, Setter set):
+    Process(sim, name, false), duration(duration), value(value), set(set), index(0) {}
+  
+  void run();
+  
+private:
+  VEC<double> duration;
+  VEC<T> value;
+  Setter set;
+  unsigned int index;
 };
 
 typedef UMAP<std::string, double> Attr;
@@ -59,7 +76,7 @@ public:
   /**
    * Gather attribute statistics.
    */
-  inline void observe(double time, std::string name, std::string key, double value) {
+  void observe(double time, std::string name, std::string key, double value) {
     attr_stats.insert("time",   time);
     attr_stats.insert("name",   name);
     attr_stats.insert("key",    key);
@@ -70,7 +87,7 @@ public:
    * Arrivals notify their end with this call.
    * The generator is in charge of gathering statistics and deleting the arrival.
    */
-  inline void notify_end(std::string name, double start, double end, 
+  void notify_end(std::string name, double start, double end, 
                          double activity, bool finished) {
     traj_stats.insert("name",           name);
     traj_stats.insert("start_time",     start);
@@ -82,7 +99,7 @@ public:
   /**
    * Arrivals notify resource releases with this call.
    */
-  inline void notify_release(std::string name, double start, double end, 
+  void notify_release(std::string name, double start, double end, 
                              double activity, std::string resource) {
     res_stats.insert("name",          name);
     res_stats.insert("start_time",    start);
@@ -135,19 +152,19 @@ public:
   void deactivate(bool restart);
   
   int set_attribute(std::string key, double value);
-  inline Attr* get_attributes() { return &attributes; }
-  inline double get_remaining() { return remaining; }
+  Attr* get_attributes() { return &attributes; }
+  double get_remaining() { return remaining; }
   
-  inline void set_start(std::string name, double start) { restime[name].start = start; }
-  inline void set_activity(std::string name, double act) { restime[name].activity = act; }
-  inline double get_activity(std::string name) { return restime[name].activity; }
+  void set_start(std::string name, double start) { restime[name].start = start; }
+  void set_activity(std::string name, double act) { restime[name].activity = act; }
+  double get_activity(std::string name) { return restime[name].activity; }
   
-  inline void leave(std::string resource, double time) {
+  void leave(std::string resource, double time) {
     gen->notify_release(name, restime[resource].start, time, 
                         restime[resource].activity, resource);
   }
   
-  inline void terminate(double time, bool finished) {
+  void terminate(double time, bool finished) {
     if (is_monitored() >= 1)
       gen->notify_end(name, lifetime.start, time, lifetime.activity, finished);
     delete this;

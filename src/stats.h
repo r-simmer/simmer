@@ -16,14 +16,14 @@ class StatsMap {
   
 public:
   template <typename T>
-  inline VEC<T> get(std::string key) {
+  VEC<T> get(std::string key) {
     if (map.find(key) != map.end())
       return boost::get< VEC<T> >(map[key]);
     return VEC<T>();
   }
   
   template <typename T>
-  inline void insert(std::string key, T value) {
+  void insert(std::string key, T value) {
     if (map.find(key) == map.end())
       map.insert(std::pair< std::string, VEC<T> >(key, VEC<T>()));
     boost::get< VEC<T> >(map[key]).push_back(value);

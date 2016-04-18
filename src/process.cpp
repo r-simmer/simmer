@@ -21,7 +21,19 @@ void Generator::run() {
   count++;
 }
 
-inline void Arrival::run() {
+template <typename T>
+void Manager<T>::run() {
+  if (!is_active()) return;
+  
+  if (sim->now() == duration[index]) {
+    set(value[index]);
+    index++;
+    if (index == duration.size()) index = 0;
+  }
+  sim->schedule(duration[index], this, -10);
+}
+
+void Arrival::run() {
   double delay;
   
   if (!is_active()) goto end;
@@ -48,14 +60,14 @@ end:
   return;
 }
 
-inline void Arrival::activate() {
+void Arrival::activate() {
   Process::activate();
   busy_until = sim->now() + remaining;
   sim->schedule(remaining, this, activity ? activity->priority : 0);
   remaining = 0;
 }
 
-inline void Arrival::deactivate(bool restart) {
+void Arrival::deactivate(bool restart) {
   Process::deactivate(restart);
   remaining = busy_until - sim->now();
   if (remaining && restart) {
