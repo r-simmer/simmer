@@ -2,10 +2,8 @@
 #define SIMULATOR_H
 
 #include "simmer.h"
-#include "entity.h"
-
-// forward declarations
-class Activity;
+#include "process.h"
+#include "resource.h"
 
 /**
  * The simulator.

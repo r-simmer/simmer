@@ -1,6 +1,8 @@
 #include "simmer.h"
 #include "activity.h"
 #include "entity.h"
+#include "process.h"
+#include "resource.h"
 #include "stats.h"
 #include "simulator.h"
 
