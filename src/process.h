@@ -12,16 +12,16 @@ class Arrival;
  */
 class Process: public Entity {
 public:
-  Process(Simulator* sim, std::string name, int mon, bool generator=false): 
-    Entity(sim, name, mon), generator(generator), active(true) {}
+  Process(Simulator* sim, std::string name, int mon, bool arrival=false): 
+    Entity(sim, name, mon), arrival(arrival), active(true) {}
   virtual ~Process(){}
   virtual void run() = 0;
   inline virtual void activate() { active = true; }
   inline virtual void deactivate(bool restart) { active = false; }
-  inline bool is_generator() { return generator; }
+  inline bool is_arrival() { return arrival; }
   inline bool is_active() { return active; }
 private:
-  bool generator;
+  bool arrival;
   bool active;
 };
 
@@ -42,12 +42,12 @@ public:
    */
   Generator(Simulator* sim, std::string name_prefix, int mon,
             Activity* first_activity, Rcpp::Function dist): 
-    Process(sim, name_prefix, mon, true), count(0), first_activity(first_activity), dist(dist) {}
+    Process(sim, name_prefix, mon), count(0), first_activity(first_activity), dist(dist) {}
   
   /**
    * Reset the generator: counter, statistics.
    */
-  void reset() { 
+  virtual void reset() { 
     count = 0;
     traj_stats.clear();
     res_stats.clear();
@@ -72,13 +72,11 @@ public:
    */
   inline void notify_end(std::string name, double start, double end, 
                          double activity, bool finished) {
-    if (is_monitored() >= 1) {
-      traj_stats.insert("name",           name);
-      traj_stats.insert("start_time",     start);
-      traj_stats.insert("end_time",       end);
-      traj_stats.insert("activity_time",  activity);
-      traj_stats.insert("finished",       finished);
-    }
+    traj_stats.insert("name",           name);
+    traj_stats.insert("start_time",     start);
+    traj_stats.insert("end_time",       end);
+    traj_stats.insert("activity_time",  activity);
+    traj_stats.insert("finished",       finished);
   }
   
   /**
@@ -130,7 +128,7 @@ public:
   * @param first_activity  the first activity of a user-defined R trajectory
   */
   Arrival(Simulator* sim, std::string name, int mon, Activity* first_activity, Generator* gen):
-    Process(sim, name, mon), activity(first_activity), gen(gen), busy_until(-1), remaining(0) {}
+    Process(sim, name, mon, true), activity(first_activity), gen(gen), busy_until(-1), remaining(0) {}
   
   void run();
   void activate();
@@ -150,7 +148,8 @@ public:
   }
   
   inline void terminate(double time, bool finished) {
-    gen->notify_end(name, lifetime.start, time, lifetime.activity, finished);
+    if (is_monitored() >= 1)
+      gen->notify_end(name, lifetime.start, time, lifetime.activity, finished);
     delete this;
   }
   

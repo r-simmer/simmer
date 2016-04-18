@@ -43,27 +43,27 @@ public:
   
   ~Simulator() {
     while (!event_queue.empty()) {
-      if (!event_queue.top().process->is_generator())
+      if (event_queue.top().process->is_arrival())
         delete event_queue.top().process;
       event_queue.pop();
     }
   }
   
   /**
-   * Reset the simulation: time, event queue, resources, generators and statistics.
+   * Reset the simulation: time, event queue, resources, processes and statistics.
    */
   void reset() {
     now_ = 0;
     while (!event_queue.empty()) {
-      if (!event_queue.top().process->is_generator())
+      if (event_queue.top().process->is_arrival())
         delete event_queue.top().process;
       event_queue.pop();
     }
     foreach_ (EntMap::value_type& itr, resource_map)
       ((Resource*)itr.second)->reset();
-    foreach_ (EntMap::value_type& itr, generator_map) {
-      ((Generator*)itr.second)->reset();
-      ((Generator*)itr.second)->run();
+    foreach_ (EntMap::value_type& itr, process_map) {
+      ((Process*)itr.second)->reset();
+      ((Process*)itr.second)->run();
     }
   }
   
@@ -120,13 +120,13 @@ public:
    */
   bool add_generator(std::string name_prefix, 
                      Activity* first_activity, Rcpp::Function dist, int mon) {
-    if (generator_map.find(name_prefix) == generator_map.end()) {
+    if (process_map.find(name_prefix) == process_map.end()) {
       Generator* gen = new Generator(this, name_prefix, mon, first_activity, dist);
-      generator_map[name_prefix] = gen;
+      process_map[name_prefix] = gen;
       gen->run();
       return TRUE;
     }
-    Rcpp::warning("generator " + name + " already defined");
+    Rcpp::warning("process " + name + " already defined");
     return FALSE;
   }
   
@@ -162,8 +162,8 @@ public:
    * Get a generator by name.
    */
   Generator* get_generator(std::string name) {
-    EntMap::iterator search = generator_map.find(name);
-    if (search == generator_map.end())
+    EntMap::iterator search = process_map.find(name);
+    if (search == process_map.end())
       Rcpp::stop("generator '" + name + "' not found (typo?)");
     return (Generator*)search->second;
   }
@@ -182,7 +182,7 @@ private:
   double now_;              /**< simulation time */
   PQueue event_queue;       /**< the event queue */
   EntMap resource_map;      /**< map of resources */
-  EntMap generator_map;     /**< map of generators */
+  EntMap process_map;       /**< map of processes */
 };
 
 #endif

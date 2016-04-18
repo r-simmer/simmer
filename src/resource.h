@@ -65,8 +65,6 @@ public:
     Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), server_count(0), 
     queue_count(0) {}
   
-  ~Resource() { reset(); }
-  
   /**
   * Reset the resource: server, queue and statistics.
   */
