@@ -5,7 +5,7 @@
 
 // forward declarations
 class Activity;
-class Generator;
+class Arrival;
 
 /** 
  * Abstract class for processes, active entities that need a method run().
@@ -26,58 +26,6 @@ private:
 };
 
 typedef UMAP<std::string, double> Attr;
-
-/** 
- *  Arrival process.
- */
-class Arrival: public Process {
-  struct ArrTime {
-    double start;
-    double activity;
-    ArrTime(): start(-1), activity(0) {}
-  };
-  typedef UMAP<std::string, ArrTime> ResTime;
-  
-public:
-  /**
-   * Constructor.
-   * @param sim             a pointer to the simulator
-   * @param name            the name
-   * @param mon             int that indicates whether this entity must be monitored
-   * @param first_activity  the first activity of a user-defined R trajectory
-   */
-  Arrival(Simulator* sim, std::string name, int mon, Activity* first_activity, Generator* gen):
-    Process(sim, name, mon), activity(first_activity), gen(gen), busy_until(-1), remaining(0) {}
-  
-  void run();
-  void activate();
-  void deactivate(bool restart);
-  
-  int set_attribute(std::string key, double value);
-  inline Attr* get_attributes() { return &attributes; }
-  
-  inline void set_start(std::string name, double start) { restime[name].start = start; }
-  inline double get_start(std::string name) { return restime[name].start; }
-  inline double get_start() { return lifetime.start; }
-  
-  inline void set_activity(std::string name, double act) { restime[name].activity = act; }
-  inline double get_activity(std::string name) { return restime[name].activity; }
-  inline double get_activity() { return lifetime.activity; }
-  
-  inline double get_remaining() { return remaining; }
-  
-  void leave(std::string name, double time);
-  void reject(double time);
-
-private:
-  ArrTime lifetime;   /**< time spent in the whole trajectory */
-  ResTime restime;    /**< time spent in resources */
-  Activity* activity; /**< current activity from an R trajectory */
-  Generator* gen;     /**< parent generator */
-  Attr attributes;    /**< user-defined (key, value) pairs */
-  double busy_until;  /**< next scheduled event time */
-  double remaining;   /**< time remaining in a deactivated arrival */
-};
 
 /**
  * Generation process.
@@ -111,43 +59,37 @@ public:
   /**
    * Gather attribute statistics.
    */
-  inline void observe(double time, Arrival* arrival, std::string key) {
-    Attr* attributes = arrival->get_attributes();
+  inline void observe(double time, std::string name, std::string key, double value) {
     attr_stats.insert("time",   time);
-    attr_stats.insert("name",   arrival->name);
+    attr_stats.insert("name",   name);
     attr_stats.insert("key",    key);
-    attr_stats.insert("value",  (*attributes)[key]);
+    attr_stats.insert("value",  value);
   }
   
   /**
    * Arrivals notify their end with this call.
    * The generator is in charge of gathering statistics and deleting the arrival.
-   * @param   time      ending time
-   * @param   arrival   a pointer to the ending arrival
-   * @param   finished  bool that indicates whether the arrival has finished its trajectory
    */
-  inline void notify_end(double time, Arrival* arrival, bool finished) {
+  inline void notify_end(std::string name, double start, double end, 
+                         double activity, bool finished) {
     if (is_monitored() >= 1) {
-      traj_stats.insert("name",           arrival->name);
-      traj_stats.insert("start_time",     arrival->get_start());
-      traj_stats.insert("end_time",       time);
-      traj_stats.insert("activity_time",  arrival->get_activity());
+      traj_stats.insert("name",           name);
+      traj_stats.insert("start_time",     start);
+      traj_stats.insert("end_time",       end);
+      traj_stats.insert("activity_time",  activity);
       traj_stats.insert("finished",       finished);
     }
-    delete arrival;
   }
   
   /**
    * Arrivals notify resource releases with this call.
-   * @param   time      ending time
-   * @param   arrival   a pointer to the arrival
-   * @param   resource  name of the resource released
    */
-  inline void notify_release(double time, Arrival* arrival, std::string resource) {
-    res_stats.insert("name",          arrival->name);
-    res_stats.insert("start_time",    arrival->get_start(resource));
-    res_stats.insert("end_time",      time);
-    res_stats.insert("activity_time", arrival->get_activity(resource));
+  inline void notify_release(std::string name, double start, double end, 
+                             double activity, std::string resource) {
+    res_stats.insert("name",          name);
+    res_stats.insert("start_time",    start);
+    res_stats.insert("end_time",      end);
+    res_stats.insert("activity_time", activity);
     res_stats.insert("resource",      resource);
   }
   
@@ -166,6 +108,60 @@ private:
   StatsMap traj_stats;      /**< arrival statistics per trajectory */
   StatsMap res_stats;       /**< arrival statistics per resource */
   StatsMap attr_stats;      /**< attribute statistics */
+};
+
+/** 
+ *  Arrival process.
+ */
+class Arrival: public Process {
+  struct ArrTime {
+    double start;
+    double activity;
+    ArrTime(): start(-1), activity(0) {}
+  };
+  typedef UMAP<std::string, ArrTime> ResTime;
+  
+public:
+  /**
+  * Constructor.
+  * @param sim             a pointer to the simulator
+  * @param name            the name
+  * @param mon             int that indicates whether this entity must be monitored
+  * @param first_activity  the first activity of a user-defined R trajectory
+  */
+  Arrival(Simulator* sim, std::string name, int mon, Activity* first_activity, Generator* gen):
+    Process(sim, name, mon), activity(first_activity), gen(gen), busy_until(-1), remaining(0) {}
+  
+  void run();
+  void activate();
+  void deactivate(bool restart);
+  
+  int set_attribute(std::string key, double value);
+  inline Attr* get_attributes() { return &attributes; }
+  inline double get_remaining() { return remaining; }
+  
+  inline void set_start(std::string name, double start) { restime[name].start = start; }
+  inline void set_activity(std::string name, double act) { restime[name].activity = act; }
+  inline double get_activity(std::string name) { return restime[name].activity; }
+  
+  inline void leave(std::string resource, double time) {
+    gen->notify_release(name, restime[resource].start, time, 
+                        restime[resource].activity, resource);
+  }
+  
+  inline void terminate(double time, bool finished) {
+    gen->notify_end(name, lifetime.start, time, lifetime.activity, finished);
+    delete this;
+  }
+  
+private:
+  ArrTime lifetime;   /**< time spent in the whole trajectory */
+  ResTime restime;    /**< time spent in resources */
+  Activity* activity; /**< current activity from an R trajectory */
+  Generator* gen;     /**< parent generator */
+  Attr attributes;    /**< user-defined (key, value) pairs */
+  double busy_until;  /**< next scheduled event time */
+  double remaining;   /**< time remaining in a deactivated arrival */
 };
 
 #endif

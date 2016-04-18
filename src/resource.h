@@ -152,7 +152,7 @@ protected:
                               int priority, int preemptible, bool restart) {
     if (queue_size > 0) while (queue_count + amount > queue_size) {
       RPQueue::iterator last = --queue.end();
-      last->arrival->reject(time);
+      last->arrival->terminate(time, false);
       queue_count -= last->amount;
       queue.erase(last);
     }

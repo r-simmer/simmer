@@ -2,6 +2,25 @@
 #include "simulator.h"
 #include "activity.h"
 
+void Generator::run() {
+  if (!is_active()) return;
+  
+  // get the delay for the next arrival
+  double delay = Rcpp::as<double>(dist());
+  if (delay < 0) return;
+  
+  // format the name and create the next arrival
+  char numstr[21];
+  sprintf(numstr, "%d", count);
+  Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_activity, this);
+  
+  // schedule the arrival and the generator itself
+  sim->schedule(delay, arrival);
+  sim->schedule(delay, this);
+  
+  count++;
+}
+
 inline void Arrival::run() {
   double delay;
   
@@ -24,7 +43,7 @@ inline void Arrival::run() {
   goto end;
   
 finish:
-  gen->notify_end(sim->now(), this, true);
+  terminate(sim->now(), true);
 end:
   return;
 }
@@ -46,36 +65,9 @@ inline void Arrival::deactivate(bool restart) {
   }
 }
 
-void Arrival::leave(std::string name, double time) {
-  gen->notify_release(time, this, name);
-}
-
-void Arrival::reject(double time) {
-  gen->notify_end(time, this, false);
-}
-
 int Arrival::set_attribute(std::string key, double value) {
   attributes[key] = value;
-  
-  if (is_monitored() >= 2) gen->observe(sim->now(), this, key);
+  if (is_monitored() >= 2) 
+    gen->observe(sim->now(), name, key, value);
   return 0;
-}
-
-void Generator::run() {
-  if (!is_active()) return;
-  
-  // get the delay for the next arrival
-  double delay = Rcpp::as<double>(dist());
-  if (delay < 0) return;
-  
-  // format the name and create the next arrival
-  char numstr[21];
-  sprintf(numstr, "%d", count);
-  Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_activity, this);
-  
-  // schedule the arrival and the generator itself
-  sim->schedule(delay, arrival);
-  sim->schedule(delay, this);
-  
-  count++;
 }

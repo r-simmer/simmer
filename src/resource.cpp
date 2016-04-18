@@ -21,7 +21,7 @@ int Resource::seize(Arrival* arrival, int amount, int priority, int preemptible,
   }
   // reject
   else {
-    arrival->reject(sim->now());
+    arrival->terminate(sim->now(), false);
     return REJECTED;
   }
   
