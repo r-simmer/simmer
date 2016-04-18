@@ -171,3 +171,74 @@ from_to <- function(start_time, stop_time, dist, arrive=TRUE){
     }
   }
 }
+
+#' @importFrom R6 R6Class
+Schedule <- R6Class("Schedule",
+  public = list(
+    initialize = function(timetable, period, values) { 
+      if (!is.numeric(c(timetable, period, values)))
+        stop("all arguments must be numeric")
+      if (is.unsorted(timetable) || !all(period >= timetable) ||
+          (timetable[length(timetable)] == period + timetable[1]))
+        stop("invalid timetable")
+      if (length(timetable) != length(values))
+        stop("vector lengths must agree")
+      if (length(timetable) < 2)
+        stop("at least two values required")
+      if (!all(values >= 0))
+        stop("invalid values")
+      private$timetable <- timetable
+      private$period <- period
+      private$values <- values
+      private$n <- length(private$timetable)
+      self
+    },
+    
+    print = function() {
+      # some pretty printing here
+    },
+    
+    get_init = function() {
+      if (private$timetable[1] == 0)
+        private$values[1]
+      else
+        private$values[private$n]
+    },
+    
+    get_schedule = function() {
+      if (private$timetable[1] == 0) list(
+        intervals = c(private$timetable[1], diff(private$timetable), 
+                      private$timetable[1] + private$period - private$timetable[private$n]),
+        values = c(private$values, private$values[1]))
+      else list(
+        intervals = c(private$timetable[1], diff(private$timetable), 
+                      private$timetable[1] + private$period - private$timetable[private$n]),
+        values = c(private$values, private$values[1]))
+    }
+  ),
+  
+  private = list(
+    timetable = NA,
+    period = NA,
+    values = NA,
+    n = NA
+  )
+)
+
+#' Generate a scheduling object
+#' 
+#' Resource convenience function to generate a scheduling object from a timetable specification.
+#'
+#' @param timetable absolute points in time in which the desired value changes.
+#' @param period period of repetition.
+#' @param values one value for each point in time.
+#' 
+#' @return Returns a Schedule object.
+#' @export
+#' 
+#' @examples
+#' # Schedule 3 units from 8 to 16 h
+#' #          2 units from 16 to 24 h
+#' #          1 units from 24 to 8 h
+#' my_schedule <- schedule(c(8, 16, 24), 24, c(3, 2, 1))
+schedule <- function(timetable, period, values) Schedule$new(timetable, period, values)
