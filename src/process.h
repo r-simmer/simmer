@@ -12,17 +12,17 @@ class Arrival;
  */
 class Process: public Entity {
 public:
-  Process(Simulator* sim, std::string name, int mon, bool arrival=false): 
-    Entity(sim, name, mon), arrival(arrival), active(true) {}
+  Process(Simulator* sim, std::string name, int mon, bool is_arrival=false): 
+    Entity(sim, name, mon), is_arrival_(is_arrival), is_active_(true) {}
   virtual ~Process(){}
   virtual void run() = 0;
-  virtual void activate() { active = true; }
-  virtual void deactivate(bool restart) { active = false; }
-  bool is_arrival() { return arrival; }
-  bool is_active() { return active; }
+  virtual void activate() { is_active_ = true; }
+  virtual void deactivate(bool restart) { is_active_ = false; }
+  bool is_arrival() { return is_arrival_; }
+  bool is_active() { return is_active_; }
 private:
-  bool arrival;
-  bool active;
+  bool is_arrival_;
+  bool is_active_;
 };
 
 template <typename T>

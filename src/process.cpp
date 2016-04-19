@@ -28,7 +28,7 @@ void Manager<T>::run() {
   if (sim->now() == duration[index]) {
     set(value[index]);
     index++;
-    if (index == duration.size()) index = 0;
+    if (index == duration.size()) index = 1;
   }
   sim->schedule(duration[index], this, -10);
 }
