@@ -189,7 +189,7 @@ Schedule <- R6Class("Schedule",
         stop("invalid values")
       private$timetable <- timetable
       private$period <- period
-      private$values <- values
+      private$values <- replace(values, values==Inf, -1)
       private$n <- length(private$timetable)
       self
     },

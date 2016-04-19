@@ -174,11 +174,11 @@ public:
         Rcpp::stop("resource '" + name + "' not found (typo?)");
       Resource* res = (Resource*)search->second;
       
-      Manager<int>* manager;
+      Manager* manager;
       if (param.compare("capacity") == 0)
-        manager = new Manager<int>(this, name + "_" + param, duration, value,
+        manager = new Manager(this, name + "_" + param, duration, value,
                                    boost::bind(&Resource::set_capacity, res, _1));
-      else manager = new Manager<int>(this, name + "_" + param, duration, value, 
+      else manager = new Manager(this, name + "_" + param, duration, value, 
                                       boost::bind(&Resource::set_queue_size, res, _1));
       process_map[name + "_" + param] = manager;
       manager->run();

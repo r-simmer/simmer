@@ -25,19 +25,18 @@ private:
   bool is_active_;
 };
 
-template <typename T>
 class Manager: public Process {
-  typedef boost::function<void (T)> Setter;
+  typedef boost::function<void (int)> Setter;
   
 public:
-  Manager(Simulator* sim, std::string name, VEC<double> duration, VEC<T> value, Setter set):
+  Manager(Simulator* sim, std::string name, VEC<double> duration, VEC<int> value, Setter set):
     Process(sim, name, false), duration(duration), value(value), set(set), index(0) {}
   
   void run();
   
 private:
   VEC<double> duration;
-  VEC<T> value;
+  VEC<int> value;
   Setter set;
   unsigned int index;
 };

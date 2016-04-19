@@ -1,6 +1,19 @@
 #include "resource.h"
 #include "simulator.h"
 
+void Resource::set_capacity(int value) {
+  capacity = value;
+  // serve another
+  while (queue_count) 
+    if (!try_serve_from_queue(sim->now())) break;
+  if (is_monitored()) observe(sim->now());
+}
+
+void Resource::set_queue_size(int value) {
+  queue_size = value;
+  if (is_monitored()) observe(sim->now());
+}
+
 int Resource::seize(Arrival* arrival, int amount, int priority, int preemptible, bool restart) {
   int status;
   // serve now

@@ -100,15 +100,17 @@ public:
   * Gather resource statistics.
   */
   void observe(double time) {
-    res_stats.insert("time",    time);
-    res_stats.insert("server",  server_count);
-    res_stats.insert("queue",   queue_count);
+    res_stats.insert("time",        time);
+    res_stats.insert("server",      server_count);
+    res_stats.insert("queue",       queue_count);
+    res_stats.insert("capacity",    capacity);
+    res_stats.insert("queue_size",  queue_size);
   }
   
   StatsMap* get_observations() { return &res_stats; }
-  void set_capacity(int value) { capacity = value; } // monitoring!
+  void set_capacity(int value);
   int get_capacity() { return capacity; }
-  void set_queue_size(int value) { queue_size = value; }
+  void set_queue_size(int value);
   int get_queue_size() { return queue_size; }
   int get_server_count() { return server_count; }
   int get_queue_count() { return queue_count; }

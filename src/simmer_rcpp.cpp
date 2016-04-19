@@ -79,6 +79,17 @@ bool add_resource_(SEXP sim_, SEXP name_, SEXP capacity_, SEXP queue_size_, SEXP
 }
 
 //[[Rcpp::export]]
+bool add_resource_manager_(SEXP sim_, SEXP name_, SEXP param_, SEXP intervals_, SEXP values_) {
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  std::string param = as<std::string>(param_);
+  VEC<double> intervals = as<VEC<double> >(intervals_);
+  VEC<int> values = as<VEC<int> >(values_);
+  
+  return sim->add_resource_manager(name, param, intervals, values);
+}
+
+//[[Rcpp::export]]
 SEXP get_mon_arrivals_(SEXP sim_, SEXP name_) {
   XPtr<Simulator> sim(sim_);
   std::string name = as<std::string>(name_);
@@ -133,9 +144,39 @@ SEXP get_mon_resource_(SEXP sim_, SEXP name_) {
   StatsMap* stats = sim->get_resource(name)->get_observations();
   
   return Rcpp::List::create(
+    Rcpp::Named("time")       = stats->get<double>("time"),
+    Rcpp::Named("server")     = stats->get<int>("server"),
+    Rcpp::Named("queue")      = stats->get<int>("queue"),
+    Rcpp::Named("capacity")   = stats->get<int>("capacity"),
+    Rcpp::Named("queue_size") = stats->get<int>("queue_size")
+  );
+}
+
+//[[Rcpp::export]]
+SEXP get_mon_resource_counts_(SEXP sim_, SEXP name_) {
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  
+  StatsMap* stats = sim->get_resource(name)->get_observations();
+  
+  return Rcpp::List::create(
     Rcpp::Named("time")   = stats->get<double>("time"),
     Rcpp::Named("server") = stats->get<int>("server"),
     Rcpp::Named("queue")  = stats->get<int>("queue")
+  );
+}
+
+//[[Rcpp::export]]
+SEXP get_mon_resource_limits_(SEXP sim_, SEXP name_) {
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  
+  StatsMap* stats = sim->get_resource(name)->get_observations();
+  
+  return Rcpp::List::create(
+    Rcpp::Named("time")   = stats->get<double>("time"),
+    Rcpp::Named("server") = stats->get<int>("capacity"),
+    Rcpp::Named("queue")  = stats->get<int>("queue_size")
   );
 }
 

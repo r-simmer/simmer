@@ -21,11 +21,10 @@ void Generator::run() {
   count++;
 }
 
-template <typename T>
-void Manager<T>::run() {
+void Manager::run() {
   if (!is_active()) return;
   
-  if (sim->now() == duration[index]) {
+  if (sim->now() || !duration[index]) {
     set(value[index]);
     index++;
     if (index == duration.size()) index = 1;

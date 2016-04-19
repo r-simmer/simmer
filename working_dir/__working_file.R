@@ -122,6 +122,16 @@ plot_attributes(env, "health")
 
 #################################################################
 
-a <- schedule(c(8, 16, 24), 24, c(2, 3, 1))
-a$get_init()
-a$get_schedule()
+my_schedule <- schedule(c(8, 16, 24), 24, c(10, 5, 1))
+
+mm1 <- create_trajectory() %>%
+  seize("server", 1) %>%
+  timeout(function() rexp(1, 1)) %>%
+  release("server", 1)
+
+env <- simmer(verbose=F) %>%
+  add_resource("server", capacity=my_schedule) %>%
+  add_generator("customer", mm1, function() rexp(1, 5)) %>%
+  run(200)
+
+plot_resource_usage(env, "server")

@@ -61,20 +61,43 @@ Simmer <- R6Class("Simmer",
     
     add_resource = function(name, capacity=1, queue_size=Inf, mon=TRUE,
                             preemptive=FALSE, preempt_order="fifo") {
+      if (!preempt_order %in% c("fifo", "lifo"))
+        stop("preempt order '", preempt_order, "' not supported")
       name <- evaluate_value(name)
       capacity <- evaluate_value(capacity)
+      capacity_schedule <- NA
       queue_size <- evaluate_value(queue_size)
-      if (is.infinite(capacity)) capacity <- -1
-      if (is.infinite(queue_size)) queue_size <- -1
+      queue_size_schedule <- NA
       mon <- evaluate_value(mon)
       preemptive <- evaluate_value(preemptive)
       preempt_order <- evaluate_value(preempt_order)
-      if (!preempt_order %in% c("fifo", "lifo"))
-        stop("preempt order '", preempt_order, "' not supported")
+      
+      if (is.numeric(capacity) && is.infinite(capacity))
+        capacity <- -1
+      else if (inherits(capacity, "Schedule")) {
+        capacity_schedule <- capacity
+        capacity <- capacity_schedule$get_init()
+      }
+      
+      if (is.numeric(queue_size) && is.infinite(queue_size))
+        queue_size <- -1
+      else if (inherits(queue_size, "Schedule")) {
+        queue_size_schedule <- queue_size
+        queue_size <- queue_size_schedule$get_init()
+      }
       
       ret <- add_resource_(private$sim_obj, name, capacity, queue_size, mon,
                            preemptive, preempt_order)
       if (ret) private$res[[name]] <- mon
+      
+      if (inherits(capacity_schedule, "Schedule"))
+        add_resource_manager_(private$sim_obj, name, "capacity",
+                              capacity_schedule$get_schedule()$intervals,
+                              capacity_schedule$get_schedule()$values)
+      if (inherits(queue_size_schedule, "Schedule"))
+        add_resource_manager_(private$sim_obj, name, "queue_size",
+                              queue_size_schedule$get_schedule()$intervals,
+                              queue_size_schedule$get_schedule()$values)
       self
     },
     
@@ -130,28 +153,58 @@ Simmer <- R6Class("Simmer",
                       value = numeric())
     },
     
-    get_mon_resources = function() {
+    get_mon_resources = function(data="counts") {
+      if (all(!data %in% c("counts", "limits")))
+        stop("parameter 'data' should be 'counts', 'limits' or both")
       if (sum(private$res>0))
         do.call(rbind,
           lapply(names(private$res[private$res>0]), function(i) {
             monitor_data <- as.data.frame(
-              get_mon_resource_(private$sim_obj, i)
+              if (all(data %in% "counts"))
+                get_mon_resource_counts_(private$sim_obj, i)
+              else if (all(data %in% "limits"))
+                get_mon_resource_limits_(private$sim_obj, i)
+              else
+                get_mon_resource_(private$sim_obj, i)
             )
             tryCatch({
-              monitor_data$system <- monitor_data$server + monitor_data$queue
+              if (all(data %in% "limits")) {
+                monitor_data$server <- 
+                  replace(monitor_data$server, monitor_data$server==-1, Inf)
+                monitor_data$queue <- 
+                  replace(monitor_data$queue, monitor_data$queue==-1, Inf)
+                monitor_data$system <- monitor_data$server + monitor_data$queue
+              } else if (all(c("counts", "limits") %in% data)) {
+                monitor_data$capacity <- 
+                  replace(monitor_data$capacity, monitor_data$capacity==-1, Inf)
+                monitor_data$queue_size <- 
+                  replace(monitor_data$queue_size, monitor_data$queue_size==-1, Inf)
+                monitor_data$system <- monitor_data$server + monitor_data$queue
+                monitor_data$limit <- monitor_data$capacity + monitor_data$queue_size
+              } else monitor_data$system <- monitor_data$server + monitor_data$queue
               monitor_data$resource <- i
             }, error = function(e) {
               monitor_data$system <<- numeric()
+              if (all(data %in% c("counts", "limits")))
+                monitor_data$limit <<- numeric()
               monitor_data$resource <<- character()
             })
             monitor_data
           })
         )
-      else data.frame(time = numeric(),
-                      server = numeric(),
-                      queue = numeric(), 
-                      system = numeric(), 
-                      resource = character())
+      else {
+        monitor_data <- data.frame(time = numeric(),
+                                   server = numeric(),
+                                   queue = numeric())
+        if (all(c("counts", "limits") %in% data)) {
+          monitor_data$capacity <- numeric()
+          monitor_data$queue_size <- numeric()
+          monitor_data$system <- numeric()
+          monitor_data$limit <- numeric()
+        } else monitor_data$system <- numeric()
+        monitor_data$resource <- character()
+        monitor_data
+      }
     },
     
     get_n_generated = function(name) { 
@@ -393,6 +446,7 @@ get_mon_attributes <- function(env) envs_apply(env, "get_mon_attributes")
 #' Gets the resources' monitored data (if any).
 #' 
 #' @param env the simulation environment (or a list of environments).
+#' @param data whether to retrieve the "counts", the "limits" or both.
 #' 
 #' @return Returns a data frame.
 #' @seealso Other methods to deal with a simulation environment:
@@ -401,7 +455,7 @@ get_mon_attributes <- function(env) envs_apply(env, "get_mon_attributes")
 #' \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
 #' \link{get_server_count}, \link{get_queue_count}.
 #' @export
-get_mon_resources <- function(env) envs_apply(env, "get_mon_resources")
+get_mon_resources <- function(env, data="counts") envs_apply(env, "get_mon_resources", data)
 
 #' Get the number of arrivals generated
 #'

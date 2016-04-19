@@ -33,6 +33,10 @@ add_resource_ <- function(sim_, name_, capacity_, queue_size_, mon_, preemptive_
     .Call('simmer_add_resource_', PACKAGE = 'simmer', sim_, name_, capacity_, queue_size_, mon_, preemptive_, preempt_order_)
 }
 
+add_resource_manager_ <- function(sim_, name_, param_, intervals_, values_) {
+    .Call('simmer_add_resource_manager_', PACKAGE = 'simmer', sim_, name_, param_, intervals_, values_)
+}
+
 get_mon_arrivals_ <- function(sim_, name_) {
     .Call('simmer_get_mon_arrivals_', PACKAGE = 'simmer', sim_, name_)
 }
@@ -47,6 +51,14 @@ get_mon_attributes_ <- function(sim_, name_) {
 
 get_mon_resource_ <- function(sim_, name_) {
     .Call('simmer_get_mon_resource_', PACKAGE = 'simmer', sim_, name_)
+}
+
+get_mon_resource_counts_ <- function(sim_, name_) {
+    .Call('simmer_get_mon_resource_counts_', PACKAGE = 'simmer', sim_, name_)
+}
+
+get_mon_resource_limits_ <- function(sim_, name_) {
+    .Call('simmer_get_mon_resource_limits_', PACKAGE = 'simmer', sim_, name_)
 }
 
 get_n_generated_ <- function(sim_, name_) {

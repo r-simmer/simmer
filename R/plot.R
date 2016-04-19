@@ -16,7 +16,13 @@ plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", 
   # Hack to avoid spurious notes
   resource <- item <- value <- server <- queue <- system <- replication <- time <- NULL
   
-  monitor_data <- envs %>% get_mon_resources() %>% 
+  limits <- envs %>% get_mon_resources(data="limits") %>% 
+    dplyr::filter(resource == resource_name) %>%
+    tidyr::gather(item, value, server, queue, system) %>%
+    dplyr::mutate(item = factor(item)) %>%
+    dplyr::filter(item %in% items)
+  
+  monitor_data <- envs %>% get_mon_resources(data="counts") %>% 
     dplyr::filter(resource == resource_name) %>%
     tidyr::gather(item, value, server, queue, system) %>%
     dplyr::mutate(item = factor(item)) %>%
@@ -27,21 +33,16 @@ plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", 
   
   if (is.list(envs)) env <- envs[[1]]
   else env <- envs
-  queue_size <- env $ get_queue_size(resource_name)
-  capacity <- env $ get_capacity(resource_name)
-  system <- capacity + queue_size
-  limits <- data.frame(item = c("queue", "server", "system"),
-                       value = c(queue_size, capacity, system))
   
   plot_obj<-
     ggplot2::ggplot(monitor_data) +
     ggplot2::aes(x=time, color=item) +
     ggplot2::geom_line(ggplot2::aes(y=mean, group=interaction(replication, item))) +
+    ggplot2::geom_step(ggplot2::aes(y=value, group=interaction(replication, item)), limits, lty=2) +
     ggplot2::ggtitle(paste("Resource usage:", resource_name)) +
     ggplot2::ylab("in use") +
     ggplot2::xlab("time") +
-    ggplot2::expand_limits(y=0) +
-    ggplot2::geom_hline(ggplot2::aes(yintercept=value, color=item), limits, lty=2)
+    ggplot2::expand_limits(y=0)
   
   if(steps == T){
     plot_obj <- plot_obj +
@@ -71,7 +72,7 @@ plot_resource_utilization <- function(envs, resources) {
   if (is.list(envs)) env <- envs[[1]]
   else env <- envs
   
-  monitor_data <- envs %>% get_mon_resources() %>% 
+  monitor_data <- envs %>% get_mon_resources(data="counts") %>% 
     dplyr::filter(resource %in% resources) %>%
     tidyr::gather(item, value, server, queue, system) %>%
     dplyr::mutate(item = factor(item)) %>%
