@@ -122,18 +122,22 @@ plot_attributes(env, "health")
 
 #################################################################
 
-my_schedule <- schedule(c(8, 16, 24), 24, c(10, 5, 1))
+# define a 24-hour period
+#  - from 8 to 16 h -> 10 units
+#  - from 16 to 24 h -> 5 units
+#  - from 24 to 8 h -> 1 unit
+my_schedule <- schedule(timetable = c(8, 16, 24), 
+                        period = 24, 
+                        values = c(10, 5, 1))
 
-mm1 <- create_trajectory() %>%
-  seize("server", 1) %>%
+t0 <- create_trajectory() %>%
+  seize("doctor", 1) %>%
   timeout(function() rexp(1, 1)) %>%
-  release("server", 1)
+  release("doctor", 1)
 
-env <- simmer(verbose=F) %>%
-  add_resource("server", capacity=my_schedule) %>%
-  add_generator("customer", mm1, function() rexp(1, 5)) %>%
+env <- simmer() %>%
+  add_resource("doctor", capacity=my_schedule) %>%
+  add_generator("patient", t0, function() rexp(1, 5)) %>%
   run(200)
 
-plot_resource_usage(env, "server")
-env %>% reset() %>% run(200)
-plot_resource_usage(env, "server")
+plot_resource_usage(env, "doctor")
