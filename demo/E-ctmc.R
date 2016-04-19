@@ -229,7 +229,7 @@ graph + geom_hline(yintercept=N_average_theor)
 
 gas.station <- option.5(5000)
 
-limits <- data.frame(item = c("queue", "server", "system"), value = c(1, 1, 2))
+limits <- data.frame(item = c("system"), value = c(2))
 
 graph <- gas.station %>% get_mon_resources() %>% 
   gather(item, value, server, queue, system) %>%

@@ -14,7 +14,9 @@ Simmer.wrap <- R6Class("Simmer.wrap",
       private$arrivals <- env$get_mon_arrivals()
       private$arrivals_res <- env$get_mon_arrivals(TRUE)
       private$attributes <- env$get_mon_attributes()
-      private$resources <- env$get_mon_resources()
+      private$resources_all <- env$get_mon_resources(data=c("counts", "limits"))
+      private$resources_counts <- env$get_mon_resources(data="counts")
+      private$resources_limits <- env$get_mon_resources(data="limits")
       for (name in names(private$gen)) {
         private$n_generated[[name]] <- env$get_n_generated(name)
       }
@@ -57,7 +59,15 @@ Simmer.wrap <- R6Class("Simmer.wrap",
       else private$arrivals 
     },
     get_mon_attributes = function() { private$attributes },
-    get_mon_resources = function() { private$resources },
+    get_mon_resources = function(data="counts") {
+      if (all(!data %in% c("counts", "limits")))
+        stop("parameter 'data' should be 'counts', 'limits' or both")
+      if (all(c("counts", "limits") %in% data))
+        private$resources_all
+      else if (all(data %in% "counts"))
+        private$resources_counts
+      else private$resources_limits
+    },
     get_n_generated = function(name) {
       if (!(name %in% names(private$gen)))
         stop("generator not found")
@@ -93,7 +103,9 @@ Simmer.wrap <- R6Class("Simmer.wrap",
     arrivals = NA,
     arrivals_res = NA,
     attributes = NA,
-    resources = NA,
+    resources_all = NA,
+    resources_counts = NA,
+    resources_limits = NA,
     n_generated = list(),
     capacity = list(),
     queue_size = list(),

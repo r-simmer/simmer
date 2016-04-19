@@ -18,8 +18,7 @@ test_that("single replication plots", {
     add_resource("administration", 1) %>%
     add_generator("patient", t0, function() rnorm(1, 10, 2)) %>%
     run(80)
-  
-  expect_error(plot_resource_usage(reps, "asdf"))
+
   expect_is(plot_resource_usage(reps, "doctor"), "ggplot")
   expect_is(plot_resource_usage(reps, "doctor", items="server"), "ggplot")
   expect_is(plot_resource_usage(reps, "doctor", items="server", steps=T), "ggplot")
@@ -40,7 +39,6 @@ test_that("multiple replication plots", {
       run(80)
   })
   
-  expect_error(plot_resource_usage(reps, "asdf"))
   expect_is(plot_resource_usage(reps, "doctor"), "ggplot")
   expect_is(plot_resource_usage(reps, "doctor", items="server"), "ggplot")
   expect_is(plot_resource_usage(reps, "doctor", items="server", steps=T), "ggplot")

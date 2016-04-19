@@ -135,3 +135,5 @@ env <- simmer(verbose=F) %>%
   run(200)
 
 plot_resource_usage(env, "server")
+env %>% reset() %>% run(200)
+plot_resource_usage(env, "server")

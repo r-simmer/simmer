@@ -32,6 +32,7 @@ public:
   Manager(Simulator* sim, std::string name, VEC<double> duration, VEC<int> value, Setter set):
     Process(sim, name, false), duration(duration), value(value), set(set), index(0) {}
   
+  virtual void reset() { index = 0; }
   void run();
   
 private:
