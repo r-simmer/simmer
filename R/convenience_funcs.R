@@ -249,5 +249,5 @@ Schedule <- R6Class("Schedule",
 #' # Schedule 3 units from 8 to 16 h
 #' #          2 units from 16 to 24 h
 #' #          1 units from 24 to 8 h
-#' my_schedule <- schedule(c(8, 16, 24), 24, c(3, 2, 1))
+#' my_schedule <- schedule(c(8, 16, 24), c(3, 2, 1), period=24)
 schedule <- function(timetable, values, period=Inf) Schedule$new(timetable, values, period)
