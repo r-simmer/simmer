@@ -66,7 +66,8 @@ t.test(t_system$mean)
 
 # ---- part7
 
-lambda; 1/mean(diff(mm1.arrivals$start_time))
+
+lambda; 1/mean(diff(subset(mm1.arrivals, finished==TRUE)$start_time))
 
 # ---- part8
 
