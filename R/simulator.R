@@ -76,14 +76,14 @@ Simmer <- R6Class("Simmer",
         capacity <- -1
       else if (inherits(capacity, "Schedule")) {
         capacity_schedule <- capacity
-        capacity <- capacity_schedule$get_init()
+        capacity <- capacity_schedule$get_schedule()$init
       }
       
       if (is.numeric(queue_size) && is.infinite(queue_size))
         queue_size <- -1
       else if (inherits(queue_size, "Schedule")) {
         queue_size_schedule <- queue_size
-        queue_size <- queue_size_schedule$get_init()
+        queue_size <- queue_size_schedule$get_schedule()$init
       }
       
       ret <- add_resource_(private$sim_obj, name, capacity, queue_size, mon,
@@ -93,11 +93,13 @@ Simmer <- R6Class("Simmer",
       if (inherits(capacity_schedule, "Schedule"))
         add_resource_manager_(private$sim_obj, name, "capacity",
                               capacity_schedule$get_schedule()$intervals,
-                              capacity_schedule$get_schedule()$values)
+                              capacity_schedule$get_schedule()$values,
+                              capacity_schedule$get_schedule()$period)
       if (inherits(queue_size_schedule, "Schedule"))
         add_resource_manager_(private$sim_obj, name, "queue_size",
                               queue_size_schedule$get_schedule()$intervals,
-                              queue_size_schedule$get_schedule()$values)
+                              queue_size_schedule$get_schedule()$values,
+                              queue_size_schedule$get_schedule()$period)
       self
     },
     

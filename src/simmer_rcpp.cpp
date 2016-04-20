@@ -79,14 +79,16 @@ bool add_resource_(SEXP sim_, SEXP name_, SEXP capacity_, SEXP queue_size_, SEXP
 }
 
 //[[Rcpp::export]]
-bool add_resource_manager_(SEXP sim_, SEXP name_, SEXP param_, SEXP intervals_, SEXP values_) {
+bool add_resource_manager_(SEXP sim_, SEXP name_, SEXP param_, 
+                           SEXP intervals_, SEXP values_, SEXP period_) {
   XPtr<Simulator> sim(sim_);
   std::string name = as<std::string>(name_);
   std::string param = as<std::string>(param_);
   VEC<double> intervals = as<VEC<double> >(intervals_);
   VEC<int> values = as<VEC<int> >(values_);
+  int period = as<int>(period_);
   
-  return sim->add_resource_manager(name, param, intervals, values);
+  return sim->add_resource_manager(name, param, intervals, values, period);
 }
 
 //[[Rcpp::export]]

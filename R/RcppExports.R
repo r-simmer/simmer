@@ -33,8 +33,8 @@ add_resource_ <- function(sim_, name_, capacity_, queue_size_, mon_, preemptive_
     .Call('simmer_add_resource_', PACKAGE = 'simmer', sim_, name_, capacity_, queue_size_, mon_, preemptive_, preempt_order_)
 }
 
-add_resource_manager_ <- function(sim_, name_, param_, intervals_, values_) {
-    .Call('simmer_add_resource_manager_', PACKAGE = 'simmer', sim_, name_, param_, intervals_, values_)
+add_resource_manager_ <- function(sim_, name_, param_, intervals_, values_, period_) {
+    .Call('simmer_add_resource_manager_', PACKAGE = 'simmer', sim_, name_, param_, intervals_, values_, period_)
 }
 
 get_mon_arrivals_ <- function(sim_, name_) {

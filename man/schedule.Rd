@@ -4,14 +4,14 @@
 \alias{schedule}
 \title{Generate a scheduling object}
 \usage{
-schedule(timetable, period, values)
+schedule(timetable, values, period = Inf)
 }
 \arguments{
 \item{timetable}{absolute points in time in which the desired value changes.}
 
-\item{period}{period of repetition.}
-
 \item{values}{one value for each point in time.}
+
+\item{period}{period of repetition.}
 }
 \value{
 Returns a Schedule object.

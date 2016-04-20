@@ -167,7 +167,7 @@ public:
    * @param   value     vector of values
    */
   bool add_resource_manager(std::string name, std::string param, 
-                            VEC<double> duration, VEC<int> value) {
+                            VEC<double> duration, VEC<int> value, int period) {
     if (process_map.find(name) == process_map.end()) {
       EntMap::iterator search = resource_map.find(name);
       if (search == resource_map.end())
@@ -176,9 +176,9 @@ public:
       
       Manager* manager;
       if (param.compare("capacity") == 0)
-        manager = new Manager(this, name + "_" + param, duration, value,
+        manager = new Manager(this, name + "_" + param, duration, value, period,
                                    boost::bind(&Resource::set_capacity, res, _1));
-      else manager = new Manager(this, name + "_" + param, duration, value, 
+      else manager = new Manager(this, name + "_" + param, duration, value, period,
                                       boost::bind(&Resource::set_queue_size, res, _1));
       process_map[name + "_" + param] = manager;
       manager->run();

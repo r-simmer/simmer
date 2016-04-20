@@ -21,6 +21,6 @@ r_binary_packages:
 after_success:
   - echo 'library(covr);
           options(covr.flags = c(CPPFLAGS = "-O0 -g -coverage -fno-inline", LDFLAGS = "-coverage"));
-          coveralls(exclusions=list("./src/RcppExports.cpp" = c(281, 306, 331, 354),
+          coveralls(exclusions=list("./src/RcppExports.cpp" = c(282, 307, 332, 355),
                                     "./R/utils.R" = seq(48, 60)));
     ' | Rscript -

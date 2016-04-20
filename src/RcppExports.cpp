@@ -103,8 +103,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // add_resource_manager_
-bool add_resource_manager_(SEXP sim_, SEXP name_, SEXP param_, SEXP intervals_, SEXP values_);
-RcppExport SEXP simmer_add_resource_manager_(SEXP sim_SEXP, SEXP name_SEXP, SEXP param_SEXP, SEXP intervals_SEXP, SEXP values_SEXP) {
+bool add_resource_manager_(SEXP sim_, SEXP name_, SEXP param_, SEXP intervals_, SEXP values_, SEXP period_);
+RcppExport SEXP simmer_add_resource_manager_(SEXP sim_SEXP, SEXP name_SEXP, SEXP param_SEXP, SEXP intervals_SEXP, SEXP values_SEXP, SEXP period_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -113,7 +113,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type param_(param_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type intervals_(intervals_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type values_(values_SEXP);
-    __result = Rcpp::wrap(add_resource_manager_(sim_, name_, param_, intervals_, values_));
+    Rcpp::traits::input_parameter< SEXP >::type period_(period_SEXP);
+    __result = Rcpp::wrap(add_resource_manager_(sim_, name_, param_, intervals_, values_, period_));
     return __result;
 END_RCPP
 }

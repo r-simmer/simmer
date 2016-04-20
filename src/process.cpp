@@ -22,14 +22,19 @@ void Generator::run() {
 }
 
 void Manager::run() {
-  if (!is_active()) return;
+  if (!is_active()) goto end;
   
   if (sim->now() || !duration[index]) {
     set(value[index]);
     index++;
-    if (index == duration.size()) index = 1;
+    if (index == duration.size()) {
+      if (period < 0) goto end;
+      index = 1;
+    }
   }
   sim->schedule(duration[index], this, -10);
+end:
+  return;
 }
 
 void Arrival::run() {

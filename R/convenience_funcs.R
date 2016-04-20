@@ -175,7 +175,7 @@ from_to <- function(start_time, stop_time, dist, arrive=TRUE){
 #' @importFrom R6 R6Class
 Schedule <- R6Class("Schedule",
   public = list(
-    initialize = function(timetable, period, values) { 
+    initialize = function(timetable, values, period=Inf) { 
       if (!is.numeric(c(timetable, period, values)))
         stop("all arguments must be numeric")
       if (is.unsorted(timetable) || !all(period >= timetable) ||
@@ -188,9 +188,12 @@ Schedule <- R6Class("Schedule",
       if (!all(values >= 0))
         stop("invalid values")
       private$timetable <- timetable
-      private$period <- period
       private$values <- replace(values, values==Inf, -1)
+      private$period <- replace(period, period==Inf, -1)
       private$n <- length(private$timetable)
+      
+      if (private$period < 0) private$compose_non_periodic()
+      else private$compose_periodic()
       self
     },
     
@@ -198,30 +201,36 @@ Schedule <- R6Class("Schedule",
       # some pretty printing here
     },
     
-    get_init = function() {
-      if (private$timetable[1] == 0)
-        private$values[1]
-      else
-        private$values[private$n]
-    },
-    
-    get_schedule = function() {
-      if (private$timetable[1] == 0) list(
-        intervals = c(private$timetable[1], diff(private$timetable), 
-                      private$timetable[1] + private$period - private$timetable[private$n]),
-        values = c(private$values, private$values[1]))
-      else list(
-        intervals = c(private$timetable[1], diff(private$timetable), 
-                      private$timetable[1] + private$period - private$timetable[private$n]),
-        values = c(private$values, private$values[1]))
-    }
+    get_schedule = function() { private$schedule }
   ),
   
   private = list(
     timetable = NA,
     period = NA,
     values = NA,
-    n = NA
+    n = NA,
+    schedule = NA,
+    
+    compose_periodic = function() {
+      intervals <- c(private$timetable[1], diff(private$timetable), 
+                     private$timetable[1] + private$period - private$timetable[private$n])
+      values <- c(private$values, private$values[1])
+      if (private$timetable[1] == 0) init <- private$values[1]
+      else init <- private$values[private$n]
+      private$schedule <- list(
+        init = init,
+        intervals = intervals,
+        values = values,
+        period = private$period)
+    },
+    
+    compose_non_periodic = function() {
+      private$schedule <- list(
+        init = 0,
+        intervals = c(private$timetable[1], diff(private$timetable)),
+        values = private$values,
+        period = private$period)
+    }
   )
 )
 
@@ -230,8 +239,8 @@ Schedule <- R6Class("Schedule",
 #' Resource convenience function to generate a scheduling object from a timetable specification.
 #'
 #' @param timetable absolute points in time in which the desired value changes.
-#' @param period period of repetition.
 #' @param values one value for each point in time.
+#' @param period period of repetition.
 #' 
 #' @return Returns a Schedule object.
 #' @export
@@ -241,4 +250,4 @@ Schedule <- R6Class("Schedule",
 #' #          2 units from 16 to 24 h
 #' #          1 units from 24 to 8 h
 #' my_schedule <- schedule(c(8, 16, 24), 24, c(3, 2, 1))
-schedule <- function(timetable, period, values) Schedule$new(timetable, period, values)
+schedule <- function(timetable, values, period=Inf) Schedule$new(timetable, values, period)
