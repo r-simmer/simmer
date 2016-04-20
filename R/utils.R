@@ -45,7 +45,7 @@ checkInstall <- function(pkgs) {
     if (class(tested)[1] == "try-error") good[i] <- FALSE
   }
   if (any(!good)) {
-    pkList <- paste(pkgs[!good], collapse = ", ")
+    pkList <- paste(pkgs[!good], collapse = ", ") # nocov start
     cat(paste("simmer's plotting capabilities depend on ",
               ifelse(sum(!good) > 1, "missing packages (", "a missing package ("),
               pkList,
@@ -57,6 +57,6 @@ checkInstall <- function(pkgs) {
       if (menu(c("yes", "no")) == 1)
         install.packages(pkgs[!good])
       else stop()
-    } else stop()
+    } else stop() # nocov end
   }
 }

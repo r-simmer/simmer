@@ -18,9 +18,8 @@ r_binary_packages:
   - knitr
   - rmarkdown
 
+r_github_packages:
+  - jimhester/covr
+
 after_success:
-  - echo 'library(covr);
-          options(covr.flags = c(CPPFLAGS = "-O0 -g -coverage -fno-inline", LDFLAGS = "-coverage"));
-          coveralls(exclusions=list("./src/RcppExports.cpp" = c(282, 307, 332, 355),
-                                    "./R/utils.R" = seq(48, 60)));
-    ' | Rscript -
+  - Rscript -e 'covr::coveralls(exclusions=list("./src/RcppExports.cpp" = c(282, 307, 332, 355)))'
