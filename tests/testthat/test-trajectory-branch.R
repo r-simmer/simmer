@@ -9,7 +9,7 @@ test_that("the wrong number of elements fails", {
   expect_error(create_trajectory()%>%branch(function() 1, c(T, T), create_trajectory()))
 })
 
-test_that("an empty Trajectory fails", {
+test_that("an empty trajectory fails", {
   expect_error(create_trajectory()%>%branch(function() 1, T, create_trajectory()))
 })
 

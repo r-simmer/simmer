@@ -1,6 +1,6 @@
 #' @importFrom R6 R6Class
 #' @importFrom Rcpp evalCpp
-Trajectory <- R6Class("Trajectory",
+simmer.trajectory <- R6Class("simmer.trajectory",
   public = list(
     name = NA,
     
@@ -11,7 +11,7 @@ Trajectory <- R6Class("Trajectory",
     
     print = function(indent=0) {
       margin <- paste(rep(" ", indent), collapse="")
-      cat(paste0(margin, "Trajectory: ", self$name, ", ",
+      cat(paste0(margin, "simmer trajectory: ", self$name, ", ",
                  private$n_activities, " activities\n"))
       ptr <- private$head
       while (!identical(ptr, private$tail)) {
@@ -67,7 +67,7 @@ Trajectory <- R6Class("Trajectory",
       trj <- list(...)
       if (length(merge) != length(trj))
         stop("the number of elements does not match")
-      for (i in trj) if (!inherits(i, "Trajectory"))
+      for (i in trj) if (!inherits(i, "simmer.trajectory"))
         stop("not a trajectory")
       private$add_activity(Branch__new(option, needs_attrs(option), merge, trj))
     },
@@ -145,7 +145,7 @@ Trajectory <- R6Class("Trajectory",
 #'   timeout(function() 2)
 #' 
 #' t1
-create_trajectory <- function(name="anonymous") Trajectory$new(name)
+create_trajectory <- function(name="anonymous") simmer.trajectory$new(name)
 
 #' Get the first activity
 #'

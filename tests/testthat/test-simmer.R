@@ -1,9 +1,9 @@
-context("basic Simmer functionality")
+context("basic simmer functionality")
 
 test_that("an empty environment behaves as expected", {
   env <- simmer()
   
-  expect_is(env, "Simmer")
+  expect_is(env, "simmer")
   expect_equal(env%>%now(), 0)
   expect_equal(env%>%peek(), Inf)
   

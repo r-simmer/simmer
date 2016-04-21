@@ -1,7 +1,7 @@
 #' @useDynLib simmer
 #' @importFrom R6 R6Class
 #' @importFrom Rcpp evalCpp
-Simmer <- R6Class("Simmer",
+Simmer <- R6Class("simmer",
   public = list(
     name = NA,
     
@@ -13,7 +13,7 @@ Simmer <- R6Class("Simmer",
     
     print = function() {
       cat(paste0(
-        "Simmer environment: ", self$name,
+        "simmer environment: ", self$name,
         " | now: ", self$now(), " | next: ", self$peek(), "\n"
       ))
       for (name in names(private$res))
@@ -74,14 +74,14 @@ Simmer <- R6Class("Simmer",
       
       if (is.numeric(capacity) && is.infinite(capacity))
         capacity <- -1
-      else if (inherits(capacity, "Schedule")) {
+      else if (inherits(capacity, "simmer.schedule")) {
         capacity_schedule <- capacity
         capacity <- capacity_schedule$get_schedule()$init
       }
       
       if (is.numeric(queue_size) && is.infinite(queue_size))
         queue_size <- -1
-      else if (inherits(queue_size, "Schedule")) {
+      else if (inherits(queue_size, "simmer.schedule")) {
         queue_size_schedule <- queue_size
         queue_size <- queue_size_schedule$get_schedule()$init
       }
@@ -90,12 +90,12 @@ Simmer <- R6Class("Simmer",
                            preemptive, preempt_order)
       if (ret) private$res[[name]] <- mon
       
-      if (inherits(capacity_schedule, "Schedule"))
+      if (inherits(capacity_schedule, "simmer.schedule"))
         add_resource_manager_(private$sim_obj, name, "capacity",
                               capacity_schedule$get_schedule()$intervals,
                               capacity_schedule$get_schedule()$values,
                               capacity_schedule$get_schedule()$period)
-      if (inherits(queue_size_schedule, "Schedule"))
+      if (inherits(queue_size_schedule, "simmer.schedule"))
         add_resource_manager_(private$sim_obj, name, "queue_size",
                               queue_size_schedule$get_schedule()$intervals,
                               queue_size_schedule$get_schedule()$values,
@@ -104,7 +104,7 @@ Simmer <- R6Class("Simmer",
     },
     
     add_generator = function(name_prefix, trajectory, dist, mon=1) {
-      if (!inherits(trajectory, "Trajectory"))
+      if (!inherits(trajectory, "simmer.trajectory"))
         stop("not a trajectory")
       name_prefix <- evaluate_value(name_prefix)
       mon <- evaluate_value(mon)

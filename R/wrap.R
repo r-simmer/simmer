@@ -1,10 +1,10 @@
 #' @importFrom R6 R6Class
-Simmer.wrap <- R6Class("Simmer.wrap",
+simmer.wrap <- R6Class("simmer.wrap",
   public = list(
     name = NA,
     
     initialize = function(env) {
-      if (!inherits(env, "Simmer")) stop("not a simmer object")
+      if (!inherits(env, "simmer")) stop("not a simmer object")
       
       self$name <- env$name
       private$now_val <- env$now()
@@ -31,7 +31,7 @@ Simmer.wrap <- R6Class("Simmer.wrap",
     
     print = function() {
       cat(paste0(
-        "Simmer wrapper: ", self$name,
+        "simmer wrapper: ", self$name,
         " | now: ", self$now(), " | next: ", self$peek(), "\n"
       ))
       for (name in names(private$res))
@@ -147,4 +147,4 @@ Simmer.wrap <- R6Class("Simmer.wrap",
 #' })
 #' 
 #' plot_resource_usage(envs, "server")
-wrap <- function(env) Simmer.wrap$new(env)
+wrap <- function(env) simmer.wrap$new(env)

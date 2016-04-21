@@ -173,7 +173,7 @@ from_to <- function(start_time, stop_time, dist, arrive=TRUE){
 }
 
 #' @importFrom R6 R6Class
-Schedule <- R6Class("Schedule",
+simmer.schedule <- R6Class("simmer.schedule",
   public = list(
     initialize = function(timetable, values, period=Inf) { 
       if (!is.numeric(c(timetable, period, values)))
@@ -198,7 +198,10 @@ Schedule <- R6Class("Schedule",
     },
     
     print = function() {
-      # some pretty printing here
+      cat(paste0("simmer schedule\n",
+                 "{ timetable: ", paste(private$timetable, collapse=" "), 
+                 " | period: ", ifelse(private$period>0, private$period, Inf), " }\n",
+                 "{ values: ", paste(private$values, collapse=" "), " }\n"))
     },
     
     get_schedule = function() { private$schedule }
@@ -250,4 +253,4 @@ Schedule <- R6Class("Schedule",
 #' #          2 units from 16 to 24 h
 #' #          1 units from 24 to 8 h
 #' my_schedule <- schedule(c(8, 16, 24), c(3, 2, 1), period=24)
-schedule <- function(timetable, values, period=Inf) Schedule$new(timetable, values, period)
+schedule <- function(timetable, values, period=Inf) simmer.schedule$new(timetable, values, period)

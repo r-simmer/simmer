@@ -1,4 +1,4 @@
-context("basic Trajectory functionality")
+context("basic trajectory functionality")
 
 test_that("the activity chain grows as expected", {
   t0 <- create_trajectory() %>%
@@ -28,7 +28,7 @@ test_that("the trajectory stores the right number of activities", {
     timeout(function() rnorm(1, 15)) %>%
     release("nurse", 1)
   
-  expect_is(t0, "Trajectory")
+  expect_is(t0, "simmer.trajectory")
   expect_equal(t0%>%get_n_activities(), 3)
   
   t0 <- t0 %>%
@@ -49,7 +49,7 @@ test_that("the trajectory stores the right number of activities", {
     set_attribute("dummy", 1) %>%
     set_attribute("dummy", function() 1)
   
-  expect_is(t0, "Trajectory")
+  expect_is(t0, "simmer.trajectory")
   expect_equal(t0%>%get_n_activities(), 13)
   
   output <- paste0(".*(",

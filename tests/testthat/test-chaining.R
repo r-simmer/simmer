@@ -1,6 +1,6 @@
 context("method chaining")
 
-test_that("Trajectory's method chaining works", {
+test_that("trajectory's method chaining works", {
   t0 <- create_trajectory() %>%
     seize("one", 1) %>%
     release("one", 1) %>%
@@ -9,10 +9,10 @@ test_that("Trajectory's method chaining works", {
     rollback(1) %>%
     seize("one", 1)
   
-  expect_is(t0, "Trajectory")
+  expect_is(t0, "simmer.trajectory")
 })
 
-test_that("Simmer's method chaining works", {
+test_that("simmer's method chaining works", {
   t0 <- create_trajectory() %>%
     timeout(function() 1)
   
@@ -23,5 +23,5 @@ test_that("Simmer's method chaining works", {
     run(10) %>%
     reset()
   
-  expect_is(env, "Simmer")
+  expect_is(env, "simmer")
 })
