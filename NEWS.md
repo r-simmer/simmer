@@ -1,5 +1,9 @@
 ## simmer 3.2.0.9000
 
+New features:
+
+* Add time-specific resource availability support (#21). Both resources' `capacity` and `queue_size` can change over time following a user-defined scheduling, which can be generated with the new function `schedule`.
+
 Minor changes and fixes:
 
 * Fix steps grouping in `plot_resource_usage` (8da9b97).
