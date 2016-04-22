@@ -6,7 +6,7 @@ simmer
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/simmer)](http://cran.r-project.org/package=simmer)
 [![Downloads](http://cranlogs.r-pkg.org/badges/simmer)](http://cran.rstudio.com/package=simmer)
 
-*by Bart Smeets (<bartsmeets86@gmail.com>), Iñaki Ucar (<i.ucar86@gmail.com>)*
+*by Bart Smeets, Iñaki Ucar*
 
 **simmer** is a Discrete-Event Simulation (DES) package for the R language designed to be a generic framework like [SimPy](https://simpy.readthedocs.org) or [SimJulia](http://simjuliajl.readthedocs.org). Although R alone is definitely not made for DES, we use [Rcpp](http://www.rcpp.org/) to boost the performance of simmer. This faces us with an important trade-off between flexibility and performance, depending on how much code remains in R or goes to C++ respectively.
 
@@ -41,4 +41,4 @@ vignette("introduction", package = "simmer")
 Contact
 -------
 
-For bugs and/or issues, create a new issue on GitHub. For other questions or comments, do not hesitate to contact us by email.
+For bugs and/or issues, create a new issue on GitHub. For other questions or comments, subscribe to the [simmer-devel mailing list](https://groups.google.com/forum/#!forum/simmer-devel).
