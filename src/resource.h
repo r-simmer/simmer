@@ -152,10 +152,12 @@ protected:
   
   virtual void insert_in_queue(double time, Arrival* arrival, int amount, 
                               int priority, int preemptible, bool restart) {
-    if (queue_size > 0) while (queue_count + amount > queue_size) {
+    int count = 0;
+    if (queue_size > 0) while (queue_count + amount > queue_size && amount > count) {
       RPQueue::iterator last = --queue.end();
       last->arrival->terminate(time, false);
       queue_count -= last->amount;
+      count += last->amount;
       queue.erase(last);
     }
     queue_count += amount;
@@ -194,8 +196,6 @@ public:
     foreach_ (RPQueue::value_type& itr, preempted)
       delete itr.arrival;
     preempted.clear();
-    foreach_ (typename T::value_type& itr, server)
-      delete itr.arrival;
     server.clear();
   }
   

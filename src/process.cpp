@@ -67,7 +67,7 @@ end:
 void Arrival::activate() {
   Process::activate();
   busy_until = sim->now() + remaining;
-  sim->schedule(remaining, this, activity ? activity->priority : 0);
+  sim->schedule(remaining, this, 1);
   remaining = 0;
 }
 
