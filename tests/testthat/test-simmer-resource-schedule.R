@@ -41,3 +41,21 @@ test_that("queue size changes", {
   expect_equal(limits$time, c(8, 16, 24, 32, 40, 48))
   expect_equal(limits$queue, c(1, 2, 3, 1, 2, 3))
 })
+
+test_that("resource behaviour when its capacity changes", {
+  t <- create_trajectory() %>% 
+    seize("dummy", 1) %>%
+    timeout(2) %>%
+    release("dummy", 1)
+  
+  inf_sch <- schedule(c(0, 1, 2), c(1, 3, 1), Inf)
+  
+  arrivals <- simmer() %>%
+    add_resource("dummy", inf_sch) %>%
+    add_generator("asdf", t, at(0, 0, 0)) %>%
+    run() %>%
+    get_mon_arrivals()
+  
+  expect_equal(arrivals$end_time, c(2, 3, 3))
+  expect_equal(arrivals$activity_time, c(2, 2, 2))
+})

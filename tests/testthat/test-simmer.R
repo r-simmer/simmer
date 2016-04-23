@@ -16,21 +16,30 @@ test_that("an empty environment behaves as expected", {
 t0 <- create_trajectory("") %>%
   seize("server", 1) %>%
   set_attribute("dummy", 1) %>%
+  timeout(1) %>%
   release("server", 1)
 
 test_that("the simulator is reset", {
+  t1 <- create_trajectory() %>%
+    seize("server", 1, preemptible=10, priority=10) %>%
+    set_attribute("dummy", 1) %>%
+    timeout(1) %>%
+    release("server", 1)
+  
   env <- simmer() %>%
-    add_resource("server", 1, queue_size=0) %>%
-    add_generator("entity", t0, function() 1) %>%
-    run(100) %>%
+    add_resource("server", 1, queue_size=1, preemptive=TRUE) %>%
+    add_generator("entity0", t0, function() 0.5) %>%
+    add_generator("entity1", t1, function() 0.5, mon=2) %>%
+    run(4) %>%
     reset()
+  
   arrivals <- env%>%get_mon_arrivals()
   arrivals_res <- env%>%get_mon_arrivals(TRUE)
   resources <- env%>%get_mon_resources()
   attributes <- env%>%get_mon_attributes()
   
   expect_equal(env%>%now(), 0)
-  expect_equal(env%>%peek(), 1)
+  expect_equal(env%>%peek(), 0.5)
   expect_equal(nrow(arrivals), 0)
   expect_equal(nrow(arrivals_res), 0)
   expect_equal(nrow(resources), 0)
@@ -40,7 +49,7 @@ test_that("the simulator is reset", {
 test_that("the simulator stops if there are no more events", {
   env <- simmer() %>%
     add_resource("server", 1) %>%
-    add_generator("entity", t0, at(1)) %>%
+    add_generator("entity", t0, at(0)) %>%
     run(10)
   
   expect_equal(env%>%now(), 1)
@@ -96,8 +105,14 @@ test_that("we can force some errors (just to complete coverage)", {
   expect_error(env %>% now())
   expect_error(env %>% peek())
   expect_error(env %>% onestep())
-  expect_error(env %>% get_mon_arrivals())
+  expect_error(env %>% get_mon_arrivals(FALSE))
   expect_error(env %>% get_mon_arrivals(TRUE))
   expect_error(env %>% get_mon_attributes())
-  expect_error(env %>% get_mon_resources())
+  expect_error(env %>% get_mon_resources("counts"))
+  expect_error(env %>% get_mon_resources("limits"))
+  expect_error(env %>% get_mon_resources(c("counts", "limits")))
+  
+  sch <- schedule(c(1,2), c(1,2), Inf)
+  sch$.__enclos_env__$private$schedule$period <- "asdf"
+  expect_error(simmer() %>% add_resource("dummy", sch))
 })
