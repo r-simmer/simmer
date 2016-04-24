@@ -14,6 +14,10 @@ void Generator::run() {
   sprintf(numstr, "%d", count);
   Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_activity, this);
   
+  if (sim->verbose) Rcpp::Rcout << 
+    FMT_0 << sim->now() << " |" << FMT_11 << "generator: " << FMT_12 << name << "|" << 
+    FMT_21 << "new: " << FMT_22 << (name + numstr) << "| " << (sim->now() + delay) << std::endl;
+  
   // schedule the arrival and the generator itself
   sim->schedule(delay, arrival);
   sim->schedule(delay, this);
@@ -23,15 +27,19 @@ void Generator::run() {
 
 void Manager::run() {
   if (!is_active()) goto end;
+  if (!sim->now() && duration[index]) goto finish;
+  if (sim->verbose) Rcpp::Rcout <<
+    FMT_0 << sim->now() << " |" << FMT_11 << "manager: " << FMT_12 << name << "|" << 
+    FMT_21 << "set value: " << FMT_22 << value[index] << std::endl;
   
-  if (sim->now() || !duration[index]) {
-    set(value[index]);
-    index++;
-    if (index == duration.size()) {
-      if (period < 0) goto end;
-      index = 1;
-    }
+  set(value[index]);
+  index++;
+  if (index == duration.size()) {
+    if (period < 0) goto end;
+    index = 1;
   }
+  
+finish:
   sim->schedule(duration[index], this, -10);
 end:
   return;
@@ -44,9 +52,8 @@ void Arrival::run() {
   if (!activity) goto finish;
   if (lifetime.start < 0) lifetime.start = sim->now();
   if (sim->verbose) Rcpp::Rcout <<
-    "sim: " << sim->name << " | " << "time: " << sim->now() << " | " <<
-    "arrival: " << name << " | " << "activity: " << 
-    activity->name << "(" << activity->resource << ")" << std::endl;
+    FMT_0 << sim->now() << " |" << FMT_11 << "arrival: " << FMT_12 << name << "|" << 
+    FMT_21 << "activity: " << FMT_22 << activity->name << "| " << activity->resource << std::endl;
   
   delay = activity->run(this);
   if (delay == REJECTED) goto end;

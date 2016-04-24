@@ -5,7 +5,7 @@ void Resource::set_capacity(int value) {
   capacity = value;
   // serve another
   while (queue_count) 
-    if (!try_serve_from_queue(sim->now())) break;
+    if (!try_serve_from_queue(sim->verbose, sim->now())) break;
   if (is_monitored()) observe(sim->now());
 }
 
@@ -22,18 +22,19 @@ int Resource::seize(Arrival* arrival, int amount, int priority, int preemptible,
       arrival->set_start(this->name, sim->now());
       arrival->set_activity(this->name, sim->now());
     }
-    insert_in_server(sim->now(), arrival, amount, priority, preemptible, restart);
+    insert_in_server(sim->verbose, sim->now(), arrival, amount, priority, preemptible, restart);
     status = SUCCESS;
   }
   // enqueue
   else if (room_in_queue(amount, priority)) {
     if (arrival->is_monitored())
       arrival->set_start(this->name, sim->now());
-    insert_in_queue(sim->now(), arrival, amount, priority, preemptible, restart);
+    insert_in_queue(sim->verbose, sim->now(), arrival, amount, priority, preemptible, restart);
     status = ENQUEUED;
   }
   // reject
   else {
+    if (sim->verbose) verbose_print(sim->now(), arrival->name, "REJECT");
     arrival->terminate(sim->now(), false);
     return REJECTED;
   }
@@ -49,11 +50,11 @@ int Resource::release(Arrival* arrival, int amount) {
     arrival->set_activity(this->name, sim->now() - last);
     arrival->leave(this->name, sim->now());
   }
-  remove_from_server(arrival, amount);
+  remove_from_server(sim->verbose, sim->now(), arrival, amount);
   
   // serve another
   while (queue_count) 
-    if (!try_serve_from_queue(sim->now())) break;
+    if (!try_serve_from_queue(sim->verbose, sim->now())) break;
   
   if (is_monitored()) observe(sim->now());
   return SUCCESS;

@@ -26,7 +26,7 @@ test_that("the simulator is reset", {
     timeout(1) %>%
     release("server", 1)
   
-  env <- simmer() %>%
+  env <- simmer(verbose=TRUE) %>%
     add_resource("server", 1, queue_size=1, preemptive=TRUE) %>%
     add_generator("entity0", t0, function() 0.5) %>%
     add_generator("entity1", t1, function() 0.5, mon=2) %>%
@@ -79,12 +79,12 @@ test_that("a stopped simulation can be resumed", {
 
 test_that("there is verbose output", {
   output <- paste0(".*(",
-    ".*sim.*dummy.*time: 1.*arrival0.*Seize.*server",
-    ".*sim.*dummy.*time: 1.*arrival0.*Release.*server",
+    ".*1.*arrival0.*Seize.*server",
+    ".*1.*arrival0.*Release.*server",
   ").*")
   
   expect_output(
-    env <- simmer("dummy", verbose=TRUE) %>%
+    env <- simmer(verbose=TRUE) %>%
       add_resource("server", 1) %>%
       add_generator("arrival", t0, at(1)) %>%
       run(),

@@ -106,7 +106,7 @@ template <typename T>
 class SetAttribute: public Activity {
 public:
   SetAttribute(std::string key, T value, bool provide_attrs):
-    Activity("SetAttribute", "none", provide_attrs), key(key), value(value) {}
+    Activity("SetAttribute", "-", provide_attrs), key(key), value(value) {}
   
   void print(int indent=0);
   double run(Arrival* arrival);
@@ -123,7 +123,7 @@ template <typename T>
 class Timeout: public Activity {
 public:
   Timeout(T delay, bool provide_attrs):
-    Activity("Timeout", "none", provide_attrs), delay(delay) {}
+    Activity("Timeout", "-", provide_attrs), delay(delay) {}
   
   void print(int indent=0);
   double run(Arrival* arrival);
@@ -139,7 +139,7 @@ private:
 class Branch: public Activity {
 public:
   Branch(Rcpp::Function option, bool provide_attrs, VEC<bool> merge, VEC<Rcpp::Environment> trj):
-    Activity("Branch", "none", provide_attrs), option(option), merge(merge), trj(trj), selected(NULL) {
+    Activity("Branch", "-", provide_attrs), option(option), merge(merge), trj(trj), selected(NULL) {
     n = 0;
     foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
       Rcpp::Function get_head(itr["get_head"]);
@@ -200,7 +200,7 @@ template <typename T>
 class Rollback: public Activity {
 public:
   Rollback(int amount, T times, bool provide_attrs):
-    Activity("Rollback", "none", provide_attrs), amount(std::abs(amount)), times(times),
+    Activity("Rollback", "-", provide_attrs), amount(std::abs(amount)), times(times),
     cached(NULL), selected(NULL) {}
   
   void print(int indent=0);

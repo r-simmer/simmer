@@ -47,10 +47,10 @@ test_that("a rollback loops the correct number of times", {
   env1 <- simmer(verbose=TRUE) %>% add_generator("dummy", t1, at(0))
   
   output <- paste0(".*(",
-    ".*time: 0.*dummy0.*Rollback",
-    ".*time: 0.*dummy0.*Rollback",
-    ".*time: 0.*dummy0.*Rollback",
-    ".*time: 0.*dummy0.*Rollback",
+    ".*0.*dummy0.*Rollback",
+    ".*0.*dummy0.*Rollback",
+    ".*0.*dummy0.*Rollback",
+    ".*0.*dummy0.*Rollback",
   ").*")
   
   expect_output(env0%>%run(), output)

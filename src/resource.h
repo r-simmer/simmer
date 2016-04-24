@@ -123,17 +123,25 @@ protected:
   RPQueue queue;        /**< queue container */
   StatsMap res_stats;   /**< resource statistics */
   
+  void verbose_print(double time, std::string arrival, std::string status) {
+    Rcpp::Rcout << 
+      FMT_0 << time << " |" << FMT_11 << "resource: " << FMT_12 << name << "|" << 
+      FMT_21 << "arrival: " << FMT_22 << arrival << "| " << status << std::endl;
+  }
+  
   virtual bool room_in_server(int amount, int priority) {
     if (capacity < 0) return true;
     return server_count + amount <= capacity;
   }
   
-  virtual void insert_in_server(double time, Arrival* arrival, int amount, 
-                                       int priority, int preemptible, bool restart) {
+  virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount, 
+                                int priority, int preemptible, bool restart) {
+    if (verbose) verbose_print(time, arrival->name, "SERVE");
     server_count += amount;
   }
   
-  virtual void remove_from_server(Arrival* arrival, int amount) {
+  virtual void remove_from_server(bool verbose, double time, Arrival* arrival, int amount) {
+    if (verbose) verbose_print(time, arrival->name, "DEPART");
     server_count -= amount;
   }
   
@@ -150,21 +158,23 @@ protected:
     return false;
   }
   
-  virtual void insert_in_queue(double time, Arrival* arrival, int amount, 
-                              int priority, int preemptible, bool restart) {
+  virtual void insert_in_queue(bool verbose, double time, Arrival* arrival, int amount, 
+                               int priority, int preemptible, bool restart) {
     int count = 0;
     if (queue_size > 0) while (queue_count + amount > queue_size && amount > count) {
       RPQueue::iterator last = --queue.end();
+      if (verbose) verbose_print(time, last->arrival->name, "REJECT");
       last->arrival->terminate(time, false);
       queue_count -= last->amount;
       count += last->amount;
       queue.erase(last);
     }
+    if (verbose) verbose_print(time, arrival->name, "ENQUEUE");
     queue_count += amount;
     queue.emplace(time, arrival, amount, priority, preemptible, restart);
   }
   
-  virtual bool try_serve_from_queue(double time) {
+  virtual bool try_serve_from_queue(bool verbose, double time) {
     RPQueue::iterator next = queue.begin();
     if (room_in_server(next->amount, next->priority)) {
       if (next->arrival->is_monitored()) {
@@ -172,7 +182,7 @@ protected:
         next->arrival->set_activity(this->name, time - last);
       }
       next->arrival->activate();
-      insert_in_server(next->arrived_at, next->arrival, next->amount,
+      insert_in_server(verbose, time, next->arrival, next->amount,
                        next->priority, next->preemptible, next->restart);
       queue_count -= next->amount;
       queue.erase(next);
@@ -216,11 +226,12 @@ protected:
     return false;
   }
   
-  virtual void insert_in_server(double time, Arrival* arrival, int amount, 
-                               int priority, int preemptible, bool restart) {
+  virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount, 
+                                int priority, int preemptible, bool restart) {
     if (capacity > 0) while (server_count + amount > capacity) {
       typename T::iterator first = server.begin();
       first->arrival->deactivate(first->restart);
+      if (verbose) verbose_print(time, first->arrival->name, "PREEMPT");
       if (first->arrival->is_monitored()) {
         double last = first->arrival->get_activity(this->name);
         first->arrival->set_activity(this->name, time - last);
@@ -230,18 +241,20 @@ protected:
       server_count -= first->amount;
       server.erase(first);
     }
+    if (verbose) verbose_print(time, arrival->name, "SERVE");
     server_count += amount;
     server.emplace(time, arrival, amount, priority, preemptible, restart);
   }
   
-  virtual void remove_from_server(Arrival* arrival, int amount) {
+  virtual void remove_from_server(bool verbose, double time, Arrival* arrival, int amount) {
+    if (verbose) verbose_print(time, arrival->name, "DEPART");
     typename T::iterator itr = server.begin();
     while (itr->arrival != arrival) ++itr;
     server.erase(itr);
     server_count -= amount;
   }
   
-  virtual bool try_serve_from_queue(double time) {
+  virtual bool try_serve_from_queue(bool verbose, double time) {
     RPQueue::iterator next;
     bool flag = false;
     if (!preempted.empty()) {
@@ -255,7 +268,7 @@ protected:
         next->arrival->set_activity(this->name, time - last);
       }
       next->arrival->activate();
-      insert_in_server(next->arrived_at, next->arrival, next->amount,
+      insert_in_server(verbose, time, next->arrival, next->amount,
                        next->priority, next->preemptible, next->restart);
       queue_count -= next->amount;
       if (flag) preempted.erase(next);
