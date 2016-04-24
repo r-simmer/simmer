@@ -9,6 +9,7 @@ Minor changes and fixes:
 * Fix steps grouping in `plot_resource_usage` (8da9b97).
 * Fix incorrect trajectory behaviour when a rejection occurs inside a branch with `merge=TRUE` (#46).
 * Fix a couple of segmentation faults in preemptive resources (f64f6b2).
+* Improve verbose output (9013db0).
 * New vignette on queueing systems.
 * New vignette on Continuous-Time Markov Chains.
 
