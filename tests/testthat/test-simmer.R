@@ -26,8 +26,10 @@ test_that("the simulator is reset", {
     timeout(1) %>%
     release("server", 1)
   
+  inf_sch <- schedule(c(0, 1), c(1, 1), Inf)
+  
   env <- simmer(verbose=TRUE) %>%
-    add_resource("server", 1, queue_size=1, preemptive=TRUE) %>%
+    add_resource("server", inf_sch, queue_size=1, preemptive=TRUE) %>%
     add_generator("entity0", t0, function() 0.5) %>%
     add_generator("entity1", t1, function() 0.5, mon=2) %>%
     run(4) %>%
