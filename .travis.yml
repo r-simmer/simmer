@@ -22,4 +22,4 @@ r_github_packages:
   - jimhester/covr
 
 after_success:
-  - Rscript -e 'covr::coveralls(exclusions=list("./src/RcppExports.cpp" = c(282, 307, 332, 355)))'
+  - Rscript -e 'covr::coveralls(line_exclusions=list("./src/RcppExports.cpp" = c(282, 307, 332, 355)))'
