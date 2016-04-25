@@ -2,7 +2,6 @@
 #define STATS_H
 
 #include "simmer.h"
-#include <boost/variant.hpp>
 
 class StatsMap {
   typedef boost::variant< VEC<bool>, VEC<int>, VEC<double>, VEC<std::string> > StatsVec;

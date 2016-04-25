@@ -176,9 +176,9 @@ public:
       
       Manager* manager;
       if (param.compare("capacity") == 0)
-        manager = new Manager(this, name + "_" + param, duration, value, period,
+        manager = new Manager(this, name, param, duration, value, period,
                                    boost::bind(&Resource::set_capacity, res, _1));
-      else manager = new Manager(this, name + "_" + param, duration, value, period,
+      else manager = new Manager(this, name, param, duration, value, period,
                                       boost::bind(&Resource::set_queue_size, res, _1));
       process_map[name + "_" + param] = manager;
       manager->run();

@@ -30,7 +30,7 @@ void Manager::run() {
   if (!sim->now() && duration[index]) goto finish;
   if (sim->verbose) Rcpp::Rcout <<
     FMT_0 << sim->now() << " |" << FMT_11 << "manager: " << FMT_12 << name << "|" << 
-    FMT_21 << "set value: " << FMT_22 << value[index] << std::endl;
+    FMT_21 << "parameter: " << FMT_22 << param << "| " << value[index] << std::endl;
   
   set(value[index]);
   index++;
