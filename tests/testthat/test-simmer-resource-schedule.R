@@ -68,7 +68,7 @@ test_that("arrivals 1) are dequeued when resource's capacity increases and 2) re
   
   inf_sch <- schedule(c(0, 1, 2), c(1, 3, 1), Inf)
   
-  arrivals <- simmer(verbose=T) %>%
+  arrivals <- simmer() %>%
     add_resource("dummy", inf_sch) %>%
     add_generator("asdf", t, at(0, 0, 0)) %>%
     run() %>%
@@ -86,7 +86,7 @@ test_that("arrivals are preempted when resource's capacity decreases", {
   
   inf_sch <- schedule(c(0, 1, 2), c(1, 3, 1), Inf)
   
-  arrivals <- simmer(verbose=T) %>%
+  arrivals <- simmer() %>%
     add_resource("dummy", inf_sch, preemptive=TRUE) %>%
     add_generator("asdf", t, at(0, 0, 0)) %>%
     run() %>%

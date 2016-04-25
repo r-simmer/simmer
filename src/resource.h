@@ -134,6 +134,8 @@ protected:
     return server_count + amount <= capacity;
   }
   
+  virtual bool try_free_server(bool verbose, double time) { return false; }
+  
   virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount, 
                                 int priority, int preemptible, bool restart) {
     if (verbose) verbose_print(time, arrival->name, "SERVE");
@@ -226,21 +228,25 @@ protected:
     return false;
   }
   
+  virtual bool try_free_server(bool verbose, double time) {
+    typename T::iterator first = server.begin();
+    first->arrival->deactivate(first->restart);
+    if (verbose) verbose_print(time, first->arrival->name, "PREEMPT");
+    if (first->arrival->is_monitored()) {
+      double last = first->arrival->get_activity(this->name);
+      first->arrival->set_activity(this->name, time - last);
+    }
+    preempted.insert((*first));
+    queue_count += first->amount;
+    server_count -= first->amount;
+    server.erase(first);
+    return true;
+  }
+  
   virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount, 
                                 int priority, int preemptible, bool restart) {
-    if (capacity > 0) while (server_count + amount > capacity) {
-      typename T::iterator first = server.begin();
-      first->arrival->deactivate(first->restart);
-      if (verbose) verbose_print(time, first->arrival->name, "PREEMPT");
-      if (first->arrival->is_monitored()) {
-        double last = first->arrival->get_activity(this->name);
-        first->arrival->set_activity(this->name, time - last);
-      }
-      preempted.insert((*first));
-      queue_count += first->amount;
-      server_count -= first->amount;
-      server.erase(first);
-    }
+    if (capacity > 0) while (server_count + amount > capacity)
+      try_free_server(verbose, time);
     if (verbose) verbose_print(time, arrival->name, "SERVE");
     server_count += amount;
     server.emplace(time, arrival, amount, priority, preemptible, restart);

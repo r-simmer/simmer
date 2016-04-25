@@ -2,10 +2,16 @@
 #include "simulator.h"
 
 void Resource::set_capacity(int value) {
+  int last = capacity;
   capacity = value;
-  // serve another
-  while (queue_count) 
-    if (!try_serve_from_queue(sim->verbose, sim->now())) break;
+  if (capacity > last) {
+    // serve another
+    while (queue_count) 
+      if (!try_serve_from_queue(sim->verbose, sim->now())) break;
+  } else if (capacity < last) {
+    while (server_count > capacity) 
+      if (!try_free_server(sim->verbose, sim->now())) break;
+  }
   if (is_monitored()) observe(sim->now());
 }
 
