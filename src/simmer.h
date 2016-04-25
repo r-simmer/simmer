@@ -4,14 +4,13 @@
 // [[Rcpp::depends(BH)]]
 #include <Rcpp.h>
 
-#include <queue>
-#include <boost/heap/priority_queue.hpp>
+#include <boost/container/deque.hpp>
 #include <boost/container/set.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
 
 #define VEC std::vector
-#define DEQUE std::deque
+#define DEQUE boost::container::deque
 #define MSET boost::container::multiset
 #define USET boost::unordered_set
 #define UMAP boost::unordered_map
