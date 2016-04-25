@@ -42,7 +42,7 @@ test_that("queue size changes", {
   expect_equal(limits$queue, c(1, 2, 3, 1, 2, 3))
 })
 
-test_that("resource behaviour when its capacity changes", {
+test_that("arrivals 1) are dequeued when resource's capacity increases and 2) remain in server when it decreases", {
   t <- create_trajectory() %>% 
     seize("dummy", 1) %>%
     timeout(2) %>%
@@ -58,4 +58,40 @@ test_that("resource behaviour when its capacity changes", {
   
   expect_equal(arrivals$end_time, c(2, 3, 3))
   expect_equal(arrivals$activity_time, c(2, 2, 2))
+})
+
+test_that("arrivals 1) are dequeued when resource's capacity increases and 2) remain in server when it decreases", {
+  t <- create_trajectory() %>% 
+    seize("dummy", 1) %>%
+    timeout(2) %>%
+    release("dummy", 1)
+  
+  inf_sch <- schedule(c(0, 1, 2), c(1, 3, 1), Inf)
+  
+  arrivals <- simmer(verbose=T) %>%
+    add_resource("dummy", inf_sch) %>%
+    add_generator("asdf", t, at(0, 0, 0)) %>%
+    run() %>%
+    get_mon_arrivals()
+  
+  expect_equal(arrivals$end_time, c(2, 3, 3))
+  expect_equal(arrivals$activity_time, c(2, 2, 2))
+})
+
+test_that("arrivals are preempted when resource's capacity decreases", {
+  t <- create_trajectory() %>% 
+    seize("dummy", 1, restart=TRUE) %>%
+    timeout(2) %>%
+    release("dummy", 1)
+  
+  inf_sch <- schedule(c(0, 1, 2), c(1, 3, 1), Inf)
+  
+  arrivals <- simmer(verbose=T) %>%
+    add_resource("dummy", inf_sch, preemptive=TRUE) %>%
+    add_generator("asdf", t, at(0, 0, 0)) %>%
+    run() %>%
+    get_mon_arrivals()
+  
+  expect_equal(arrivals$end_time, c(2, 3, 5))
+  expect_equal(arrivals$activity_time, c(2, 2, 3))
 })
