@@ -22,12 +22,14 @@ class Simulator {
     
     bool operator<(const Event& other) const {
       if (time == other.time)
-        return priority > other.priority;
-      return time > other.time;
+        return priority < other.priority;
+      return time < other.time;
     }
   };
   
-  typedef PQUEUE<Event> PQueue;
+  typedef MSET<Event> PQueue;
+  typedef DEQUE<PQueue::iterator> EvDeque;
+  typedef UMAP<Process*, EvDeque> EvMap;
   typedef UMAP<std::string, Entity*> EntMap;
   
 public:
@@ -42,11 +44,10 @@ public:
   Simulator(std::string name, bool verbose): name(name), verbose(verbose), now_(0) {}
   
   ~Simulator() {
-    while (!event_queue.empty()) {
-      if (event_queue.top().process->is_arrival())
-        delete event_queue.top().process;
-      event_queue.pop();
-    }
+    foreach_ (PQueue::value_type& itr, event_queue)
+      if (itr.process->is_arrival()) delete itr.process;
+    event_queue.clear();
+    event_map.clear();
   }
   
   /**
@@ -54,11 +55,10 @@ public:
    */
   void reset() {
     now_ = 0;
-    while (!event_queue.empty()) {
-      if (event_queue.top().process->is_arrival())
-        delete event_queue.top().process;
-      event_queue.pop();
-    }
+    foreach_ (PQueue::value_type& itr, event_queue)
+      if (itr.process->is_arrival()) delete itr.process;
+    event_queue.clear();
+    event_map.clear();
     foreach_ (EntMap::value_type& itr, resource_map)
       ((Resource*)itr.second)->reset();
     foreach_ (EntMap::value_type& itr, process_map) {
@@ -76,7 +76,15 @@ public:
    * @param   priority  additional key to execute releases before seizes if they coincide
    */
   void schedule(double delay, Process* process, int priority=0) {
-    event_queue.push(Event(now_ + delay, process, priority));
+    event_map[process].push_back(
+      event_queue.emplace(now_ + delay, process, priority)
+    );
+  }
+  
+  void unschedule(Process* process) {
+    foreach_ (EvDeque::value_type& itr, event_map[process])
+      event_queue.erase(itr);
+    event_map[process].clear();
   }
   
   /**
@@ -84,7 +92,7 @@ public:
    */
   double peek() { 
     if (!event_queue.empty())
-      return event_queue.top().time;
+      return event_queue.begin()->time;
     else return -1;
   }
   
@@ -93,9 +101,11 @@ public:
    */
   bool step() {
     if (event_queue.empty()) return 0;
-    now_ = event_queue.top().time;
-    event_queue.top().process->run();
-    event_queue.pop();
+    PQueue::iterator ev = event_queue.begin();
+    now_ = ev->time;
+    ev->process->run();
+    event_map[ev->process].pop_front();
+    event_queue.erase(ev);
     return 1;
     // ... and that's it! :D
   }
@@ -213,6 +223,7 @@ private:
   PQueue event_queue;       /**< the event queue */
   EntMap resource_map;      /**< map of resources */
   EntMap process_map;       /**< map of processes */
+  EvMap event_map;          /**< map of pending events */
 };
 
 #endif

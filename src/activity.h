@@ -90,7 +90,7 @@ template <typename T>
 class Release: public Activity {
 public:
   Release(std::string resource, T amount, bool provide_attrs):
-    Activity("Release", resource, provide_attrs, -1), amount(amount) {}
+    Activity("Release", resource, provide_attrs, PRIORITY_RELEASE), amount(amount) {}
   
   void print(int indent=0);
   double run(Arrival* arrival);

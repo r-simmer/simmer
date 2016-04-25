@@ -2,9 +2,9 @@
 #include "simulator.h"
 #include "activity.h"
 
+void Process::deactivate(bool restart) { sim->unschedule(this); }
+
 void Generator::run() {
-  if (!is_active()) return;
-  
   // get the delay for the next arrival
   double delay = Rcpp::as<double>(dist());
   if (delay < 0) return;
@@ -19,14 +19,13 @@ void Generator::run() {
     FMT_21 << "new: " << FMT_22 << (name + numstr) << "| " << (sim->now() + delay) << std::endl;
   
   // schedule the arrival and the generator itself
-  sim->schedule(delay, arrival);
-  sim->schedule(delay, this);
+  sim->schedule(delay, arrival, count);
+  sim->schedule(delay, this, PRIORITY_GENERATOR);
   
   count++;
 }
 
 void Manager::run() {
-  if (!is_active()) goto end;
   if (!sim->now() && duration[index]) goto finish;
   if (sim->verbose) Rcpp::Rcout <<
     FMT_0 << sim->now() << " |" << FMT_11 << "manager: " << FMT_12 << name << "|" << 
@@ -40,7 +39,7 @@ void Manager::run() {
   }
   
 finish:
-  sim->schedule(duration[index], this, -10);
+  sim->schedule(duration[index], this, PRIORITY_MANAGER);
 end:
   return;
 }
@@ -48,7 +47,6 @@ end:
 void Arrival::run() {
   double delay;
   
-  if (!is_active()) goto end;
   if (!activity) goto finish;
   if (lifetime.start < 0) lifetime.start = sim->now();
   if (sim->verbose) Rcpp::Rcout <<

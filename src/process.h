@@ -13,16 +13,15 @@ class Arrival;
 class Process: public Entity {
 public:
   Process(Simulator* sim, std::string name, int mon, bool is_arrival=false): 
-    Entity(sim, name, mon), is_arrival_(is_arrival), is_active_(true) {}
+    Entity(sim, name, mon), is_arrival_(is_arrival) {}
   virtual ~Process(){}
   virtual void run() = 0;
-  virtual void activate() { is_active_ = true; }
-  virtual void deactivate(bool restart) { is_active_ = false; }
+  virtual void activate() {}
+  virtual void deactivate(bool restart);
   bool is_arrival() { return is_arrival_; }
-  bool is_active() { return is_active_; }
+  
 private:
   bool is_arrival_;
-  bool is_active_;
 };
 
 class Manager: public Process {

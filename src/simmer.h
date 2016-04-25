@@ -11,8 +11,7 @@
 #include <boost/unordered_map.hpp>
 
 #define VEC std::vector
-#define QUEUE std::queue
-#define PQUEUE boost::heap::priority_queue
+#define DEQUE std::deque
 #define MSET boost::container::multiset
 #define USET boost::unordered_set
 #define UMAP boost::unordered_map
@@ -31,5 +30,9 @@
 #define FMT_12 std::setw(15) << std::left
 #define FMT_21 std::setw(12) << std::right
 #define FMT_22 std::setw(15) << std::left
+
+#define PRIORITY_RELEASE    -3
+#define PRIORITY_MANAGER    -2
+#define PRIORITY_GENERATOR  -1
 
 #endif
