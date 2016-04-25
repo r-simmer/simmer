@@ -81,10 +81,10 @@ t0 <- create_trajectory("my trajectory") %>%
   timeout(function() 1) %>%
   release("server", 1)
 
-t0 %>% show_trajectory()
+t0
 
 a <- t0 %>% get_head()
-a %>% show_activity(); a <- a %>% get_next_activity()
+a %>% print_activity(); a <- a %>% get_next_activity()
 
 
 #################################
