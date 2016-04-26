@@ -28,8 +28,7 @@ class Simulator {
   };
   
   typedef MSET<Event> PQueue;
-  typedef DEQUE<PQueue::iterator> EvDeque;
-  typedef UMAP<Process*, EvDeque> EvMap;
+  typedef UMAP<Process*, PQueue::iterator> EvMap;
   typedef UMAP<std::string, Entity*> EntMap;
   
 public:
@@ -76,15 +75,12 @@ public:
    * @param   priority  additional key to execute releases before seizes if they coincide
    */
   void schedule(double delay, Process* process, int priority=0) {
-    event_map[process].push_back(
-      event_queue.emplace(now_ + delay, process, priority)
-    );
+    event_map[process] = event_queue.emplace(now_ + delay, process, priority);
   }
   
   void unschedule(Process* process) {
-    foreach_ (EvDeque::value_type& itr, event_map[process])
-      event_queue.erase(itr);
-    event_map[process].clear();
+    event_queue.erase(event_map[process]);
+    event_map.erase(process);
   }
   
   /**
@@ -102,9 +98,9 @@ public:
   bool step() {
     if (event_queue.empty()) return 0;
     PQueue::iterator ev = event_queue.begin();
+    event_map.erase(ev->process);
     now_ = ev->time;
     ev->process->run();
-    event_map[ev->process].pop_front();
     event_queue.erase(ev);
     return 1;
     // ... and that's it! :D
