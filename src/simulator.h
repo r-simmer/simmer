@@ -112,7 +112,7 @@ public:
    */
   void run(double until) {
     long int nsteps = 0;
-    while ((now_ < until) && step())
+    while ((now_ < until || until < 0) && step())
       if (++nsteps % 100000 == 0)
         Rcpp::checkUserInterrupt();
   }

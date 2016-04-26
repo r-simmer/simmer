@@ -42,8 +42,7 @@ Simmer <- R6Class("simmer",
     
     peek = function() {
       ret <- peek_(private$sim_obj)
-      if (ret >= 0) ret
-      else Inf
+      replace(ret, ret==-1, Inf)
     },
     
     step = function() {
@@ -53,8 +52,7 @@ Simmer <- R6Class("simmer",
     
     run = function(until=1000) {
       until <- evaluate_value(until)
-      if(!is.finite(until)) until <- 1000
-      
+      replace(until, until==Inf, -1)
       run_(private$sim_obj, until)
       self
     },
