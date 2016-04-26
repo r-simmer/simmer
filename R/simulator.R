@@ -40,9 +40,13 @@ Simmer <- R6Class("simmer",
     
     now = function() { now_(private$sim_obj) },
     
-    peek = function() {
-      ret <- peek_(private$sim_obj)
-      replace(ret, ret==-1, Inf)
+    peek = function(steps=1, verbose=F) {
+      steps <- evaluate_value(steps)
+      verbose <- evaluate_value(verbose)
+      steps <- replace(steps, steps==Inf, -1)
+      ret <- as.data.frame(peek_(private$sim_obj, steps))
+      if (!verbose) ret$time
+      else ret # nocov
     },
     
     step = function() {
@@ -52,7 +56,7 @@ Simmer <- R6Class("simmer",
     
     run = function(until=1000) {
       until <- evaluate_value(until)
-      replace(until, until==Inf, -1)
+      until <- replace(until, until==Inf, -1)
       run_(private$sim_obj, until)
       self
     },
@@ -315,20 +319,22 @@ reset <- function(env) env$reset()
 #' @export
 now <- function(env) env$now()
 
-#' Peek the next event's time
+#' Peek next events
 #'
-#' Gets the time of the next scheduled event.
+#' Looks for future events in the event queue.
 #' 
 #' @param env the simulation environment.
+#' @param steps number of steps to peek.
+#' @param verbose show additional information (i.e., the name of the process) about future events.
 #' 
-#' @return Returns a numeric value.
+#' @return Returns numeric values if `verbose=F` and a data frame otherwise.
 #' @seealso Other methods to deal with a simulation environment:
 #' \link{simmer}, \link{reset}, \link{now}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
 #' \link{get_server_count}, \link{get_queue_count}.
 #' @export
-peek <- function(env) env$peek()
+peek <- function(env, steps=1, verbose=F) env$peek(steps, verbose)
 
 #' Step the simulation
 #'

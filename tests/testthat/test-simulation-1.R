@@ -27,7 +27,7 @@ test_that("a simple deterministic simulation with rejections behaves as expected
   resources <- env%>%get_mon_resources()
   
   expect_equal(env%>%now(), n+0.5)
-  expect_equal(env%>%peek(), Inf)
+  expect_equal(env%>%peek(), numeric(0))
   expect_equal(nrow(arrivals), n)
   expect_equal(nrow(arrivals_res), n/2)
   expect_true(arrivals_res[1,]$resource == "server")

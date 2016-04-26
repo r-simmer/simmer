@@ -32,10 +32,16 @@ double now_(SEXP sim_) {
 }
 
 //[[Rcpp::export]]
-double peek_(SEXP sim_) {
+SEXP peek_(SEXP sim_, SEXP steps_) {
   XPtr<Simulator> sim(sim_);
+  int steps = as<int>(steps_);
   
-  return sim->peek();
+  std::pair<VEC<double>, VEC<std::string> > ret = sim->peek(steps);
+  
+  return Rcpp::List::create(
+    Rcpp::Named("time")     = ret.first,
+    Rcpp::Named("process")  = ret.second
+  );
 }
 
 //[[Rcpp::export]]

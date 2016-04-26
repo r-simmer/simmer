@@ -84,12 +84,17 @@ public:
   }
   
   /**
-   * Get the time of the next scheduled event.
+   * Look for future events.
    */
-  double peek() { 
-    if (!event_queue.empty())
-      return event_queue.begin()->time;
-    else return -1;
+  std::pair<VEC<double>, VEC<std::string> > peek(int steps) {
+    VEC<double> time;
+    VEC<std::string> process;
+    if (steps) { foreach_ (PQueue::value_type& itr, event_queue) {
+      time.push_back(itr.time);
+      process.push_back(itr.process->name);
+      if (!--steps) break;
+    }}
+    return std::make_pair(time, process);
   }
   
   /**

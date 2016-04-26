@@ -13,7 +13,7 @@ test_that("the wrapper behaves as expected", {
     wrap()
   
   expect_equal(env%>%now(), 10)
-  expect_equal(env%>%peek(), Inf)
+  expect_equal(env%>%peek(), numeric(0))
   
   arrivals <- env%>%get_mon_arrivals()
   arrivals_res <- env%>%get_mon_arrivals(TRUE)

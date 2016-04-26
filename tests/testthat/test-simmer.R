@@ -5,12 +5,12 @@ test_that("an empty environment behaves as expected", {
   
   expect_is(env, "simmer")
   expect_equal(env%>%now(), 0)
-  expect_equal(env%>%peek(), Inf)
+  expect_equal(env%>%peek(), numeric(0))
   
   env%>%onestep()%>%run()
   
   expect_equal(env%>%now(), 0)
-  expect_equal(env%>%peek(), Inf)
+  expect_equal(env%>%peek(), numeric(0))
 })
 
 t0 <- create_trajectory("") %>%

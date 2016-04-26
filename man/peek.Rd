@@ -2,18 +2,22 @@
 % Please edit documentation in R/simulator.R
 \name{peek}
 \alias{peek}
-\title{Peek the next event's time}
+\title{Peek next events}
 \usage{
-peek(env)
+peek(env, steps = 1, verbose = F)
 }
 \arguments{
 \item{env}{the simulation environment.}
+
+\item{steps}{number of steps to peek.}
+
+\item{verbose}{show additional information (i.e., the name of the process) about future events.}
 }
 \value{
-Returns a numeric value.
+Returns numeric values if `verbose=F` and a data frame otherwise.
 }
 \description{
-Gets the time of the next scheduled event.
+Looks for future events in the event queue.
 }
 \seealso{
 Other methods to deal with a simulation environment:

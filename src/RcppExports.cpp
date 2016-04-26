@@ -39,13 +39,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // peek_
-double peek_(SEXP sim_);
-RcppExport SEXP simmer_peek_(SEXP sim_SEXP) {
+SEXP peek_(SEXP sim_, SEXP steps_);
+RcppExport SEXP simmer_peek_(SEXP sim_SEXP, SEXP steps_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    __result = Rcpp::wrap(peek_(sim_));
+    Rcpp::traits::input_parameter< SEXP >::type steps_(steps_SEXP);
+    __result = Rcpp::wrap(peek_(sim_, steps_));
     return __result;
 END_RCPP
 }

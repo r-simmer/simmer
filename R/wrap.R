@@ -8,7 +8,7 @@ simmer.wrap <- R6Class("simmer.wrap",
       
       self$name <- env$name
       private$now_val <- env$now()
-      private$peek_val <- env$peek()
+      private$peek_val <- env$peek(Inf, TRUE)
       private$res <- env$get_resources()
       private$gen <- env$get_generators()
       private$arrivals <- env$get_mon_arrivals()
@@ -52,7 +52,15 @@ simmer.wrap <- R6Class("simmer.wrap",
     },
     
     now = function() private$now_val,
-    peek = function() private$peek_val,
+    
+    peek = function(steps=1, verbose=F) {
+      steps <- evaluate_value(steps)
+      verbose <- evaluate_value(verbose)
+      steps <- min(steps, nrow(private$peek_val))
+      ret <- private$peek_val[0:steps,]
+      if (!verbose) ret$time
+      else ret # nocov
+    },
     
     get_mon_arrivals = function(per_resource=FALSE) {
       if (per_resource) private$arrivals_res

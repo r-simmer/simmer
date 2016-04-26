@@ -13,8 +13,8 @@ now_ <- function(sim_) {
     .Call('simmer_now_', PACKAGE = 'simmer', sim_)
 }
 
-peek_ <- function(sim_) {
-    .Call('simmer_peek_', PACKAGE = 'simmer', sim_)
+peek_ <- function(sim_, steps_) {
+    .Call('simmer_peek_', PACKAGE = 'simmer', sim_, steps_)
 }
 
 step_ <- function(sim_) {
