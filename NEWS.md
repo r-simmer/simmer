@@ -11,6 +11,7 @@ Minor changes and fixes:
 * Fix a couple of segmentation faults in preemptive resources (f64f6b2).
 * Improve verbose output (9013db0).
 * New multiset-based event queue with unscheduling capabilities (a615fea and d6a9d67).
+* A simulation may run forever (until the user interrupts it), that is, `until=Inf` is allowed now (f47baa9).
 * New vignette on queueing systems.
 * New vignette on Continuous-Time Markov Chains.
 
