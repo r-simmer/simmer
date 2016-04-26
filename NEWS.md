@@ -3,6 +3,7 @@
 New features:
 
 * Add time-specific resource availability support (#21). Both resources' `capacity` and `queue_size` can change over time following a user-defined scheduling, which can be generated with the new function `schedule`.
+* Advanced peek: inspect any number of future events in the event queue (8147820). For more details, see `?peek`.
 
 Minor changes and fixes:
 

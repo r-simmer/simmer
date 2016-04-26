@@ -1,4 +1,3 @@
- - inspect the queue (some kind of "advanced peek")
  - change default behavior of `seize` and `release` (for version >=4.0.0, see issues #25, #27)
  - start/stop a generator from inside a trajectory
  - modify resources from inside a trajectory
