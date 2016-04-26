@@ -32,13 +32,20 @@ Please note that the package contains some C++ code and thus you need a developm
 Learning simmer
 ---------------
 
-To get started, please read the [intro vignette](https://cran.r-project.org/web/packages/simmer/vignettes/introduction.html):
+To get started, please explore the vignettes: 
 
 ``` r
-vignette("introduction", package = "simmer")
+vignette(package = "simmer")
 ```
+
+These are currently available:
+
+* [Introduction to simmer](https://cran.r-project.org/web/packages/simmer/vignettes/introduction.html)
+* [Terminology](https://cran.r-project.org/web/packages/simmer/vignettes/terminology.html)
+* [Advanced trajectory usage](https://cran.r-project.org/web/packages/simmer/vignettes/trajectories.html)
 
 Contact
 -------
 
-For bugs and/or issues, create a new issue on GitHub. For other questions or comments, subscribe to the [simmer-devel mailing list](https://groups.google.com/forum/#!forum/simmer-devel).
+* For bugs and/or issues, create a new issue on GitHub. 
+* For other questions or comments, subscribe to the [simmer-devel mailing list](https://groups.google.com/forum/#!forum/simmer-devel).
