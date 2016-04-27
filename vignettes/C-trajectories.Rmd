@@ -22,6 +22,8 @@ knitr::read_demo("C-trajectories", "simmer")
 ```{r setup, message=FALSE}
 ```
 
+## Available set of activities
+
 When a generator creates an arrival, it couples the arrival to a given trajectory. A trajectory is defined as an interlinkage of activities which together form the arrivals' lifetime in the system. Once an arrival is coupled to the trajectory, it will (in general) start processing the activities in the trajectory in the specified order and, eventually, leave the system. Consider the following:
 
 ```{r part1}
@@ -31,7 +33,7 @@ Here we create a trajectory where a patient _seizes_ a doctor for 3 minutes and 
 
 This is a very straightforward example, however, most of the trajectory-related functions allow for more advanced usage. The different functions are introduced below.
 
-## set_attribute
+### set_attribute
 
 The `set_attribute(trajectory, key, value)` function set the `value` of an arrival's attribute `key`. Be aware that `value` can only be numeric.
 
@@ -45,7 +47,7 @@ If you want to set an attribute that depends on another attribute, or on the cur
 ```{r part3}
 ```
 
-## seize & release
+### seize & release
 
 The `seize(trajectory, resource, amount)` function seizes a specified `amount` of resources of type `resource`. Conversely, the `release(trajectory, resource, amount)` function releases a specified `amount` of resource of type `resource`. Be aware that, in order to use these functions in relation to a specific resource type, you have to create that resource type in your definition of the simulation environment (check `?add_resource`). 
 
@@ -62,7 +64,7 @@ There are situations where you want to let the amount of resources seized/releas
 ```{r part5}
 ```
 
-## timeout
+### timeout
 
 At its simplest, the `timeout(trajectory, task)` function delays the arrival's advance through the trajectory for a specified amount of time. Consider the following minimal example where we simply supply a static value to the timeout's `task` parameter.
 
@@ -78,27 +80,49 @@ Be aware that if you want the `timeout`'s `task` parameter to be evaluated dynam
 
 Of course, this `task`, supplied as a function, may be as complex as you need and, for instance, check a resource's status, interact with other entities in your simulation model... The same applies to all previous activities when they accept a function as a parameter.
 
-## branch
+### branch
+
+The `branch(trajectory, option, merge, ...)` method offers the possibility of adding alternative paths in the trajectory. The following example shows how a trajectory can be built with a 50-50 chance for an arrival to pass through each path of a two-path branch.
+
+```{r part8}
+```
+
+When an arrival gets to the branch, the first argument is evaluated to select a specific path to follow, so it must be callable and must return a numeric value between 1 and ```n```, where ```n``` is the number of paths defined. The second argument, ```merge```, indicates whether the arrival must continue executing the activities after the selected path or not. In the example above, only the first path continues to the last *release*.
 
 Sometimes you may need to count how many times a certain trajectory in a certain branch is entered, or how much time arrivals spend inside that trajectory. For these situations, it is handy to use resources with infinite capacity just for _accounting_ purposes, like in the example below.
 
-```{r part8, message = FALSE}
+```{r part9, message = FALSE}
 ```
 
-## rollback
+### rollback
 
 The `rollback(trajectory, amount, times, check)` function allows an arrival to rollback the trajectory an `amount` number of steps.
 
 Consider the following where a string is printed in the timeout function. After the first run, the trajectory is rolled back 3 times.
 
-```{r part9}
+```{r part10}
 ```
 
 The `rollback` function also accepts an optional `check` parameter which overrides the default amount-based behaviour. This parameter must be a function that returns a logical value. Each time an arrival reaches the activity, this `check` is evaluated to determine whether the `rollback` with `amount` steps must be performed or not. Consider the following example:
 
-```{r part10}
+```{r part11}
 ```
 
-## Bringing it all together
+## Interacting with the environment from within a trajectory
 
-in progress...
+It is possible to interact with the simulation environment in order to extract parameters of interest such as the current simulation time (`now()`), status of resources (`get_capacity`, `get_queue_size`, `get_server_count`, `get_queue_count`), status of generators (`get_n_generated`) or directly to gather the history of monitored values (`get_mon_*`). You may also want (or in other words, your model may need) to check and use all this information to take decisions inside a given trajectory.
+
+For instance, let's suppose we just want to print the simulation time at a given point in a trajectory. The only requirement is that you must define the simulation environment __before__ running the simulation. This won't work:
+
+```{r part12, error = TRUE}
+```
+
+Because the global `env` is not available at runtime: the simulation runs _and then_ the resulting object is assigned to `env`. We need to assign first, then run. So this will work:
+
+```{r part13}
+```
+
+And we get the expected output. However, as a general rule of good practice, __it is recommended to instantiate the environment always in the first place__, to avoid possible mistakes and because the code becomes more readable:
+
+```{r part14}
+```

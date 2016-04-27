@@ -115,6 +115,19 @@ get_mon_attributes(env)
 
 # ---- part8
 
+t1 <- create_trajectory("trajectory with a branch") %>%
+  seize("server", 1) %>%
+  branch(function() sample(1:2, 1), merge=c(T, F), 
+         create_trajectory("branch1") %>%
+           timeout(function() 1),
+         create_trajectory("branch2") %>%
+           timeout(function() rexp(1, 3)) %>%
+           release("server", 1)
+  ) %>%
+  release("server", 1)
+
+# ---- part9
+
 t0 <- create_trajectory() %>%
   branch(function() sample(c(1, 2), 1), c(T, T),
          create_trajectory() %>%
@@ -144,7 +157,7 @@ arrivals %>% count(resource)
 # Let's see the distributions
 ggplot(arrivals) + geom_histogram(aes(x=activity_time)) + facet_wrap(~resource)
 
-# ---- part9
+# ---- part10
 
 
 t0<-create_trajectory() %>%
@@ -158,7 +171,7 @@ simmer() %>%
   add_generator("hello_sayer", t0, at(0)) %>% 
   run()
 
-# ---- part10
+# ---- part11
 
 t0<-create_trajectory() %>%
   set_attribute("happiness", 0) %>%
@@ -181,3 +194,37 @@ simmer() %>%
   add_generator("mood_swinger", t0, at(0)) %>% 
   run()
 
+# ---- part12
+
+remove(env)
+
+t <- create_trajectory() %>%
+  timeout(function() print(env %>% now()))
+
+env <- simmer() %>%
+  add_generator("dummy", t, function() 1) %>%
+  run(4)
+
+# ---- part13
+
+t <- create_trajectory() %>%
+  timeout(function() print(env %>% now()))
+
+env <- simmer() %>%
+  add_generator("dummy", t, function() 1)
+
+env %>% run(4)
+
+# ---- part14
+
+# First, instantiate the environment
+env <- simmer()
+
+# Here I'm using it
+t <- create_trajectory() %>%
+  timeout(function() print(env %>% now()))
+
+# And finally, run it
+env %>%
+  add_generator("dummy", t, function() 1) %>%
+  run(4)

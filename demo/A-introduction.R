@@ -2,9 +2,12 @@
 
 library(simmer)
 
+env <- simmer("SuperDuperSim")
+env
+
 # ---- part1
 
-t0 <- create_trajectory("my trajectory") %>%
+patient <- create_trajectory("patients' path") %>%
   ## add an intake activity 
   seize("nurse", 1) %>%
   timeout(function() rnorm(1, 15)) %>%
@@ -20,24 +23,24 @@ t0 <- create_trajectory("my trajectory") %>%
 
 # ---- part2
 
-env <- simmer("SuperDuperSim") %>%
+env %>%
   add_resource("nurse", 1) %>%
   add_resource("doctor", 2) %>%
   add_resource("administration", 1) %>%
-  add_generator("patient", t0, function() rnorm(1, 10, 2))
+  add_generator("patient", patient, function() rnorm(1, 10, 2))
 
 # ---- part3
 
 env %>% run(until=80)
 env %>% now()
-env %>% peek()
+env %>% peek(3)
 
 # ---- part4
 
 env %>% onestep()
 env %>% onestep() %>% onestep() %>% onestep()
 env %>% now()
-env %>% peek()
+env %>% peek(Inf, verbose=TRUE)
 
 # ---- part5
 
@@ -59,7 +62,7 @@ envs <- lapply(1:100, function(i) {
     add_resource("nurse", 1) %>%
     add_resource("doctor", 2) %>%
     add_resource("administration", 1) %>%
-    add_generator("patient", t0, function() rnorm(1, 10, 2)) %>%
+    add_generator("patient", patient, function() rnorm(1, 10, 2)) %>%
     run(80)
 })
 
@@ -72,7 +75,7 @@ envs <- mclapply(1:100, function(i) {
     add_resource("nurse", 1) %>%
     add_resource("doctor", 2) %>%
     add_resource("administration", 1) %>%
-    add_generator("patient", t0, function() rnorm(1, 10, 2)) %>%
+    add_generator("patient", patient, function() rnorm(1, 10, 2)) %>%
     run(80) %>%
     wrap()
 })
@@ -91,29 +94,16 @@ head(
 
 # ---- part10
 
-t1 <- create_trajectory("trajectory with a branch") %>%
-  seize("server", 1) %>%
-  branch(function() sample(1:2, 1), merge=c(T, F), 
-         create_trajectory("branch1") %>%
-           timeout(function() 1),
-         create_trajectory("branch2") %>%
-           timeout(function() rexp(1, 3)) %>%
-           release("server", 1)
-  ) %>%
-  release("server", 1)
+plot_resource_utilization(envs, c("nurse", "doctor","administration"))
 
 # ---- part11
 
-plot_resource_utilization(envs, c("nurse", "doctor","administration"))
+plot_resource_usage(envs, "doctor", items="server", steps=T)
 
 # ---- part12
 
-plot_resource_usage(envs, "doctor", items="server", steps=T)
-
-# ---- part13
-
 plot_resource_usage(envs[[6]], "doctor", items="server", steps=T)
 
-# ---- part14
+# ---- part13
 
 plot_evolution_arrival_times(envs, type = "flow_time")

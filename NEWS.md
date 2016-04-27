@@ -15,6 +15,7 @@ Minor changes and fixes:
 * A simulation may run forever (until the user interrupts it), that is, `until=Inf` is allowed now (f47baa9).
 * New vignette on queueing systems.
 * New vignette on Continuous-Time Markov Chains.
+* Update and extend previous vignettes.
 
 ## simmer 3.2.0
 

@@ -21,7 +21,7 @@ knitr::read_demo("A-introduction", "simmer")
 
 ## Basic usage
 
-First, load the package.
+First, load the package and instantiate a new simulation environment.
 
 ```{r setup, message=FALSE}
 ```
@@ -31,14 +31,14 @@ Set-up a simple trajectory. Let's say we want to simulate an ambulatory consulta
 ```{r part1}
 ```
 
-The argument of the ```timeout``` function is evaluated dynamically, so it must be callable and must return a numeric value (note: negative values are automatically converted to positive ones). Apart from that, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources' status, make decisions according to the latter...
+In this case, the argument of the ```timeout``` activity is a function, which is evaluated dynamically to produce an stochastic waiting time, but it could be a constant too. Apart from that, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources' status, make decisions according to the latter...
 
-When the trajectory is known, the simulation environment can be built. In the example below, an environment is instantiated and three types of resources are added. The *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory ```t0```. The time between patients is about 10 minutes (a Gaussian of ```mean=10``` and ```sd=2```). (Note: returning a negative interarrival time at some point would stop the generator).
+Once the trajectory is known, you may attach arrivals to it and define the resources needed. In the example below, three types of resources are added: the *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory ```t0```. The time between patients is about 10 minutes (a Gaussian of ```mean=10``` and ```sd=2```). (Note: returning a negative interarrival time at some point would stop the generator).
 
 ```{r part2}
 ```
 
-The simulation is now ready for a test run; just let it *simmer* for a bit. Below, we specify that we want to limit the runtime to 80 time units using the ```until``` argument. After that, we verify the current simulation time (```now```) and when will be the next event (```peek```).
+The simulation is now ready for a test run; just let it *simmer* for a bit. Below, we specify that we want to limit the runtime to 80 time units using the ```until``` argument. After that, we verify the current simulation time (```now```) and when will be the next 3 events (```peek```).
 
 ```{r part3, message=FALSE}
 ```
@@ -77,37 +77,28 @@ This helper function brings the simulation data back to R and makes it accessibl
 
 Unfortunately, as the C++ simulation cores are destroyed, parallelization does not allow to resume the execution of replicas.
 
-## Advanced trajectories
+## Basic visualization tools
 
-The ```branch``` method offers the possibility of adding alternative paths in the trajectory. The following example shows how a trajectory can be built with a 50-50 chance for an arrival to pass through each path of a two-path branch.
+This package provides some basic visualization tools to help you take a glance at your simulations quickly, but of course you probably may want to extract the RAW data with the functions shown above and develop your own data analysis.
 
-```{r part10}
-```
+For instance, after you've left it simmering for a bit (pun intended), we can have a look at the overall resource utilization. The top and bottom of the error bars show respectively the 25th and 75th percentile of the utilization across all the replications. The top of the bar shows the median utilization.
 
-When an arrival gets to the branch, the first argument is evaluated to select a specific path to follow, so it must be callable and must return a numeric value between 1 and ```n```, where ```n``` is the number of paths defined. The second argument, ```merge```, indicates whether the arrival must continue executing the activities after the selected path or not. In the example above, only the first path continues to the last *release*.
-
-## Resource utilization
-
-After you've left it simmering for a bit (pun intended), we can have a look at the overall resource utilization. The top and bottom of the error bars show respectively the 25th and 75th percentile of the utilization across all the replications. The top of the bar shows the median utilization.
-
-```{r part11, message=FALSE}
+```{r part10, message=FALSE}
 ```
 
 It is also possible to have a look at a specific resource and its activity during the simulation.
 
-```{r part12, message=FALSE}
+```{r part11, message=FALSE}
 ```
 
 In the above graph, the individual lines are all separate replications. The step lines are instantaneous utilization and the smooth line is a running average. Let's take a look now at a specific replication. In the example below the 6th replication is shown.
 
-```{r part13, message=FALSE}
+```{r part12, message=FALSE}
 ```
-
-## Flow time
 
 Next we can have a look at the evolution of the arrivals' flow time during the simulation. In the below plot, each individual line represents a replication. A smooth line is drawn over them. All arrivals that didn't finish their entire trajectory are excluded from the plot.
 
-```{r part14, message=FALSE}
+```{r part13, message=FALSE}
 ```
 
 Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
