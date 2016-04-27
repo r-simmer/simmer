@@ -20,7 +20,7 @@ The trajectory object.
 Adds a new key/value attribute. The value should be numeric.
 }
 \seealso{
-Other methods to deal with trajectories:
+Other methods for dealing with trajectories:
 \link{create_trajectory}, \link{get_head},
 \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
 \link{timeout}, \link{branch}, \link{rollback}.

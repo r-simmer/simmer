@@ -50,7 +50,7 @@ t1 <- create_trajectory("trajectory with a branch") \%>\%
 t1
 }
 \seealso{
-Other methods to deal with trajectories:
+Other methods for dealing with trajectories:
 \link{get_head}, \link{get_tail},
 \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
 \link{set_attribute}, \link{branch}, \link{rollback}.

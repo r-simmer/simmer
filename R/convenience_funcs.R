@@ -246,11 +246,15 @@ simmer.schedule <- R6Class("simmer.schedule",
 #' @param period period of repetition.
 #' 
 #' @return Returns a Schedule object.
+#' @seealso \link{add_resource}.
 #' @export
 #' 
 #' @examples
 #' # Schedule 3 units from 8 to 16 h
 #' #          2 units from 16 to 24 h
 #' #          1 units from 24 to 8 h
-#' my_schedule <- schedule(c(8, 16, 24), c(3, 2, 1), period=24)
+#' capacity_schedule <- schedule(c(8, 16, 24), c(3, 2, 1), period=24)
+#' 
+#' env <- simmer() %>%
+#'   add_resource("dummy", capacity_schedule)
 schedule <- function(timetable, values, period=Inf) simmer.schedule$new(timetable, values, period)

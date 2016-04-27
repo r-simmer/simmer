@@ -24,7 +24,7 @@ The trajectory object.
 Adds a new activity that goes backwards in the trajectory.
 }
 \seealso{
-Other methods to deal with trajectories:
+Other methods for dealing with trajectories:
 \link{create_trajectory}, \link{get_head},
 \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release},
 \link{set_attribute}, \link{timeout}, \link{branch}.
