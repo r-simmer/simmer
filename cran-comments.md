@@ -14,12 +14,21 @@ This version implements two incremental features and several minor fixes and imp
 
 There were no ERRORs or WARNINGs.
 
-There was 1 NOTE:
+There were 2 NOTEs:
+
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: ‘Iñaki Ucar <i.ucar86@gmail.com>’
+
+License components with restrictions and base license permitting such:
+  MIT + file LICENSE
+File 'LICENSE':
+  YEAR: 2014-2016
+  COPYRIGHT HOLDERS: BART SMEETS, IÑAKI UCAR
 
 * checking installed package size ... NOTE
-  installed size is  5.8Mb
+  installed size is  7.5Mb
   sub-directories of 1Mb or more:
-    libs   5.0Mb
+    libs   6.6Mb
 
 ## Downstream dependencies
 
