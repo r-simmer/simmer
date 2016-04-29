@@ -1,10 +1,10 @@
 Package: simmer
 Type: Package
-Version: 3.2.0.9000
+Version: 3.2.1.9000
 Title: Discrete-Event Simulation for R
 Description: A process-oriented and trajectory-based Discrete-Event Simulation
     (DES) package for R. Designed to be a generic framework like SimPy or 
-    SimJulia, it leverages the use of Rcpp to boost the performance and turning
+    SimJulia, it leverages the use of Rcpp to boost the performance, turning
     DES in R feasible. As a noteworthy characteristic, simmer exploits the 
     concept of trajectory: a common path in the simulation model for entities 
     of the same type.
