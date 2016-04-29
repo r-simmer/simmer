@@ -1,4 +1,4 @@
-## simmer 3.2.0.9000
+## simmer 3.2.1
 
 New features:
 
