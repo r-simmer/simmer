@@ -38,9 +38,11 @@ vignette(package = "simmer")
 
 These are currently available:
 
-* [Introduction to simmer](https://cran.r-project.org/web/packages/simmer/vignettes/introduction.html)
-* [Terminology](https://cran.r-project.org/web/packages/simmer/vignettes/terminology.html)
-* [Advanced trajectory usage](https://cran.r-project.org/web/packages/simmer/vignettes/trajectories.html)
+* [Introduction to simmer](https://cran.r-project.org/web/packages/simmer/vignettes/A-introduction.html)
+* [Terminology](https://cran.r-project.org/web/packages/simmer/vignettes/B-terminology.html)
+* [Advanced trajectory usage](https://cran.r-project.org/web/packages/simmer/vignettes/C-trajectories.html)
+* [Queueing systems](https://cran.r-project.org/web/packages/simmer/vignettes/D-queueing-systems.html)
+* [Continuous-Time Markov Chains](https://cran.r-project.org/web/packages/simmer/vignettes/E-ctmc.html)
 
 Contact
 -------
