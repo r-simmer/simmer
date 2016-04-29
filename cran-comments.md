@@ -1,34 +1,25 @@
 ## Release summary
 
-The GitHub repository has been transferred from one author to the other (Bart -> Iñaki), and so the corresponding URLs (URL and BugReports) have changed in the DESCRIPTION file.
+In the DESCRIPTION file, the _title_ has been changed in order to be more informative (as it is generally used as a description), and the _description_ has been extended.
 
-This version implements two major features, several minor fixes and improvements (including compatibility issues with the new version of `testthat`), and removes two functions which were deprecated in previous releases.
+This version implements two incremental features and several minor fixes and improvements.
 
 ## Test environments
 
 * Fedora 23 + clang (local), R 3.2.3 and devel
-* Ubuntu 12.04 + GCC (on travis-ci), R 3.2.4
+* Ubuntu 12.04 + GCC (on travis-ci), R 3.2.5
 * win-builder, R release and devel
 
 ## R CMD check results
 
 There were no ERRORs or WARNINGs.
 
-There were 2 NOTEs:
-
-* checking CRAN incoming feasibility ... NOTE
-Maintainer: ‘Iñaki Ucar <i.ucar86@gmail.com>’
-
-License components with restrictions and base license permitting such:
-  MIT + file LICENSE
-File 'LICENSE':
-  YEAR: 2014-2016
-  COPYRIGHT HOLDERS: BART SMEETS, IÑAKI UCAR
+There was 1 NOTE:
 
 * checking installed package size ... NOTE
-  installed size is  5.1Mb
+  installed size is  5.8Mb
   sub-directories of 1Mb or more:
-    libs   4.6Mb
+    libs   5.0Mb
 
 ## Downstream dependencies
 
