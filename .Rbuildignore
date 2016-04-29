@@ -6,7 +6,6 @@
 ^README-.*\.png$
 ^cran-comments\.md$
 ^.*\.gcda$
-NEWS\.md
 working_dir
 .gitignore
 .git
