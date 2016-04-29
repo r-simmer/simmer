@@ -25,6 +25,12 @@ File 'LICENSE':
   YEAR: 2014-2016
   COPYRIGHT HOLDERS: BART SMEETS, IÑAKI UCAR
 
+Possibly mis-spelled words in DESCRIPTION:
+  DES (6:6, 8:5)
+  Rcpp (7:39)
+  SimJulia (7:5)
+  SimPy (6:66)
+
 * checking installed package size ... NOTE
   installed size is  7.5Mb
   sub-directories of 1Mb or more:
