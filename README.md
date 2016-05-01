@@ -16,13 +16,7 @@ Documentation is available at [r-simmer.org/docs](http://r-simmer.org/docs).
 
 ## Mailing list
 
-For bugs and/or issues, create a new issue on GitHub. For other questions or comments, please subscribe to the [simmer-devel mailing list](https://groups.google.com/forum/#!forum/simmer-devel):
-
-<p><form action="http://groups.google.com/group/simmer-devel/boxsubscribe">
-  Your email address: <input type="text" name="email" vk_16697="subscribed"> <input type="submit" value="Subscribe">
-</form></p>
-
-You must be a member to post messages, but anyone can read the archived discussions.
+For bugs and/or issues, create a new issue on GitHub. For other questions or comments, please subscribe to the [simmer-devel mailing list](https://groups.google.com/forum/#!forum/simmer-devel). You must be a member to post messages, but anyone can read the archived discussions.
 
 ## Installation
 
