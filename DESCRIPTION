@@ -12,7 +12,7 @@ Encoding: UTF-8
 Authors@R: c(
     person("Bart", "Smeets", email="bartsmeets86@gmail.com", role="aut"),
     person("Iñaki", "Ucar", email="i.ucar86@gmail.com", role=c("aut", "cre")))
-URL: http://r-simmer.org, https://github.com/Enchufa2/simmer
+URL: http://r-simmer.org
 BugReports: https://github.com/Enchufa2/simmer/issues
 Depends:
     R (>= 3.1.2)
