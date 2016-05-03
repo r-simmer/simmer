@@ -71,7 +71,7 @@
 
 # Changes in version 3.0.1
 
-## Minor fixes:
+## Minor changes and fixes:
 
 * Complete test coverage (#12).
 * Minor fix in the documentation (42363d2).
