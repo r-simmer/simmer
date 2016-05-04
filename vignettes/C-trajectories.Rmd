@@ -16,17 +16,24 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
                       fig.width = 6, fig.height = 4, fig.align = "center")
 library(ggplot2)
 theme_set(theme_bw())
-knitr::read_demo("C-trajectories", "simmer")
 ```
 
-```{r setup, message=FALSE}
+```{r, message=FALSE}
+library(simmer)
+library(ggplot2)
+library(dplyr)
 ```
 
 ## Available set of activities
 
 When a generator creates an arrival, it couples the arrival to a given trajectory. A trajectory is defined as an interlinkage of activities which together form the arrivals' lifetime in the system. Once an arrival is coupled to the trajectory, it will (in general) start processing the activities in the trajectory in the specified order and, eventually, leave the system. Consider the following:
 
-```{r part1}
+```{r}
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  seize(resource = "doctor", amount = 1) %>%
+  timeout(3) %>%
+  release(resource = "doctor", amount = 1)
 ```
 
 Here we create a trajectory where a patient _seizes_ a doctor for 3 minutes and then _releases_ him again.
@@ -37,14 +44,42 @@ This is a very straightforward example, however, most of the trajectory-related 
 
 The `set_attribute(trajectory, key, value)` function set the `value` of an arrival's attribute `key`. Be aware that `value` can only be numeric.
 
-```{r part2}
+```{r}
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  set_attribute("my_key", 123) %>%
+  timeout(5) %>%
+  set_attribute("my_key", 456)
+
+env<-
+  simmer() %>%
+  add_generator("patient", patient_traj, at(0), mon = 2) %>%
+  run()
+
+get_mon_attributes(env)
 ```
 
 Above, a trajectory which _only_ sets attribute `my_key` to value `123` is launched once by an arrival generated at time 0 (check `?at`). Using `get_mon_attributes` we can look at the evolution of the value of `my_key`.
 
 If you want to set an attribute that depends on another attribute, or on the current value of the attribute to be set, this is also possible. In fact, if, instead of a numeric value, you supply a function with one parameter, the current set of attributes is passed as a list to that function. Whatever (numeric value) your function returns is set as the value of the specified attribute key. If the supplied function has no parameters, it is evaluated in the same way, but the attribute list is not accesible in the function body. This means that, if you supply a function to the `value` parameter, it has to be in the form of either `function(attrs){}` (first case) or `function(){}` (second case). Below, you can see an example of this in practice.
 
-```{r part3}
+```{r}
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  set_attribute("my_key", 123) %>%
+  timeout(5) %>%
+  set_attribute("my_key", function(attrs) attrs[["my_key"]] + 1) %>%
+  timeout(5) %>%
+  set_attribute("dependent_key", function(attrs) ifelse(attrs[["my_key"]]<=123, 1, 0)) %>%
+  timeout(5) %>%
+  set_attribute("independent_key", function() runif(1))
+
+env<-
+  simmer() %>%
+  add_generator("patient", patient_traj, at(0), mon = 2) %>%
+  run()
+
+get_mon_attributes(env)
 ```
 
 ### seize & release
@@ -54,26 +89,81 @@ The `seize(trajectory, resource, amount)` function seizes a specified `amount` o
 Consider the following example:
 
 
-```{r part4}
+```{r}
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  seize(resource = "doctor", amount = 1) %>%
+  timeout(3) %>%
+  release(resource = "doctor", amount = 1)
+
+env<-
+  simmer() %>%
+  add_resource("doctor", capacity=1, mon = 1) %>%
+  add_generator("patient", patient_traj, at(0)) %>%
+  run()
+
+get_mon_resources(env)
 ```
 
 Here the `mon=1` argument (=default) of `add_resource` makes the simulation environment monitor the resource usage. Using the `get_mon_resources(env)` function you can get access to the log of the usage evolution of resources.
 
 There are situations where you want to let the amount of resources seized/released be dependent on a specific function or on a previously set attribute. To achieve this, you can pass a function in the form of either `function(){}` or `function(attrs){}` to the `amount` parameter instead of a numeric value. If going for the latter, the current state of the arrival's attributes will be passed to `attrs` as a list which you can inspect. This allows for the following:
 
-```{r part5}
+```{r}
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  set_attribute("health", function() sample(20:80, 1)) %>%
+  set_attribute("docs_to_seize", function(attrs) ifelse(attrs[["health"]]<50, 1, 2)) %>%
+  seize("doctor", function(attrs) attrs[["docs_to_seize"]]) %>%
+  timeout(3) %>%
+  release("doctor", function(attrs) attrs[["docs_to_seize"]])
+
+env<-
+  simmer() %>%
+  add_resource("doctor", capacity=2, mon = 1) %>%
+  add_generator("patient", patient_traj, at(0), mon=2) %>%
+  run()
+
+get_mon_resources(env)
+get_mon_attributes(env)
 ```
 
 ### timeout
 
 At its simplest, the `timeout(trajectory, task)` function delays the arrival's advance through the trajectory for a specified amount of time. Consider the following minimal example where we simply supply a static value to the timeout's `task` parameter.
 
-```{r part6}
+```{r}
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  timeout(3)
+
+env<-
+  simmer() %>%
+  add_resource("doctor", capacity=2, mon = 1) %>%
+  add_generator("patient", patient_traj, at(0), mon=2) %>%
+  run()
+
+get_mon_arrivals(env)
 ```
 
 Often, however, you want a timeout to be dependent on a distribution or, for example, an earlier set attribute. This is achieved by passing a function in to form of either `function(){}` or `function(attrs){}` to the `task` parameter. In the following example this functionality is demonstrated:
 
-```{r part7}
+```{r}
+patient_traj<-
+  create_trajectory(name = "patient_trajectory") %>%
+  set_attribute("health", function() sample(20:80, 1)) %>%
+  # distribution-based timeout
+  timeout(function() rpois(1, 10)) %>%
+  # attribute-dependent timeout
+  timeout(function(attrs) (100 - attrs[["health"]]) * 2)
+
+env<-
+  simmer() %>%
+  add_generator("patient", patient_traj, at(0), mon=2) %>%
+  run()
+
+get_mon_arrivals(env)
+get_mon_attributes(env)
 ```
 
 Be aware that if you want the `timeout`'s `task` parameter to be evaluated dynamically, you should supply a callable function. For example in `timeout(function() rpois(1, 10))`, `rpois(1, 10)` will be evaluated every time the timeout activity is executed. However, if you supply it in the form of `timeout(rpois(1, 10))`, it will only be evaluated at initalization and will remain static after that.
@@ -84,14 +174,52 @@ Of course, this `task`, supplied as a function, may be as complex as you need an
 
 The `branch(trajectory, option, merge, ...)` method offers the possibility of adding alternative paths in the trajectory. The following example shows how a trajectory can be built with a 50-50 chance for an arrival to pass through each path of a two-path branch.
 
-```{r part8}
+```{r}
+t1 <- create_trajectory("trajectory with a branch") %>%
+  seize("server", 1) %>%
+  branch(function() sample(1:2, 1), merge=c(T, F), 
+         create_trajectory("branch1") %>%
+           timeout(function() 1),
+         create_trajectory("branch2") %>%
+           timeout(function() rexp(1, 3)) %>%
+           release("server", 1)
+  ) %>%
+  release("server", 1)
 ```
 
 When an arrival gets to the branch, the first argument is evaluated to select a specific path to follow, so it must be callable and must return a numeric value between 1 and ```n```, where ```n``` is the number of paths defined. The second argument, ```merge```, indicates whether the arrival must continue executing the activities after the selected path or not. In the example above, only the first path continues to the last *release*.
 
 Sometimes you may need to count how many times a certain trajectory in a certain branch is entered, or how much time arrivals spend inside that trajectory. For these situations, it is handy to use resources with infinite capacity just for _accounting_ purposes, like in the example below.
 
-```{r part9, message = FALSE}
+```{r, message = FALSE}
+t0 <- create_trajectory() %>%
+  branch(function() sample(c(1, 2), 1), c(T, T),
+         create_trajectory() %>%
+           seize("branch1", 1) %>%
+           # do stuff here
+           timeout(function() rexp(1, 1)) %>%
+           release("branch1", 1),
+         create_trajectory() %>%
+           seize("branch2", 1) %>%
+           # do stuff here
+           timeout(function() rexp(1, 1/2)) %>%
+           release("branch2", 1))
+
+env <- simmer() %>%
+  add_generator("dummy", t0, at(rep(0, 1000))) %>%
+  # Resources with infinite capacity, just for accounting purposes
+  add_resource("branch1", Inf) %>%
+  add_resource("branch2", Inf) %>%
+  run()
+
+arrivals <- get_mon_arrivals(env, per_resource = T)
+
+# Times that each branch was entered
+arrivals %>% count(resource)
+
+# The `activity_time` is the total time inside each branch for each arrival
+# Let's see the distributions
+ggplot(arrivals) + geom_histogram(aes(x=activity_time)) + facet_wrap(~resource)
 ```
 
 ### rollback
@@ -100,12 +228,40 @@ The `rollback(trajectory, amount, times, check)` function allows an arrival to r
 
 Consider the following where a string is printed in the timeout function. After the first run, the trajectory is rolled back 3 times.
 
-```{r part10}
+```{r}
+t0<-create_trajectory() %>%
+  timeout(function(){
+    print("Hello!")
+    0}) %>%
+  rollback(amount=1, times=3)
+
+simmer() %>%
+  add_generator("hello_sayer", t0, at(0)) %>% 
+  run()
 ```
 
 The `rollback` function also accepts an optional `check` parameter which overrides the default amount-based behaviour. This parameter must be a function that returns a logical value. Each time an arrival reaches the activity, this `check` is evaluated to determine whether the `rollback` with `amount` steps must be performed or not. Consider the following example:
 
-```{r part11}
+```{r}
+t0<-create_trajectory() %>%
+  set_attribute("happiness", 0) %>%
+  # the timeout function is used simply to print something and returns 0,
+  # hence it is a dummy timeout
+  timeout(function(attrs){
+    cat(">> Happiness level is at: ", attrs[["happiness"]], " -- ")
+    cat(ifelse(attrs[["happiness"]]<25,"PETE: I'm feeling crappy...",
+               ifelse(attrs[["happiness"]]<50,"PETE: Feelin' a bit moody",
+                      ifelse(attrs[["happiness"]]<75,"PETE: Just had a good espresso",
+                             "PETE: Let's do this! (and stop this loop...)")))
+        , "\n")
+    return(0)
+  }) %>%
+  set_attribute("happiness", function(attrs) attrs[["happiness"]] + 25) %>%
+  rollback(amount=2, check=function(attrs) attrs[["happiness"]] < 100)
+
+simmer() %>%
+  add_generator("mood_swinger", t0, at(0)) %>% 
+  run()
 ```
 
 ## Interacting with the environment from within a trajectory
@@ -114,15 +270,41 @@ It is possible to interact with the simulation environment in order to extract p
 
 For instance, let's suppose we just want to print the simulation time at a given point in a trajectory. The only requirement is that you must define the simulation environment __before__ running the simulation. This won't work:
 
-```{r part12, error = TRUE}
+```{r, error = TRUE}
+remove(env)
+
+t <- create_trajectory() %>%
+  timeout(function() print(env %>% now()))
+
+env <- simmer() %>%
+  add_generator("dummy", t, function() 1) %>%
+  run(4)
 ```
 
 Because the global `env` is not available at runtime: the simulation runs _and then_ the resulting object is assigned to `env`. We need to assign first, then run. So this will work:
 
-```{r part13}
+```{r}
+t <- create_trajectory() %>%
+  timeout(function() print(env %>% now()))
+
+env <- simmer() %>%
+  add_generator("dummy", t, function() 1)
+
+env %>% run(4)
 ```
 
 And we get the expected output. However, as a general rule of good practice, __it is recommended to instantiate the environment always in the first place__, to avoid possible mistakes and because the code becomes more readable:
 
-```{r part14}
+```{r}
+# First, instantiate the environment
+env <- simmer()
+
+# Here I'm using it
+t <- create_trajectory() %>%
+  timeout(function() print(env %>% now()))
+
+# And finally, run it
+env %>%
+  add_generator("dummy", t, function() 1) %>%
+  run(4)
 ```

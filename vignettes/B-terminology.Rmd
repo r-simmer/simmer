@@ -14,7 +14,6 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
                       fig.width = 6, fig.height = 4, fig.align = "center")
 library(ggplot2)
 theme_set(theme_bw())
-knitr::read_demo("B-terminology", "simmer")
 ```
 
 Please find below a short explanation of the most important terminologies used in the docs.
@@ -43,13 +42,35 @@ Please find below a short explanation of the most important terminologies used i
 
 In the simulation model below we create a __trajectory__ which we will call `my trajectory`. This trajectory consists of three consecutive __activities__; a `seize`, `timeout` and `release` event. In the `seize` and `release` events a associated __resource__ type is specified. In this case the resource type is called `operator`. 
 
-```{r create-trajectory}
+```{r}
+library(simmer)
+
+# create a trajectory "my_trajectory"
+# this trajectory consists of 3 activities, a seize, timeout and release activity.
+t0<-
+  create_trajectory("my_trajectory") %>%
+  # seize one unit of the resource called "operator"
+  seize("operator", 1) %>%
+  # spend some (stochastic) time holding that resource
+  timeout(function() rpois(1,50)) %>%
+  # release the previously seized unit of "operator"
+  release("operator", 1)
 ```
 
 
 Once the trajectory has been created, the simulation object (a `simmer` instance) is set up. One of the first steps is to actually attach a __resource__ instance called `operator`. Next, a __generator__ instance is attached. This generator, called `my_generator`, has an associated trajectory (`my_trajectory` stored in `t0`) and an associated `dist` function. Once `run()` is called the simulation model will start running. The generator `my_generator` will create an __arrival__ at an interarrival time delivered by the function passed to `dist`.
 
-```{r setup-simmer}
+```{r}
+env<-simmer() %>%
+  # a resource called "operator"" is created with a capacity of 1 and an infinite queue size
+  add_resource("operator", 1, Inf) %>%
+  # this generator will create arrivals at each interval rpois(1,40) during
+  # the simulation lifetime (while "dist" returns positive time values)
+  # the arrivals will follow the trajectory specified in t0
+  add_generator("my_generator", 
+                trajectory = t0,
+                dist = function() rpois(1, 40)) %>%
+  run()
 ```
 
 For more information, see the other vignettes or the function specific help documentation (e.g. `?simmer`).

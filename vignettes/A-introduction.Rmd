@@ -16,63 +16,126 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
                       fig.width = 6, fig.height = 4, fig.align = "center")
 library(ggplot2)
 theme_set(theme_bw())
-knitr::read_demo("A-introduction", "simmer")
 ```
 
 ## Basic usage
 
 First, load the package and instantiate a new simulation environment.
 
-```{r setup, message=FALSE}
+```{r, message=FALSE}
+library(simmer)
+
+env <- simmer("SuperDuperSim")
+env
 ```
 
 Set-up a simple trajectory. Let's say we want to simulate an ambulatory consultation where a patient is first seen by a nurse for an intake, next by a doctor for the consultation and finally by administrative staff to schedule a follow-up appointment.
 
-```{r part1}
+```{r}
+patient <- create_trajectory("patients' path") %>%
+  ## add an intake activity 
+  seize("nurse", 1) %>%
+  timeout(function() rnorm(1, 15)) %>%
+  release("nurse", 1) %>%
+  ## add a consultation activity
+  seize("doctor", 1) %>%
+  timeout(function() rnorm(1, 20)) %>%
+  release("doctor", 1) %>%
+  ## add a planning activity
+  seize("administration", 1) %>%
+  timeout(function() rnorm(1, 5)) %>%
+  release("administration", 1)
 ```
 
 In this case, the argument of the ```timeout``` activity is a function, which is evaluated dynamically to produce an stochastic waiting time, but it could be a constant too. Apart from that, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources' status, make decisions according to the latter...
 
 Once the trajectory is known, you may attach arrivals to it and define the resources needed. In the example below, three types of resources are added: the *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory ```t0```. The time between patients is about 10 minutes (a Gaussian of ```mean=10``` and ```sd=2```). (Note: returning a negative interarrival time at some point would stop the generator).
 
-```{r part2}
+```{r}
+env %>%
+  add_resource("nurse", 1) %>%
+  add_resource("doctor", 2) %>%
+  add_resource("administration", 1) %>%
+  add_generator("patient", patient, function() rnorm(1, 10, 2))
 ```
 
 The simulation is now ready for a test run; just let it *simmer* for a bit. Below, we specify that we want to limit the runtime to 80 time units using the ```until``` argument. After that, we verify the current simulation time (```now```) and when will be the next 3 events (```peek```).
 
-```{r part3, message=FALSE}
+```{r, message=FALSE}
+env %>% run(until=80)
+env %>% now()
+env %>% peek(3)
 ```
 
 It is possible to run the simulation step by step, and such a method is chainable too.
 
-```{r part4, message=FALSE}
+```{r, message=FALSE}
+env %>% onestep()
+env %>% onestep() %>% onestep() %>% onestep()
+env %>% now()
+env %>% peek(Inf, verbose=TRUE)
 ```
 
 Also, it is possible to resume the automatic execution simply by specifying a longer runtime. Below, we continue the execution until 120 time units.
 
-```{r part5, message=FALSE}
+```{r, message=FALSE}
+env %>% 
+  run(until=120) %>%
+  now()
 ```
 
 Finally, you can reset the simulation, flush all results, resources and generators, and restart from the beginning.
 
-```{r part6, message=FALSE}
+```{r, message=FALSE}
+env %>% 
+  reset() %>% 
+  run(until=80) %>%
+  now()
 ```
 
 ## Replication
 
 It is very easy to replicate a simulation multiple times using standard R functions.
 
-```{r part7}
+```{r}
+envs <- lapply(1:100, function(i) {
+  simmer("SuperDuperSim") %>%
+    add_resource("nurse", 1) %>%
+    add_resource("doctor", 2) %>%
+    add_resource("administration", 1) %>%
+    add_generator("patient", patient, function() rnorm(1, 10, 2)) %>%
+    run(80)
+})
 ```
 
 The advantage of the latter approach is that, if the individual replicas are heavy, it is straightforward to parallelize their execution (for instance, in the next example we use the function ```mclapply``` from the package [parallel](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf)). Nevertheless, the external pointers to the C++ simmer core are no longer valid when the parallelized execution ends. Thus, it is necessary to extract the results for each thread at the end of the execution. This can be done with the helper function ```wrap``` as follows.
 
-```{r part8}
+```{r}
+library(parallel)
+
+envs <- mclapply(1:100, function(i) {
+  simmer("SuperDuperSim") %>%
+    add_resource("nurse", 1) %>%
+    add_resource("doctor", 2) %>%
+    add_resource("administration", 1) %>%
+    add_generator("patient", patient, function() rnorm(1, 10, 2)) %>%
+    run(80) %>%
+    wrap()
+})
 ```
 
 This helper function brings the simulation data back to R and makes it accessible through the same methods that a ```simmer``` environment.
 
-```{r part9, message=FALSE}
+```{r, message=FALSE}
+envs[[1]] %>% get_n_generated("patient")
+envs[[1]] %>% get_capacity("doctor")
+envs[[1]] %>% get_queue_size("doctor")
+head(
+  envs %>% get_mon_resources()
+)
+head(
+  envs %>% get_mon_arrivals()
+)
 ```
 
 Unfortunately, as the C++ simulation cores are destroyed, parallelization does not allow to resume the execution of replicas.
@@ -83,22 +146,26 @@ This package provides some basic visualization tools to help you take a glance a
 
 For instance, after you've left it simmering for a bit (pun intended), we can have a look at the overall resource utilization. The top and bottom of the error bars show respectively the 25th and 75th percentile of the utilization across all the replications. The top of the bar shows the median utilization.
 
-```{r part10, message=FALSE}
+```{r, message=FALSE}
+plot_resource_utilization(envs, c("nurse", "doctor","administration"))
 ```
 
 It is also possible to have a look at a specific resource and its activity during the simulation.
 
-```{r part11, message=FALSE}
+```{r, message=FALSE}
+plot_resource_usage(envs, "doctor", items="server", steps=T)
 ```
 
 In the above graph, the individual lines are all separate replications. The step lines are instantaneous utilization and the smooth line is a running average. Let's take a look now at a specific replication. In the example below the 6th replication is shown.
 
-```{r part12, message=FALSE}
+```{r, message=FALSE}
+plot_resource_usage(envs[[6]], "doctor", items="server", steps=T)
 ```
 
 Next we can have a look at the evolution of the arrivals' flow time during the simulation. In the below plot, each individual line represents a replication. A smooth line is drawn over them. All arrivals that didn't finish their entire trajectory are excluded from the plot.
 
-```{r part13, message=FALSE}
+```{r, message=FALSE}
+plot_evolution_arrival_times(envs, type = "flow_time")
 ```
 
 Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
