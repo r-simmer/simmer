@@ -1,8 +1,8 @@
 simmer
 ======
 
-[![Build Status](https://travis-ci.org/Enchufa2/simmer.svg?branch=master)](https://travis-ci.org/Enchufa2/simmer)
-[![Coverage Status](https://coveralls.io/repos/github/Enchufa2/simmer/badge.svg?branch=master)](https://coveralls.io/github/Enchufa2/simmer?branch=master)
+[![Build Status](https://travis-ci.org/r-simmer/simmer.svg?branch=master)](https://travis-ci.org/r-simmer/simmer)
+[![Coverage Status](https://coveralls.io/repos/github/r-simmer/simmer/badge.svg?branch=master)](https://coveralls.io/github/r-simmer/simmer?branch=master)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/simmer)](http://cran.r-project.org/package=simmer)
 [![Downloads](http://cranlogs.r-pkg.org/badges/simmer)](http://cran.rstudio.com/package=simmer)
 
