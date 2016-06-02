@@ -220,7 +220,7 @@ protected:
     if (server_count + amount <= capacity) return true;
     int count = 0;
     foreach_ (typename T::value_type& itr, server) {
-      if (priority > itr.preemptible)
+      if (priority >= itr.preemptible)
         count += itr.amount;
       else break;
       if (count >= amount) return true;
