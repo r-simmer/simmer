@@ -19,8 +19,9 @@ priority; defaults to the minimum priority, which is 0).}
 
 \item{preemptible}{if the seize occurs in a preemptive resource, this parameter 
 establishes the minimum incoming priority that can preempt this arrival (a seize 
-with a priority equal to `preemptible` or more gains the resource; by default, 
-any seize may cause preemption in a preemptive resource).}
+with a priority greater than `preemptible` gains the resource). In any case,
+`preemptible` must be equal or greater than `priority`, and thus only higher
+priority seizes can trigger the preemption.}
 
 \item{restart}{whether the activity must be restarted after being preempted.}
 }

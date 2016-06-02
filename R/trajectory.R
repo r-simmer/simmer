@@ -32,6 +32,11 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       amount <- evaluate_value(amount)
       priority <- evaluate_value(priority)
       preemptible <- evaluate_value(preemptible)
+      if (preemptible < priority) {
+        warning("`preemptible` value has changed from ", preemptible, " to ", priority,
+                " (see ?seize for more details)")
+        preemptible <- priority
+      }
       restart <- evaluate_value(restart)
       if (is.function(amount))
         private$add_activity(Seize__new_func(resource, amount, needs_attrs(amount), 
@@ -200,8 +205,9 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #' priority; defaults to the minimum priority, which is 0).
 #' @param preemptible if the seize occurs in a preemptive resource, this parameter 
 #' establishes the minimum incoming priority that can preempt this arrival (a seize 
-#' with a priority equal to `preemptible` or more gains the resource; by default, 
-#' any seize may cause preemption in a preemptive resource).
+#' with a priority greater than `preemptible` gains the resource). In any case,
+#' `preemptible` must be equal or greater than `priority`, and thus only higher
+#' priority seizes can trigger the preemption.
 #' @param restart whether the activity must be restarted after being preempted.
 #' 
 #' @return The trajectory object.

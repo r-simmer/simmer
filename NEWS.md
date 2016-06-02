@@ -1,5 +1,9 @@
 # Changes in version 3.2.1.9000
 
+## Minor changes and fixes:
+
+* Fix the description of `preemptible` in the documentation of `seize` and force `preemptible` to be equal or greater than `priority` (#53).
+
 # Changes in version 3.2.1
 
 ## New features:
