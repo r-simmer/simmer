@@ -110,6 +110,16 @@ Simmer <- R6Class("simmer",
         stop("not a trajectory")
       name_prefix <- evaluate_value(name_prefix)
       mon <- evaluate_value(mon)
+      
+      init <- as.list(environment(dist))
+      environment(dist)$.reset <- new.env(parent = environment(dist))
+      environment(dist)$.reset$init <- init
+      environment(dist)$.reset$reset <- function() {
+        lst <- parent.env(environment())$init
+        cls <- parent.env(parent.env(environment()))
+        for(i in ls(lst, all.names=TRUE)) assign(i, get(i, lst), cls)
+      }
+      environment(environment(dist)$.reset$reset) <- environment(dist)$.reset
 
       ret <- add_generator_(private$sim_obj, name_prefix, trajectory$get_head(), dist, mon)
       if (ret) private$gen[[name_prefix]] <- mon

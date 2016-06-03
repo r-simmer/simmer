@@ -72,6 +72,10 @@ public:
     traj_stats.clear();
     res_stats.clear();
     attr_stats.clear();
+    Rcpp::Environment dist_env(dist.environment());
+    Rcpp::Environment reset_env(dist_env[".reset"]);
+    Rcpp::Function reset_fun(reset_env["reset"]);
+    reset_fun();
   }
   
   void run();

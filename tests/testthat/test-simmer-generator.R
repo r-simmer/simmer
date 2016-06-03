@@ -32,3 +32,13 @@ test_that("generates the expected amount", {
   expect_error(env %>% get_n_generated("asdf"))
   expect_equal(env %>% get_n_generated("customer"), 3)
 })
+
+test_that("generators are reset", {
+  t <- create_trajectory() %>% timeout(1)
+  
+  expect_equal(3, simmer() %>% 
+    add_generator("dummy", t, at(0, 1, 2)) %>%
+    run() %>% reset() %>% run() %>%
+    get_mon_arrivals() %>% nrow()
+  )
+})

@@ -3,6 +3,7 @@
 ## Minor changes and fixes:
 
 * Fix the description of `preemptible` in the documentation of `seize` and force `preemptible` to be equal or greater than `priority` (#53).
+* Reset finite generators (#51).
 
 # Changes in version 3.2.1
 
