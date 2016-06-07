@@ -2,9 +2,10 @@
 #include "simulator.h"
 
 void Resource::set_capacity(int value) {
+  if (capacity == value) return;
   int last = capacity;
   capacity = value;
-  if (capacity > last) {
+  if (capacity > last || capacity < 0) {
     // serve another
     while (queue_count) 
       if (!try_serve_from_queue(sim->verbose, sim->now())) break;
@@ -16,6 +17,7 @@ void Resource::set_capacity(int value) {
 }
 
 void Resource::set_queue_size(int value) {
+  if (queue_size == value) return;
   queue_size = value;
   if (is_monitored()) observe(sim->now());
 }
