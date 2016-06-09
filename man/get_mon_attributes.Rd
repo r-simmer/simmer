@@ -4,10 +4,10 @@
 \alias{get_mon_attributes}
 \title{Get attribute statistics}
 \usage{
-get_mon_attributes(env)
+get_mon_attributes(envs)
 }
 \arguments{
-\item{env}{the simulation environment (or a list of environments).}
+\item{envs}{the simulation environment (or a list of environments).}
 }
 \value{
 Returns a data frame.

@@ -43,8 +43,8 @@ test_that("a rollback loops the correct number of times", {
   t0 <- create_trajectory() %>% rollback(0, 3)
   t1 <- create_trajectory() %>% rollback(0, check=three_times())
   
-  env0 <- simmer(verbose=TRUE) %>% add_generator("dummy", t0, at(0))
-  env1 <- simmer(verbose=TRUE) %>% add_generator("dummy", t1, at(0))
+  env0 <- evaluate_promise(simmer(verbose=TRUE) %>% add_generator("dummy", t0, at(0)))$result
+  env1 <- evaluate_promise(simmer(verbose=TRUE) %>% add_generator("dummy", t1, at(0)))$result
   
   output <- paste0(".*(",
     ".*0.*dummy0.*Rollback",

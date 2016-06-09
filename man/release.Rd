@@ -11,7 +11,7 @@ release(traj, resource, amount = 1)
 
 \item{resource}{the name of the resource.}
 
-\item{amount}{the amount to release.}
+\item{amount}{the amount to release, accepts either a callable object (a function) or a numeric value.}
 }
 \value{
 The trajectory object.
