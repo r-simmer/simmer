@@ -200,7 +200,7 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #' 
 #' @param traj the trajectory object.
 #' @param resource the name of the resource.
-#' @param amount the amount to seize.
+#' @param amount the amount to seize, accepts either a callable object (a function) or a numeric value.
 #' @param priority the priority of the seize (a higher integer equals higher 
 #' priority; defaults to the minimum priority, which is 0).
 #' @param preemptible if the seize occurs in a preemptive resource, this parameter 
@@ -225,7 +225,7 @@ seize <- function(traj, resource, amount=1, priority=0, preemptible=0, restart=F
 #' 
 #' @param traj the trajectory object.
 #' @param resource the name of the resource.
-#' @param amount the amount to release.
+#' @param amount the amount to release, accepts either a callable object (a function) or a numeric value.
 #' 
 #' @return The trajectory object.
 #' @seealso Other methods for dealing with trajectories:
@@ -241,7 +241,7 @@ release <- function(traj, resource, amount=1) traj$release(resource, amount)
 #' an associated delay to the tail of a trajectory.
 #' 
 #' @param traj the trajectory object.
-#' @param task a callable object (a function) that returns a numeric value 
+#' @param task the timeout duration supplied by either passing a numeric value or a callable object (a function) that returns a numeric value 
 #' (negative values are automatically coerced to positive).
 #' 
 #' @return The trajectory object.
@@ -258,7 +258,7 @@ timeout <- function(traj, task) traj$timeout(task)
 #' 
 #' @param traj the trajectory object.
 #' @param key the attribute key (is coerced to a string).
-#' @param value the value (should be numeric or a function which returns a numeric).
+#' @param value the value to set, accepts either a numeric or a callable object (a function) which returns a numeric.
 #' 
 #' @return The trajectory object.
 #' @seealso Other methods for dealing with trajectories:
