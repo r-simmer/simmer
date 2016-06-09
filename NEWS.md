@@ -5,6 +5,7 @@
 * Fix the description of `preemptible` in the documentation of `seize` and force `preemptible` to be equal or greater than `priority` (#53).
 * Reset finite generators (#51).
 * Fix the handling of a capacity change when the new value is infinite (#60).
+* Various doc fixes (#61).
 
 # Changes in version 3.2.1
 
