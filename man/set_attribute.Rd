@@ -11,7 +11,7 @@ set_attribute(traj, key, value)
 
 \item{key}{the attribute key (is coerced to a string).}
 
-\item{value}{the value (should be numeric or a function which returns a numeric).}
+\item{value}{the value to set, accepts either a numeric or a callable object (a function) which returns a numeric.}
 }
 \value{
 The trajectory object.

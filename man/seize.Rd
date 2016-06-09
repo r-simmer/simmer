@@ -12,7 +12,7 @@ seize(traj, resource, amount = 1, priority = 0, preemptible = 0,
 
 \item{resource}{the name of the resource.}
 
-\item{amount}{the amount to seize.}
+\item{amount}{the amount to seize, accepts either a callable object (a function) or a numeric value.}
 
 \item{priority}{the priority of the seize (a higher integer equals higher 
 priority; defaults to the minimum priority, which is 0).}

@@ -100,7 +100,7 @@ test_that("we can force some errors (just to complete coverage)", {
   
   t0 <- create_trajectory() %>% timeout(function() {})
   t0$.__enclos_env__$private$head <- NULL
-  expect_error(t0 %>% print)
+  expect_error(t0 %>% capture.output)
   expect_error(t0$.__enclos_env__$private$add_activity(NULL))
   
   t0 <- create_trajectory() %>% timeout(function() {})

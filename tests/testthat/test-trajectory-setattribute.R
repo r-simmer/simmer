@@ -2,8 +2,8 @@ context("set attributes")
 
 test_that("only valid types can be passed to functions", {
   expect_error(create_trajectory()%>%set_attribute("test", "string_value"))
-  expect_error(not(create_trajectory()%>%set_attribute("test", 3)))
-  expect_error(not(create_trajectory()%>%set_attribute("test", function() 3)))
+  expect_error(create_trajectory()%>%set_attribute("test", 3), NA)
+  expect_error(create_trajectory()%>%set_attribute("test", function() 3), NA)
   
 })
 
