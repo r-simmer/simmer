@@ -113,8 +113,8 @@ Timeout__new_func <- function(task, provide_attrs_) {
     .Call('simmer_Timeout__new_func', PACKAGE = 'simmer', task, provide_attrs_)
 }
 
-Branch__new <- function(option, provide_attrs_, merge_, trj_) {
-    .Call('simmer_Branch__new', PACKAGE = 'simmer', option, provide_attrs_, merge_, trj_)
+Branch__new <- function(option, provide_attrs_, cont_, trj_) {
+    .Call('simmer_Branch__new', PACKAGE = 'simmer', option, provide_attrs_, cont_, trj_)
 }
 
 Rollback__new <- function(amount_, times_) {

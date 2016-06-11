@@ -138,8 +138,8 @@ private:
  */
 class Branch: public Activity {
 public:
-  Branch(Rcpp::Function option, bool provide_attrs, VEC<bool> merge, VEC<Rcpp::Environment> trj):
-    Activity("Branch", "-", provide_attrs), option(option), merge(merge), trj(trj), selected(NULL) {
+  Branch(Rcpp::Function option, bool provide_attrs, VEC<bool> cont, VEC<Rcpp::Environment> trj):
+    Activity("Branch", "-", provide_attrs), option(option), cont(cont), trj(trj), selected(NULL) {
     n = 0;
     foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
       Rcpp::Function get_head(itr["get_head"]);
@@ -154,7 +154,7 @@ public:
   void print(int indent=0) {
     for (unsigned int i = 0; i < trj.size(); i++) {
       Activity::print(indent);
-      Rcpp::Rcout << "merge: " << merge[i] << " }" << std::endl;
+      Rcpp::Rcout << "continue: " << cont[i] << " }" << std::endl;
       Rcpp::Function print(trj[i]["print"]);
       print(indent+2);
     }
@@ -171,7 +171,7 @@ public:
   void set_next(Activity* activity) {
     Activity::set_next(activity);
     for (unsigned int i = 0; i < tails.size(); i++) {
-      if (merge[i]) tails[i]->set_next(activity);
+      if (cont[i]) tails[i]->set_next(activity);
     }
   }
   
@@ -186,7 +186,7 @@ public:
   
 private:
   Rcpp::Function option;
-  VEC<bool> merge;
+  VEC<bool> cont;
   VEC<Rcpp::Environment> trj;
   Activity* selected;
   VEC<Activity*> heads;

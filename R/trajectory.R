@@ -68,13 +68,13 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       else private$add_activity(SetAttribute__new(key, value))
     },
     
-    branch = function(option, merge, ...) {
+    branch = function(option, continue, ...) {
       trj <- list(...)
-      if (length(merge) != length(trj))
+      if (length(continue) != length(trj))
         stop("the number of elements does not match")
       for (i in trj) if (!inherits(i, "simmer.trajectory"))
         stop("not a trajectory")
-      private$add_activity(Branch__new(option, needs_attrs(option), merge, trj))
+      private$add_activity(Branch__new(option, needs_attrs(option), continue, trj))
     },
     
     rollback = function(amount, times=1, check) {
