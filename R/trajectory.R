@@ -138,7 +138,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
 #' t1 <- create_trajectory("trajectory with a branch") %>%
 #'   seize("server", 1) %>%
 #'   ## 50-50 chance for each branch
-#'   branch(function() sample(1:2, 1), merge=c(TRUE, FALSE), 
+#'   branch(function() sample(1:2, 1), continue=c(TRUE, FALSE), 
 #'     create_trajectory("branch1") %>%
 #'       timeout(function() 1),
 #'     create_trajectory("branch2") %>%
@@ -276,8 +276,10 @@ set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
 #' @param traj the trajectory object.
 #' @param option a callable object (a function) that must return an integer 
 #' between 1 and \code{n}; it will be used by the arrivals to select a path to follow.
-#' @param merge a vector of \code{n} booleans that indicate whether the arrival must 
+#' @param continue a vector of \code{n} booleans that indicate whether the arrival must 
 #' continue executing activities after each path or not.
+#' @param merge (deprecated) same as \code{continue}, for compatibility reasons. Support
+#' for this argument will be dropped in upcoming versions.
 #' @param ... \code{n} trajectory objects describing each path.
 #' 
 #' @return The trajectory object.
@@ -286,7 +288,12 @@ set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
 #' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
 #' \link{set_attribute}, \link{timeout}, \link{rollback}.
 #' @export
-branch <- function(traj, option, merge, ...) traj$branch(option, merge, ...)
+branch <- function(traj, option, continue, ..., merge="_deprecated") {
+  if(!identical(merge, "_deprecated")) {
+    warning("'merge' is deprecated, use 'continue' instead")
+    traj$branch(option, merge, continue, ...)
+  } else traj$branch(option, continue, ...)
+}
 
 #' Add a rollback activity
 #'

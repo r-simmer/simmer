@@ -6,6 +6,7 @@
 * Reset finite generators (#51).
 * Fix the handling of a capacity change when the new value is infinite (#60).
 * Various doc fixes (#61).
+* Change branch's `merge` parameter name to `continue`. The old name is deprecated (#57).
 
 # Changes in version 3.2.1
 

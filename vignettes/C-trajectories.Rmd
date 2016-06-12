@@ -172,12 +172,12 @@ Of course, this `task`, supplied as a function, may be as complex as you need an
 
 ### branch
 
-The `branch(trajectory, option, merge, ...)` method offers the possibility of adding alternative paths in the trajectory. The following example shows how a trajectory can be built with a 50-50 chance for an arrival to pass through each path of a two-path branch.
+The `branch(trajectory, option, continue, ...)` method offers the possibility of adding alternative paths in the trajectory. The following example shows how a trajectory can be built with a 50-50 chance for an arrival to pass through each path of a two-path branch.
 
 ```{r}
 t1 <- create_trajectory("trajectory with a branch") %>%
   seize("server", 1) %>%
-  branch(function() sample(1:2, 1), merge=c(T, F), 
+  branch(function() sample(1:2, 1), continue=c(T, F), 
          create_trajectory("branch1") %>%
            timeout(function() 1),
          create_trajectory("branch2") %>%
@@ -187,7 +187,7 @@ t1 <- create_trajectory("trajectory with a branch") %>%
   release("server", 1)
 ```
 
-When an arrival gets to the branch, the first argument is evaluated to select a specific path to follow, so it must be callable and must return a numeric value between 1 and ```n```, where ```n``` is the number of paths defined. The second argument, ```merge```, indicates whether the arrival must continue executing the activities after the selected path or not. In the example above, only the first path continues to the last *release*.
+When an arrival gets to the branch, the first argument is evaluated to select a specific path to follow, so it must be callable and must return a numeric value between 1 and ```n```, where ```n``` is the number of paths defined. The second argument, ```continue```, indicates whether the arrival must continue executing the activities after the selected path or not. In the example above, only the first path continues to the last *release*.
 
 Sometimes you may need to count how many times a certain trajectory in a certain branch is entered, or how much time arrivals spend inside that trajectory. For these situations, it is handy to use resources with infinite capacity just for _accounting_ purposes, like in the example below.
 

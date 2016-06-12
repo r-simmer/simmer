@@ -36,7 +36,7 @@ t0
 t1 <- create_trajectory("trajectory with a branch") \%>\%
   seize("server", 1) \%>\%
   ## 50-50 chance for each branch
-  branch(function() sample(1:2, 1), merge=c(TRUE, FALSE), 
+  branch(function() sample(1:2, 1), continue=c(TRUE, FALSE), 
     create_trajectory("branch1") \%>\%
       timeout(function() 1),
     create_trajectory("branch2") \%>\%

@@ -4,7 +4,7 @@
 \alias{branch}
 \title{Add a branch activity}
 \usage{
-branch(traj, option, merge, ...)
+branch(traj, option, continue, ..., merge = "_deprecated")
 }
 \arguments{
 \item{traj}{the trajectory object.}
@@ -12,10 +12,13 @@ branch(traj, option, merge, ...)
 \item{option}{a callable object (a function) that must return an integer 
 between 1 and \code{n}; it will be used by the arrivals to select a path to follow.}
 
-\item{merge}{a vector of \code{n} booleans that indicate whether the arrival must 
+\item{continue}{a vector of \code{n} booleans that indicate whether the arrival must 
 continue executing activities after each path or not.}
 
 \item{...}{\code{n} trajectory objects describing each path.}
+
+\item{merge}{(deprecated) same as \code{continue}, for compatibility reasons. Support
+for this argument will be dropped in upcoming versions.}
 }
 \value{
 The trajectory object.
