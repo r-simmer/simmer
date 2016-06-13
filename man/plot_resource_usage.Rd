@@ -4,8 +4,8 @@
 \alias{plot_resource_usage}
 \title{Plot usage of a resource over time}
 \usage{
-plot_resource_usage(envs, resource_name, items = c("queue", "server",
-  "system"), steps = FALSE)
+plot_resource_usage(envs, resource_name, items = c("system", "queue",
+  "server"), steps = FALSE)
 }
 \arguments{
 \item{envs}{a single simmer environment or a list of environments representing several replications.}

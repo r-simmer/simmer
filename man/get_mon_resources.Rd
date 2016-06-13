@@ -4,7 +4,7 @@
 \alias{get_mon_resources}
 \title{Get resource statistics}
 \usage{
-get_mon_resources(envs, data = "counts")
+get_mon_resources(envs, data = c("counts", "limits"))
 }
 \arguments{
 \item{envs}{the simulation environment (or a list of environments).}

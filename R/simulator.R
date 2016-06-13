@@ -62,9 +62,8 @@ Simmer <- R6Class("simmer",
     },
     
     add_resource = function(name, capacity=1, queue_size=Inf, mon=TRUE,
-                            preemptive=FALSE, preempt_order="fifo") {
-      if (!preempt_order %in% c("fifo", "lifo"))
-        stop("preempt order '", preempt_order, "' not supported")
+                            preemptive=FALSE, preempt_order=c("fifo", "lifo")) {
+      preempt_order <- match.arg(preempt_order)
       name <- evaluate_value(name)
       capacity <- evaluate_value(capacity)
       capacity_schedule <- NA
@@ -72,7 +71,6 @@ Simmer <- R6Class("simmer",
       queue_size_schedule <- NA
       mon <- evaluate_value(mon)
       preemptive <- evaluate_value(preemptive)
-      preempt_order <- evaluate_value(preempt_order)
       
       if (is.numeric(capacity) && is.infinite(capacity))
         capacity <- -1
@@ -167,22 +165,21 @@ Simmer <- R6Class("simmer",
                       value = numeric())
     },
     
-    get_mon_resources = function(data="counts") {
-      if (all(!data %in% c("counts", "limits")))
-        stop("parameter 'data' should be 'counts', 'limits' or both")
+    get_mon_resources = function(data=c("counts", "limits")) {
+      data <- match.arg(data, several.ok = TRUE)
       if (sum(private$res>0))
         do.call(rbind,
           lapply(names(private$res[private$res>0]), function(i) {
             monitor_data <- as.data.frame(
-              if (all(data %in% "counts"))
+              if (identical(data, "counts"))
                 get_mon_resource_counts_(private$sim_obj, i)
-              else if (all(data %in% "limits"))
+              else if (identical(data, "limits"))
                 get_mon_resource_limits_(private$sim_obj, i)
               else
                 get_mon_resource_(private$sim_obj, i)
             )
             tryCatch({
-              if (all(data %in% "limits")) {
+              if (identical(data, "limits")) {
                 monitor_data$server <- 
                   replace(monitor_data$server, monitor_data$server==-1, Inf)
                 monitor_data$queue <- 
@@ -199,8 +196,7 @@ Simmer <- R6Class("simmer",
               monitor_data$resource <- i
             }, error = function(e) {
               monitor_data$system <<- numeric()
-              if (all(data %in% c("counts", "limits")))
-                monitor_data$limit <<- numeric()
+              monitor_data$limit <<- numeric()
               monitor_data$resource <<- character()
             })
             monitor_data
@@ -403,7 +399,7 @@ run <- function(env, until=1000) env$run(until)
 #' \link{get_server_count}, \link{get_queue_count}.
 #' @export
 add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE,
-                         preemptive=FALSE, preempt_order="fifo")
+                         preemptive=FALSE, preempt_order=c("fifo", "lifo"))
   env$add_resource(name, capacity, queue_size, mon, preemptive, preempt_order)
 
 #' Add a generator
@@ -473,7 +469,7 @@ get_mon_attributes <- function(envs) envs_apply(envs, "get_mon_attributes")
 #' \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
 #' \link{get_server_count}, \link{get_queue_count}.
 #' @export
-get_mon_resources <- function(envs, data="counts") envs_apply(envs, "get_mon_resources", data)
+get_mon_resources <- function(envs, data=c("counts", "limits")) envs_apply(envs, "get_mon_resources", data)
 
 #' Get the number of arrivals generated
 #'

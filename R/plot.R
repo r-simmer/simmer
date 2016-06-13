@@ -11,10 +11,12 @@
 #' @seealso \link{plot_resource_utilization},
 #' \link{plot_evolution_arrival_times}, \link{plot_attributes}.
 #' @export
-plot_resource_usage <- function(envs, resource_name, items=c("queue", "server", "system"), steps = FALSE) {
+plot_resource_usage <- function(envs, resource_name, items=c("system", "queue", "server"), steps = FALSE) {
   checkInstall(c("dplyr", "tidyr", "ggplot2", "scales"))
   # Hack to avoid spurious notes
   resource <- item <- value <- server <- queue <- system <- replication <- time <- NULL
+  
+  items <- match.arg(items, several.ok = TRUE)
   
   limits <- envs %>% get_mon_resources(data="limits") %>% 
     dplyr::filter(resource == resource_name) %>%
@@ -106,17 +108,19 @@ plot_resource_utilization <- function(envs, resources) {
 #' Plot the evolution of arrival related times (flow, activity and waiting time).
 #' 
 #' @param envs a single simmer environment or a list of environments representing several replications.
-#' @param type one of c("flow_time","activity_time","waiting_time").
+#' @param type one of \code{c("activity_time", "waiting_time", "flow_time")}.
 #' 
 #' @return a ggplot2 object.
 #' @seealso \link{plot_resource_usage}, \link{plot_resource_utilization},
 #' \link{plot_attributes}.
 #' @export
-plot_evolution_arrival_times <- function(envs, type=c("flow_time","activity_time","waiting_time")){
+plot_evolution_arrival_times <- function(envs, type=c("activity_time", "waiting_time", "flow_time")){
   checkInstall(c("dplyr", "tidyr", "ggplot2", "scales"))
   # Hack to avoid spurious notes
   end_time <- start_time <- flow_time <- activity_time <- 
     replication <- waiting_time <- NULL
+  
+  type <- match.arg(type)
   
   monitor_data <- envs %>% get_mon_arrivals() %>%
     dplyr::mutate(flow_time = end_time - start_time,

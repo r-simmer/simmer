@@ -4,13 +4,13 @@
 \alias{plot_evolution_arrival_times}
 \title{Plot evolution of arrival times}
 \usage{
-plot_evolution_arrival_times(envs, type = c("flow_time", "activity_time",
-  "waiting_time"))
+plot_evolution_arrival_times(envs, type = c("activity_time", "waiting_time",
+  "flow_time"))
 }
 \arguments{
 \item{envs}{a single simmer environment or a list of environments representing several replications.}
 
-\item{type}{one of c("flow_time","activity_time","waiting_time").}
+\item{type}{one of \code{c("activity_time", "waiting_time", "flow_time")}.}
 }
 \value{
 a ggplot2 object.

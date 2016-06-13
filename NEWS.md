@@ -7,6 +7,7 @@
 * Fix the handling of a capacity change when the new value is infinite (#60).
 * Various doc fixes (#61).
 * Change branch's `merge` parameter name to `continue`. The old name is deprecated (#57).
+* Use `match.arg()` in multiple-choice arguments (#55).
 
 # Changes in version 3.2.1
 

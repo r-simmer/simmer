@@ -67,12 +67,11 @@ simmer.wrap <- R6Class("simmer.wrap",
       else private$arrivals 
     },
     get_mon_attributes = function() { private$attributes },
-    get_mon_resources = function(data="counts") {
-      if (all(!data %in% c("counts", "limits")))
-        stop("parameter 'data' should be 'counts', 'limits' or both")
+    get_mon_resources = function(data=c("counts", "limits")) {
+      data <- match.arg(data, several.ok = TRUE)
       if (all(c("counts", "limits") %in% data))
         private$resources_all
-      else if (all(data %in% "counts"))
+      else if (identical(data, "counts"))
         private$resources_counts
       else private$resources_limits
     },
