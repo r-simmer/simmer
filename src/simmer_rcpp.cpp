@@ -383,3 +383,11 @@ void activity_chain_(SEXP first_, SEXP second_) {
   first->set_next(second);
   second->set_prev(first);
 }
+
+//[[Rcpp::export]]
+SEXP activity_clone_(SEXP activity_) {
+  XPtr<Activity> activity(activity_);
+  
+  XPtr<Activity> ptr(activity->clone(), false);
+  return ptr;
+}

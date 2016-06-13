@@ -145,3 +145,7 @@ activity_chain_ <- function(first_, second_) {
     invisible(.Call('simmer_activity_chain_', PACKAGE = 'simmer', first_, second_))
 }
 
+activity_clone_ <- function(activity_) {
+    .Call('simmer_activity_clone_', PACKAGE = 'simmer', activity_)
+}
+

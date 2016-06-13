@@ -84,6 +84,22 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       if (missing(check))
         private$add_activity(Rollback__new(amount, times))
       else private$add_activity(Rollback__new_func(amount, check, needs_attrs(check)))
+    },
+    
+    join = function(traj) {
+      if (!inherits(traj, "simmer.trajectory"))
+        stop("not a trajectory")
+      new <- self$clone(deep=TRUE)
+      traj <- traj$clone(deep=TRUE)
+      if (!is.null(traj$get_head())) {
+        if (!is.null(new$get_tail()))
+          activity_chain_(new$get_tail(), traj$get_head())
+        else new$.__enclos_env__$private$head <- traj$get_head()
+        new$.__enclos_env__$private$tail <- traj$get_tail()
+      }
+      new$.__enclos_env__$private$n_activities <- 
+        new$.__enclos_env__$private$n_activities + traj$get_n_activities()
+      new
     }
   ),
   
@@ -100,9 +116,30 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       private$tail <- activity
       private$n_activities <- private$n_activities + activity_get_n_(activity)
       self
+    },
+    
+    clone2 = function(){},
+    copy = function(deep = FALSE) {
+      new <- private$clone2(deep)
+      if (!is.null(new$get_head())) {
+        first <- activity_clone_(new$get_head())
+        ptr <- activity_get_next_(new$get_head())
+        last <- first
+        while (!is.null(ptr)) {
+          new_ptr <- activity_clone_(ptr)
+          ptr <- activity_get_next_(ptr)
+          activity_chain_(last, new_ptr)
+          last <- new_ptr
+        }
+        new$.__enclos_env__$private$head <- first
+        new$.__enclos_env__$private$tail <- last
+      }
+      new
     }
   )
 )
+simmer.trajectory$private_methods$clone2 <- simmer.trajectory$public_methods$clone
+simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 
 #' Create a trajectory
 #'
@@ -113,8 +150,8 @@ simmer.trajectory <- R6Class("simmer.trajectory",
 #' 
 #' @return Returns an environment that represents the trajectory.
 #' @seealso Other methods for dealing with trajectories:
-#' \link{get_head}, \link{get_tail},
-#' \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
+#' \link{get_head}, \link{get_tail}, \link{get_n_activities}, 
+#' \link{join}, \link{seize}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
 #' 
@@ -160,8 +197,8 @@ create_trajectory <- function(name="anonymous") simmer.trajectory$new(name)
 #' 
 #' @return An external pointer to an activity object.
 #' @seealso Other methods for dealing with trajectories:
-#' \link{create_trajectory}, \link{get_tail},
-#' \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
+#' \link{create_trajectory}, \link{get_tail}, \link{get_n_activities}, 
+#' \link{join}, \link{seize}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
 get_head <- function(traj) traj$get_head()
@@ -174,8 +211,8 @@ get_head <- function(traj) traj$get_head()
 #' 
 #' @return An external pointer to an activity object.
 #' @seealso Other methods for dealing with trajectories:
-#' \link{create_trajectory}, \link{get_head},
-#' \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
+#' \link{create_trajectory}, \link{get_head}, \link{get_n_activities}, 
+#' \link{join}, \link{seize}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
 get_tail <- function(traj) traj$get_tail()
@@ -188,11 +225,29 @@ get_tail <- function(traj) traj$get_tail()
 #' 
 #' @return The number of activities in the trajectory.
 #' @seealso Other methods for dealing with trajectories:
-#' \link{create_trajectory}, \link{get_head},
-#' \link{get_tail}, \link{seize}, \link{release}, \link{timeout}, 
+#' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
+#' \link{join}, \link{seize}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
 get_n_activities <- function(traj) traj$get_n_activities()
+
+#' Join trajectories
+#'
+#' Concatenate any number of trajectories in the order specified.
+#' 
+#' @param ... trajectory objects.
+#' 
+#' @return A new trajectory object.
+#' @seealso Other methods for dealing with trajectories:
+#' \link{create_trajectory}, \link{get_head}, \link{get_tail},
+#' \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
+#' \link{set_attribute}, \link{branch}, \link{rollback}.
+#' @export
+join <- function(...) {
+  traj <- list(...)
+  for (i in traj[-1]) traj[[1]] <- traj[[1]]$join(i)
+  traj[[1]]
+}
 
 #' Add a seize activity
 #'
@@ -212,8 +267,8 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #' 
 #' @return The trajectory object.
 #' @seealso Other methods for dealing with trajectories:
-#' \link{create_trajectory}, \link{get_head},
-#' \link{get_tail}, \link{get_n_activities}, \link{release}, \link{timeout}, 
+#' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
+#' \link{get_n_activities}, \link{join}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
 seize <- function(traj, resource, amount=1, priority=0, preemptible=0, restart=FALSE)
@@ -229,8 +284,8 @@ seize <- function(traj, resource, amount=1, priority=0, preemptible=0, restart=F
 #' 
 #' @return The trajectory object.
 #' @seealso Other methods for dealing with trajectories:
-#' \link{create_trajectory}, \link{get_head},
-#' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{timeout}, 
+#' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
+#' \link{get_n_activities}, \link{join}, \link{seize}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
 release <- function(traj, resource, amount=1) traj$release(resource, amount)
@@ -246,8 +301,8 @@ release <- function(traj, resource, amount=1) traj$release(resource, amount)
 #' 
 #' @return The trajectory object.
 #' @seealso Other methods for dealing with trajectories:
-#' \link{create_trajectory}, \link{get_head},
-#' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
+#' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
+#' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
 timeout <- function(traj, task) traj$timeout(task)
@@ -262,8 +317,8 @@ timeout <- function(traj, task) traj$timeout(task)
 #' 
 #' @return The trajectory object.
 #' @seealso Other methods for dealing with trajectories:
-#' \link{create_trajectory}, \link{get_head},
-#' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
+#' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
+#' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
 #' \link{timeout}, \link{branch}, \link{rollback}.
 #' @export
 set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
@@ -284,8 +339,8 @@ set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
 #' 
 #' @return The trajectory object.
 #' @seealso Other methods for dealing with trajectories:
-#' \link{create_trajectory}, \link{get_head},
-#' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release}, 
+#' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
+#' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
 #' \link{set_attribute}, \link{timeout}, \link{rollback}.
 #' @export
 branch <- function(traj, option, continue, ..., merge="_deprecated") {
@@ -308,8 +363,8 @@ branch <- function(traj, option, continue, ..., merge="_deprecated") {
 #' 
 #' @return The trajectory object.
 #' @seealso Other methods for dealing with trajectories:
-#' \link{create_trajectory}, \link{get_head},
-#' \link{get_tail}, \link{get_n_activities}, \link{seize}, \link{release},
+#' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
+#' \link{get_n_activities}, \link{join}, \link{seize}, \link{release},
 #' \link{set_attribute}, \link{timeout}, \link{branch}.
 #' @export
 rollback <- function(traj, amount, times=1, check) traj$rollback(amount, times, check)

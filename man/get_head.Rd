@@ -17,8 +17,8 @@ It can be used to get the pointer to a trajectory's first activity.
 }
 \seealso{
 Other methods for dealing with trajectories:
-\link{create_trajectory}, \link{get_tail},
-\link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
+\link{create_trajectory}, \link{get_tail}, \link{get_n_activities}, 
+\link{join}, \link{seize}, \link{release}, \link{timeout}, 
 \link{set_attribute}, \link{branch}, \link{rollback}.
 }
 

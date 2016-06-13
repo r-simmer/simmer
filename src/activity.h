@@ -11,6 +11,8 @@ class Arrival;
  */
 class Activity {
 public:
+  BASE_CLONEABLE(Activity)
+  
   std::string name;
   std::string resource;
   bool provide_attrs;
@@ -69,6 +71,8 @@ private:
 template <typename T>
 class Seize: public Activity {
 public:
+  CLONEABLE(Seize<T>)
+  
   Seize(std::string resource, T amount, bool provide_attrs, 
         int priority, int preemptible, bool restart):
     Activity("Seize", resource, provide_attrs, std::abs(priority)),
@@ -89,6 +93,8 @@ private:
 template <typename T>
 class Release: public Activity {
 public:
+  CLONEABLE(Release<T>)
+  
   Release(std::string resource, T amount, bool provide_attrs):
     Activity("Release", resource, provide_attrs, PRIORITY_RELEASE), amount(amount) {}
   
@@ -105,6 +111,8 @@ private:
 template <typename T>
 class SetAttribute: public Activity {
 public:
+  CLONEABLE(SetAttribute<T>)
+  
   SetAttribute(std::string key, T value, bool provide_attrs):
     Activity("SetAttribute", "-", provide_attrs), key(key), value(value) {}
   
@@ -122,6 +130,8 @@ private:
 template <typename T>
 class Timeout: public Activity {
 public:
+  CLONEABLE(Timeout<T>)
+  
   Timeout(T delay, bool provide_attrs):
     Activity("Timeout", "-", provide_attrs), delay(delay) {}
   
@@ -138,6 +148,8 @@ private:
  */
 class Branch: public Activity {
 public:
+  CLONEABLE(Branch)
+  
   Branch(Rcpp::Function option, bool provide_attrs, VEC<bool> cont, VEC<Rcpp::Environment> trj):
     Activity("Branch", "-", provide_attrs), option(option), cont(cont), trj(trj), selected(NULL) {
     foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
@@ -198,6 +210,8 @@ private:
 template <typename T>
 class Rollback: public Activity {
 public:
+  CLONEABLE(Rollback<T>)
+  
   Rollback(int amount, T times, bool provide_attrs):
     Activity("Rollback", "-", provide_attrs), amount(std::abs(amount)), times(times),
     cached(NULL), selected(NULL) {}

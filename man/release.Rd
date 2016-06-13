@@ -21,8 +21,8 @@ Adds a new activity capable of releasing a resource to the tail of a trajectory.
 }
 \seealso{
 Other methods for dealing with trajectories:
-\link{create_trajectory}, \link{get_head},
-\link{get_tail}, \link{get_n_activities}, \link{seize}, \link{timeout}, 
+\link{create_trajectory}, \link{get_head}, \link{get_tail}, 
+\link{get_n_activities}, \link{join}, \link{seize}, \link{timeout}, 
 \link{set_attribute}, \link{branch}, \link{rollback}.
 }
 

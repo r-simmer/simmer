@@ -449,3 +449,14 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// activity_clone_
+SEXP activity_clone_(SEXP activity_);
+RcppExport SEXP simmer_activity_clone_(SEXP activity_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
+    __result = Rcpp::wrap(activity_clone_(activity_));
+    return __result;
+END_RCPP
+}
