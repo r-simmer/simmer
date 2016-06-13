@@ -19,7 +19,7 @@ test_that("a rollback points to the correct activity", {
     seize("dummy", 1) %>%
     branch(function() 1, T, 
            create_trajectory() %>% 
-             rollback(1))
+             rollback(2))
   
   env <- simmer() %>%
     add_resource("dummy", 2, 0) %>%

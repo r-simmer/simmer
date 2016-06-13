@@ -50,15 +50,15 @@ test_that("the trajectory stores the right number of activities", {
     set_attribute("dummy", function() 1)
   
   expect_is(t0, "simmer.trajectory")
-  expect_equal(t0%>%get_n_activities(), 13)
+  expect_equal(t0%>%get_n_activities(), 15)
   
   output <- paste0(".*(",
-    "13 activities", 
+    "15 activities", 
     ".*Seize.*nurse.*1", 
     ".*Timeout.*function", 
     ".*Release.*nurse.*1", 
     ".*Branch.*1", 
-      ".*6 activities", 
+      ".*7 activities", 
       ".*Seize.*doctor.*function", 
       ".*Timeout.*function", 
       ".*Release.*doctor.*function", 

@@ -8,6 +8,7 @@
 * Various doc fixes (#61).
 * Change branch's `merge` parameter name to `continue`. The old name is deprecated (#57).
 * Use `match.arg()` in multiple-choice arguments (#55).
+* Fix `branch` backwards linking and count (#56).
 
 # Changes in version 3.2.1
 

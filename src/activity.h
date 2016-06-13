@@ -140,7 +140,6 @@ class Branch: public Activity {
 public:
   Branch(Rcpp::Function option, bool provide_attrs, VEC<bool> cont, VEC<Rcpp::Environment> trj):
     Activity("Branch", "-", provide_attrs), option(option), cont(cont), trj(trj), selected(NULL) {
-    n = 0;
     foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
       Rcpp::Function get_head(itr["get_head"]);
       Rcpp::Function get_tail(itr["get_tail"]);
@@ -165,7 +164,7 @@ public:
   void set_prev(Activity* activity) {
     Activity::set_prev(activity);
     foreach_ (VEC<Activity*>::value_type& itr, heads)
-      itr->set_prev(activity);
+      itr->set_prev(this);
   }
   
   void set_next(Activity* activity) {
