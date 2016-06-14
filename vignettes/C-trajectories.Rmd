@@ -264,6 +264,29 @@ simmer() %>%
   run()
 ```
 
+## Concatenating trajectories
+
+It is possible to concatenate together any number of trajectories using the `join(...)` verb. It may be used as a standalone function as follows:
+
+```{r}
+t1 <- create_trajectory() %>% seize("dummy", 1)
+t2 <- create_trajectory() %>% timeout(1)
+t3 <- create_trajectory() %>% release("dummy", 1)
+
+t0 <- join(t1, t2, t3)
+t0
+```
+
+Or it may operate inline, like another activity:
+
+```{r}
+t0 <- create_trajectory() %>%
+  join(t1) %>%
+  timeout(1) %>%
+  join(t3)
+t0
+```
+
 ## Interacting with the environment from within a trajectory
 
 It is possible to interact with the simulation environment in order to extract parameters of interest such as the current simulation time (`now()`), status of resources (`get_capacity`, `get_queue_size`, `get_server_count`, `get_queue_count`), status of generators (`get_n_generated`) or directly to gather the history of monitored values (`get_mon_*`). You may also want (or in other words, your model may need) to check and use all this information to take decisions inside a given trajectory.

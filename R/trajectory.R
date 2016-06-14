@@ -246,6 +246,18 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #' \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
+#' 
+#' @examples
+#' t1 <- create_trajectory() %>% seize("dummy", 1)
+#' t2 <- create_trajectory() %>% timeout(1)
+#' t3 <- create_trajectory() %>% release("dummy", 1)
+#' 
+#' join(t1, t2, t3)
+#' 
+#' create_trajectory() %>%
+#'   join(t1) %>%
+#'   timeout(1) %>%
+#'   join(t3)
 join <- function(...) {
   traj <- list(...)
   for (i in traj[-1]) traj[[1]] <- traj[[1]]$join(i)

@@ -15,6 +15,18 @@ A new trajectory object.
 \description{
 Concatenate any number of trajectories in the order specified.
 }
+\examples{
+t1 <- create_trajectory() \%>\% seize("dummy", 1)
+t2 <- create_trajectory() \%>\% timeout(1)
+t3 <- create_trajectory() \%>\% release("dummy", 1)
+
+join(t1, t2, t3)
+
+create_trajectory() \%>\%
+  join(t1) \%>\%
+  timeout(1) \%>\%
+  join(t3)
+}
 \seealso{
 Other methods for dealing with trajectories:
 \link{create_trajectory}, \link{get_head}, \link{get_tail},
