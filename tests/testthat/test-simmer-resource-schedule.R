@@ -4,7 +4,7 @@ test_that("capacity & queue size change", {
   inf_sch <- schedule(c(8, 16, 24), c(1, 2, 3), Inf)
   fin_sch <- schedule(c(8, 16, 24), c(1, 2, 3), 24)
   
-  limits <- simmer() %>%
+  limits <- simmer(verbose=TRUE) %>%
     add_resource("dummy", inf_sch) %>%
     run(16) %>% reset() %>% run(48) %>%
     get_mon_resources("limits")

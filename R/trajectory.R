@@ -360,8 +360,8 @@ set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
 #' @export
 branch <- function(traj, option, continue, ..., merge="_deprecated") {
   if(!identical(merge, "_deprecated")) {
-    warning("'merge' is deprecated, use 'continue' instead")
-    traj$branch(option, merge, continue, ...)
+    warning("'merge' is deprecated, use 'continue' instead") # nocov
+    traj$branch(option, merge, continue, ...) # nocov
   } else traj$branch(option, continue, ...)
 }
 
