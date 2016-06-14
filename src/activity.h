@@ -14,6 +14,7 @@ public:
   BASE_CLONEABLE(Activity)
   
   std::string name;
+  bool verbose;
   std::string resource;
   bool provide_attrs;
   int n;
@@ -26,9 +27,9 @@ public:
    * @param provide_attrs whether the activity should expose the arrival's attributes
    * @param priority      resource accessing priority
    */
-  Activity(std::string name, std::string resource, bool provide_attrs, int priority = 0): 
-    name(name), resource(resource), provide_attrs(provide_attrs), 
-    n(1), priority(priority), next(NULL), prev(NULL)  {}
+  Activity(std::string name, bool verbose, std::string resource, bool provide_attrs, int priority = 0): 
+    name(name), verbose(verbose), resource(resource), provide_attrs(provide_attrs), 
+    n(1), priority(priority), next(NULL), prev(NULL) {}
   
   virtual ~Activity(){}
   
@@ -37,9 +38,14 @@ public:
    * @param indent number of spaces at the beginning of each line
    */
   virtual void print(int indent=0) {
-    for (int i = 0; i < indent; ++i)
-      Rcpp::Rcout << " ";
-    Rcpp::Rcout << "{ Activity: " << name << "(" << resource << ") | ";
+    for (int i = 0; i < indent; ++i) Rcpp::Rcout << " ";
+    Rcpp::Rcout << "{ Activity: " << std::setw(9) << std::left << name << " | ";
+    if (verbose) {
+      Rcpp::Rcout << std::setw(9) << std::right << prev;
+      Rcpp::Rcout << " <- " << std::setw(9) << this << " -> ";
+      Rcpp::Rcout << std::setw(9) << std::left << next << " | ";
+    }
+    Rcpp::Rcout << "resource: " << FMT_12 << resource << " | ";
   }
   
   /**
@@ -73,9 +79,9 @@ class Seize: public Activity {
 public:
   CLONEABLE(Seize<T>)
   
-  Seize(std::string resource, T amount, bool provide_attrs, 
+  Seize(bool verbose, std::string resource, T amount, bool provide_attrs, 
         int priority, int preemptible, bool restart):
-    Activity("Seize", resource, provide_attrs, std::abs(priority)),
+    Activity("Seize", verbose, resource, provide_attrs, std::abs(priority)),
     amount(amount), preemptible(std::abs(preemptible)), restart(restart) {}
   
   void print(int indent=0);
@@ -95,8 +101,8 @@ class Release: public Activity {
 public:
   CLONEABLE(Release<T>)
   
-  Release(std::string resource, T amount, bool provide_attrs):
-    Activity("Release", resource, provide_attrs, PRIORITY_RELEASE), amount(amount) {}
+  Release(bool verbose, std::string resource, T amount, bool provide_attrs):
+    Activity("Release", verbose, resource, provide_attrs, PRIORITY_RELEASE), amount(amount) {}
   
   void print(int indent=0);
   double run(Arrival* arrival);
@@ -113,8 +119,8 @@ class SetAttribute: public Activity {
 public:
   CLONEABLE(SetAttribute<T>)
   
-  SetAttribute(std::string key, T value, bool provide_attrs):
-    Activity("SetAttribute", "-", provide_attrs), key(key), value(value) {}
+  SetAttribute(bool verbose, std::string key, T value, bool provide_attrs):
+    Activity("SetAttribute", verbose, "-", provide_attrs), key(key), value(value) {}
   
   void print(int indent=0);
   double run(Arrival* arrival);
@@ -132,8 +138,8 @@ class Timeout: public Activity {
 public:
   CLONEABLE(Timeout<T>)
   
-  Timeout(T delay, bool provide_attrs):
-    Activity("Timeout", "-", provide_attrs), delay(delay) {}
+  Timeout(bool verbose, T delay, bool provide_attrs):
+    Activity("Timeout", verbose, "-", provide_attrs), delay(delay) {}
   
   void print(int indent=0);
   double run(Arrival* arrival);
@@ -150,8 +156,8 @@ class Branch: public Activity {
 public:
   CLONEABLE(Branch)
   
-  Branch(Rcpp::Function option, bool provide_attrs, VEC<bool> cont, VEC<Rcpp::Environment> trj):
-    Activity("Branch", "-", provide_attrs), option(option), cont(cont), trj(trj), selected(NULL) {
+  Branch(bool verbose, Rcpp::Function option, bool provide_attrs, VEC<bool> cont, VEC<Rcpp::Environment> trj):
+    Activity("Branch", verbose, "-", provide_attrs), option(option), cont(cont), trj(trj), selected(NULL) {
     foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
       Rcpp::Function get_head(itr["get_head"]);
       Rcpp::Function get_tail(itr["get_tail"]);
@@ -159,6 +165,20 @@ public:
       tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_tail()));
       Rcpp::Function get_n_activities(itr["get_n_activities"]);
       n += Rcpp::as<int>(get_n_activities());
+    }
+  }
+  
+  Branch(const Branch& o): Activity("Branch", o.verbose, "-", o.provide_attrs), option(o.option), 
+    cont(o.cont), trj(o.trj), selected(NULL) {
+    heads.clear();
+    tails.clear();
+    foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
+      Rcpp::Function clone(itr["clone"]);
+      itr = clone();
+      Rcpp::Function get_head(itr["get_head"]);
+      Rcpp::Function get_tail(itr["get_tail"]);
+      heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_head()));
+      tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_tail()));
     }
   }
   
@@ -212,9 +232,14 @@ class Rollback: public Activity {
 public:
   CLONEABLE(Rollback<T>)
   
-  Rollback(int amount, T times, bool provide_attrs):
-    Activity("Rollback", "-", provide_attrs), amount(std::abs(amount)), times(times),
+  Rollback(bool verbose, int amount, T times, bool provide_attrs):
+    Activity("Rollback", verbose, "-", provide_attrs), amount(std::abs(amount)), times(times),
     cached(NULL), selected(NULL) {}
+  
+  Rollback(const Rollback& o): Activity("Rollback", o.verbose, "-", o.provide_attrs), 
+    amount(o.amount), times(o.times), cached(NULL), selected(NULL) {
+    pending.clear();
+  }
   
   void print(int indent=0);
   double run(Arrival* arrival);

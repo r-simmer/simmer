@@ -160,19 +160,19 @@ plot_resource_usage(sim, "t-rex")
 
 ###################################################
 
-t1 <- create_trajectory("my trajectory") %>%
+t1 <- create_trajectory("my trajectory", verbose=T) %>%
   ## add an intake activity
   seize("nurse", 1) %>%
   timeout(function() rnorm(1, 15)) %>%
   release("nurse", 1)
 
-t2 <- create_trajectory() %>%
+t2 <- create_trajectory(verbose=T) %>%
   ## add a consultation activity
   seize("doctor", 1) %>%
   timeout(function() rnorm(1, 20)) %>%
   release("doctor", 1)
 
-t3 <- create_trajectory() %>%
+t3 <- create_trajectory(verbose=T) %>%
   ## add a planning activity
   seize("administration", 1) %>%
   timeout(function() rnorm(1, 5)) %>%
@@ -189,3 +189,7 @@ t0 <- create_trajectory() %>%
   timeout(function() rnorm(1, 20)) %>%
   release("doctor", 1) %>%
   join(t3)
+
+t1 <- create_trajectory() %>%
+  branch(function() 1, T, 
+         create_trajectory() %>% timeout(1))

@@ -4,10 +4,12 @@
 \alias{create_trajectory}
 \title{Create a trajectory}
 \usage{
-create_trajectory(name = "anonymous")
+create_trajectory(name = "anonymous", verbose = FALSE)
 }
 \arguments{
 \item{name}{the name of the trajectory.}
+
+\item{verbose}{enable showing additional information.}
 }
 \value{
 Returns an environment that represents the trajectory.

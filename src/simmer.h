@@ -33,9 +33,9 @@
 #define PRIORITY_GENERATOR  -1
 
 #define BASE_CLONEABLE(Type) \
-  virtual Type *clone() const = 0;
+  virtual Type* clone() const = 0;
 
 #define CLONEABLE(Type) \
-  virtual Type *clone() const { return new Type(*this); }
+  virtual Type* clone() const { return new Type(*this); }
 
 #endif

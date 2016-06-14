@@ -40,7 +40,7 @@ Simmer <- R6Class("simmer",
     
     now = function() { now_(private$sim_obj) },
     
-    peek = function(steps=1, verbose=F) {
+    peek = function(steps=1, verbose=FALSE) {
       steps <- evaluate_value(steps)
       verbose <- evaluate_value(verbose)
       steps <- replace(steps, steps==Inf, -1)
@@ -340,7 +340,7 @@ now <- function(env) env$now()
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
 #' \link{get_server_count}, \link{get_queue_count}.
 #' @export
-peek <- function(env, steps=1, verbose=F) env$peek(steps, verbose)
+peek <- function(env, steps=1, verbose=FALSE) env$peek(steps, verbose)
 
 #' Step the simulation
 #'

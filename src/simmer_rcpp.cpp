@@ -229,22 +229,24 @@ int get_queue_count_(SEXP sim_, SEXP name_){
 }
 
 //[[Rcpp::export]]
-SEXP Seize__new(SEXP resource_, SEXP amount_, 
+SEXP Seize__new(SEXP verbose_, SEXP resource_, SEXP amount_, 
                 SEXP priority_, SEXP preemptible_, SEXP restart_) {
+  bool verbose = as<bool>(verbose_);
   std::string resource = as<std::string>(resource_);
   int amount = as<int>(amount_);
   int priority = as<int>(priority_);
   int preemptible = as<int>(preemptible_);
   bool restart = as<bool>(restart_);
 
-  XPtr<Seize<int> > ptr(new Seize<int>(resource, amount, 0, 
+  XPtr<Seize<int> > ptr(new Seize<int>(verbose, resource, amount, 0, 
                                        priority, preemptible, restart), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Seize__new_func(SEXP resource_, Function amount, SEXP provide_attrs_, 
+SEXP Seize__new_func(SEXP verbose_, SEXP resource_, Function amount, SEXP provide_attrs_, 
                      SEXP priority_, SEXP preemptible_, SEXP restart_) {
+  bool verbose = as<bool>(verbose_);
   std::string resource = as<std::string>(resource_);
   bool provide_attrs = as<bool>(provide_attrs_);
   int priority = as<int>(priority_);
@@ -252,89 +254,98 @@ SEXP Seize__new_func(SEXP resource_, Function amount, SEXP provide_attrs_,
   bool restart = as<bool>(restart_);
   
   XPtr<Seize<Function> > 
-    ptr(new Seize<Function>(resource, amount, provide_attrs, 
+    ptr(new Seize<Function>(verbose, resource, amount, provide_attrs, 
                             priority, preemptible, restart), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Release__new(SEXP resource_, SEXP amount_) {
+SEXP Release__new(SEXP verbose_, SEXP resource_, SEXP amount_) {
+  bool verbose = as<bool>(verbose_);
   std::string resource = as<std::string>(resource_);
   int amount = as<int>(amount_);
   
-  XPtr<Release<int> > ptr(new Release<int>(resource, amount, 0), false);
+  XPtr<Release<int> > ptr(new Release<int>(verbose, resource, amount, 0), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Release__new_func(SEXP resource_, Function amount, SEXP provide_attrs_) {
+SEXP Release__new_func(SEXP verbose_, SEXP resource_, Function amount, SEXP provide_attrs_) {
+  bool verbose = as<bool>(verbose_);
   std::string resource = as<std::string>(resource_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Release<Function> > ptr(new Release<Function>(resource, amount, provide_attrs), false);
+  XPtr<Release<Function> > ptr(new Release<Function>(verbose, resource, amount, provide_attrs), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new(SEXP key_, SEXP value_) {
+SEXP SetAttribute__new(SEXP verbose_, SEXP key_, SEXP value_) {
+  bool verbose = as<bool>(verbose_);
   std::string key = as<std::string>(key_);
   double value = as<double>(value_);
   
-  XPtr<SetAttribute<double> > ptr(new SetAttribute<double>(key, value, 0), false);
+  XPtr<SetAttribute<double> > ptr(new SetAttribute<double>(verbose, key, value, 0), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new_func(SEXP key_, Function value, SEXP provide_attrs_) {
+SEXP SetAttribute__new_func(SEXP verbose_, SEXP key_, Function value, SEXP provide_attrs_) {
   // TODO: look into (dis)advantages of using bool provide_attrs directly instead of SEXP provide_attrs
+  bool verbose = as<bool>(verbose_);
   std::string key = as<std::string>(key_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<SetAttribute<Function> > ptr(new SetAttribute<Function>(key, value, provide_attrs), false);
+  XPtr<SetAttribute<Function> > ptr(new SetAttribute<Function>(verbose, key, value, provide_attrs), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Timeout__new(SEXP delay_) {
+SEXP Timeout__new(SEXP verbose_, SEXP delay_) {
+  bool verbose = as<bool>(verbose_);
   double delay = as<double>(delay_);
   
-  XPtr<Timeout<double> > ptr(new Timeout<double>(delay, 0), false);
+  XPtr<Timeout<double> > ptr(new Timeout<double>(verbose, delay, 0), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Timeout__new_func(Function task, SEXP provide_attrs_) {
+SEXP Timeout__new_func(SEXP verbose_, Function task, SEXP provide_attrs_) {
+  bool verbose = as<bool>(verbose_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Timeout<Function> > ptr(new Timeout<Function>(task, provide_attrs), false);
+  XPtr<Timeout<Function> > ptr(new Timeout<Function>(verbose, task, provide_attrs), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Branch__new(Function option, SEXP provide_attrs_, SEXP cont_, SEXP trj_) {
+SEXP Branch__new(SEXP verbose_, Function option, SEXP provide_attrs_, SEXP cont_, SEXP trj_) {
+  bool verbose = as<bool>(verbose_);
   bool provide_attrs = as<bool>(provide_attrs_);
   VEC<bool> cont = as<VEC<bool> >(cont_);
   VEC<Environment> trj = as<VEC<Environment> >(trj_);
   
-  XPtr<Branch> ptr(new Branch(option, provide_attrs, cont, trj), false);
+  XPtr<Branch> ptr(new Branch(verbose, option, provide_attrs, cont, trj), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Rollback__new(SEXP amount_, SEXP times_) {
+SEXP Rollback__new(SEXP verbose_, SEXP amount_, SEXP times_) {
+  bool verbose = as<bool>(verbose_);
   int amount = as<int>(amount_);
   int times = as<int>(times_);
   
-  XPtr<Rollback<int> > ptr(new Rollback<int>(amount, times, 0), false);
+  XPtr<Rollback<int> > ptr(new Rollback<int>(verbose, amount, times, 0), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Rollback__new_func(SEXP amount_, Function check, SEXP provide_attrs_) {
+SEXP Rollback__new_func(SEXP verbose_, SEXP amount_, Function check, SEXP provide_attrs_) {
+  bool verbose = as<bool>(verbose_);
   int amount = as<int>(amount_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Rollback<Function> > ptr(new Rollback<Function>(amount, check, provide_attrs), false);
+  XPtr<Rollback<Function> > ptr(new Rollback<Function>(verbose, amount, check, provide_attrs), false);
   return ptr;
 }
 

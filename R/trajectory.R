@@ -4,8 +4,9 @@ simmer.trajectory <- R6Class("simmer.trajectory",
   public = list(
     name = NA,
     
-    initialize = function(name="anonymous") { 
+    initialize = function(name="anonymous", verbose=FALSE) { 
       self$name <- evaluate_value(name)
+      private$verbose <- evaluate_value(verbose)
       self
     },
     
@@ -39,9 +40,9 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       }
       restart <- evaluate_value(restart)
       if (is.function(amount))
-        private$add_activity(Seize__new_func(resource, amount, needs_attrs(amount), 
-                                             priority, preemptible, restart))
-      else private$add_activity(Seize__new(resource, amount, 
+        private$add_activity(Seize__new_func(private$verbose, resource, amount, 
+                                             needs_attrs(amount), priority, preemptible, restart))
+      else private$add_activity(Seize__new(private$verbose, resource, amount, 
                                            priority, preemptible, restart))
     },
     
@@ -49,23 +50,23 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
       if (is.function(amount))
-        private$add_activity(Release__new_func(resource, amount, needs_attrs(amount)))
-      else private$add_activity(Release__new(resource, amount))
+        private$add_activity(Release__new_func(private$verbose, resource, amount, needs_attrs(amount)))
+      else private$add_activity(Release__new(private$verbose, resource, amount))
     },
     
     timeout = function(task) {
       task <- evaluate_value(task)
       if (is.function(task))
-        private$add_activity(Timeout__new_func(task, needs_attrs(task)))
-      else private$add_activity(Timeout__new(task))
+        private$add_activity(Timeout__new_func(private$verbose, task, needs_attrs(task)))
+      else private$add_activity(Timeout__new(private$verbose, task))
     },
     
     set_attribute = function(key, value) {
       key <- as.character(key)
       value <- evaluate_value(value)
       if (is.function(value))
-        private$add_activity(SetAttribute__new_func(key, value, needs_attrs(value)))
-      else private$add_activity(SetAttribute__new(key, value))
+        private$add_activity(SetAttribute__new_func(private$verbose, key, value, needs_attrs(value)))
+      else private$add_activity(SetAttribute__new(private$verbose, key, value))
     },
     
     branch = function(option, continue, ...) {
@@ -74,7 +75,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
         stop("the number of elements does not match")
       for (i in trj) if (!inherits(i, "simmer.trajectory"))
         stop("not a trajectory")
-      private$add_activity(Branch__new(option, needs_attrs(option), continue, trj))
+      private$add_activity(Branch__new(private$verbose, option, needs_attrs(option), continue, trj))
     },
     
     rollback = function(amount, times=1, check) {
@@ -82,8 +83,8 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       times <- evaluate_value(times)
       if (is.infinite(times)) times <- -1
       if (missing(check))
-        private$add_activity(Rollback__new(amount, times))
-      else private$add_activity(Rollback__new_func(amount, check, needs_attrs(check)))
+        private$add_activity(Rollback__new(private$verbose, amount, times))
+      else private$add_activity(Rollback__new_func(private$verbose, amount, check, needs_attrs(check)))
     },
     
     join = function(traj) {
@@ -104,6 +105,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
   ),
   
   private = list(
+    verbose = FALSE,
     n_activities = 0,
     head = NULL,
     tail = NULL,
@@ -147,6 +149,7 @@ simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 #' by arrivals of the same type.
 #' 
 #' @param name the name of the trajectory.
+#' @param verbose enable showing additional information.
 #' 
 #' @return Returns an environment that represents the trajectory.
 #' @seealso Other methods for dealing with trajectories:
@@ -187,7 +190,7 @@ simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 #'   timeout(function() 2)
 #' 
 #' t1
-create_trajectory <- function(name="anonymous") simmer.trajectory$new(name)
+create_trajectory <- function(name="anonymous", verbose=FALSE) simmer.trajectory$new(name, verbose)
 
 #' Get the first activity
 #'

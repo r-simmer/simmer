@@ -81,48 +81,48 @@ get_queue_count_ <- function(sim_, name_) {
     .Call('simmer_get_queue_count_', PACKAGE = 'simmer', sim_, name_)
 }
 
-Seize__new <- function(resource_, amount_, priority_, preemptible_, restart_) {
-    .Call('simmer_Seize__new', PACKAGE = 'simmer', resource_, amount_, priority_, preemptible_, restart_)
+Seize__new <- function(verbose_, resource_, amount_, priority_, preemptible_, restart_) {
+    .Call('simmer_Seize__new', PACKAGE = 'simmer', verbose_, resource_, amount_, priority_, preemptible_, restart_)
 }
 
-Seize__new_func <- function(resource_, amount, provide_attrs_, priority_, preemptible_, restart_) {
-    .Call('simmer_Seize__new_func', PACKAGE = 'simmer', resource_, amount, provide_attrs_, priority_, preemptible_, restart_)
+Seize__new_func <- function(verbose_, resource_, amount, provide_attrs_, priority_, preemptible_, restart_) {
+    .Call('simmer_Seize__new_func', PACKAGE = 'simmer', verbose_, resource_, amount, provide_attrs_, priority_, preemptible_, restart_)
 }
 
-Release__new <- function(resource_, amount_) {
-    .Call('simmer_Release__new', PACKAGE = 'simmer', resource_, amount_)
+Release__new <- function(verbose_, resource_, amount_) {
+    .Call('simmer_Release__new', PACKAGE = 'simmer', verbose_, resource_, amount_)
 }
 
-Release__new_func <- function(resource_, amount, provide_attrs_) {
-    .Call('simmer_Release__new_func', PACKAGE = 'simmer', resource_, amount, provide_attrs_)
+Release__new_func <- function(verbose_, resource_, amount, provide_attrs_) {
+    .Call('simmer_Release__new_func', PACKAGE = 'simmer', verbose_, resource_, amount, provide_attrs_)
 }
 
-SetAttribute__new <- function(key_, value_) {
-    .Call('simmer_SetAttribute__new', PACKAGE = 'simmer', key_, value_)
+SetAttribute__new <- function(verbose_, key_, value_) {
+    .Call('simmer_SetAttribute__new', PACKAGE = 'simmer', verbose_, key_, value_)
 }
 
-SetAttribute__new_func <- function(key_, value, provide_attrs_) {
-    .Call('simmer_SetAttribute__new_func', PACKAGE = 'simmer', key_, value, provide_attrs_)
+SetAttribute__new_func <- function(verbose_, key_, value, provide_attrs_) {
+    .Call('simmer_SetAttribute__new_func', PACKAGE = 'simmer', verbose_, key_, value, provide_attrs_)
 }
 
-Timeout__new <- function(delay_) {
-    .Call('simmer_Timeout__new', PACKAGE = 'simmer', delay_)
+Timeout__new <- function(verbose_, delay_) {
+    .Call('simmer_Timeout__new', PACKAGE = 'simmer', verbose_, delay_)
 }
 
-Timeout__new_func <- function(task, provide_attrs_) {
-    .Call('simmer_Timeout__new_func', PACKAGE = 'simmer', task, provide_attrs_)
+Timeout__new_func <- function(verbose_, task, provide_attrs_) {
+    .Call('simmer_Timeout__new_func', PACKAGE = 'simmer', verbose_, task, provide_attrs_)
 }
 
-Branch__new <- function(option, provide_attrs_, cont_, trj_) {
-    .Call('simmer_Branch__new', PACKAGE = 'simmer', option, provide_attrs_, cont_, trj_)
+Branch__new <- function(verbose_, option, provide_attrs_, cont_, trj_) {
+    .Call('simmer_Branch__new', PACKAGE = 'simmer', verbose_, option, provide_attrs_, cont_, trj_)
 }
 
-Rollback__new <- function(amount_, times_) {
-    .Call('simmer_Rollback__new', PACKAGE = 'simmer', amount_, times_)
+Rollback__new <- function(verbose_, amount_, times_) {
+    .Call('simmer_Rollback__new', PACKAGE = 'simmer', verbose_, amount_, times_)
 }
 
-Rollback__new_func <- function(amount_, check, provide_attrs_) {
-    .Call('simmer_Rollback__new_func', PACKAGE = 'simmer', amount_, check, provide_attrs_)
+Rollback__new_func <- function(verbose_, amount_, check, provide_attrs_) {
+    .Call('simmer_Rollback__new_func', PACKAGE = 'simmer', verbose_, amount_, check, provide_attrs_)
 }
 
 activity_get_n_ <- function(activity_) {

@@ -4,7 +4,7 @@
 \alias{peek}
 \title{Peek next events}
 \usage{
-peek(env, steps = 1, verbose = F)
+peek(env, steps = 1, verbose = FALSE)
 }
 \arguments{
 \item{env}{the simulation environment.}
