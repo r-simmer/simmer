@@ -22,6 +22,30 @@ test_that("the activity chain grows as expected", {
   expect_equal(get_prev_activity(tail), NULL)
 })
 
+test_that("the activity chain grows as expected using join", {
+  # TODO: check that pointers differ with verbose=TRUE
+  t1 <- create_trajectory() %>% seize("nurse", 1)
+  t2 <- create_trajectory() %>% timeout(function() rnorm(1, 15))
+  t3 <- create_trajectory() %>% branch(function() 1, T, create_trajectory()%>%timeout(function() 1))
+  t4 <- create_trajectory() %>% set_attribute("dummy", 1)
+  t5 <- create_trajectory() %>% rollback(1)
+  t6 <- create_trajectory() %>% release("nurse", 1)
+  
+  t0 <- join(t1, t2, t3, t4, t5, t6)
+  
+  head <- t0%>%get_head()
+  for (i in 1:5) head <- get_next_activity(head)
+  tail <- t0%>%get_tail()
+  for (i in 1:5) tail <- get_prev_activity(tail)
+  
+  expect_output(print_activity(head), "Release")
+  expect_output(print_activity(t0%>%get_tail()), "Release")
+  expect_equal(get_next_activity(head), NULL)
+  expect_output(print_activity(tail), "Seize")
+  expect_output(print_activity(t0%>%get_head()), "Seize")
+  expect_equal(get_prev_activity(tail), NULL)
+})
+
 test_that("the trajectory stores the right number of activities", {
   t0 <- create_trajectory("my trajectory") %>%
     seize("nurse", 1) %>%
