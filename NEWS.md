@@ -9,6 +9,7 @@
 * Change branch's `merge` parameter name to `continue`. The old name is deprecated (#57).
 * Use `match.arg()` in multiple-choice arguments (#55).
 * Fix `branch` backwards linking and count (#56).
+* Split `release` in two steps to deal properly with capacity changes at the same point in time (#64).
 
 # Changes in version 3.2.1
 

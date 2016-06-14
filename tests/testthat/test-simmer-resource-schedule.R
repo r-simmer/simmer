@@ -95,3 +95,21 @@ test_that("arrivals are preempted when resource's capacity decreases", {
   expect_equal(arrivals$end_time, c(2, 3, 5))
   expect_equal(arrivals$activity_time, c(2, 2, 3))
 })
+
+test_that("resource's capacity decreases before post-release tasks", {
+  t <- create_trajectory() %>%
+    seize("t-rex") %>%
+    timeout(5) %>%
+    release("t-rex")
+  
+  arrivals <- simmer() %>%
+    add_resource("t-rex", capacity = schedule(timetable = c(5,10,15), 
+                                              period=Inf, 
+                                              values = c(1,0,1))) %>%
+    add_generator("piggy", t, at(0,0,0)) %>%
+    run() %>%
+    get_mon_arrivals()
+  
+  expect_equal(arrivals$end_time, c(10, 20, 25))
+  expect_equal(arrivals$activity_time, c(5, 5, 5))
+})

@@ -45,6 +45,19 @@ private:
   unsigned int index;
 };
 
+class DelayedTask: public Process {
+  typedef boost::function<void ()> Task;
+  
+public:
+  DelayedTask(Simulator* sim, std::string name, Task task): 
+    Process(sim, name, false), task(task) {}
+  
+  void run();
+  
+private:
+  Task task;
+};
+
 typedef UMAP<std::string, double> Attr;
 
 /**

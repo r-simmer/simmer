@@ -95,6 +95,7 @@ public:
   * @return  SUCCESS
   */
   int release(Arrival* arrival, int amount);
+  int post_release();
   
   /**
   * Gather resource statistics.

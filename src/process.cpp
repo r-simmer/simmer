@@ -44,6 +44,15 @@ end:
   return;
 }
 
+void DelayedTask::run() {
+  if (sim->verbose) Rcpp::Rcout <<
+    FMT_0 << sim->now() << " |" << FMT_11 << "task: " << FMT_12 << name << "|" << 
+    FMT_21 << " " << FMT_22 << " " << "| " << std::endl;
+  
+  task();
+  delete this;
+}
+
 void Arrival::run() {
   double delay;
   

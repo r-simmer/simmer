@@ -61,9 +61,18 @@ int Resource::release(Arrival* arrival, int amount) {
   remove_from_server(sim->verbose, sim->now(), arrival, amount);
   
   // serve another
+  DelayedTask* task = new DelayedTask(sim, "Post-Release", 
+                                      boost::bind(&Resource::post_release, this));
+  sim->schedule(0, task, PRIORITY_RELEASE_POST);
+  
+  return SUCCESS;
+}
+
+int Resource::post_release() {
+  // serve another
   while (queue_count) 
     if (!try_serve_from_queue(sim->verbose, sim->now())) break;
-  
+    
   if (is_monitored()) observe(sim->now());
   return SUCCESS;
 }

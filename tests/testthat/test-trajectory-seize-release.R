@@ -12,7 +12,7 @@ test_that("resources are seized/released as expected", {
     timeout(1) %>%
     seize("dummy", 1)
   
-  env <- simmer() %>%
+  env <- simmer(verbose=T) %>%
     add_resource("dummy", 3, 0) %>%
     add_generator("arrival", t0, at(0))
   
@@ -20,7 +20,7 @@ test_that("resources are seized/released as expected", {
   expect_equal(env %>% get_server_count("dummy"), 1)
   env %>% onestep() %>% onestep()
   expect_equal(env %>% get_server_count("dummy"), 3)
-  env %>% onestep() %>% onestep()
+  env %>% onestep() %>% onestep() %>% onestep()
   expect_equal(env %>% get_server_count("dummy"), 2)
   env %>% onestep() %>% onestep()
   expect_equal(env %>% get_server_count("dummy"), 0)
