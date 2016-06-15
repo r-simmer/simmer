@@ -2,7 +2,7 @@
 % Please edit documentation in R/convenience_funcs.R
 \name{every}
 \alias{every}
-\title{Arrivals every specific interval}
+\title{[Deprecated] Arrivals every specific interval}
 \usage{
 every(...)
 }

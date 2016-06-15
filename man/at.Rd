@@ -22,7 +22,7 @@ env <- simmer(verbose=TRUE) \%>\%
   run(100)
 }
 \seealso{
-\link{add_generator}, \link{every}, \link{from}, 
+\link{add_generator}, \link{from}, 
 \link{to}, \link{from_to}.
 }
 

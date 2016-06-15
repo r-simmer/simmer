@@ -24,7 +24,7 @@ env <- simmer(verbose=TRUE) \%>\%
   run(10)
 }
 \seealso{
-\link{add_generator}, \link{at}, \link{every}, \link{from}, 
+\link{add_generator}, \link{at}, \link{from}, 
 \link{from_to}.
 }
 

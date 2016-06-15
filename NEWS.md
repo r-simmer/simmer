@@ -15,6 +15,7 @@
 * Use `match.arg()` in multiple-choice arguments (#55).
 * Fix `branch` backwards linking and count (#56).
 * Split `release` in two steps to deal properly with capacity changes at the same point in time (#64).
+* The convenience function `every` is deprecated due to #65.
 
 # Changes in version 3.2.1
 

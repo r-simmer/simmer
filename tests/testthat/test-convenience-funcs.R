@@ -8,16 +8,6 @@ test_that("at returns the correct values", {
   expect_equal(gen_func(), c(0, 10, 5, -1))
 })
 
-test_that("every returns the correct values", {
-  gen_func <- every(1, 2, 3)
-  expect_equal(gen_func(), 1)
-  expect_equal(gen_func(), 2)
-  expect_equal(gen_func(), 3)
-  expect_equal(gen_func(), 1)
-  expect_equal(gen_func(), 2)
-  expect_equal(gen_func(), 3)
-})
-
 test_that("from returns the correct values", {
   gen_func <- from(5, function() 1)
   expect_equal(gen_func(), 5)

@@ -413,7 +413,7 @@ add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE,
 #' @param mon whether the simulator must monitor the generated arrivals or not (0=no monitoring, 1=simple arrival monitoring, 2=level 1 + arrival attribute montoring)
 #' 
 #' @return Returns the simulation environment.
-#' @seealso Convenience functions: \link{at}, \link{every}, \link{from}, 
+#' @seealso Convenience functions: \link{at}, \link{from}, 
 #' \link{to}, \link{from_to}. Other methods for dealing with a simulation environment:
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{get_mon_arrivals}, \link{get_mon_attributes},
