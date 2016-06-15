@@ -5,24 +5,30 @@
 void Process::deactivate(bool restart) { sim->unschedule(this); }
 
 void Generator::run() {
-  // get the delay for the next arrival
-  double delay = Rcpp::as<double>(dist());
-  if (delay < 0) return;
+  // get the delay for the next (n) arrival(s)
+  Rcpp::NumericVector delays = dist();
+  int n = delays.size();
+  double delay = 0;
   
-  // format the name and create the next arrival
-  char numstr[21];
-  sprintf(numstr, "%d", count);
-  Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_activity, this);
-  
-  if (sim->verbose) Rcpp::Rcout << 
-    FMT(10, right) << sim->now() << " |" << FMT(12, right) << "generator: " << FMT(15, left) << name << "|" << 
-    FMT(12, right) << "new: " << FMT(15, left) << (name + numstr) << "| " << (sim->now() + delay) << std::endl;
-  
-  // schedule the arrival and the generator itself
-  sim->schedule(delay, arrival, count);
+  for(int i = 0; i < n; ++i) {
+    if (delays[i] < 0) return;
+    delay += delays[i];
+    
+    // format the name and create the next arrival
+    char numstr[21];
+    sprintf(numstr, "%d", count);
+    Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_activity, this);
+    
+    if (sim->verbose) Rcpp::Rcout << 
+      FMT(10, right) << sim->now() << " |" << FMT(12, right) << "generator: " << FMT(15, left) << name << "|" << 
+      FMT(12, right) << "new: " << FMT(15, left) << (name + numstr) << "| " << (sim->now() + delay) << std::endl;
+    
+    // schedule the arrival
+    sim->schedule(delay, arrival, count);
+    count++;
+  }
+  // schedule the generator
   sim->schedule(delay, this, PRIORITY_GENERATOR);
-  
-  count++;
 }
 
 void Manager::run() {

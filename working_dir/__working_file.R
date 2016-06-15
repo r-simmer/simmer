@@ -55,10 +55,10 @@ mm1 <- create_trajectory() %>%
 
 env <- simmer(verbose=F) %>%
   add_resource("server", 1) %>%
-  add_generator("customer", mm1, function() rexp(1, 60), mon=F) %>%
+  add_generator("customer", mm1, function() rexp(100, 60), mon=F) %>%
   run(10000)
 })
-# 28 seconds (Simpy: 30 seconds)
+# 16 seconds (Simpy: 30 seconds)
 
 plot_resource_usage(env, "server")
 

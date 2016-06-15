@@ -92,7 +92,7 @@ It seems that it matches the theoretical value pretty well. But of course we are
 envs <- mclapply(1:1000, function(i) {
   simmer() %>%
     add_resource("resource", capacity=1, queue_size=Inf) %>%
-    add_generator("arrival", mm1.trajectory, function() rexp(1, lambda)) %>%
+    add_generator("arrival", mm1.trajectory, function() rexp(100, lambda)) %>%
     run(1000/lambda) %>%
     wrap()
 })

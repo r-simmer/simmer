@@ -3,6 +3,7 @@
 ## New features:
 
 * Concatenate (`join`) trajectories (#50).
+* Batched generation: the generation function can return more than one interarrival value at a time (#65).
 
 ## Minor changes and fixes:
 
