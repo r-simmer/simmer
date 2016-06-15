@@ -16,12 +16,6 @@ Returns a generator function.
 Generator convenience function to generate arrivals every specific interval.
 When the generator reaches the last interval, it starts again from the first one.
 }
-\examples{
-t0 <- create_trajectory() \%>\% timeout(0)
-env <- simmer(verbose=TRUE) \%>\%
-  add_generator("dummy", t0, every(1, 2, 1)) \%>\%
-  run(10)
-}
 \seealso{
 \link{add_generator}, \link{at}, \link{from}, 
 \link{to}, \link{from_to}.
