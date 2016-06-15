@@ -31,12 +31,6 @@ at <- function(...) {
 #' @seealso \link{add_generator}, \link{at}, \link{from}, 
 #' \link{to}, \link{from_to}.
 #' @export
-#'
-#' @examples
-#' t0 <- create_trajectory() %>% timeout(0)
-#' env <- simmer(verbose=TRUE) %>%
-#'   add_generator("dummy", t0, every(1, 2, 1)) %>%
-#'   run(10)
 every <- function(...) {
   .Deprecated("function() c(...)")
   time_diffs <- c(...)
@@ -102,12 +96,11 @@ to <- function(stop_time, dist) {
   counter <- 0
   function() {
     dt <- dist()
-    counter <<- counter + dt
-    if (counter < stop_time) {
-      return(dt)
-    } else {
-      return(-1)
-    }
+    len <- length(dt)
+    dt <- dt[cumsum(dt) + counter < stop_time]
+    counter <<- counter + sum(dt)
+    if (len == length(dt)) return(dt)
+    return(c(dt, -1))
   }
 }
 

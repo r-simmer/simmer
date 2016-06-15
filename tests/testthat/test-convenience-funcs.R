@@ -23,6 +23,13 @@ test_that("to returns the correct values", {
   expect_equal(gen_func(), 1)
   expect_equal(gen_func(), 1)
   expect_equal(gen_func(), -1)
+  
+  gen_func <- to(3, function() c(1, 1))
+  expect_equal(gen_func(), c(1, 1))
+  expect_equal(gen_func(), -1)
+  
+  gen_func <- to(3, function() c(1, 1, 1))
+  expect_equal(gen_func(), c(1, 1, -1))
 })
 
 test_that("from_to returns the correct values", {
