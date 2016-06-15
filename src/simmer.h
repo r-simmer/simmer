@@ -22,11 +22,7 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
-#define FMT_0 std::setw(10) << std::right
-#define FMT_11 std::setw(12) << std::right
-#define FMT_12 std::setw(15) << std::left
-#define FMT_21 std::setw(12) << std::right
-#define FMT_22 std::setw(15) << std::left
+#define FMT(n, justify) std::setw(n) << std::justify
 
 #define PRIORITY_RELEASE        -4
 #define PRIORITY_MANAGER        -3

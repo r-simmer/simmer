@@ -126,8 +126,8 @@ protected:
   
   void verbose_print(double time, std::string arrival, std::string status) {
     Rcpp::Rcout << 
-      FMT_0 << time << " |" << FMT_11 << "resource: " << FMT_12 << name << "|" << 
-      FMT_21 << "arrival: " << FMT_22 << arrival << "| " << status << std::endl;
+      FMT(10, right) << time << " |" << FMT(12, right) << "resource: " << FMT(15, left) << name << "|" << 
+      FMT(12, right) << "arrival: " << FMT(15, left) << arrival << "| " << status << std::endl;
   }
   
   virtual bool room_in_server(int amount, int priority) {

@@ -15,8 +15,8 @@ void Generator::run() {
   Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_activity, this);
   
   if (sim->verbose) Rcpp::Rcout << 
-    FMT_0 << sim->now() << " |" << FMT_11 << "generator: " << FMT_12 << name << "|" << 
-    FMT_21 << "new: " << FMT_22 << (name + numstr) << "| " << (sim->now() + delay) << std::endl;
+    FMT(10, right) << sim->now() << " |" << FMT(12, right) << "generator: " << FMT(15, left) << name << "|" << 
+    FMT(12, right) << "new: " << FMT(15, left) << (name + numstr) << "| " << (sim->now() + delay) << std::endl;
   
   // schedule the arrival and the generator itself
   sim->schedule(delay, arrival, count);
@@ -28,8 +28,8 @@ void Generator::run() {
 void Manager::run() {
   if (!sim->now() && duration[index]) goto finish;
   if (sim->verbose) Rcpp::Rcout <<
-    FMT_0 << sim->now() << " |" << FMT_11 << "manager: " << FMT_12 << name << "|" << 
-    FMT_21 << "parameter: " << FMT_22 << param << "| " << value[index] << std::endl;
+    FMT(10, right) << sim->now() << " |" << FMT(12, right) << "manager: " << FMT(15, left) << name << "|" << 
+    FMT(12, right) << "parameter: " << FMT(15, left) << param << "| " << value[index] << std::endl;
   
   set(value[index]);
   index++;
@@ -46,8 +46,8 @@ end:
 
 void DelayedTask::run() {
   if (sim->verbose) Rcpp::Rcout <<
-    FMT_0 << sim->now() << " |" << FMT_11 << "task: " << FMT_12 << name << "|" << 
-    FMT_21 << " " << FMT_22 << " " << "| " << std::endl;
+    FMT(10, right) << sim->now() << " |" << FMT(12, right) << "task: " << FMT(15, left) << name << "|" << 
+    FMT(12, right) << " " << FMT(15, left) << " " << "| " << std::endl;
   
   task();
   delete this;
@@ -59,8 +59,8 @@ void Arrival::run() {
   if (!activity) goto finish;
   if (lifetime.start < 0) lifetime.start = sim->now();
   if (sim->verbose) Rcpp::Rcout <<
-    FMT_0 << sim->now() << " |" << FMT_11 << "arrival: " << FMT_12 << name << "|" << 
-    FMT_21 << "activity: " << FMT_22 << activity->name << "| " << activity->resource << std::endl;
+    FMT(10, right) << sim->now() << " |" << FMT(12, right) << "arrival: " << FMT(15, left) << name << "|" << 
+    FMT(12, right) << "activity: " << FMT(15, left) << activity->name << "| " << activity->resource << std::endl;
   
   delay = activity->run(this);
   if (delay == REJECTED) goto end;

@@ -39,13 +39,13 @@ public:
    */
   virtual void print(int indent=0) {
     for (int i = 0; i < indent; ++i) Rcpp::Rcout << " ";
-    Rcpp::Rcout << "{ Activity: " << std::setw(9) << std::left << name << " | ";
+    Rcpp::Rcout << "{ Activity: " << FMT(12, left) << name << " | ";
     if (verbose) {
-      Rcpp::Rcout << std::setw(9) << std::right << prev;
-      Rcpp::Rcout << " <- " << std::setw(9) << this << " -> ";
-      Rcpp::Rcout << std::setw(9) << std::left << next << " | ";
+      Rcpp::Rcout << FMT(9, right) << prev;
+      Rcpp::Rcout << " <- " << FMT(9, right) << this << " -> ";
+      Rcpp::Rcout << FMT(9, left) << next << " | ";
     }
-    Rcpp::Rcout << "resource: " << FMT_12 << resource << " | ";
+    Rcpp::Rcout << "resource: " << FMT(15, left) << resource << " | ";
   }
   
   /**
