@@ -15,7 +15,7 @@
 #'   add_generator("dummy", t0, at(0, c(1,10,30), 40, 43)) %>%
 #'   run(100)
 at <- function(...) {
-  time_vec <- unlist(list(...))
+  time_vec <- c(...)
   time_diffs <- c(time_vec[1], diff(time_vec))
   i <- 0
   function() {
@@ -46,7 +46,7 @@ at <- function(...) {
 #'   add_generator("dummy", t0, every(1, 2, 1)) %>%
 #'   run(10)
 every <- function(...) {
-  time_diffs <- unlist(list(...))
+  time_diffs <- c(...)
   i <- 0
   function() {
     if (i < length(time_diffs)) {

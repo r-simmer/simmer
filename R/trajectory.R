@@ -259,7 +259,7 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #'   timeout(1) %>%
 #'   join(t3)
 join <- function(...) {
-  traj <- list(...)
+  traj <- c(...)
   for (i in traj[-1]) traj[[1]] <- traj[[1]]$join(i)
   traj[[1]]
 }
