@@ -17,15 +17,7 @@
 at <- function(...) {
   time_vec <- c(...)
   time_diffs <- c(time_vec[1], diff(time_vec))
-  i <- 0
-  function() {
-    if (i < length(time_diffs)) {
-      i <<- i+1
-      return(time_diffs[i])
-    } else {
-      return(-1)
-    }
-  }
+  function() return(c(time_diffs, -1))
 }
 
 #' Arrivals every specific interval

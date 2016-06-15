@@ -16,7 +16,7 @@ test_that("a simple deterministic simulation with rejections behaves as expected
   expect_equal(env%>%now(), 0)
   expect_equal(env%>%peek(), 1)
   
-  env%>%onestep()%>%onestep()%>%onestep()
+  env%>%onestep()%>%onestep()
   
   expect_equal(env%>%now(), 1)
   expect_equal(env%>%peek(), 2)
