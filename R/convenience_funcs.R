@@ -32,9 +32,9 @@ at <- function(...) {
 #' \link{to}, \link{from_to}.
 #' @export
 every <- function(...) {
-  .Deprecated("function() c(...)")
-  time_diffs <- c(...)
-  function() return(time_diffs)
+  .Deprecated("function() c(...)")  # nocov
+  time_diffs <- c(...)              # nocov
+  function() return(time_diffs)     # nocov
 }
 
 #' Generate arrivals starting at a specified time
