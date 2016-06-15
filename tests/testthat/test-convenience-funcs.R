@@ -39,10 +39,26 @@ test_that("from_to returns the correct values", {
   expect_equal(gen_func(), 1)
   expect_equal(gen_func(), -1)
   
+  gen_func <- from_to(5, 8, function() c(1, 1))
+  expect_equal(gen_func(), 5)
+  expect_equal(gen_func(), c(1, 1))
+  expect_equal(gen_func(), -1)
+  
+  gen_func <- from_to(5, 8, function() c(1, 1, 1))
+  expect_equal(gen_func(), 5)
+  expect_equal(gen_func(), c(1, 1, -1))
+  
   gen_func2 <- from_to(5, 8, function() 1, arrive = FALSE)
   expect_equal(gen_func2(), 6)
   expect_equal(gen_func2(), 1)
   expect_equal(gen_func2(), -1)
+  
+  gen_func2 <- from_to(5, 8, function() c(1, 1), arrive = FALSE)
+  expect_equal(gen_func2(), c(6, 1))
+  expect_equal(gen_func2(), -1)
+  
+  gen_func2 <- from_to(5, 8, function() c(1, 1, 1), arrive = FALSE)
+  expect_equal(gen_func2(), c(6, 1, -1))
 })
 
 test_that("schedule returns the correct values", {

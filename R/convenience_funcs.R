@@ -136,17 +136,17 @@ from_to <- function(start_time, stop_time, dist, arrive=TRUE){
       if (arrive) {
         dt <- start_time
       } else {
-        dt <- start_time + dist()
+        dt <- dist()
+        dt[1] <- dt[1] + start_time
       }
     } else {
       dt <- dist()
     }
-    counter <<- counter + dt
-    if (counter < stop_time) {
-      return(dt)
-    } else {
-      return(-1)
-    }
+    len <- length(dt)
+    dt <- dt[cumsum(dt) + counter < stop_time]
+    counter <<- counter + sum(dt)
+    if (len == length(dt)) return(dt)
+    return(c(dt, -1))
   }
 }
 
