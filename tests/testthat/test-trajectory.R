@@ -1,14 +1,21 @@
 context("basic trajectory functionality")
 
+t0 <- create_trajectory(verbose=TRUE) %>%
+  seize("nurse", 1) %>%
+  timeout(function() rnorm(1, 15)) %>%
+  branch(function() 1, T, create_trajectory(verbose=TRUE)%>%timeout(function() 1)) %>%
+  set_attribute("dummy", 1) %>%
+  rollback(1) %>%
+  release("nurse", 1)
+
+trajs <- c(create_trajectory(verbose=TRUE) %>% seize("nurse", 1),
+           create_trajectory(verbose=TRUE) %>% timeout(function() rnorm(1, 15)),
+           create_trajectory(verbose=TRUE) %>% branch(function() 1, T, create_trajectory(verbose=TRUE)%>%timeout(function() 1)),
+           create_trajectory(verbose=TRUE) %>% set_attribute("dummy", 1),
+           create_trajectory(verbose=TRUE) %>% rollback(1),
+           create_trajectory(verbose=TRUE) %>% release("nurse", 1))
+
 test_that("the activity chain grows as expected", {
-  t0 <- create_trajectory() %>%
-    seize("nurse", 1) %>%
-    timeout(function() rnorm(1, 15)) %>%
-    branch(function() 1, T, create_trajectory()%>%timeout(function() 1)) %>%
-    set_attribute("dummy", 1) %>%
-    rollback(1) %>%
-    release("nurse", 1)
-  
   head <- t0%>%get_head()
   for (i in 1:5) head <- get_next_activity(head)
   tail <- t0%>%get_tail()
@@ -23,35 +30,32 @@ test_that("the activity chain grows as expected", {
 })
 
 test_that("the activity chain grows as expected using join", {
-  trajs <- c(create_trajectory(verbose=TRUE) %>% seize("nurse", 1),
-             create_trajectory(verbose=TRUE) %>% timeout(function() rnorm(1, 15)),
-             create_trajectory(verbose=TRUE) %>% branch(function() 1, T, create_trajectory(verbose=TRUE)%>%timeout(function() 1)),
-             create_trajectory(verbose=TRUE) %>% set_attribute("dummy", 1),
-             create_trajectory(verbose=TRUE) %>% rollback(1),
-             create_trajectory(verbose=TRUE) %>% release("nurse", 1))
+  t <- join(trajs)
   
-  t0 <- join(trajs)
-  
-  head <- t0%>%get_head()
+  head <- t%>%get_head()
   for (i in 1:5) head <- get_next_activity(head)
-  tail <- t0%>%get_tail()
+  tail <- t%>%get_tail()
   for (i in 1:5) tail <- get_prev_activity(tail)
   
   expect_output(print_activity(head), "Release")
-  expect_output(print_activity(t0%>%get_tail()), "Release")
+  expect_output(print_activity(t%>%get_tail()), "Release")
   expect_equal(get_next_activity(head), NULL)
   expect_output(print_activity(tail), "Seize")
-  expect_output(print_activity(t0%>%get_head()), "Seize")
+  expect_output(print_activity(t%>%get_head()), "Seize")
   expect_equal(get_prev_activity(tail), NULL)
+  
+  expect_true(length(capture.output(t)) == length(capture.output(t0)))
   
   # check that pointers differ
   ptrs <- lapply(trajs, function(i) {
     line <- capture.output(i)
-    regmatches(line, regexpr("0x[[:alnum:]]{7}", line))
+    regmatches(line, regexpr("<- 0x[[:alnum:]]{7} ->", line))
   }) %>% unlist
-  out <- paste(capture.output(t0), collapse="")
+  ptrs_t <- lapply(capture.output(t0), function(i) {
+    regmatches(i, regexpr("<- 0x[[:alnum:]]{7} ->", i))
+  }) %>% unlist
   
-  expect_false(any(lapply(ptrs, function(i) grepl(i, out)) %>% unlist))
+  expect_false(any(ptrs == ptrs_t))
 })
 
 test_that("the trajectory stores the right number of activities", {

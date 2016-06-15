@@ -166,6 +166,8 @@ public:
       Rcpp::Function get_n_activities(itr["get_n_activities"]);
       n += Rcpp::as<int>(get_n_activities());
     }
+    foreach_ (VEC<Activity*>::value_type& itr, heads)
+      itr->set_prev(this);
   }
   
   Branch(const Branch& o): Activity("Branch", o.verbose, "-", o.provide_attrs), option(o.option), 
@@ -180,6 +182,8 @@ public:
       heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_head()));
       tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_tail()));
     }
+    foreach_ (VEC<Activity*>::value_type& itr, heads)
+      itr->set_prev(this);
   }
   
   void print(int indent=0) {
@@ -192,12 +196,6 @@ public:
   }
   
   double run(Arrival* arrival);
-  
-  void set_prev(Activity* activity) {
-    Activity::set_prev(activity);
-    foreach_ (VEC<Activity*>::value_type& itr, heads)
-      itr->set_prev(this);
-  }
   
   void set_next(Activity* activity) {
     Activity::set_next(activity);

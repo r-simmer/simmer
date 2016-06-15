@@ -124,12 +124,12 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     copy = function(deep = FALSE) {
       new <- private$clone2(deep)
       if (!is.null(new$get_head())) {
-        first <- activity_clone_(new$get_head())
-        ptr <- activity_get_next_(new$get_head())
+        ptr <- new$get_head()
+        first <- activity_clone_(ptr)
         last <- first
-        while (!is.null(ptr)) {
-          new_ptr <- activity_clone_(ptr)
+        while (!identical(ptr, new$get_tail())) {
           ptr <- activity_get_next_(ptr)
+          new_ptr <- activity_clone_(ptr)
           activity_chain_(last, new_ptr)
           last <- new_ptr
         }
