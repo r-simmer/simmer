@@ -61,8 +61,8 @@ Simmer <- R6Class("simmer",
       self
     },
     
-    add_resource = function(name, capacity=1, queue_size=Inf, mon=TRUE,
-                            preemptive=FALSE, preempt_order=c("fifo", "lifo")) {
+    add_resource = function(name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE, 
+                            preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE) {
       preempt_order <- match.arg(preempt_order)
       name <- evaluate_value(name)
       capacity <- evaluate_value(capacity)
@@ -71,6 +71,7 @@ Simmer <- R6Class("simmer",
       queue_size_schedule <- NA
       mon <- evaluate_value(mon)
       preemptive <- evaluate_value(preemptive)
+      queue_size_strict <- evaluate_value(queue_size_strict)
       
       if (is.numeric(capacity) && is.infinite(capacity))
         capacity <- -1
@@ -87,7 +88,7 @@ Simmer <- R6Class("simmer",
       }
       
       ret <- add_resource_(private$sim_obj, name, capacity, queue_size, mon,
-                           preemptive, preempt_order)
+                           preemptive, preempt_order, queue_size_strict)
       if (ret) private$res[[name]] <- mon
       
       if (inherits(capacity_schedule, "simmer.schedule"))
@@ -389,6 +390,11 @@ run <- function(env, until=1000) env$run(until)
 #' be preempted first. It must be `fifo` (First In First Out: older preemptible 
 #' tasks are preempted first) or `lifo` (Last In First Out: newer preemptible tasks 
 #' are preempted first).
+#' @param queue_size_strict if the resource is preemptive and preemption occurs,
+#' this parameter controls whether the \code{queue_size} is a hard limit. By default,
+#' preempted arrivals go to a dedicated queue, so that \code{queue_size} may be
+#' exceeded. If this option is \code{TRUE}, preempted arrivals go to the standard
+#' queue, and the maximum \code{queue_size} is guaranteed (rejection may occur).
 #' 
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \link{schedule}.
@@ -398,9 +404,9 @@ run <- function(env, until=1000) env$run(until)
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
 #' \link{get_server_count}, \link{get_queue_count}.
 #' @export
-add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE,
-                         preemptive=FALSE, preempt_order=c("fifo", "lifo"))
-  env$add_resource(name, capacity, queue_size, mon, preemptive, preempt_order)
+add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE, 
+                         preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE)
+  env$add_resource(name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict)
 
 #' Add a generator
 #'

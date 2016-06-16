@@ -185,6 +185,7 @@ public:
   }
   
   void terminate(double time, bool finished) {
+    lifetime.activity -= remaining;
     if (is_monitored() >= 1)
       gen->notify_end(name, lifetime.start, time, lifetime.activity, finished);
     delete this;

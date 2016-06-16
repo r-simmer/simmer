@@ -137,7 +137,7 @@ public:
       gen->run();
       return TRUE;
     }
-    Rcpp::warning("process " + name + " already defined");
+    Rcpp::warning("process " + name_prefix + " already defined");
     return FALSE;
   }
   
@@ -149,18 +149,19 @@ public:
    * @param   mon           whether this entity must be monitored
    * @param   preemptive    whether the resource is preemptive
    * @param   preempt_order fifo or lifo
+   * @param   keep_queue    whether the queue size is a hard limit
    */
   bool add_resource(std::string name, int capacity, int queue_size, bool mon,
-                    bool preemptive, std::string preempt_order) {
+                    bool preemptive, std::string preempt_order, bool keep_queue) {
     if (resource_map.find(name) == resource_map.end()) {
       Resource* res;
       if (!preemptive)
         res = new Resource(this, name, mon, capacity, queue_size);
       else {
         if (preempt_order.compare("fifo") == 0)
-          res = new PreemptiveResource<FIFO>(this, name, mon, capacity, queue_size);
+          res = new PreemptiveResource<FIFO>(this, name, mon, capacity, queue_size, keep_queue);
         else
-          res = new PreemptiveResource<LIFO>(this, name, mon, capacity, queue_size);
+          res = new PreemptiveResource<LIFO>(this, name, mon, capacity, queue_size, keep_queue);
       }
       resource_map[name] = res;
       return TRUE;

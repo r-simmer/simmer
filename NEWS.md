@@ -4,6 +4,7 @@
 
 * Concatenate (`join`) trajectories (#50).
 * Batched generation: the generation function can return more than one interarrival value at a time (#65).
+* Add the option `queue_size_strict` to `add_resource` to guarantee the queue size limit with preemption (#59).
 
 ## Minor changes and fixes:
 

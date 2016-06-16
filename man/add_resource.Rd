@@ -5,7 +5,8 @@
 \title{Add a resource}
 \usage{
 add_resource(env, name, capacity = 1, queue_size = Inf, mon = TRUE,
-  preemptive = FALSE, preempt_order = c("fifo", "lifo"))
+  preemptive = FALSE, preempt_order = c("fifo", "lifo"),
+  queue_size_strict = FALSE)
 }
 \arguments{
 \item{env}{the simulation environment.}
@@ -26,6 +27,12 @@ more than one arrival in the server, this parameter defines which arrival should
 be preempted first. It must be `fifo` (First In First Out: older preemptible 
 tasks are preempted first) or `lifo` (Last In First Out: newer preemptible tasks 
 are preempted first).}
+
+\item{queue_size_strict}{if the resource is preemptive and preemption occurs,
+this parameter controls whether the \code{queue_size} is a hard limit. By default,
+preempted arrivals go to a dedicated queue, so that \code{queue_size} may be
+exceeded. If this option is \code{TRUE}, preempted arrivals go to the standard
+queue, and the maximum \code{queue_size} is guaranteed (rejection may occur).}
 }
 \value{
 Returns the simulation environment.

@@ -72,7 +72,7 @@ bool add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_activity_, SEXP dis
 
 //[[Rcpp::export]]
 bool add_resource_(SEXP sim_, SEXP name_, SEXP capacity_, SEXP queue_size_, SEXP mon_,
-                   SEXP preemptive_, SEXP preempt_order_) {
+                   SEXP preemptive_, SEXP preempt_order_, SEXP keep_queue_) {
   XPtr<Simulator> sim(sim_);
   std::string name = as<std::string>(name_);
   int capacity = as<int>(capacity_);
@@ -80,8 +80,9 @@ bool add_resource_(SEXP sim_, SEXP name_, SEXP capacity_, SEXP queue_size_, SEXP
   bool mon = as<bool>(mon_);
   bool preemptive = as<bool>(preemptive_);
   std::string preempt_order = as<std::string>(preempt_order_);
+  bool keep_queue = as<bool>(keep_queue_);
   
-  return sim->add_resource(name, capacity, queue_size, mon, preemptive, preempt_order);
+  return sim->add_resource(name, capacity, queue_size, mon, preemptive, preempt_order, keep_queue);
 }
 
 //[[Rcpp::export]]
