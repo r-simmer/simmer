@@ -28,7 +28,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     
     get_n_activities = function() { private$n_activities },
     
-    seize = function(resource, amount=1, priority=0, preemptible=0, restart=FALSE) {
+    seize = function(resource, amount=1, priority=0, preemptible=priority, restart=FALSE) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
       priority <- evaluate_value(priority)
@@ -286,7 +286,7 @@ join <- function(...) {
 #' \link{get_n_activities}, \link{join}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
-seize <- function(traj, resource, amount=1, priority=0, preemptible=0, restart=FALSE)
+seize <- function(traj, resource, amount=1, priority=0, preemptible=priority, restart=FALSE)
   traj$seize(resource, amount, priority, preemptible, restart)
 
 #' Add a release activity

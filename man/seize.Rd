@@ -4,7 +4,7 @@
 \alias{seize}
 \title{Add a seize activity}
 \usage{
-seize(traj, resource, amount = 1, priority = 0, preemptible = 0,
+seize(traj, resource, amount = 1, priority = 0, preemptible = priority,
   restart = FALSE)
 }
 \arguments{
