@@ -19,6 +19,7 @@ It can be used to get the pointer to a trajectory's last activity.
 Other methods for dealing with trajectories:
 \link{create_trajectory}, \link{get_head}, \link{get_n_activities}, 
 \link{join}, \link{seize}, \link{release}, \link{timeout}, 
-\link{set_attribute}, \link{branch}, \link{rollback}.
+\link{set_attribute}, \link{branch}, \link{rollback},
+\link{seize_selected}, \link{release_selected}, \link{select}.
 }
 

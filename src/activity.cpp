@@ -10,15 +10,19 @@ T execute_call(Rcpp::Function call, Arrival* arrival, bool provide_attrs) {
 }
 
 template <>
-void Seize<int>::print(int indent) {
-  Activity::print(indent);
-  Rcpp::Rcout << "amount: " << amount << " }" << std::endl;
+void Seize<int>::print(int indent, bool brief) {
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << 
+    "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
+  else Rcpp::Rcout << resource << ", " << amount << std::endl;
 }
 
 template <>
-void Seize<Rcpp::Function>::print(int indent) {
-  Activity::print(indent);
-  Rcpp::Rcout << "amount: function() }" << std::endl;
+void Seize<Rcpp::Function>::print(int indent, bool brief) {
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << 
+    "resource: " << resource << " | " << "amount: function() }" << std::endl;
+  else Rcpp::Rcout << resource << ", " << amount << std::endl;
 }
 
 template <>
@@ -35,15 +39,34 @@ double Seize<Rcpp::Function>::run(Arrival* arrival) {
 }
 
 template <>
-void Release<int>::print(int indent) {
-  Activity::print(indent);
-  Rcpp::Rcout << "amount: " << amount << " }" << std::endl;
+double SeizeSelected<int>::run(Arrival* arrival) {
+  std::string selected = arrival->get_selected();
+  return arrival->sim->get_resource(selected)->seize(arrival, amount, 
+                                    priority, preemptible, restart);
 }
 
 template <>
-void Release<Rcpp::Function>::print(int indent) {
-  Activity::print(indent);
-  Rcpp::Rcout << "amount: function() }" << std::endl;
+double SeizeSelected<Rcpp::Function>::run(Arrival* arrival) {
+  std::string selected = arrival->get_selected();
+  return arrival->sim->get_resource(selected)->seize(arrival, 
+                                    execute_call<int>(amount, arrival, provide_attrs), 
+                                    priority, preemptible, restart);
+}
+
+template <>
+void Release<int>::print(int indent, bool brief) {
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << 
+    "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
+  else Rcpp::Rcout << resource << ", " << amount << std::endl;
+}
+
+template <>
+void Release<Rcpp::Function>::print(int indent, bool brief) {
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << 
+    "resource: " << resource << " | " << "amount: function() }" << std::endl;
+  else Rcpp::Rcout << resource << ", " << amount << std::endl;
 }
 
 template <>
@@ -58,15 +81,30 @@ double Release<Rcpp::Function>::run(Arrival* arrival) {
 }
 
 template <>
-void Timeout<double>::print(int indent) {
-  Activity::print(indent);
-  Rcpp::Rcout << "delay: " << delay << " }" << std::endl;
+double ReleaseSelected<int>::run(Arrival* arrival) {
+  std::string selected = arrival->get_selected();
+  return arrival->sim->get_resource(selected)->release(arrival, amount);
 }
 
 template <>
-void Timeout<Rcpp::Function>::print(int indent) {
-  Activity::print(indent);
-  Rcpp::Rcout << "task: function() }" << std::endl;
+double ReleaseSelected<Rcpp::Function>::run(Arrival* arrival) {
+  std::string selected = arrival->get_selected();
+  return arrival->sim->get_resource(selected)->release(arrival, 
+                                    execute_call<int>(amount, arrival, provide_attrs));
+}
+
+template <>
+void Timeout<double>::print(int indent, bool brief) {
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << "delay: " << delay << " }" << std::endl;
+  else Rcpp::Rcout << delay << std::endl;
+}
+
+template <>
+void Timeout<Rcpp::Function>::print(int indent, bool brief) {
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << "task: function() }" << std::endl;
+  else Rcpp::Rcout << "function()" << std::endl;
 }
 
 template <>
@@ -78,15 +116,19 @@ double Timeout<Rcpp::Function>::run(Arrival* arrival) {
 }
 
 template <>
-void SetAttribute<double>::print(int indent) {
-  Activity::print(indent);
-  Rcpp::Rcout << "key: " << key << ", value: " << value << " }" << std::endl;
+void SetAttribute<double>::print(int indent, bool brief) {
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << 
+    "key: " << key << ", value: " << value << " }" << std::endl;
+  else Rcpp::Rcout << key << ": " << value << std::endl;
 }
 
 template <>
-void SetAttribute<Rcpp::Function>::print(int indent) {
-  Activity::print(indent);
-  Rcpp::Rcout << "key: " << key << ", value: function() }" << std::endl;
+void SetAttribute<Rcpp::Function>::print(int indent, bool brief) {
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << 
+    "key: " << key << ", value: function() }" << std::endl;
+  else Rcpp::Rcout << "function()" << std::endl;
 }
 
 template <>
@@ -109,22 +151,26 @@ double Branch::run(Arrival* arrival) {
 }
 
 template <>
-void Rollback<int>::print(int indent) {
+void Rollback<int>::print(int indent, bool brief) {
   if (!cached) cached = goback();
-  Activity::print(indent);
-  Rcpp::Rcout << "amount: " << amount << " (" << cached->name << "), ";
-  if (times >= 0)
-    Rcpp::Rcout << "times: " << times << " }" << std::endl;
-  else
-    Rcpp::Rcout << "times: Inf }" << std::endl;
+  Activity::print(indent, brief);
+  if (!brief) {
+    Rcpp::Rcout << "amount: " << amount << " (" << cached->name << "), ";
+    if (times >= 0)
+      Rcpp::Rcout << "times: " << times << " }" << std::endl;
+    else
+      Rcpp::Rcout << "times: Inf }" << std::endl;
+  } else Rcpp::Rcout << cached->name << std::endl;
 }
 
 template <>
-void Rollback<Rcpp::Function>::print(int indent) {
+void Rollback<Rcpp::Function>::print(int indent, bool brief) {
   if (!cached) cached = goback();
-  Activity::print(indent);
-  Rcpp::Rcout << "amount: " << amount << " (" << cached->name << "), ";
-  Rcpp::Rcout << "check: function() }" << std::endl;
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << 
+    "amount: " << amount << " (" << cached->name << "), " << 
+    "check: function() }" << std::endl;
+  else Rcpp::Rcout << cached->name << std::endl;
 }
 
 template <>
@@ -149,5 +195,54 @@ double Rollback<Rcpp::Function>::run(Arrival* arrival) {
   if (!execute_call<bool>(times, arrival, provide_attrs)) return 0;
   if (!cached) cached = goback();
   selected = cached;
+  return 0;
+}
+
+template <>
+void Select<VEC<std::string> >::print(int indent, bool brief) {
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << 
+    "resources: " << resources[0] << (resources.size()>1 ? ", ..." : "") << " | " << 
+    "policy: " << policy << " }" << std::endl;
+  else Rcpp::Rcout << resources[0] << (resources.size()>1 ? ", ..." : "") << std::endl;
+}
+
+template <>
+void Select<Rcpp::Function>::print(int indent, bool brief) {
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << "resources: function() }" << std::endl;
+  else Rcpp::Rcout << "function()" << std::endl;
+}
+
+template <>
+double Select<VEC<std::string> >::run(Arrival* arrival) {
+  std::string selected;
+  if (resources.size() == 1)
+    selected = resources[0];
+  else {
+    if (!policy.compare("shortest-queue")) {
+      selected = resources[0];
+      foreach_ (VEC<std::string>::value_type& itr, resources) {
+        Resource* old = arrival->sim->get_resource(selected);
+        Resource* res = arrival->sim->get_resource(itr);
+        if (res->get_server_count() + res->get_queue_count() < 
+            old->get_server_count() + old->get_queue_count())
+          selected = itr;
+      }
+    } else if (!policy.compare("round-robin")) {
+      selected = resources[0];
+    } else if (!policy.compare("first-available")) {
+      selected = resources[0];
+    } else if (!policy.compare("random")) {
+      selected = resources[0];
+    } else Rcpp::stop("policy '" + policy + "' not supported (typo?)");
+  }
+  arrival->set_selected(selected);
+  return 0;
+}
+
+template <>
+double Select<Rcpp::Function>::run(Arrival* arrival) {
+  arrival->set_selected(execute_call<std::string>(resources, arrival, provide_attrs));
   return 0;
 }

@@ -64,9 +64,13 @@ void Arrival::run() {
   
   if (!activity) goto finish;
   if (lifetime.start < 0) lifetime.start = sim->now();
-  if (sim->verbose) Rcpp::Rcout <<
-    FMT(10, right) << sim->now() << " |" << FMT(12, right) << "arrival: " << FMT(15, left) << name << "|" << 
-    FMT(12, right) << "activity: " << FMT(15, left) << activity->name << "| " << activity->resource << std::endl;
+  if (sim->verbose) {
+    Rcpp::Rcout <<
+      FMT(10, right) << sim->now() << " |" << 
+      FMT(12, right) << "arrival: " << FMT(15, left) << name << "|" << 
+      FMT(12, right) << "activity: " << FMT(15, left) << activity->name << "| ";
+    activity->print(0, true);
+  }
   
   delay = activity->run(this);
   if (delay == REJECTED) goto end;

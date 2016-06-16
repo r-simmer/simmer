@@ -27,6 +27,7 @@ Adds a new activity that goes backwards in the trajectory.
 Other methods for dealing with trajectories:
 \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
 \link{get_n_activities}, \link{join}, \link{seize}, \link{release},
-\link{set_attribute}, \link{timeout}, \link{branch}.
+\link{set_attribute}, \link{timeout}, \link{branch},
+\link{seize_selected}, \link{release_selected}, \link{select}.
 }
 

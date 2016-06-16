@@ -193,3 +193,16 @@ t0 <- create_trajectory() %>%
 t1 <- create_trajectory() %>%
   branch(function() 1, T, 
          create_trajectory() %>% timeout(1))
+
+####################################################################
+
+t <- create_trajectory(verbose=T) %>%
+  select(c("dummy", "asdf")) %>%
+  seize_selected(1) %>%
+  timeout(10) %>%
+  release_selected(1)
+
+env <- simmer(verbose=T) %>%
+  add_resource("dummy", 1) %>%
+  add_generator("arrival", t, at(0, 1, 2, 3)) %>%
+  run()
