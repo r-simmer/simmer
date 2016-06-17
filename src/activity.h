@@ -152,7 +152,8 @@ public:
   CLONEABLE(Select<T>)
   
   Select(bool verbose, T resources, bool provide_attrs, std::string policy):
-    Activity("Select", verbose, provide_attrs), resources(resources), policy(policy) {}
+    Activity("Select", verbose, provide_attrs), resources(resources),
+    policy(policy), selected_i(-1) {}
   
   void print(int indent=0, bool brief=false);
   double run(Arrival* arrival);
@@ -160,6 +161,8 @@ public:
 protected:
   T resources;
   std::string policy;
+  int selected_i;
+  std::string selected;
 };
 
 /**
