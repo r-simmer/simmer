@@ -3,6 +3,8 @@ context("basic simmer functionality")
 test_that("an empty environment behaves as expected", {
   env <- simmer()
   
+  expect_output(print(env))
+  
   expect_is(env, "simmer")
   expect_equal(env%>%now(), 0)
   expect_equal(env%>%peek(), numeric(0))
@@ -117,4 +119,8 @@ test_that("we can force some errors (just to complete coverage)", {
   sch <- schedule(c(1,2), c(1,2), Inf)
   sch$.__enclos_env__$private$schedule$period <- "asdf"
   expect_error(simmer() %>% add_resource("dummy", sch))
+  
+  env <- simmer()
+  expect_equal(env %>% get_mon_resources() %>% nrow(), 0)
+  expect_equal(env %>% get_mon_resources(c("counts", "limits")) %>% nrow(), 0)
 })

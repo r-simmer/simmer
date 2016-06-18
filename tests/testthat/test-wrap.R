@@ -1,6 +1,8 @@
 context("wrap")
 
 test_that("the wrapper behaves as expected", {
+  expect_error("asdf" %>% wrap())
+  
   t0 <- create_trajectory() %>%
     seize("server", 1) %>%
     set_attribute("attr", 1) %>%
@@ -12,12 +14,16 @@ test_that("the wrapper behaves as expected", {
     run() %>%
     wrap()
   
+  expect_output(print(env))
+  
   expect_equal(env%>%now(), 10)
   expect_equal(env%>%peek(), numeric(0))
   
   arrivals <- env%>%get_mon_arrivals()
   arrivals_res <- env%>%get_mon_arrivals(TRUE)
   attributes <- env%>%get_mon_attributes()
+  resources <- env%>%get_mon_resources("counts")
+  resources <- env%>%get_mon_resources("limits")
   resources <- env%>%get_mon_resources()
   
   expect_equal(nrow(arrivals), 10)
