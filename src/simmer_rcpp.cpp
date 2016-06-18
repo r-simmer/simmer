@@ -261,31 +261,33 @@ SEXP Seize__new_func(SEXP verbose_, SEXP resource_, Function amount, SEXP provid
 }
 
 //[[Rcpp::export]]
-SEXP SeizeSelected__new(SEXP verbose_, SEXP amount_, 
+SEXP SeizeSelected__new(SEXP verbose_, SEXP id_, SEXP amount_, 
                         SEXP priority_, SEXP preemptible_, SEXP restart_) {
   bool verbose = as<bool>(verbose_);
+  int id = as<int>(id_);
   int amount = as<int>(amount_);
   int priority = as<int>(priority_);
   int preemptible = as<int>(preemptible_);
   bool restart = as<bool>(restart_);
   
   XPtr<SeizeSelected<int> > 
-    ptr(new SeizeSelected<int>(verbose, amount, 0, 
+    ptr(new SeizeSelected<int>(verbose, id, amount, 0, 
                                priority, preemptible, restart), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP SeizeSelected__new_func(SEXP verbose_, Function amount, SEXP provide_attrs_, 
+SEXP SeizeSelected__new_func(SEXP verbose_, SEXP id_, Function amount, SEXP provide_attrs_, 
                              SEXP priority_, SEXP preemptible_, SEXP restart_) {
   bool verbose = as<bool>(verbose_);
+  int id = as<int>(id_);
   bool provide_attrs = as<bool>(provide_attrs_);
   int priority = as<int>(priority_);
   int preemptible = as<int>(preemptible_);
   bool restart = as<bool>(restart_);
   
   XPtr<SeizeSelected<Function> > 
-    ptr(new SeizeSelected<Function>(verbose, amount, provide_attrs, 
+    ptr(new SeizeSelected<Function>(verbose, id, amount, provide_attrs, 
                                     priority, preemptible, restart), false);
   return ptr;
 }
@@ -311,43 +313,47 @@ SEXP Release__new_func(SEXP verbose_, SEXP resource_, Function amount, SEXP prov
 }
 
 //[[Rcpp::export]]
-SEXP ReleaseSelected__new(SEXP verbose_, SEXP amount_) {
+SEXP ReleaseSelected__new(SEXP verbose_, SEXP id_, SEXP amount_) {
   bool verbose = as<bool>(verbose_);
+  int id = as<int>(id_);
   int amount = as<int>(amount_);
   
-  XPtr<ReleaseSelected<int> > ptr(new ReleaseSelected<int>(verbose, amount, 0), false);
+  XPtr<ReleaseSelected<int> > ptr(new ReleaseSelected<int>(verbose, id, amount, 0), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP ReleaseSelected__new_func(SEXP verbose_, Function amount, SEXP provide_attrs_) {
+SEXP ReleaseSelected__new_func(SEXP verbose_, SEXP id_, Function amount, SEXP provide_attrs_) {
   bool verbose = as<bool>(verbose_);
+  int id = as<int>(id_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
   XPtr<ReleaseSelected<Function> > 
-    ptr(new ReleaseSelected<Function>(verbose, amount, provide_attrs), false);
+    ptr(new ReleaseSelected<Function>(verbose, id, amount, provide_attrs), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Select__new(SEXP verbose_, SEXP resources_, SEXP policy_) {
+SEXP Select__new(SEXP verbose_, SEXP resources_, SEXP policy_, SEXP id_) {
   bool verbose = as<bool>(verbose_);
   VEC<std::string> resources = as<VEC<std::string> >(resources_);
   std::string policy = as<std::string>(policy_);
   if (resources.size() == 1) policy = "none";
+  int id = as<int>(id_);
   
   XPtr<Select<VEC<std::string> > > 
-    ptr(new Select<VEC<std::string> >(verbose, resources, 0, policy), false);
+    ptr(new Select<VEC<std::string> >(verbose, resources, 0, policy, id), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Select__new_func(SEXP verbose_, Function resources, SEXP provide_attrs_) {
+SEXP Select__new_func(SEXP verbose_, Function resources, SEXP provide_attrs_, SEXP id_) {
   bool verbose = as<bool>(verbose_);
   bool provide_attrs = as<bool>(provide_attrs_);
+  int id = as<int>(id_);
   
   XPtr<Select<Function> > 
-    ptr(new Select<Function>(verbose, resources, provide_attrs, "custom"), false);
+    ptr(new Select<Function>(verbose, resources, provide_attrs, "custom", id), false);
   return ptr;
 }
 

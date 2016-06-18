@@ -4,12 +4,14 @@
 \alias{release_selected}
 \title{Add a release activity}
 \usage{
-release_selected(traj, amount = 1)
+release_selected(traj, amount = 1, id = 0)
 }
 \arguments{
 \item{traj}{the trajectory object.}
 
 \item{amount}{the amount to release, accepts either a callable object (a function) or a numeric value.}
+
+\item{id}{selection identifier for nested usage.}
 }
 \value{
 The trajectory object.

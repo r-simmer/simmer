@@ -12,7 +12,7 @@ test_that("resources are seized/released as expected", {
     timeout(1) %>%
     seize("dummy", 1)
   
-  env <- simmer(verbose=T) %>%
+  env <- simmer(verbose=TRUE) %>%
     add_resource("dummy", 3, 0) %>%
     add_generator("arrival", t0, at(0))
   

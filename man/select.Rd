@@ -5,7 +5,7 @@
 \title{Select a resource}
 \usage{
 select(traj, resources, policy = c("shortest-queue", "round-robin",
-  "first-available", "random"))
+  "first-available", "random"), id = 0)
 }
 \arguments{
 \item{traj}{the trajectory object.}
@@ -16,6 +16,8 @@ must return a resource name to select.}
 \item{policy}{if \code{resources} is a vector of names, this parameter determines
 the criteria for selecting a resource among the set of policies available; otherwise,
 it is ignored.}
+
+\item{id}{selection identifier for nested usage.}
 }
 \value{
 The trajectory object.

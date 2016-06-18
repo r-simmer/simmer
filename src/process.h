@@ -155,6 +155,7 @@ class Arrival: public Process {
     ArrTime(): start(-1), activity(0) {}
   };
   typedef UMAP<std::string, ArrTime> ResTime;
+  typedef UMAP<int, std::string> SelMap;
   
 public:
   /**
@@ -178,8 +179,8 @@ public:
   void set_start(std::string name, double start) { restime[name].start = start; }
   void set_activity(std::string name, double act) { restime[name].activity = act; }
   double get_activity(std::string name) { return restime[name].activity; }
-  void set_selected(std::string name) { selected = name; }
-  std::string get_selected() { return selected; }
+  void set_selected(int id, std::string name) { selected[id] = name; }
+  std::string get_selected(int id) { return selected[id]; }
   
   void leave(std::string resource, double time) {
     gen->notify_release(name, restime[resource].start, time, 
@@ -194,14 +195,14 @@ public:
   }
   
 private:
-  ArrTime lifetime;     /**< time spent in the whole trajectory */
-  ResTime restime;      /**< time spent in resources */
-  Activity* activity;   /**< current activity from an R trajectory */
-  Generator* gen;       /**< parent generator */
-  Attr attributes;      /**< user-defined (key, value) pairs */
-  double busy_until;    /**< next scheduled event time */
-  double remaining;     /**< time remaining in a deactivated arrival */
-  std::string selected; /**< selected resource */
+  ArrTime lifetime;   /**< time spent in the whole trajectory */
+  ResTime restime;    /**< time spent in resources */
+  Activity* activity; /**< current activity from an R trajectory */
+  Generator* gen;     /**< parent generator */
+  Attr attributes;    /**< user-defined (key, value) pairs */
+  double busy_until;  /**< next scheduled event time */
+  double remaining;   /**< time remaining in a deactivated arrival */
+  SelMap selected;    /**< selected resource */
 };
 
 #endif

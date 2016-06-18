@@ -286,33 +286,35 @@ BEGIN_RCPP
 END_RCPP
 }
 // SeizeSelected__new
-SEXP SeizeSelected__new(SEXP verbose_, SEXP amount_, SEXP priority_, SEXP preemptible_, SEXP restart_);
-RcppExport SEXP simmer_SeizeSelected__new(SEXP verbose_SEXP, SEXP amount_SEXP, SEXP priority_SEXP, SEXP preemptible_SEXP, SEXP restart_SEXP) {
+SEXP SeizeSelected__new(SEXP verbose_, SEXP id_, SEXP amount_, SEXP priority_, SEXP preemptible_, SEXP restart_);
+RcppExport SEXP simmer_SeizeSelected__new(SEXP verbose_SEXP, SEXP id_SEXP, SEXP amount_SEXP, SEXP priority_SEXP, SEXP preemptible_SEXP, SEXP restart_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type id_(id_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type priority_(priority_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type preemptible_(preemptible_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type restart_(restart_SEXP);
-    __result = Rcpp::wrap(SeizeSelected__new(verbose_, amount_, priority_, preemptible_, restart_));
+    __result = Rcpp::wrap(SeizeSelected__new(verbose_, id_, amount_, priority_, preemptible_, restart_));
     return __result;
 END_RCPP
 }
 // SeizeSelected__new_func
-SEXP SeizeSelected__new_func(SEXP verbose_, Function amount, SEXP provide_attrs_, SEXP priority_, SEXP preemptible_, SEXP restart_);
-RcppExport SEXP simmer_SeizeSelected__new_func(SEXP verbose_SEXP, SEXP amountSEXP, SEXP provide_attrs_SEXP, SEXP priority_SEXP, SEXP preemptible_SEXP, SEXP restart_SEXP) {
+SEXP SeizeSelected__new_func(SEXP verbose_, SEXP id_, Function amount, SEXP provide_attrs_, SEXP priority_, SEXP preemptible_, SEXP restart_);
+RcppExport SEXP simmer_SeizeSelected__new_func(SEXP verbose_SEXP, SEXP id_SEXP, SEXP amountSEXP, SEXP provide_attrs_SEXP, SEXP priority_SEXP, SEXP preemptible_SEXP, SEXP restart_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type id_(id_SEXP);
     Rcpp::traits::input_parameter< Function >::type amount(amountSEXP);
     Rcpp::traits::input_parameter< SEXP >::type provide_attrs_(provide_attrs_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type priority_(priority_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type preemptible_(preemptible_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type restart_(restart_SEXP);
-    __result = Rcpp::wrap(SeizeSelected__new_func(verbose_, amount, provide_attrs_, priority_, preemptible_, restart_));
+    __result = Rcpp::wrap(SeizeSelected__new_func(verbose_, id_, amount, provide_attrs_, priority_, preemptible_, restart_));
     return __result;
 END_RCPP
 }
@@ -344,53 +346,57 @@ BEGIN_RCPP
 END_RCPP
 }
 // ReleaseSelected__new
-SEXP ReleaseSelected__new(SEXP verbose_, SEXP amount_);
-RcppExport SEXP simmer_ReleaseSelected__new(SEXP verbose_SEXP, SEXP amount_SEXP) {
+SEXP ReleaseSelected__new(SEXP verbose_, SEXP id_, SEXP amount_);
+RcppExport SEXP simmer_ReleaseSelected__new(SEXP verbose_SEXP, SEXP id_SEXP, SEXP amount_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type id_(id_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type amount_(amount_SEXP);
-    __result = Rcpp::wrap(ReleaseSelected__new(verbose_, amount_));
+    __result = Rcpp::wrap(ReleaseSelected__new(verbose_, id_, amount_));
     return __result;
 END_RCPP
 }
 // ReleaseSelected__new_func
-SEXP ReleaseSelected__new_func(SEXP verbose_, Function amount, SEXP provide_attrs_);
-RcppExport SEXP simmer_ReleaseSelected__new_func(SEXP verbose_SEXP, SEXP amountSEXP, SEXP provide_attrs_SEXP) {
+SEXP ReleaseSelected__new_func(SEXP verbose_, SEXP id_, Function amount, SEXP provide_attrs_);
+RcppExport SEXP simmer_ReleaseSelected__new_func(SEXP verbose_SEXP, SEXP id_SEXP, SEXP amountSEXP, SEXP provide_attrs_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type id_(id_SEXP);
     Rcpp::traits::input_parameter< Function >::type amount(amountSEXP);
     Rcpp::traits::input_parameter< SEXP >::type provide_attrs_(provide_attrs_SEXP);
-    __result = Rcpp::wrap(ReleaseSelected__new_func(verbose_, amount, provide_attrs_));
+    __result = Rcpp::wrap(ReleaseSelected__new_func(verbose_, id_, amount, provide_attrs_));
     return __result;
 END_RCPP
 }
 // Select__new
-SEXP Select__new(SEXP verbose_, SEXP resources_, SEXP policy_);
-RcppExport SEXP simmer_Select__new(SEXP verbose_SEXP, SEXP resources_SEXP, SEXP policy_SEXP) {
+SEXP Select__new(SEXP verbose_, SEXP resources_, SEXP policy_, SEXP id_);
+RcppExport SEXP simmer_Select__new(SEXP verbose_SEXP, SEXP resources_SEXP, SEXP policy_SEXP, SEXP id_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type resources_(resources_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type policy_(policy_SEXP);
-    __result = Rcpp::wrap(Select__new(verbose_, resources_, policy_));
+    Rcpp::traits::input_parameter< SEXP >::type id_(id_SEXP);
+    __result = Rcpp::wrap(Select__new(verbose_, resources_, policy_, id_));
     return __result;
 END_RCPP
 }
 // Select__new_func
-SEXP Select__new_func(SEXP verbose_, Function resources, SEXP provide_attrs_);
-RcppExport SEXP simmer_Select__new_func(SEXP verbose_SEXP, SEXP resourcesSEXP, SEXP provide_attrs_SEXP) {
+SEXP Select__new_func(SEXP verbose_, Function resources, SEXP provide_attrs_, SEXP id_);
+RcppExport SEXP simmer_Select__new_func(SEXP verbose_SEXP, SEXP resourcesSEXP, SEXP provide_attrs_SEXP, SEXP id_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
     Rcpp::traits::input_parameter< Function >::type resources(resourcesSEXP);
     Rcpp::traits::input_parameter< SEXP >::type provide_attrs_(provide_attrs_SEXP);
-    __result = Rcpp::wrap(Select__new_func(verbose_, resources, provide_attrs_));
+    Rcpp::traits::input_parameter< SEXP >::type id_(id_SEXP);
+    __result = Rcpp::wrap(Select__new_func(verbose_, resources, provide_attrs_, id_));
     return __result;
 END_RCPP
 }

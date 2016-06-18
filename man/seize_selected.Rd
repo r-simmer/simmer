@@ -5,7 +5,7 @@
 \title{Add a seize activity}
 \usage{
 seize_selected(traj, amount = 1, priority = 0, preemptible = priority,
-  restart = FALSE)
+  restart = FALSE, id = 0)
 }
 \arguments{
 \item{traj}{the trajectory object.}
@@ -22,6 +22,8 @@ with a priority greater than `preemptible` gains the resource). In any case,
 priority seizes can trigger the preemption.}
 
 \item{restart}{whether the activity must be restarted after being preempted.}
+
+\item{id}{selection identifier for nested usage.}
 }
 \value{
 The trajectory object.

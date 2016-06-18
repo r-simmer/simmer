@@ -2,9 +2,10 @@
 
 ## New features:
 
-* Concatenate (`join`) trajectories (#50).
+* New `join` activity to concatenate trajectories (#50).
 * Batched generation: the generation function can return more than one interarrival value at a time (#65).
 * Add the option `queue_size_strict` to `add_resource` to guarantee the queue size limit with preemption (#59).
+* New `select`, `seize_selected` and `release_selected` activities (#52).
 
 ## Minor changes and fixes:
 

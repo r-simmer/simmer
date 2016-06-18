@@ -28,7 +28,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     
     get_n_activities = function() { private$n_activities },
     
-    seize = function(resource, amount=1, priority=0, preemptible=priority, restart=FALSE) {
+    seize = function(resource, amount=1, priority=0, preemptible=priority, restart=FALSE, id=0) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
       priority <- evaluate_value(priority)
@@ -41,9 +41,9 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       restart <- evaluate_value(restart)
       if (is.na(resource)) {
         if (is.function(amount))
-          private$add_activity(SeizeSelected__new_func(private$verbose, amount, 
+          private$add_activity(SeizeSelected__new_func(private$verbose, id, amount, 
                                                needs_attrs(amount), priority, preemptible, restart))
-        else private$add_activity(SeizeSelected__new(private$verbose, amount, 
+        else private$add_activity(SeizeSelected__new(private$verbose, id, amount, 
                                              priority, preemptible, restart))
       } else {
         if (is.function(amount))
@@ -54,13 +54,13 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       }
     },
     
-    release = function(resource, amount=1) {
+    release = function(resource, amount=1, id=0) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
       if (is.na(resource)) {
         if (is.function(amount))
-          private$add_activity(ReleaseSelected__new_func(private$verbose, amount, needs_attrs(amount)))
-        else private$add_activity(ReleaseSelected__new(private$verbose, amount))
+          private$add_activity(ReleaseSelected__new_func(private$verbose, id, amount, needs_attrs(amount)))
+        else private$add_activity(ReleaseSelected__new(private$verbose, id, amount))
       } else {
         if (is.function(amount))
           private$add_activity(Release__new_func(private$verbose, resource, amount, needs_attrs(amount)))
@@ -68,12 +68,14 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       }
     },
     
-    select = function(resources, policy=c("shortest-queue", "round-robin", "first-available", "random")) {
+    select = function(resources, policy=c("shortest-queue", "round-robin", 
+                                          "first-available", "random"), id=0) {
       resources <- evaluate_value(resources)
       policy <- match.arg(policy)
+      id <- evaluate_value(id)
       if (is.function(resources))
-        private$add_activity(Select__new_func(private$verbose, resources, needs_attrs(resources)))
-      else private$add_activity(Select__new(private$verbose, resources, policy))
+        private$add_activity(Select__new_func(private$verbose, resources, needs_attrs(resources), id))
+      else private$add_activity(Select__new(private$verbose, resources, policy, id))
     },
     
     timeout = function(task) {
@@ -331,6 +333,7 @@ seize <- function(traj, resource, amount=1, priority=0, preemptible=priority, re
 #' `preemptible` must be equal or greater than `priority`, and thus only higher
 #' priority seizes can trigger the preemption.
 #' @param restart whether the activity must be restarted after being preempted.
+#' @param id selection identifier for nested usage.
 #' 
 #' @return The trajectory object.
 #' @seealso \link{release_selected}, \link{select}. 
@@ -339,8 +342,8 @@ seize <- function(traj, resource, amount=1, priority=0, preemptible=priority, re
 #' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
-seize_selected <- function(traj, amount=1, priority=0, preemptible=priority, restart=FALSE)
-  traj$seize(NA, amount, priority, preemptible, restart)
+seize_selected <- function(traj, amount=1, priority=0, preemptible=priority, restart=FALSE, id=0)
+  traj$seize(NA, amount, priority, preemptible, restart, id)
 
 #' Add a release activity
 #'
@@ -365,6 +368,7 @@ release <- function(traj, resource, amount=1) traj$release(resource, amount)
 #' 
 #' @param traj the trajectory object.
 #' @param amount the amount to release, accepts either a callable object (a function) or a numeric value.
+#' @param id selection identifier for nested usage.
 #' 
 #' @return The trajectory object.
 #' @seealso \link{seize_selected}, \link{select}. 
@@ -373,7 +377,7 @@ release <- function(traj, resource, amount=1) traj$release(resource, amount)
 #' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, \link{timeout}, 
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
-release_selected <- function(traj, amount=1) traj$release(NA, amount)
+release_selected <- function(traj, amount=1, id=0) traj$release(NA, amount, id)
 
 #' Select a resource
 #'
@@ -385,6 +389,7 @@ release_selected <- function(traj, amount=1) traj$release(NA, amount)
 #' @param policy if \code{resources} is a vector of names, this parameter determines
 #' the criteria for selecting a resource among the set of policies available; otherwise,
 #' it is ignored.
+#' @param id selection identifier for nested usage.
 #' 
 #' @return The trajectory object.
 #' @seealso \link{seize_selected}, \link{release_selected}. 
@@ -394,8 +399,8 @@ release_selected <- function(traj, amount=1) traj$release(NA, amount)
 #' \link{set_attribute}, \link{branch}, \link{rollback}.
 #' @export
 select <- function(traj, resources, policy=c("shortest-queue", "round-robin", 
-                                             "first-available", "random"))
-  traj$select(resources, policy)
+                                             "first-available", "random"), id=0)
+  traj$select(resources, policy, id)
 
 #' Add a timeout activity
 #'
