@@ -82,7 +82,7 @@ public:
   Seize(bool verbose, std::string resource, T amount, bool provide_attrs, 
         int priority, int preemptible, bool restart):
     Activity("Seize", verbose, provide_attrs, std::abs(priority)), resource(resource),
-    amount(amount), ret(-1), preemptible(std::abs(preemptible)), restart(restart) {}
+    amount(amount), preemptible(std::abs(preemptible)), restart(restart) {}
   
   virtual void print(int indent=0, bool brief=false);
   virtual double run(Arrival* arrival);
@@ -90,7 +90,6 @@ public:
 protected:
   std::string resource;
   T amount;
-  int ret;
   int preemptible;
   bool restart;
 };
@@ -105,7 +104,7 @@ public:
   
   SeizeSelected(bool verbose, int id, T amount, bool provide_attrs, 
                 int priority, int preemptible, bool restart):
-    Seize<T>(verbose, "<selected>", amount, provide_attrs, priority, preemptible, restart),
+    Seize<T>(verbose, "[]", amount, provide_attrs, priority, preemptible, restart),
     id(id) {}
   
   double run(Arrival* arrival);
@@ -124,7 +123,7 @@ public:
   
   Release(bool verbose, std::string resource, T amount, bool provide_attrs):
     Activity("Release", verbose, provide_attrs, PRIORITY_RELEASE), 
-    resource(resource), amount(amount), ret(-1) {}
+    resource(resource), amount(amount) {}
   
   virtual void print(int indent=0, bool brief=false);
   virtual double run(Arrival* arrival);
@@ -132,7 +131,6 @@ public:
 protected:
   std::string resource;
   T amount;
-  int ret;
 };
 
 /**
@@ -184,7 +182,7 @@ public:
   CLONEABLE(SetAttribute<T>)
   
   SetAttribute(bool verbose, std::string key, T value, bool provide_attrs):
-    Activity("SetAttribute", verbose, provide_attrs), key(key), value(value), ret(-1) {}
+    Activity("SetAttribute", verbose, provide_attrs), key(key), value(value) {}
   
   void print(int indent=0, bool brief=false);
   double run(Arrival* arrival);
@@ -192,7 +190,6 @@ public:
 protected:
   std::string key;
   T value;
-  double ret;
 };
 
 /**
@@ -204,14 +201,13 @@ public:
   CLONEABLE(Timeout<T>)
   
   Timeout(bool verbose, T delay, bool provide_attrs):
-    Activity("Timeout", verbose, provide_attrs), delay(delay), ret(-1) {}
+    Activity("Timeout", verbose, provide_attrs), delay(delay) {}
   
   void print(int indent=0, bool brief=false);
   double run(Arrival* arrival);
   
 protected:
   T delay;
-  double ret;
 };
 
 /**
@@ -223,7 +219,7 @@ public:
   CLONEABLE(Branch)
   
   Branch(bool verbose, Rcpp::Function option, bool provide_attrs, VEC<bool> cont, VEC<Rcpp::Environment> trj):
-    Activity("Branch", verbose, provide_attrs), option(option), ret(-1), cont(cont), trj(trj), selected(NULL) {
+    Activity("Branch", verbose, provide_attrs), option(option), cont(cont), trj(trj), selected(NULL) {
     foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
       Rcpp::Function get_head(itr["get_head"]);
       Rcpp::Function get_tail(itr["get_tail"]);
@@ -260,7 +256,7 @@ public:
         Rcpp::Function print(trj[i]["print"]);
         print(indent+2);
       }
-    else Rcpp::Rcout << ret << std::endl;
+    else Rcpp::Rcout << trj.size() << " options" << std::endl;
   }
   
   double run(Arrival* arrival);
@@ -283,7 +279,6 @@ public:
   
 protected:
   Rcpp::Function option;
-  int ret;
   VEC<bool> cont;
   VEC<Rcpp::Environment> trj;
   Activity* selected;

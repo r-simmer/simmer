@@ -65,8 +65,6 @@ void Arrival::run() {
   if (!activity) goto finish;
   if (lifetime.start < 0) lifetime.start = sim->now();
   
-  delay = activity->run(this);
-  
   if (sim->verbose) {
     Rcpp::Rcout <<
       FMT(10, right) << sim->now() << " |" << 
@@ -75,6 +73,7 @@ void Arrival::run() {
     activity->print(0, true);
   }
   
+  delay = activity->run(this);
   if (delay == REJECTED) goto end;
   activity = activity->get_next();
   if (delay == ENQUEUED) goto end;

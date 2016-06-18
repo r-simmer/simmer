@@ -103,7 +103,7 @@ test_that("core selection algorithms work: first-available", {
   res_ordered <- res[order(res$time),]
   res_ordered <- res_ordered[4:9,]
   
-  expect_equal(res_ordered$server, c(2, 3, 1, 2, 2, 2))
+  expect_equal(res_ordered$server, c(2, 3, 1, 2, 3, 1))
   expect_equal(res_ordered$queue, c(0, 0, 0, 1, 1, 1))
   expect_equal(res_ordered$resource, c("r1", "r2", "r3", "r1", "r2", "r3"))
 })

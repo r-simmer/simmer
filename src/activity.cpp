@@ -23,7 +23,7 @@ void Seize<Rcpp::Function>::print(int indent, bool brief) {
   Activity::print(indent, brief);
   if (!brief) Rcpp::Rcout << 
     "resource: " << resource << " | " << "amount: function() }" << std::endl;
-  else Rcpp::Rcout << resource << ", " << ret << std::endl;
+  else Rcpp::Rcout << resource << ", function()" << std::endl;
 }
 
 template <>
@@ -34,21 +34,24 @@ double Seize<int>::run(Arrival* arrival) {
 
 template <>
 double Seize<Rcpp::Function>::run(Arrival* arrival) {
-  ret = execute_call<int>(amount, arrival, provide_attrs);
+  int ret = execute_call<int>(amount, arrival, provide_attrs);
   return arrival->sim->get_resource(resource)->seize(arrival, ret,
                                     priority, preemptible, restart);
 }
 
 template <>
 double SeizeSelected<int>::run(Arrival* arrival) {
-  resource = arrival->get_selected(id);
-  return Seize<int>::run(arrival);
+  std::string resource = arrival->get_selected(id);
+  return arrival->sim->get_resource(resource)->seize(arrival, amount, 
+                                    priority, preemptible, restart);
 }
 
 template <>
 double SeizeSelected<Rcpp::Function>::run(Arrival* arrival) {
-  resource = arrival->get_selected(id);
-  return Seize<Rcpp::Function>::run(arrival);
+  std::string resource = arrival->get_selected(id);
+  int ret = execute_call<int>(amount, arrival, provide_attrs);
+  return arrival->sim->get_resource(resource)->seize(arrival, ret,
+                                    priority, preemptible, restart);
 }
 
 template <>
@@ -64,7 +67,7 @@ void Release<Rcpp::Function>::print(int indent, bool brief) {
   Activity::print(indent, brief);
   if (!brief) Rcpp::Rcout << 
     "resource: " << resource << " | " << "amount: function() }" << std::endl;
-  else Rcpp::Rcout << resource << ", " << ret << std::endl;
+  else Rcpp::Rcout << resource << ", function()" << std::endl;
 }
 
 template <>
@@ -74,20 +77,21 @@ double Release<int>::run(Arrival* arrival) {
 
 template <>
 double Release<Rcpp::Function>::run(Arrival* arrival) {
-  ret = execute_call<int>(amount, arrival, provide_attrs);
+  int ret = execute_call<int>(amount, arrival, provide_attrs);
   return arrival->sim->get_resource(resource)->release(arrival, ret);
 }
 
 template <>
 double ReleaseSelected<int>::run(Arrival* arrival) {
-  resource = arrival->get_selected(id);
-  return Release<int>::run(arrival);
+  std::string resource = arrival->get_selected(id);
+  return arrival->sim->get_resource(resource)->release(arrival, amount);
 }
 
 template <>
 double ReleaseSelected<Rcpp::Function>::run(Arrival* arrival) {
-  resource = arrival->get_selected(id);
-  return Release<Rcpp::Function>::run(arrival);
+  std::string resource = arrival->get_selected(id);
+  int ret = execute_call<int>(amount, arrival, provide_attrs);
+  return arrival->sim->get_resource(resource)->release(arrival, ret);
 }
 
 template <>
@@ -101,7 +105,7 @@ template <>
 void Timeout<Rcpp::Function>::print(int indent, bool brief) {
   Activity::print(indent, brief);
   if (!brief) Rcpp::Rcout << "task: function() }" << std::endl;
-  else Rcpp::Rcout << ret << std::endl;
+  else Rcpp::Rcout << "function()" << std::endl;
 }
 
 template <>
@@ -109,8 +113,8 @@ double Timeout<double>::run(Arrival* arrival) { return std::abs(delay); }
 
 template <>
 double Timeout<Rcpp::Function>::run(Arrival* arrival) {
-  ret = std::abs(execute_call<double>(delay, arrival, provide_attrs));
-  return ret;
+  double ret = execute_call<double>(delay, arrival, provide_attrs);
+  return std::abs(ret);
 }
 
 template <>
@@ -126,7 +130,7 @@ void SetAttribute<Rcpp::Function>::print(int indent, bool brief) {
   Activity::print(indent, brief);
   if (!brief) Rcpp::Rcout << 
     "key: " << key << ", value: function() }" << std::endl;
-  else Rcpp::Rcout << ret << std::endl;
+  else Rcpp::Rcout << key << ": function()" << std::endl;
 }
 
 template <>
@@ -136,13 +140,13 @@ double SetAttribute<double>::run(Arrival* arrival) {
 
 template <>
 double SetAttribute<Rcpp::Function>::run(Arrival* arrival) {
-  ret = execute_call<double>(value, arrival, provide_attrs);
+  double ret = execute_call<double>(value, arrival, provide_attrs);
   return arrival->set_attribute(key, ret);
 }
 
 double Branch::run(Arrival* arrival) {
-  ret = execute_call<unsigned int>(option, arrival, provide_attrs);
-  if (ret < 1 || ret > (int)heads.size())
+  unsigned int ret = execute_call<unsigned int>(option, arrival, provide_attrs);
+  if (ret < 1 || ret > heads.size())
     Rcpp::stop("index out of range");
   selected = heads[ret-1];
   return 0;
@@ -201,14 +205,18 @@ void Select<VEC<std::string> >::print(int indent, bool brief) {
   if (!brief) Rcpp::Rcout << 
     "resources: " << resources[0] << (resources.size()>1 ? ", ..." : "") << " | " << 
     "policy: " << policy << " }" << std::endl;
-  else Rcpp::Rcout << selected << std::endl;
+  else {
+    if (resources.size() > 1)
+      Rcpp::Rcout << resources.size() << " options" << std::endl;
+    else Rcpp::Rcout << resources[0] << std::endl;
+  }
 }
 
 template <>
 void Select<Rcpp::Function>::print(int indent, bool brief) {
   Activity::print(indent, brief);
   if (!brief) Rcpp::Rcout << "resources: function() }" << std::endl;
-  else Rcpp::Rcout << selected << std::endl;
+  else Rcpp::Rcout << "function()" << std::endl;
 }
 
 template <>
