@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "simulator.h"
 #include "activity.h"
+#include "random.h"
 
 template <typename T>
 T execute_call(Rcpp::Function call, Arrival* arrival, bool provide_attrs) {
@@ -228,7 +229,7 @@ double Select<VEC<std::string> >::run(Arrival* arrival) {
     }
     else if (!policy.compare("round-robin")) {
       selected_i++;
-      if (selected_i == resources.size())
+      if (selected_i == (int)resources.size())
         selected_i = 0;
     } 
     else if (!policy.compare("first-available")) {
