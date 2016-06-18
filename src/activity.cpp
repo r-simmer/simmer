@@ -242,7 +242,7 @@ double Select<VEC<std::string> >::run(Arrival* arrival) {
       for (i = 0; i < n; i++) {
         Resource* res = arrival->sim->get_resource(resources[i]);
         if (res->get_queue_count() < res->get_queue_size())
-          goto select;
+          goto select; // LCOV_EXCL_LINE
       }
     select:
       if (i == n) selected_i = 0;
@@ -251,7 +251,7 @@ double Select<VEC<std::string> >::run(Arrival* arrival) {
     else if (!policy.compare("random")) {
       selected_i = rand_int(0, resources.size()-1);
     }
-    else Rcpp::stop("policy '" + policy + "' not supported (typo?)");
+    else Rcpp::stop("policy '" + policy + "' not supported (typo?)"); // LCOV_EXCL_LINE
   }
   selected = resources[selected_i];
   arrival->set_selected(id, selected);
