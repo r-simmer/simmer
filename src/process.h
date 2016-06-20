@@ -6,6 +6,7 @@
 // forward declarations
 class Activity;
 class Arrival;
+class Resource;
 
 /** 
  * Abstract class for processes, active entities that need a method run().
@@ -155,7 +156,7 @@ class Arrival: public Process {
     ArrTime(): start(-1), activity(0) {}
   };
   typedef UMAP<std::string, ArrTime> ResTime;
-  typedef UMAP<int, std::string> SelMap;
+  typedef UMAP<int, Resource*> SelMap;
   
 public:
   /**
@@ -179,8 +180,8 @@ public:
   void set_start(std::string name, double start) { restime[name].start = start; }
   void set_activity(std::string name, double act) { restime[name].activity = act; }
   double get_activity(std::string name) { return restime[name].activity; }
-  void set_selected(int id, std::string name) { selected[id] = name; }
-  std::string get_selected(int id) { return selected[id]; }
+  void set_selected(int id, Resource* res) { selected[id] = res; }
+  Resource* get_selected(int id) { return selected[id]; }
   
   void leave(std::string resource, double time) {
     gen->notify_release(name, restime[resource].start, time, 

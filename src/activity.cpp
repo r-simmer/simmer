@@ -1,7 +1,6 @@
 #include "entity.h"
 #include "simulator.h"
 #include "activity.h"
-#include "random.h"
 
 template <typename T>
 T execute_call(Rcpp::Function call, Arrival* arrival, bool provide_attrs) {
@@ -41,17 +40,15 @@ double Seize<Rcpp::Function>::run(Arrival* arrival) {
 
 template <>
 double SeizeSelected<int>::run(Arrival* arrival) {
-  std::string resource = arrival->get_selected(id);
-  return arrival->sim->get_resource(resource)->seize(arrival, amount, 
-                                    priority, preemptible, restart);
+  return arrival->get_selected(id)->seize(arrival, amount, 
+                               priority, preemptible, restart);
 }
 
 template <>
 double SeizeSelected<Rcpp::Function>::run(Arrival* arrival) {
-  std::string resource = arrival->get_selected(id);
   int ret = execute_call<int>(amount, arrival, provide_attrs);
-  return arrival->sim->get_resource(resource)->seize(arrival, ret,
-                                    priority, preemptible, restart);
+  return arrival->get_selected(id)->seize(arrival, ret, 
+                               priority, preemptible, restart);
 }
 
 template <>
@@ -83,15 +80,13 @@ double Release<Rcpp::Function>::run(Arrival* arrival) {
 
 template <>
 double ReleaseSelected<int>::run(Arrival* arrival) {
-  std::string resource = arrival->get_selected(id);
-  return arrival->sim->get_resource(resource)->release(arrival, amount);
+  return arrival->get_selected(id)->release(arrival, amount);
 }
 
 template <>
 double ReleaseSelected<Rcpp::Function>::run(Arrival* arrival) {
-  std::string resource = arrival->get_selected(id);
   int ret = execute_call<int>(amount, arrival, provide_attrs);
-  return arrival->sim->get_resource(resource)->release(arrival, ret);
+  return arrival->get_selected(id)->release(arrival, ret);
 }
 
 template <>
@@ -221,54 +216,19 @@ void Select<Rcpp::Function>::print(int indent, bool brief) {
 
 template <>
 double Select<VEC<std::string> >::run(Arrival* arrival) {
+  Resource* selected;
   if (resources.size() == 1)
-    selected_i = 0;
-  else {
-    if (!policy.compare("shortest-queue")) {
-      selected_i = 0;
-      int n = resources.size();
-      for (int i = 0; i < n; i++) {
-        Resource* old = arrival->sim->get_resource(resources[selected_i]);
-        Resource* res = arrival->sim->get_resource(resources[i]);
-        if (res->get_server_count() + res->get_queue_count() < 
-            old->get_server_count() + old->get_queue_count())
-          selected_i = i;
-      }
-    }
-    else if (!policy.compare("round-robin")) {
-      selected_i++;
-      if (selected_i == (int)resources.size())
-        selected_i = 0;
-    } 
-    else if (!policy.compare("first-available")) {
-      int i, n = resources.size();
-      for (i = 0; i < n; i++) {
-        Resource* res = arrival->sim->get_resource(resources[i]);
-        if (res->get_server_count() < res->get_capacity())
-          goto select;
-      }
-      for (i = 0; i < n; i++) {
-        Resource* res = arrival->sim->get_resource(resources[i]);
-        if (res->get_queue_count() < res->get_queue_size())
-          goto select;
-      }
-    select:
-      if (i == n) selected_i = 0;
-      else selected_i = i;
-    }
-    else if (!policy.compare("random")) {
-      selected_i = rand_int(0, resources.size()-1);
-    }
-    else Rcpp::stop("policy '" + policy + "' not supported (typo?)");
-  }
-  selected = resources[selected_i];
+    selected = arrival->sim->get_resource(resources[0]);
+  else
+    selected = dispatcher.dispatch(arrival->sim);
   arrival->set_selected(id, selected);
   return 0;
 }
 
 template <>
 double Select<Rcpp::Function>::run(Arrival* arrival) {
-  selected = execute_call<std::string>(resources, arrival, provide_attrs);
+  std::string res = execute_call<std::string>(resources, arrival, provide_attrs);
+  Resource* selected = arrival->sim->get_resource(res);
   arrival->set_selected(id, selected);
   return 0;
 }

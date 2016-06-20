@@ -2,6 +2,7 @@
 #define ACTIVITY_H
 
 #include "simmer.h"
+#include "policy.h"
 
 // forward declarations
 class Arrival;
@@ -160,7 +161,7 @@ public:
   
   Select(bool verbose, T resources, bool provide_attrs, std::string policy, int id):
     Activity("Select", verbose, provide_attrs), resources(resources),
-    policy(policy), id(id), selected_i(-1) {}
+    policy(policy), id(id), dispatcher(Policy(resources, policy)) {}
   
   void print(int indent=0, bool brief=false);
   double run(Arrival* arrival);
@@ -169,8 +170,7 @@ protected:
   T resources;
   std::string policy;
   int id;
-  int selected_i;
-  std::string selected;
+  Policy dispatcher;
 };
 
 /**

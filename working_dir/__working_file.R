@@ -197,15 +197,15 @@ t1 <- create_trajectory() %>%
 ####################################################################
 
 t <- create_trajectory(verbose=T) %>%
-  select(c("dummy", "asdf", "otro"), policy="random") %>%
-  #seize_selected(1) %>%
+  select(c("r1", "r2", "r3"), policy="round-robin") %>%
+  seize_selected(1) %>%
   #timeout(10) %>%
   #release_selected(1) %>%
   rollback(4, times=10)
 
 env <- simmer(verbose=T) %>%
-  add_resource("dummy", 1) %>%
-  add_resource("asdf", 1) %>%
-  add_resource("otro", 1) %>%
+  add_resource("r1", Inf) %>%
+  add_resource("r2", Inf) %>%
+  add_resource("r3", Inf) %>%
   add_generator("arrival", t, at(0)) %>%
   run()
