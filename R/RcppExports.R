@@ -65,8 +65,16 @@ get_n_generated_ <- function(sim_, name_) {
     .Call('simmer_get_n_generated_', PACKAGE = 'simmer', sim_, name_)
 }
 
+set_capacity_ <- function(sim_, name_, value_) {
+    invisible(.Call('simmer_set_capacity_', PACKAGE = 'simmer', sim_, name_, value_))
+}
+
 get_capacity_ <- function(sim_, name_) {
     .Call('simmer_get_capacity_', PACKAGE = 'simmer', sim_, name_)
+}
+
+set_queue_size_ <- function(sim_, name_, value_) {
+    invisible(.Call('simmer_set_queue_size_', PACKAGE = 'simmer', sim_, name_, value_))
 }
 
 get_queue_size_ <- function(sim_, name_) {

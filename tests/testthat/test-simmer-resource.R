@@ -2,31 +2,46 @@ context("resource")
 
 test_that("resources are correctly created", {
   env <- simmer() %>%
-    add_resource("server", 5, Inf)
+    add_resource("dummy", 5, Inf)
   
-  expect_warning(env%>%add_resource("server"))
+  expect_warning(env%>%add_resource("dummy"))
   expect_error(env%>%get_capacity("asdf"))
-  expect_equal(env%>%get_capacity("server"), 5)
+  expect_equal(env%>%get_capacity("dummy"), 5)
   expect_error(env%>%get_queue_size("asdf"))
-  expect_equal(env%>%get_queue_size("server"), Inf)
+  expect_equal(env%>%get_queue_size("dummy"), Inf)
   expect_error(env%>%get_server_count("asdf"))
-  expect_equal(env%>%get_server_count("server"), 0)
+  expect_equal(env%>%get_server_count("dummy"), 0)
   expect_error(env%>%get_queue_count("asdf"))
-  expect_equal(env%>%get_queue_count("server"), 0)
+  expect_equal(env%>%get_queue_count("dummy"), 0)
+})
+
+test_that("capacity and queue size change", {
+  env <- simmer() %>%
+    add_resource("dummy", 5, Inf)
+  
+  expect_equal(env%>%get_capacity("dummy"), 5)
+  expect_equal(env%>%get_queue_size("dummy"), Inf)
+  
+  env %>% 
+    set_capacity("dummy", Inf) %>%
+    set_queue_size("dummy", 5)
+  
+  expect_equal(env%>%get_capacity("dummy"), Inf)
+  expect_equal(env%>%get_queue_size("dummy"), 5)
 })
 
 test_that("a negative capacity or queue_size is converted to positive", {
   env <- simmer() %>%
-    add_resource("server", -4, -1)
+    add_resource("dummy", -4, -1)
   
-  expect_equal(env%>%get_capacity("server"), 4)
-  expect_equal(env%>%get_queue_size("server"), 1)
+  expect_equal(env%>%get_capacity("dummy"), 4)
+  expect_equal(env%>%get_queue_size("dummy"), 1)
 })
 
 test_that("a non-existent resource fails", {
   t0 <- create_trajectory("") %>%
-    seize("server", 1) %>%
-    release("server", 1)
+    seize("dummy", 1) %>%
+    release("dummy", 1)
   
   env <- simmer() %>%
     add_generator("customer", t0, function() 1)
@@ -36,11 +51,11 @@ test_that("a non-existent resource fails", {
 
 test_that("resource slots are correctly filled", {
   t0 <- create_trajectory("") %>%
-    seize("server", 1) %>%
+    seize("dummy", 1) %>%
     set_attribute("dummy", 1)
   
   env <- simmer() %>%
-    add_resource("server", 2, 2) %>%
+    add_resource("dummy", 2, 2) %>%
     add_generator("customer", t0, at(1:5), mon=2) %>%
     run()
   
@@ -58,11 +73,11 @@ test_that("resource slots are correctly filled", {
 
 test_that("resources are  correctly monitored", {
   t0 <- create_trajectory("") %>%
-    seize("server", 1) %>%
-    release("server", 1)
+    seize("dummy", 1) %>%
+    release("dummy", 1)
   
   env <- simmer() %>%
-    add_resource("server", 2) %>%
+    add_resource("dummy", 2) %>%
     add_generator("customer", t0, at(0)) %>%
     run()
   
@@ -74,16 +89,16 @@ test_that("resources are  correctly monitored", {
 
 test_that("a big departure triggers more than one small seize from the queue", {
   t0 <- create_trajectory("") %>%
-    seize("server", 2) %>%
+    seize("dummy", 2) %>%
     timeout(10) %>%
-    release("server", 2)
+    release("dummy", 2)
   t1 <- create_trajectory("") %>%
-    seize("server", 1) %>%
+    seize("dummy", 1) %>%
     timeout(10) %>%
-    release("server", 1)
+    release("dummy", 1)
   
   env <- simmer() %>%
-    add_resource("server", 2) %>%
+    add_resource("dummy", 2) %>%
     add_generator("a", t0, at(0)) %>%
     add_generator("b", t1, at(1, 2)) %>%
     run()

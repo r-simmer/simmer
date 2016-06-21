@@ -204,6 +204,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// set_capacity_
+void set_capacity_(SEXP sim_, SEXP name_, SEXP value_);
+RcppExport SEXP simmer_set_capacity_(SEXP sim_SEXP, SEXP name_SEXP, SEXP value_SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type value_(value_SEXP);
+    set_capacity_(sim_, name_, value_);
+    return R_NilValue;
+END_RCPP
+}
 // get_capacity_
 int get_capacity_(SEXP sim_, SEXP name_);
 RcppExport SEXP simmer_get_capacity_(SEXP sim_SEXP, SEXP name_SEXP) {
@@ -214,6 +226,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
     __result = Rcpp::wrap(get_capacity_(sim_, name_));
     return __result;
+END_RCPP
+}
+// set_queue_size_
+void set_queue_size_(SEXP sim_, SEXP name_, SEXP value_);
+RcppExport SEXP simmer_set_queue_size_(SEXP sim_SEXP, SEXP name_SEXP, SEXP value_SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type value_(value_SEXP);
+    set_queue_size_(sim_, name_, value_);
+    return R_NilValue;
 END_RCPP
 }
 // get_queue_size_

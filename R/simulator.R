@@ -222,10 +222,26 @@ Simmer <- R6Class("simmer",
       get_n_generated_(private$sim_obj, evaluate_value(name))
     },
     
-    get_capacity = function(name) { 
+    set_capacity = function(name, value) { 
+      name <- evaluate_value(name)
+      value <- evaluate_value(value)
+      value <- replace(value, value==Inf, -1)
+      set_capacity_(private$sim_obj, name, value)
+      self
+    },
+    
+    get_capacity = function(name) {
       ret <- get_capacity_(private$sim_obj, evaluate_value(name))
       if (ret < 0) ret <- Inf
       ret
+    },
+    
+    set_queue_size = function(name, value) { 
+      name <- evaluate_value(name)
+      value <- evaluate_value(value)
+      value <- replace(value, value==Inf, -1)
+      set_queue_size_(private$sim_obj, name, value)
+      self
     },
     
     get_queue_size = function(name) {
@@ -266,7 +282,7 @@ Simmer <- R6Class("simmer",
 #' \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 #' 
 #' @examples
@@ -307,7 +323,7 @@ simmer <- function(name="anonymous", verbose=FALSE) Simmer$new(name, verbose)
 #' \link{simmer}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 reset <- function(env) env$reset()
 
@@ -322,7 +338,7 @@ reset <- function(env) env$reset()
 #' \link{simmer}, \link{reset}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 now <- function(env) env$now()
 
@@ -339,7 +355,7 @@ now <- function(env) env$now()
 #' \link{simmer}, \link{reset}, \link{now}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 peek <- function(env, steps=1, verbose=FALSE) env$peek(steps, verbose)
 
@@ -354,7 +370,7 @@ peek <- function(env, steps=1, verbose=FALSE) env$peek(steps, verbose)
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 onestep <- function(env) env$step()
 
@@ -370,7 +386,7 @@ onestep <- function(env) env$step()
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 run <- function(env, until=1000) env$run(until)
 
@@ -402,7 +418,7 @@ run <- function(env, until=1000) env$run(until)
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE, 
                          preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE)
@@ -424,7 +440,7 @@ add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE, preemp
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 add_generator <- function(env, name_prefix, trajectory, dist, mon=1)
   env$add_generator(name_prefix, trajectory, dist, mon)
@@ -441,7 +457,7 @@ add_generator <- function(env, name_prefix, trajectory, dist, mon=1)
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 get_mon_arrivals <- function(envs, per_resource=FALSE) 
   envs_apply(envs, "get_mon_arrivals", per_resource)
@@ -457,7 +473,7 @@ get_mon_arrivals <- function(envs, per_resource=FALSE)
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 get_mon_attributes <- function(envs) envs_apply(envs, "get_mon_attributes")
 
@@ -473,7 +489,7 @@ get_mon_attributes <- function(envs) envs_apply(envs, "get_mon_attributes")
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 get_mon_resources <- function(envs, data=c("counts", "limits")) envs_apply(envs, "get_mon_resources", data)
 
@@ -489,13 +505,30 @@ get_mon_resources <- function(envs, data=c("counts", "limits")) envs_apply(envs,
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 get_n_generated <- function(env, name) env$get_n_generated(name)
 
+#' Set the capacity
+#'
+#' Sets a resource's capacity by name.
+#' 
+#' @param env the simulation environment.
+#' @param name the name of the resource.
+#' @param value new capacity.
+#' 
+#' @return Returns the simulation environment.
+#' @seealso Other methods for dealing with a simulation environment:
+#' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
+#' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
+#' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
+#' \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+#' @export
+set_capacity <- function(env, name, value) env$set_capacity(name, value)
+
 #' Get the capacity
 #'
-#' Gets the capacity of a resource by name.
+#' Gets a resource's capacity by name.
 #' 
 #' @param env the simulation environment.
 #' @param name the name of the resource.
@@ -505,13 +538,30 @@ get_n_generated <- function(env, name) env$get_n_generated(name)
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_queue_size},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 get_capacity <- function(env, name) env$get_capacity(name)
 
+#' Set the queue size
+#'
+#' Sets a resource's queue size by name.
+#' 
+#' @param env the simulation environment.
+#' @param name the name of the resource.
+#' @param value new queue size.
+#' 
+#' @return Returns the simulation environment.
+#' @seealso Other methods for dealing with a simulation environment:
+#' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
+#' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
+#' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
+#' \link{set_capacity}, \link{get_server_count}, \link{get_queue_count}.
+#' @export
+set_queue_size <- function(env, name, value) env$set_queue_size(name, value)
+
 #' Get the queue size
 #'
-#' Gets the queue size of a resource by name.
+#' Gets a resource's queue size by name.
 #' 
 #' @param env the simulation environment.
 #' @param name the name of the resource.
@@ -521,7 +571,7 @@ get_capacity <- function(env, name) env$get_capacity(name)
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity},
-#' \link{get_server_count}, \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
 get_queue_size <- function(env, name) env$get_queue_size(name)
 
@@ -537,7 +587,7 @@ get_queue_size <- function(env, name) env$get_queue_size(name)
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_queue_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_queue_count}.
 #' @export
 get_server_count <- function(env, name) env$get_server_count(name)
 
@@ -553,6 +603,6 @@ get_server_count <- function(env, name) env$get_server_count(name)
 #' \link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
 #' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{get_server_count}.
+#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}.
 #' @export
 get_queue_count <- function(env, name) env$get_queue_count(name)

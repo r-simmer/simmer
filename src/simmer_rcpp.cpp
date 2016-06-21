@@ -198,11 +198,30 @@ int get_n_generated_(SEXP sim_, SEXP name_){
 }
 
 //[[Rcpp::export]]
+void set_capacity_(SEXP sim_, SEXP name_, SEXP value_){
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  int value = as<int>(value_);
+  
+  sim->get_resource(name)->set_capacity(value);
+}
+
+
+//[[Rcpp::export]]
 int get_capacity_(SEXP sim_, SEXP name_){
   XPtr<Simulator> sim(sim_);
   std::string name = as<std::string>(name_);
   
   return sim->get_resource(name)->get_capacity();
+}
+
+//[[Rcpp::export]]
+void set_queue_size_(SEXP sim_, SEXP name_, SEXP value_){
+  XPtr<Simulator> sim(sim_);
+  std::string name = as<std::string>(name_);
+  int value = as<int>(value_);
+  
+  sim->get_resource(name)->set_queue_size(value);
 }
 
 //[[Rcpp::export]]
