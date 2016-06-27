@@ -1,22 +1,16 @@
-language: r
-sudo: required
+language: R
+sudo: false
+cache: packages
+r:
+  - oldrel
+  - release
+  - devel
+
 warnings_are_errors: true
 env:
   global:
     - PKG_CXXFLAGS="-Wall -Wno-unused -pedantic"
     - _R_CHECK_CRAN_INCOMING_=FALSE
-
-r_binary_packages:
-  - Rcpp
-  - R6
-  - magrittr
-  - dplyr
-  - tidyr
-  - ggplot2
-  - scales
-  - testthat
-  - knitr
-  - rmarkdown
 
 r_github_packages:
   - jimhester/covr
