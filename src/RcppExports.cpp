@@ -518,6 +518,31 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// Leave__new
+SEXP Leave__new(SEXP verbose_, SEXP prob_);
+RcppExport SEXP simmer_Leave__new(SEXP verbose_SEXP, SEXP prob_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type prob_(prob_SEXP);
+    __result = Rcpp::wrap(Leave__new(verbose_, prob_));
+    return __result;
+END_RCPP
+}
+// Leave__new_func
+SEXP Leave__new_func(SEXP verbose_, Function prob, SEXP provide_attrs_);
+RcppExport SEXP simmer_Leave__new_func(SEXP verbose_SEXP, SEXP probSEXP, SEXP provide_attrs_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
+    Rcpp::traits::input_parameter< Function >::type prob(probSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type provide_attrs_(provide_attrs_SEXP);
+    __result = Rcpp::wrap(Leave__new_func(verbose_, prob, provide_attrs_));
+    return __result;
+END_RCPP
+}
 // activity_get_n_
 int activity_get_n_(SEXP activity_);
 RcppExport SEXP simmer_activity_get_n_(SEXP activity_SEXP) {

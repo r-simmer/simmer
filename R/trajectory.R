@@ -111,6 +111,13 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       else private$add_activity(Rollback__new_func(private$verbose, amount, check, needs_attrs(check)))
     },
     
+    leave = function(prob) {
+      prob <- evaluate_value(prob)
+      if (is.function(prob))
+        private$add_activity(Leave__new_func(private$verbose, prob, needs_attrs(prob)))
+      else private$add_activity(Leave__new(private$verbose, prob))
+    },
+    
     join = function(traj) {
       if (!inherits(traj, "simmer.trajectory"))
         stop("not a trajectory")
@@ -178,8 +185,8 @@ simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 #' @return Returns an environment that represents the trajectory.
 #' @seealso Other methods for dealing with trajectories:
 #' \link{get_head}, \link{get_tail}, \link{get_n_activities}, 
-#' \link{join}, \link{seize}, \link{release}, \link{timeout}, 
-#' \link{set_attribute}, \link{branch}, \link{rollback},
+#' \link{join}, \link{seize}, \link{release}, 
+#' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}, 
 #' \link{seize_selected}, \link{release_selected}, \link{select}.
 #' @export
 #' 
@@ -226,8 +233,8 @@ create_trajectory <- function(name="anonymous", verbose=FALSE) simmer.trajectory
 #' @return An external pointer to an activity object.
 #' @seealso Other methods for dealing with trajectories:
 #' \link{create_trajectory}, \link{get_tail}, \link{get_n_activities}, 
-#' \link{join}, \link{seize}, \link{release}, \link{timeout}, 
-#' \link{set_attribute}, \link{branch}, \link{rollback},
+#' \link{join}, \link{seize}, \link{release}, 
+#' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}, 
 #' \link{seize_selected}, \link{release_selected}, \link{select}.
 #' @export
 get_head <- function(traj) traj$get_head()
@@ -241,8 +248,8 @@ get_head <- function(traj) traj$get_head()
 #' @return An external pointer to an activity object.
 #' @seealso Other methods for dealing with trajectories:
 #' \link{create_trajectory}, \link{get_head}, \link{get_n_activities}, 
-#' \link{join}, \link{seize}, \link{release}, \link{timeout}, 
-#' \link{set_attribute}, \link{branch}, \link{rollback},
+#' \link{join}, \link{seize}, \link{release}, 
+#' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}, 
 #' \link{seize_selected}, \link{release_selected}, \link{select}.
 #' @export
 get_tail <- function(traj) traj$get_tail()
@@ -256,8 +263,8 @@ get_tail <- function(traj) traj$get_tail()
 #' @return The number of activities in the trajectory.
 #' @seealso Other methods for dealing with trajectories:
 #' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
-#' \link{join}, \link{seize}, \link{release}, \link{timeout}, 
-#' \link{set_attribute}, \link{branch}, \link{rollback},
+#' \link{join}, \link{seize}, \link{release}, 
+#' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}, 
 #' \link{seize_selected}, \link{release_selected}, \link{select}.
 #' @export
 get_n_activities <- function(traj) traj$get_n_activities()
@@ -271,8 +278,8 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #' @return A new trajectory object.
 #' @seealso Other methods for dealing with trajectories:
 #' \link{create_trajectory}, \link{get_head}, \link{get_tail},
-#' \link{get_n_activities}, \link{seize}, \link{release}, \link{timeout}, 
-#' \link{set_attribute}, \link{branch}, \link{rollback},
+#' \link{get_n_activities}, \link{seize}, \link{release}, 
+#' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}, 
 #' \link{seize_selected}, \link{release_selected}, \link{select}.
 #' @export
 #' 
@@ -312,8 +319,8 @@ join <- function(...) {
 #' @return The trajectory object.
 #' @seealso Other methods for dealing with trajectories:
 #' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
-#' \link{get_n_activities}, \link{join}, \link{release}, \link{timeout}, 
-#' \link{set_attribute}, \link{branch}, \link{rollback},
+#' \link{get_n_activities}, \link{join}, \link{release},
+#' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}, 
 #' \link{seize_selected}, \link{release_selected}, \link{select}.
 #' @export
 seize <- function(traj, resource, amount=1, priority=0, preemptible=priority, restart=FALSE)
@@ -339,8 +346,8 @@ seize <- function(traj, resource, amount=1, priority=0, preemptible=priority, re
 #' @seealso \link{release_selected}, \link{select}. 
 #' Other methods for dealing with trajectories:
 #' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
-#' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, \link{timeout}, 
-#' \link{set_attribute}, \link{branch}, \link{rollback}.
+#' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
+#' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}.
 #' @export
 seize_selected <- function(traj, amount=1, priority=0, preemptible=priority, restart=FALSE, id=0)
   traj$seize(NA, amount, priority, preemptible, restart, id)
@@ -356,8 +363,8 @@ seize_selected <- function(traj, amount=1, priority=0, preemptible=priority, res
 #' @return The trajectory object.
 #' @seealso Other methods for dealing with trajectories:
 #' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
-#' \link{get_n_activities}, \link{join}, \link{seize}, \link{timeout}, 
-#' \link{set_attribute}, \link{branch}, \link{rollback},
+#' \link{get_n_activities}, \link{join}, \link{seize},
+#' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}, 
 #' \link{seize_selected}, \link{release_selected}, \link{select}.
 #' @export
 release <- function(traj, resource, amount=1) traj$release(resource, amount)
@@ -374,8 +381,8 @@ release <- function(traj, resource, amount=1) traj$release(resource, amount)
 #' @seealso \link{seize_selected}, \link{select}. 
 #' Other methods for dealing with trajectories:
 #' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
-#' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, \link{timeout}, 
-#' \link{set_attribute}, \link{branch}, \link{rollback}.
+#' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
+#' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}.
 #' @export
 release_selected <- function(traj, amount=1, id=0) traj$release(NA, amount, id)
 
@@ -395,8 +402,8 @@ release_selected <- function(traj, amount=1, id=0) traj$release(NA, amount, id)
 #' @seealso \link{seize_selected}, \link{release_selected}. 
 #' Other methods for dealing with trajectories:
 #' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
-#' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, \link{timeout}, 
-#' \link{set_attribute}, \link{branch}, \link{rollback}.
+#' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
+#' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}.
 #' @export
 select <- function(traj, resources, policy=c("shortest-queue", "round-robin", 
                                              "first-available", "random"), id=0)
@@ -408,14 +415,15 @@ select <- function(traj, resources, policy=c("shortest-queue", "round-robin",
 #' an associated delay to the tail of a trajectory.
 #' 
 #' @param traj the trajectory object.
-#' @param task the timeout duration supplied by either passing a numeric value or a callable object (a function) that returns a numeric value 
-#' (negative values are automatically coerced to positive).
+#' @param task the timeout duration supplied by either passing a numeric value or a 
+#' callable object (a function) that returns a numeric value (negative values are 
+#' automatically coerced to positive).
 #' 
 #' @return The trajectory object.
 #' @seealso Other methods for dealing with trajectories:
 #' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
 #' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
-#' \link{set_attribute}, \link{branch}, \link{rollback},
+#' \link{set_attribute}, \link{branch}, \link{rollback}, \link{leave}, 
 #' \link{seize_selected}, \link{release_selected}, \link{select}.
 #' @export
 timeout <- function(traj, task) traj$timeout(task)
@@ -426,13 +434,14 @@ timeout <- function(traj, task) traj$timeout(task)
 #' 
 #' @param traj the trajectory object.
 #' @param key the attribute key (is coerced to a string).
-#' @param value the value to set, accepts either a numeric or a callable object (a function) which returns a numeric.
+#' @param value the value to set, accepts either a numeric or a callable object 
+#' (a function) which returns a numeric.
 #' 
 #' @return The trajectory object.
 #' @seealso Other methods for dealing with trajectories:
 #' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
 #' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
-#' \link{timeout}, \link{branch}, \link{rollback},
+#' \link{timeout}, \link{branch}, \link{rollback}, \link{leave}, 
 #' \link{seize_selected}, \link{release_selected}, \link{select}.
 #' @export
 set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
@@ -455,7 +464,7 @@ set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
 #' @seealso Other methods for dealing with trajectories:
 #' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
 #' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
-#' \link{set_attribute}, \link{timeout}, \link{rollback},
+#' \link{set_attribute}, \link{timeout}, \link{rollback}, \link{leave}, 
 #' \link{seize_selected}, \link{release_selected}, \link{select}.
 #' @export
 branch <- function(traj, option, continue, ..., merge="_deprecated") {
@@ -480,7 +489,23 @@ branch <- function(traj, option, continue, ..., merge="_deprecated") {
 #' @seealso Other methods for dealing with trajectories:
 #' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
 #' \link{get_n_activities}, \link{join}, \link{seize}, \link{release},
-#' \link{set_attribute}, \link{timeout}, \link{branch},
+#' \link{set_attribute}, \link{timeout}, \link{branch}, \link{leave}, 
 #' \link{seize_selected}, \link{release_selected}, \link{select}.
 #' @export
 rollback <- function(traj, amount, times=1, check) traj$rollback(amount, times, check)
+
+#' Add a leave activity
+#'
+#' Adds a new activity that terminates the trajectory with some probability.
+#' 
+#' @param traj the trajectory object.
+#' @param prob a probability or a function returning a probability.
+#' 
+#' @return The trajectory object.
+#' @seealso Other methods for dealing with trajectories:
+#' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
+#' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
+#' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback},
+#' \link{seize_selected}, \link{release_selected}, \link{select}.
+#' @export
+leave <- function(traj, prob) traj$leave(prob)

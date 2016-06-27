@@ -7,6 +7,7 @@
 * Add the option `queue_size_strict` to `add_resource` to guarantee the queue size limit with preemption (#59).
 * New `select`, `seize_selected` and `release_selected` activities (#52).
 * Modify resources (capacity, queue size) from inside a trajectory (#66).
+* New `leave` activity (#63).
 
 ## Major fixes:
 

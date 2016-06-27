@@ -232,3 +232,37 @@ double Select<Rcpp::Function>::run(Arrival* arrival) {
   arrival->set_selected(id, selected);
   return 0;
 }
+
+template <>
+void Leave<double>::print(int indent, bool brief) {
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << "prob: " << prob << " }" << std::endl;
+  else Rcpp::Rcout << prob << std::endl;
+}
+
+template <>
+void Leave<Rcpp::Function>::print(int indent, bool brief) {
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << "prob: function() }" << std::endl;
+  else Rcpp::Rcout << "function()" << std::endl;
+}
+
+template <>
+double Leave<double>::run(Arrival* arrival) {
+  Rcpp::NumericVector val = Rcpp::runif(1);
+  if (val[0] <= prob) {
+    arrival->terminate(arrival->sim->now(), false);
+    return REJECTED;
+  }
+  return 0;
+}
+
+template <>
+double Leave<Rcpp::Function>::run(Arrival* arrival) {
+  Rcpp::NumericVector val = Rcpp::runif(1);
+  if (val[0] <= execute_call<double>(prob, arrival, provide_attrs)) {
+    arrival->terminate(arrival->sim->now(), false);
+    return REJECTED;
+  }
+  return 0;
+}

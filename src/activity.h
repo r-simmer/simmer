@@ -330,4 +330,22 @@ protected:
   }
 };
 
+/**
+ * Leave the trajectory with some probability.
+ */
+template <typename T>
+class Leave: public Activity {
+public:
+  CLONEABLE(Leave<T>)
+  
+  Leave(bool verbose, T prob, bool provide_attrs):
+    Activity("Leave", verbose, provide_attrs), prob(prob) {}
+  
+  void print(int indent=0, bool brief=false);
+  double run(Arrival* arrival);
+  
+protected:
+  T prob;
+};
+
 #endif

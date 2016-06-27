@@ -447,6 +447,24 @@ SEXP Rollback__new_func(SEXP verbose_, SEXP amount_, Function check, SEXP provid
 }
 
 //[[Rcpp::export]]
+SEXP Leave__new(SEXP verbose_, SEXP prob_) {
+  bool verbose = as<bool>(verbose_);
+  double prob = as<double>(prob_);
+  
+  XPtr<Leave<double> > ptr(new Leave<double>(verbose, prob, 0), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP Leave__new_func(SEXP verbose_, Function prob, SEXP provide_attrs_) {
+  bool verbose = as<bool>(verbose_);
+  bool provide_attrs = as<bool>(provide_attrs_);
+  
+  XPtr<Leave<Function> > ptr(new Leave<Function>(verbose, prob, provide_attrs), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
 int activity_get_n_(SEXP activity_) {
   XPtr<Activity> activity(activity_);
   

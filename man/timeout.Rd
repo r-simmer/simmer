@@ -9,8 +9,9 @@ timeout(traj, task)
 \arguments{
 \item{traj}{the trajectory object.}
 
-\item{task}{the timeout duration supplied by either passing a numeric value or a callable object (a function) that returns a numeric value 
-(negative values are automatically coerced to positive).}
+\item{task}{the timeout duration supplied by either passing a numeric value or a 
+callable object (a function) that returns a numeric value (negative values are 
+automatically coerced to positive).}
 }
 \value{
 The trajectory object.
@@ -23,7 +24,7 @@ an associated delay to the tail of a trajectory.
 Other methods for dealing with trajectories:
 \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
 \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
-\link{set_attribute}, \link{branch}, \link{rollback},
+\link{set_attribute}, \link{branch}, \link{rollback}, \link{leave}, 
 \link{seize_selected}, \link{release_selected}, \link{select}.
 }
 

@@ -157,6 +157,14 @@ Rollback__new_func <- function(verbose_, amount_, check, provide_attrs_) {
     .Call('simmer_Rollback__new_func', PACKAGE = 'simmer', verbose_, amount_, check, provide_attrs_)
 }
 
+Leave__new <- function(verbose_, prob_) {
+    .Call('simmer_Leave__new', PACKAGE = 'simmer', verbose_, prob_)
+}
+
+Leave__new_func <- function(verbose_, prob, provide_attrs_) {
+    .Call('simmer_Leave__new_func', PACKAGE = 'simmer', verbose_, prob, provide_attrs_)
+}
+
 activity_get_n_ <- function(activity_) {
     .Call('simmer_activity_get_n_', PACKAGE = 'simmer', activity_)
 }
