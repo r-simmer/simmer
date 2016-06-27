@@ -8,6 +8,10 @@
 * New `select`, `seize_selected` and `release_selected` activities (#52).
 * Modify resources (capacity, queue size) from inside a trajectory (#66).
 
+## Major fixes:
+
+* Fix per-resource activity time monitoring (#67). The problem emerged when an arrival revisited a resource and it was enqueued. An uninitialised variable could lead to an activity time greater than `end_time - start_time`. All versions 3.2.x are affected by this bug.
+
 ## Minor changes and fixes:
 
 * Fix the description of `preemptible` in the documentation of `seize` and force `preemptible` to be equal or greater than `priority` (#53).

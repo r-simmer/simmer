@@ -35,8 +35,10 @@ int Resource::seize(Arrival* arrival, int amount, int priority, int preemptible,
   }
   // enqueue
   else if (room_in_queue(amount, priority)) {
-    if (arrival->is_monitored())
+    if (arrival->is_monitored()) {
       arrival->set_start(this->name, sim->now());
+      arrival->set_activity(this->name, 0);
+    }
     insert_in_queue(sim->verbose, sim->now(), arrival, amount, priority, preemptible, restart);
     status = ENQUEUED;
   }
