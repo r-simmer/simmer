@@ -1,14 +1,12 @@
 ## Release summary
 
-In the DESCRIPTION file, the _title_ has been changed in order to be more informative (as it is generally used as a description), and the _description_ has been extended.
-
-This version implements two incremental features and several minor fixes and improvements.
+This version implements 6 new features and 11 fixes and improvements. In the DESCRIPTION file, the _URL_ has been updated with our new website.
 
 ## Test environments
 
-* Fedora 23 + clang (local), R 3.2.3 and devel
-* Ubuntu 12.04 + GCC (on travis-ci), R 3.2.5
-* win-builder, R release and devel
+* Fedora 23 + clang (local), R 3.3.0
+* Ubuntu 12.04 + GCC (on travis-ci), R 3.2.5, 3.3.1, devel
+* win-builder, R devel
 
 ## R CMD check results
 
@@ -32,9 +30,9 @@ Possibly mis-spelled words in DESCRIPTION:
   SimPy (6:66)
 
 * checking installed package size ... NOTE
-  installed size is  7.5Mb
+  installed size is  7.2Mb
   sub-directories of 1Mb or more:
-    libs   6.6Mb
+    libs   6.3Mb
 
 ## Downstream dependencies
 
