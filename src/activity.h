@@ -70,6 +70,9 @@ public:
 protected:
   Activity* next;
   Activity* prev;
+  
+  template <typename T>
+  T execute_call(Rcpp::Function call, Arrival* arrival);
 };
 
 /**
@@ -85,7 +88,13 @@ public:
     Activity("Seize", verbose, provide_attrs, std::abs(priority)), resource(resource),
     amount(amount), preemptible(std::abs(preemptible)), restart(restart) {}
   
-  virtual void print(int indent=0, bool brief=false);
+  virtual void print(int indent=0, bool brief=false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << 
+      "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
+    else Rcpp::Rcout << resource << ", " << amount << std::endl;
+  }
+  
   virtual double run(Arrival* arrival);
   
 protected:
@@ -126,7 +135,13 @@ public:
     Activity("Release", verbose, provide_attrs, PRIORITY_RELEASE), 
     resource(resource), amount(amount) {}
   
-  virtual void print(int indent=0, bool brief=false);
+  virtual void print(int indent=0, bool brief=false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << 
+      "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
+    else Rcpp::Rcout << resource << ", " << amount << std::endl;
+  }
+  
   virtual double run(Arrival* arrival);
   
 protected:
@@ -184,7 +199,13 @@ public:
   SetAttribute(bool verbose, std::string key, T value, bool provide_attrs):
     Activity("SetAttribute", verbose, provide_attrs), key(key), value(value) {}
   
-  void print(int indent=0, bool brief=false);
+  void print(int indent=0, bool brief=false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << 
+      "key: " << key << ", value: " << value << " }" << std::endl;
+    else Rcpp::Rcout << key << ": " << value << std::endl;
+  }
+  
   double run(Arrival* arrival);
   
 protected:
@@ -203,7 +224,12 @@ public:
   Timeout(bool verbose, T delay, bool provide_attrs):
     Activity("Timeout", verbose, provide_attrs), delay(delay) {}
   
-  void print(int indent=0, bool brief=false);
+  void print(int indent=0, bool brief=false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << "delay: " << delay << " }" << std::endl;
+    else Rcpp::Rcout << delay << std::endl;
+  }
+  
   double run(Arrival* arrival);
   
 protected:
@@ -341,7 +367,12 @@ public:
   Leave(bool verbose, T prob, bool provide_attrs):
     Activity("Leave", verbose, provide_attrs), prob(prob) {}
   
-  void print(int indent=0, bool brief=false);
+  void print(int indent=0, bool brief=false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << "prob: " << prob << " }" << std::endl;
+    else Rcpp::Rcout << prob << std::endl;
+  }
+  
   double run(Arrival* arrival);
   
 protected:
