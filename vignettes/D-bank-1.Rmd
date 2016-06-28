@@ -1,0 +1,520 @@
+---
+title: "The Bank Tutorial: Part I"
+author: "Duncan Garmonsway"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{The Bank Tutorial: Part I}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, cache = FALSE, include=FALSE}
+knitr::opts_chunk$set(collapse = T, comment = "#>",
+                      fig.width = 6, fig.height = 4, fig.align = "center")
+library(ggplot2)
+theme_set(theme_bw())
+```
+
+## Introduction
+
+This tutorial is adapted from a tutorial for the Python 2 package 'SimPy',
+[here](https://pythonhosted.org/SimPy/Tutorials/TheBank.html).  Users familiar
+with SimPy may find this tutorial helpful for transitioning to simmer.  Some
+very basic material is not covered.  Beginners should first read the vignettes
+'Introduction', 'Terminology' and 'Trajectories'.
+
+## A single customer
+
+In this tutorial we model a simple bank with customers arriving at random. We
+develop the model step-by-step, starting out simply, and producing a running
+program at each stage.
+
+A simulation should always be developed to answer a specific question; in these
+models we investigate how changing the number of bank servers or tellers might
+affect the waiting time for customers.
+
+### A customer arriving at a fixed time
+
+We first model a single customer who arrives at the bank for a visit, looks
+around at the decor for a time and then leaves. There is no queueing. First we
+will assume his arrival time and the time he spends in the bank are fixed.
+
+The arrival time is fixed at 5, and the time spent in the bank is fixed at 10.
+We interpret '5' and '10' as '5 minutes' and '10 minutes'.  The simulation runs
+for a maximum of 100 minutes, or until all the customers that are generated
+complete their trajectories.
+
+Note where these constants appear in the code below.
+
+```{r}
+library(simmer)
+
+customer <- 
+  create_trajectory("Customer's path") %>%
+  timeout(10) 
+
+bank <- 
+  simmer("bank") %>% 
+  add_generator("Customer", customer, at(5))
+
+bank %>% run(until = 100) 
+bank %>% get_mon_arrivals
+```
+
+The short trace printed out by the `get_mon_arrivals` function shows the result.
+The program finishes at simulation time 15 because there are no further events
+to be executed. At the end of the visit, the customer has no more actions and no
+other objects or customers are active.
+
+### A customer arriving at random
+
+Now we extend the model to allow our customer to arrive at a random simulated
+time though we will keep the time in the bank at 10, as before.
+
+The change occurs in the arguments to the `add_generator` function. The function
+`rexp` draws from an exponential distribution with the given parameter, which in
+this case is `1/5`.  See `?rexp` for more details.  We also seed the random
+number generator with 10211 so that the same sequence of random numbers will be
+drawn every time the script is run.
+
+```{r}
+library(simmer)
+
+set.seed(10212)
+
+customer <- 
+  create_trajectory("Customer's path") %>%
+  timeout(10) 
+
+bank <- 
+  simmer("bank") %>% 
+  add_generator("Customer", customer, at(rexp(1, 1/5)))
+
+bank %>% run(until = 100) 
+bank %>% get_mon_arrivals
+```
+
+The trace shows that the customer now arrives at time 7.839305. Changing the
+seed value would change that time.
+
+### More customers
+
+Our simulation does little so far. To consider a simulation with several
+customers we return to the simple deterministic model and add more customers.
+
+The program is almost as easy as the first example (A customer arriving at a
+fixed time). The main change is in the `add_generator` function, where we
+generate three customers by defining three start times. We also increase the
+maximum simulation time to 400 in the `run` function. Observe that we need only
+one definition of the customer trajectory, and generate several customers who
+follow that trajectory. These customers act quite independently in this model.
+
+Each customer also stays in the bank for a different, but non-random, amount of
+time.  This is an unusual case, so it requires an unusual bit of R code.  The
+`timeout` function accepts either a constant waiting time, or a function that is
+called once per customer and returns a single value (e.g. `rexp(1, 1/10)`).  So
+we need to create a function that returns a different, but specific, value each
+time it is called. We define a function called `loop` to do this.  The `loop`
+function returns another function.  In the example, we store that function under
+the name `x`. When called, the function `x` returns one of (in the example) 10,
+7, and 20, in sequence, wrapping around when it is called a fourth time.
+
+```{r}
+# Function to specify a series of waiting times, that loop around
+loop <- function(...) {
+    time_diffs <- c(...)
+    i <- 0
+    function() {		
+      if (i < length(time_diffs)) {		
+        i <<- i+1		
+      } else {		
+        i <<- 1		
+      }		
+      return(time_diffs[i])		
+    }		
+  }
+
+x <- loop(10, 7, 20)
+x(); x(); x(); x(); x()
+```
+
+The technical term for the `loop` function is a 'closure'.  How closures work is
+beyond the scope of this vignette; if you wish to learn more, then [Advanced
+R](http://adv-r.had.co.nz/Functional-programming.html#closures) by Hadley Wickam
+has a good explanation.
+
+When we use `loop` in the `timeout` function, we don't need to assign its output
+to a name; it can be an 'anonymous' function. It will be called whenever a
+customer is about to wait and needs to know how long to wait for.  Because only
+three customers are generated, and their first step is the timeout step, they
+are assigned 10, 7, and 20 in order.
+
+```{r}
+library(simmer)
+
+# Function to specify a series of waiting times in a loop
+loop <- function(...) {
+    time_diffs <- c(...)
+    i <- 0
+    function() {		
+      if (i < length(time_diffs)) {		
+        i <<- i+1		
+      } else {		
+        i <<- 1		
+      }		
+      return(time_diffs[i])		
+    }		
+  }
+
+customer <- 
+  create_trajectory("Customer's path") %>%
+  timeout(loop(10, 7, 20))
+
+bank <- 
+  simmer("bank") %>% 
+  add_generator("Customer", customer, at(2, 5, 12))
+
+bank %>% run(until = 400) 
+bank %>% get_mon_arrivals
+```
+
+Again the simulation finishes before the 400 specified in the `run` function.
+
+### Many customers
+
+Another change will allow us to have more customers. And use a separate Source
+class to create and activate them. To make things clearer we do not use random
+numbers in this model.
+
+The change is in the `add_generator` function, where we create a sequence of
+start times for five customers, starting at time 0, with an interval of 10
+between each customer. The -1 is a flag to stop the generator.  An idiosyncracy
+of the syntax is that this argument must be a function, hence `function()
+{c(first time, interarrival times, -1)}`
+
+```{r}
+library(simmer)
+
+customer <- 
+  create_trajectory("Customer's path") %>%
+  timeout(12) 
+
+bank <- 
+  simmer("bank") %>% 
+  add_generator("Customer", customer, 
+                function() {c(0, rep(10, 4), -1)}) # every 10 starting at 0 for 5 customers
+
+bank %>% run(until = 400) 
+bank %>% get_mon_arrivals
+```
+
+### Many random customers
+
+We now extend this model to allow arrivals at random. In simulation this is
+usually interpreted as meaning that the times between customer arrivals are
+distributed as exponential random variates. There is little change in our
+program.  The only difference between this and the previous example of a single
+customer generated at a random time is that this example generates several
+customers at different randome times.
+
+The change occurs in the arguments to the `add_generator` function. The function
+`rexp` draws from an exponential distribution with the given parameter, which in
+this case is `1/10`.  See `?rexp` for more details.  We also seed the random
+number generator with 1289 so that the same sequence of random numbers will be
+drawn every time the script is run.  The 0 is the time of the first customer,
+then the random interarrival times are drawn, and then -1 stops the generator.
+
+
+```{r}
+library(simmer)
+
+set.seed(1289)
+
+customer <- 
+  create_trajectory("Customer's path") %>%
+  timeout(12) 
+
+bank <- 
+  simmer("bank") %>% 
+  add_generator("Customer", customer, function() {c(0, rexp(4, 1/10), -1)})
+
+bank %>% run(until = 400) 
+bank %>% get_mon_arrivals
+```
+
+## A Service counter
+
+So far, the model has been more like an art gallery, the customers entering,
+looking around, and leaving. Now they are going to require service from the bank
+clerk. We extend the model to include a service counter that will be modelled as
+a 'resource'. The actions of a Resource are simple: a customer requests a unit
+of the resource (a clerk).  If one is free, then the customer gets service (and
+the unit is no longer available to other customers). If there is no free clerk,
+then the customer joins the queue (managed by the resource object) until it is
+the customer's turn to be served. As each customer completes service and
+releases the unit, the clerk can start serving the next in line.
+
+### One Service counter
+
+The service counter is created with the `add_resource` function. Default
+arguments specify that it can serve one customer at a time, and has infinite
+queueing capacity.
+
+The `seize` function causes the customer to join the queue at the counter.  If
+the queue is empty and the counter is available (not serving any customers),
+then the customer claims the counter for itself and moves onto the `timeout`
+step.  Otherwise the customer must wait until the counter becomes available.
+Behaviour of the customer while in the queue is controlled by the arguments of
+the `seize` function, rather than by any other functions.  Once the `timeout`
+step is complete, the `release` function causes the customer to make the counter
+available to other customers in the queue.
+
+Since the activity trace does not produce the waiting time by default, this is
+calculated and appended using the `mutate` function in the dplyr package.
+
+```{r, message = FALSE}
+library(dplyr)
+library(simmer)
+
+set.seed(99999)
+
+customer <- 
+  create_trajectory("Customer's path") %>%
+  seize("counter") %>%
+  timeout(12) %>%
+  release("counter")
+
+bank <- 
+  simmer("bank") %>% 
+  add_resource("counter") %>%
+  add_generator("Customer", customer, function() {c(0, rexp(4, 1/10), -1)})
+
+bank %>% run(until = 400) 
+bank %>% 
+  get_mon_arrivals %>%
+  mutate(waiting_time = end_time - start_time - activity_time)
+```
+
+Examining the trace we see that the first customer gets instant service but the
+others have to wait. We still only have five customers, so we cannot draw
+general conclusions.
+
+### A server with a random service time
+
+This is a simple change to the model in that we retain the single service
+counter but make the customer service time a random variable. As is traditional
+in the study of simple queues we first assume an exponential service time.
+
+Note that the argument to `timeout` must be a function, otherwise it would apply
+a constant timeout to every customer.
+
+```{r, message = FALSE}
+library(dplyr)
+library(simmer)
+
+set.seed(99999)
+
+customer <- 
+  create_trajectory("Customer's path") %>%
+  seize("counter") %>%
+  timeout(function() {rexp(1, 1/12)}) %>%
+  # timeout(rexp(1, 1/12)) %>% # This line would use the same time for everyone
+  release("counter")
+
+bank <- 
+  simmer("bank") %>% 
+  add_resource("counter") %>%
+  add_generator("Customer", customer, function() {c(0, rexp(4, 1/10), -1)})
+
+bank %>% run(until = 400) 
+bank %>% 
+  get_mon_arrivals %>%
+  mutate(waiting_time = end_time - start_time - activity_time)
+```
+
+This model with random arrivals and exponential service times is an example of
+an M/M/1 queue and could rather easily be solved analytically to calculate the
+steady-state mean waiting time and other operating characteristics. (But not so
+easily solved for its transient behavior.)
+
+## Several Service Counters
+
+When we introduce several counters we must decide on a queue discipline. Are
+customers going to make one queue or are they going to form separate queues in
+front of each counter? Then there are complications - will they be allowed to
+switch lines (jockey)? We first consider a single queue with several counters
+and later consider separate isolated queues. We will not look at jockeying.
+
+### Several Counters but a Single Queue
+
+Here we model a bank whose customers arrive randomly and are to be served at a
+group of counters, taking a random time for service, where we assume that
+waiting customers form a single first-in first-out queue.
+
+The only difference between this model and the single-server model is in the
+`add_resource` function, where we have increased the capacity to two so that it
+can serve two customers at once.
+
+```{r, message = FALSE}
+library(dplyr)
+library(simmer)
+
+set.seed(99999)
+
+customer <- 
+  create_trajectory("Customer's path") %>%
+  seize("counter") %>%
+  timeout(function() {rexp(1, 1/12)}) %>%
+  # timeout(rexp(1, 1/12)) %>% # This line would use the same time for everyone
+  release("counter")
+
+bank <- 
+  simmer("bank") %>% 
+  add_resource("counter", 2) %>%
+  add_generator("Customer", customer, function() {c(0, rexp(4, 1/10), -1)})
+
+bank %>% run(until = 400) 
+bank %>% 
+  get_mon_arrivals %>%
+  mutate(waiting_time = end_time - start_time - activity_time)
+```
+
+The waiting times in this model are much shorter than those for the single
+service counter. For example, the waiting time for Customer2 has been reduced
+from 6 minutes to zero. Again we have too few customers processed to draw
+general conclusions.
+
+### Several Counters with individual queues
+
+Each counter is now assumed to have its own queue. The programming is more
+complicated because the customer has to decide which queue to join. The obvious
+technique is to make each counter a separate resource.
+
+In practice, a customer might join the shortest queue.  We implement this
+behaviour by first selecting the shortest queue, using the `select` function.
+(This is prefixed `simmer::select` to avoid clashes with the dplyr package).
+Then we use `seize_selected` to enter the chosen queue, and later
+`release_selected`.
+
+The rest of the program is the same as before.
+
+```{r, message = FALSE}
+library(dplyr)
+library(simmer)
+
+set.seed(1014)
+
+customer <- 
+  create_trajectory("Customer's path") %>%
+  simmer::select(c("counter1", "counter2"), policy = "shortest-queue") %>%
+  seize_selected %>%
+  timeout(function() {rexp(1, 1/12)}) %>%
+  release_selected
+
+bank <- 
+  simmer("bank") %>% 
+  add_resource("counter1", 1) %>%
+  add_resource("counter2", 1) %>%
+  add_generator("Customer", customer, function() {c(0, rexp(4, 1/10), -1)})
+
+bank %>% run(until = 400) 
+bank %>% 
+  get_mon_arrivals %>%
+  mutate(service_start_time = end_time - activity_time) %>%
+  arrange(start_time)
+bank %>% 
+  get_mon_resources %>%
+  arrange(time)
+```
+
+The results show that the customers chose the counter with the smallest number.
+Unlucky Customer2 who joins the wrong queue has to wait until Customer0 finishes
+at time 62.10372, and is the last to leave. There are, however, too few arrivals
+in these runs, limited as they are to five customers, to draw any general
+conclusions about the relative efficiencies of the two systems.
+
+### The bank with a monitor (aka summary statistics)
+
+We now demonstrate how to calculate average waiting times for our customers.  In
+the original SimPy version of this tutorial, this involved using 'Monitors'.  In
+simmer, data is returned by the `get_mon_*` family of functions, as has already
+been demonstrated.  Here, we simply summarise the data frame returned by the
+`get_mon_arrivals` function, using functions from the `dplyr` package.
+
+We also increase the number of customers to 50 (find the number '49' in the
+code.code).
+
+```{r, message = FALSE}
+library(dplyr)
+library(simmer)
+
+set.seed(100005)
+
+customer <- 
+  create_trajectory("Customer's path") %>%
+  seize("counter") %>%
+  timeout(function() {rexp(1, 1/12)}) %>%
+  release("counter")
+
+bank <- 
+  simmer("bank") %>% 
+  add_resource("counter", 2) %>%
+  add_generator("Customer", customer, function() {c(0, rexp(49, 1/10), -1)})
+
+bank %>% run(until = 400) 
+result <- 
+  bank %>% 
+  get_mon_arrivals %>%
+  mutate(waiting_time = end_time - start_time - activity_time)
+paste("Average wait for ", sum(result$finished), " completions was ",
+      mean(result$waiting_time), "minutes.")
+```
+
+### Multiple runs
+
+To get a number of independent measurements we must replicate the runs using
+different random number seeds. Each replication must be independent of previous
+ones, so the environment (bank) must be redefined for each
+run, so that the random interarrival times in the `add_generator` function are
+generated from scratch.
+
+We take the chunks of code that build the environment (bank) and run the
+simulation, and wrap them in the `mclapply` function from the 'parallel'
+package.  This function runs each simulation in parallel, using the available
+cores in the computer's processor.  Because we use seeds for reproducability, we
+pass these to the function that runs the simulation (`function(the_seed)`).
+
+```{r, message = FALSE}
+library(dplyr)
+library(simmer)
+library(parallel)
+
+customer <- 
+  create_trajectory("Customer's path") %>%
+  seize("counter") %>%
+  timeout(function() {rexp(1, 1/12)}) %>%
+  release("counter")
+
+mclapply(c(393943, 100005, 777999555, 319999772), function(the_seed) {
+  set.seed(the_seed)
+
+  bank <- 
+    simmer("bank") %>% 
+    add_resource("counter", 2) %>%
+    add_generator("Customer", customer, function() {c(0, rexp(49, 1/10), -1)})
+
+  bank %>% run(until = 400) 
+  result <- 
+    bank %>% 
+    get_mon_arrivals %>%
+    mutate(waiting_time = end_time - start_time - activity_time)
+  paste("Average wait for ", sum(result$finished), " completions was ",
+        mean(result$waiting_time), "minutes.")
+})
+```
+
+The results show some variation. Remember, though, that the system is still only
+operating for 50 customers, so the system may not be in steady-state.
