@@ -1,3 +1,9 @@
+# Changes in version 3.3.0.9000
+
+## Minor changes and fixes
+
+* New vignette "The Bank Tutorial: Part I", by Duncan Garmonsway (@nacnudus).
+
 # Changes in version 3.3.0
 
 ## New features:
