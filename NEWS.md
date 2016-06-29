@@ -2,7 +2,7 @@
 
 ## Minor changes and fixes
 
-* New vignette "The Bank Tutorial: Part I", by Duncan Garmonsway (@nacnudus).
+* New vignette "The Bank Tutorial: Part I", by Duncan Garmonsway @nacnudus (#68).
 
 # Changes in version 3.3.0
 
