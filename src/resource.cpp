@@ -22,24 +22,24 @@ void Resource::set_queue_size(int value) {
   if (is_monitored()) observe(sim->now());
 }
 
-int Resource::seize(Arrival* arrival, int amount, int priority, int preemptible, bool restart) {
+int Resource::seize(Arrival* arrival, int amount) {
   int status;
   // serve now
-  if (room_in_server(amount, priority)) {
+  if (room_in_server(amount, arrival->order.get_priority())) {
     if (arrival->is_monitored()) {
       arrival->set_start(this->name, sim->now());
       arrival->set_activity(this->name, sim->now());
     }
-    insert_in_server(sim->verbose, sim->now(), arrival, amount, priority, preemptible, restart);
+    insert_in_server(sim->verbose, sim->now(), arrival, amount);
     status = SUCCESS;
   }
   // enqueue
-  else if (room_in_queue(amount, priority)) {
+  else if (room_in_queue(amount, arrival->order.get_priority())) {
     if (arrival->is_monitored()) {
       arrival->set_start(this->name, sim->now());
       arrival->set_activity(this->name, 0);
     }
-    insert_in_queue(sim->verbose, sim->now(), arrival, amount, priority, preemptible, restart);
+    insert_in_queue(sim->verbose, sim->now(), arrival, amount);
     status = ENQUEUED;
   }
   // reject

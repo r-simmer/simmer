@@ -128,11 +128,15 @@ public:
    * @param   first_activity  the first activity of a user-defined R trajectory
    * @param   dis             an user-defined R function that provides random numbers
    * @param   mon             monitoring level
+   * @param   priority        arrival priority
+   * @param   preemptible     maximum priority that cannot cause preemption (>=priority)
+   * @param   restart         whether activity must be restarted after preemption
    */
-  bool add_generator(std::string name_prefix, 
-                     Activity* first_activity, Rcpp::Function dist, int mon) {
+  bool add_generator(std::string name_prefix, Activity* first_activity, Rcpp::Function dist, 
+                     int mon, int priority, int preemptible, bool restart) {
     if (process_map.find(name_prefix) == process_map.end()) {
-      Generator* gen = new Generator(this, name_prefix, mon, first_activity, dist);
+      Generator* gen = new Generator(this, name_prefix, mon, first_activity, dist,
+                                     Order(priority, preemptible, restart));
       process_map[name_prefix] = gen;
       gen->run();
       return TRUE;

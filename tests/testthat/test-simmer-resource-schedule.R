@@ -82,7 +82,7 @@ test_that("arrivals 1) are dequeued when resource's capacity increases and 2) re
 
 test_that("arrivals are preempted when resource's capacity decreases", {
   t <- create_trajectory() %>% 
-    seize("dummy", 1, restart=TRUE) %>%
+    seize("dummy", 1) %>%
     timeout(2) %>%
     release("dummy", 1)
   
@@ -90,7 +90,7 @@ test_that("arrivals are preempted when resource's capacity decreases", {
   
   arrivals <- simmer() %>%
     add_resource("dummy", inf_sch, preemptive=TRUE) %>%
-    add_generator("asdf", t, at(0, 0, 0)) %>%
+    add_generator("asdf", t, at(0, 0, 0), restart=TRUE) %>%
     run() %>%
     get_mon_arrivals()
   

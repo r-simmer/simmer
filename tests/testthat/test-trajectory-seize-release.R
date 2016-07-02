@@ -26,11 +26,6 @@ test_that("resources are seized/released as expected", {
   expect_equal(env %>% get_server_count("dummy"), 0)
 })
 
-test_that("preemptible < priority shows a warning", {
-  expect_warning(create_trajectory() %>%
-    seize("dummy", 1, priority=3, preemptible=1))
-})
-
 test_that("incorrect types fail", {
   expect_error(create_trajectory() %>% seize(0, 0))
   expect_error(create_trajectory() %>% release(0, 0))

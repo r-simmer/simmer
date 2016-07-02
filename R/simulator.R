@@ -104,11 +104,20 @@ Simmer <- R6Class("simmer",
       self
     },
     
-    add_generator = function(name_prefix, trajectory, dist, mon=1) {
+    add_generator = function(name_prefix, trajectory, dist, mon=1, 
+                             priority=0, preemptible=priority, restart=FALSE) {
       if (!inherits(trajectory, "simmer.trajectory"))
         stop("not a trajectory")
       name_prefix <- evaluate_value(name_prefix)
       mon <- evaluate_value(mon)
+      priority <- evaluate_value(priority)
+      preemptible <- evaluate_value(preemptible)
+      if (preemptible < priority) {
+        warning("`preemptible` level has changed from ", preemptible, " to ", priority,
+                " (see ?add_generator for more details)")
+        preemptible <- priority
+      }
+      restart <- evaluate_value(restart)
       
       init <- as.list(environment(dist))
       environment(dist)$.reset <- new.env(parent = environment(dist))
@@ -120,7 +129,8 @@ Simmer <- R6Class("simmer",
       }
       environment(environment(dist)$.reset$reset) <- environment(dist)$.reset
 
-      ret <- add_generator_(private$sim_obj, name_prefix, trajectory$get_head(), dist, mon)
+      ret <- add_generator_(private$sim_obj, name_prefix, trajectory$get_head(), dist, mon,
+                            priority, preemptible, restart)
       if (ret) private$gen[[name_prefix]] <- mon
       self
     },
@@ -426,13 +436,25 @@ add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE, preemp
 
 #' Add a generator
 #'
-#' Adds a generator to a simulation environment.
+#' Adds a generator of arrivals to a simulation environment.
 #' 
 #' @param env the simulation environment.
 #' @param name_prefix the name prefix of the generated arrivals.
-#' @param trajectory the trajectory that the generated arrivals will follow (see \link{create_trajectory}).
-#' @param dist a function modelling the interarrival times (returning a negative value stops the generator).
-#' @param mon whether the simulator must monitor the generated arrivals or not (0=no monitoring, 1=simple arrival monitoring, 2=level 1 + arrival attribute montoring)
+#' @param trajectory the trajectory that the generated arrivals will follow (see
+#' \link{create_trajectory}).
+#' @param dist a function modelling the interarrival times (returning a negative 
+#' value stops the generator).
+#' @param mon whether the simulator must monitor the generated arrivals or not 
+#' (0 = no monitoring, 1 = simple arrival monitoring, 2 = level 1 + arrival 
+#' attribute montoring)
+#' @param priority the priority of each arrival (a higher integer equals higher 
+#' priority; defaults to the minimum priority, which is 0).
+#' @param preemptible if a seize occurs in a preemptive resource, this parameter 
+#' establishes the minimum incoming priority that can preempt these arrivals (an 
+#' arrival with a priority greater than `preemptible` gains the resource). In any 
+#' case, `preemptible` must be equal or greater than `priority`, and thus only 
+#' higher priority arrivals can trigger preemption.
+#' @param restart whether the activity must be restarted after being preempted.
 #' 
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \link{at}, \link{from}, 
@@ -442,8 +464,9 @@ add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE, preemp
 #' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
 #' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
 #' @export
-add_generator <- function(env, name_prefix, trajectory, dist, mon=1)
-  env$add_generator(name_prefix, trajectory, dist, mon)
+add_generator <- function(env, name_prefix, trajectory, dist, mon=1,
+                          priority=0, preemptible=priority, restart=FALSE)
+  env$add_generator(name_prefix, trajectory, dist, mon, priority, preemptible, restart)
 
 #' Get arrival statistics
 #'

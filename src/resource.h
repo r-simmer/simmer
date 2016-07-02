@@ -7,40 +7,40 @@ struct RSeize {
   double arrived_at;
   Arrival* arrival;
   int amount;
-  int priority;
-  int preemptible;
-  bool restart;
   
-  RSeize(double arrived_at, Arrival* arrival, int amount, int priority, 
-         int preemptible, bool restart):
-    arrived_at(arrived_at), arrival(arrival), amount(amount), priority(priority),
-    preemptible(preemptible), restart(restart) {}
+  RSeize(double arrived_at, Arrival* arrival, int amount):
+    arrived_at(arrived_at), arrival(arrival), amount(amount) {}
+  
+  int priority() const { return arrival->order.get_priority(); }
+  int preemptible() const { return arrival->order.get_preemptible(); }
+  bool restart() const { return arrival->order.get_restart(); }
+  double remaining() const { return arrival->get_remaining(); }
 };
 
 struct RQComp {
   bool operator()(const RSeize& lhs, const RSeize& rhs) const {
-    if (lhs.priority == rhs.priority) {
+    if (lhs.priority() == rhs.priority()) {
       if (lhs.arrived_at == rhs.arrived_at)
-        return lhs.arrival->get_remaining() > rhs.arrival->get_remaining();
+        return lhs.remaining() > rhs.remaining();
       return lhs.arrived_at < rhs.arrived_at;
     }
-    return lhs.priority > rhs.priority;
+    return lhs.priority() > rhs.priority();
   }
 };
 
 struct RSCompFIFO {
   bool operator()(const RSeize& lhs, const RSeize& rhs) const {
-    if (lhs.preemptible == rhs.preemptible)
+    if (lhs.preemptible() == rhs.preemptible())
       return lhs.arrived_at < rhs.arrived_at;
-    return lhs.preemptible < rhs.preemptible;
+    return lhs.preemptible() < rhs.preemptible();
   }
 };
 
 struct RSCompLIFO {
   bool operator()(const RSeize& lhs, const RSeize& rhs) const {
-    if (lhs.preemptible == rhs.preemptible)
+    if (lhs.preemptible() == rhs.preemptible())
       return lhs.arrived_at > rhs.arrived_at;
-    return lhs.preemptible < rhs.preemptible;
+    return lhs.preemptible() < rhs.preemptible();
   }
 };
 
@@ -81,11 +81,10 @@ public:
   * Seize resources.
   * @param   arrival  a pointer to the arrival trying to seize resources
   * @param   amount   the amount of resources needed
-  * @param   priority resource accessing priority
   * 
   * @return  SUCCESS, ENQUEUED, REJECTED
   */
-  int seize(Arrival* arrival, int amount, int priority, int preemptible, bool restart);
+  int seize(Arrival* arrival, int amount);
   
   /**
   * Release resources.
@@ -137,8 +136,7 @@ protected:
   
   virtual bool try_free_server(bool verbose, double time) { return false; }
   
-  virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount, 
-                                int priority, int preemptible, bool restart) {
+  virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount) {
     if (verbose) verbose_print(time, arrival->name, "SERVE");
     server_count += amount;
   }
@@ -153,7 +151,7 @@ protected:
     if (queue_count + amount <= queue_size) return true;
     int count = 0;
     foreach_r_ (RPQueue::value_type& itr, queue) {
-      if (priority > itr.priority)
+      if (priority > itr.priority())
         count += itr.amount;
       else break;
       if (count >= amount) return true;
@@ -161,8 +159,7 @@ protected:
     return false;
   }
   
-  virtual void insert_in_queue(bool verbose, double time, Arrival* arrival, int amount, 
-                               int priority, int preemptible, bool restart) {
+  virtual void insert_in_queue(bool verbose, double time, Arrival* arrival, int amount) {
     int count = 0;
     if (queue_size > 0) while (queue_count + amount > queue_size && amount > count) {
       RPQueue::iterator last = --queue.end();
@@ -174,19 +171,18 @@ protected:
     }
     if (verbose) verbose_print(time, arrival->name, "ENQUEUE");
     queue_count += amount;
-    queue.emplace(time, arrival, amount, priority, preemptible, restart);
+    queue.emplace(time, arrival, amount);
   }
   
   virtual bool try_serve_from_queue(bool verbose, double time) {
     RPQueue::iterator next = queue.begin();
-    if (room_in_server(next->amount, next->priority)) {
+    if (room_in_server(next->amount, next->priority())) {
       if (next->arrival->is_monitored()) {
         double last = next->arrival->get_activity(this->name);
         next->arrival->set_activity(this->name, time - last);
       }
       next->arrival->activate();
-      insert_in_server(verbose, time, next->arrival, next->amount,
-                       next->priority, next->preemptible, next->restart);
+      insert_in_server(verbose, time, next->arrival, next->amount);
       queue_count -= next->amount;
       queue.erase(next);
       return true;
@@ -223,7 +219,7 @@ protected:
     if (server_count + amount <= capacity) return true;
     int count = 0;
     foreach_ (typename T::value_type& itr, server) {
-      if (priority > itr.preemptible)
+      if (priority > itr.preemptible())
         count += itr.amount;
       else break;
       if (count >= amount) return true;
@@ -233,18 +229,17 @@ protected:
   
   virtual bool try_free_server(bool verbose, double time) {
     typename T::iterator first = server.begin();
-    first->arrival->deactivate(first->restart);
+    first->arrival->deactivate(first->restart());
     if (verbose) verbose_print(time, first->arrival->name, "PREEMPT");
     if (first->arrival->is_monitored()) {
       double last = first->arrival->get_activity(this->name);
       first->arrival->set_activity(this->name, time - last);
     }
     if (keep_queue) {
-      if (!room_in_queue(first->amount, first->priority)) {
+      if (!room_in_queue(first->amount, first->priority())) {
         if (verbose) verbose_print(time, first->arrival->name, "REJECT");
         first->arrival->terminate(time, false);
-      } else insert_in_queue(verbose, time, first->arrival, first->amount, 
-                             first->priority, first->preemptible, first->restart);
+      } else insert_in_queue(verbose, time, first->arrival, first->amount);
     } else {
       preempted.insert((*first));
       queue_count += first->amount;
@@ -254,13 +249,12 @@ protected:
     return true;
   }
   
-  virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount, 
-                                int priority, int preemptible, bool restart) {
+  virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount) {
     if (capacity > 0) while (server_count + amount > capacity)
       try_free_server(verbose, time);
     if (verbose) verbose_print(time, arrival->name, "SERVE");
     server_count += amount;
-    server.emplace(time, arrival, amount, priority, preemptible, restart);
+    server.emplace(time, arrival, amount);
   }
   
   virtual void remove_from_server(bool verbose, double time, Arrival* arrival, int amount) {
@@ -279,14 +273,13 @@ protected:
       flag = true;
     }
     else next = queue.begin();
-    if (room_in_server(next->amount, next->priority)) {
+    if (room_in_server(next->amount, next->priority())) {
       if (next->arrival->is_monitored()) {
         double last = next->arrival->get_activity(this->name);
         next->arrival->set_activity(this->name, time - last);
       }
       next->arrival->activate();
-      insert_in_server(verbose, time, next->arrival, next->amount,
-                       next->priority, next->preemptible, next->restart);
+      insert_in_server(verbose, time, next->arrival, next->amount);
       queue_count -= next->amount;
       if (flag) preempted.erase(next);
       else queue.erase(next);

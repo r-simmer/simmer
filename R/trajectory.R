@@ -28,35 +28,25 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     
     get_n_activities = function() { private$n_activities },
     
-    seize = function(resource, amount=1, priority=0, preemptible=priority, restart=FALSE, id=0) {
+    seize = function(resource, amount=1, id=0) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
-      priority <- evaluate_value(priority)
-      preemptible <- evaluate_value(preemptible)
-      if (preemptible < priority) {
-        warning("`preemptible` value has changed from ", preemptible, " to ", priority,
-                " (see ?seize for more details)")
-        preemptible <- priority
-      }
-      restart <- evaluate_value(restart)
+      id <- evaluate_value(id)
       if (is.na(resource)) {
         if (is.function(amount))
-          private$add_activity(SeizeSelected__new_func(private$verbose, id, amount, 
-                                               needs_attrs(amount), priority, preemptible, restart))
-        else private$add_activity(SeizeSelected__new(private$verbose, id, amount, 
-                                             priority, preemptible, restart))
+          private$add_activity(SeizeSelected__new_func(private$verbose, id, amount, needs_attrs(amount)))
+        else private$add_activity(SeizeSelected__new(private$verbose, id, amount))
       } else {
         if (is.function(amount))
-          private$add_activity(Seize__new_func(private$verbose, resource, amount, 
-                                               needs_attrs(amount), priority, preemptible, restart))
-        else private$add_activity(Seize__new(private$verbose, resource, amount, 
-                                             priority, preemptible, restart))
+          private$add_activity(Seize__new_func(private$verbose, resource, amount, needs_attrs(amount)))
+        else private$add_activity(Seize__new(private$verbose, resource, amount))
       }
     },
     
     release = function(resource, amount=1, id=0) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
+      id <- evaluate_value(id)
       if (is.na(resource)) {
         if (is.function(amount))
           private$add_activity(ReleaseSelected__new_func(private$verbose, id, amount, needs_attrs(amount)))
@@ -307,14 +297,7 @@ join <- function(...) {
 #' @param traj the trajectory object.
 #' @param resource the name of the resource.
 #' @param amount the amount to seize, accepts either a callable object (a function) or a numeric value.
-#' @param priority the priority of the seize (a higher integer equals higher 
-#' priority; defaults to the minimum priority, which is 0).
-#' @param preemptible if the seize occurs in a preemptive resource, this parameter 
-#' establishes the minimum incoming priority that can preempt this arrival (a seize 
-#' with a priority greater than `preemptible` gains the resource). In any case,
-#' `preemptible` must be equal or greater than `priority`, and thus only higher
-#' priority seizes can trigger the preemption.
-#' @param restart whether the activity must be restarted after being preempted.
+#' @param ... unused arguments
 #' 
 #' @return The trajectory object.
 #' @seealso Other methods for dealing with trajectories:
@@ -323,8 +306,13 @@ join <- function(...) {
 #' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}, 
 #' \link{seize_selected}, \link{release_selected}, \link{select}.
 #' @export
-seize <- function(traj, resource, amount=1, priority=0, preemptible=priority, restart=FALSE)
-  traj$seize(resource, amount, priority, preemptible, restart)
+seize <- function(traj, resource, amount=1, ...) {
+  args <- list(...)
+  if ("priority" %in% names(args)) warning("unused argument `priority` has been moved to `add_generator`")
+  if ("preemptible" %in% names(args)) warning("unused argument `preemptible` has been moved to `add_generator`")
+  if ("restart" %in% names(args)) warning("unused argument `restart` has been moved to `add_generator`")
+  traj$seize(resource, amount)
+}
 
 #' Add a seize activity
 #'
@@ -332,15 +320,8 @@ seize <- function(traj, resource, amount=1, priority=0, preemptible=priority, re
 #' 
 #' @param traj the trajectory object.
 #' @param amount the amount to seize, accepts either a callable object (a function) or a numeric value.
-#' @param priority the priority of the seize (a higher integer equals higher 
-#' priority; defaults to the minimum priority, which is 0).
-#' @param preemptible if the seize occurs in a preemptive resource, this parameter 
-#' establishes the minimum incoming priority that can preempt this arrival (a seize 
-#' with a priority greater than `preemptible` gains the resource). In any case,
-#' `preemptible` must be equal or greater than `priority`, and thus only higher
-#' priority seizes can trigger the preemption.
-#' @param restart whether the activity must be restarted after being preempted.
 #' @param id selection identifier for nested usage.
+#' @param ... unused arguments
 #' 
 #' @return The trajectory object.
 #' @seealso \link{release_selected}, \link{select}. 
@@ -349,8 +330,13 @@ seize <- function(traj, resource, amount=1, priority=0, preemptible=priority, re
 #' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
 #' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}.
 #' @export
-seize_selected <- function(traj, amount=1, priority=0, preemptible=priority, restart=FALSE, id=0)
-  traj$seize(NA, amount, priority, preemptible, restart, id)
+seize_selected <- function(traj, amount=1, id=0, ...) {
+  args <- list(...)
+  if ("priority" %in% names(args)) warning("unused argument `priority` has been moved to `add_generator`")
+  if ("preemptible" %in% names(args)) warning("unused argument `preemptible` has been moved to `add_generator`")
+  if ("restart" %in% names(args)) warning("unused argument `restart` has been moved to `add_generator`")
+  traj$seize(NA, amount, id)
+}
 
 #' Add a release activity
 #'

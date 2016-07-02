@@ -25,8 +25,8 @@ run_ <- function(sim_, until_) {
     invisible(.Call('simmer_run_', PACKAGE = 'simmer', sim_, until_))
 }
 
-add_generator_ <- function(sim_, name_prefix_, first_activity_, dist_, mon_) {
-    .Call('simmer_add_generator_', PACKAGE = 'simmer', sim_, name_prefix_, first_activity_, dist_, mon_)
+add_generator_ <- function(sim_, name_prefix_, first_activity_, dist_, mon_, priority_, preemptible_, restart_) {
+    .Call('simmer_add_generator_', PACKAGE = 'simmer', sim_, name_prefix_, first_activity_, dist_, mon_, priority_, preemptible_, restart_)
 }
 
 add_resource_ <- function(sim_, name_, capacity_, queue_size_, mon_, preemptive_, preempt_order_, keep_queue_) {
@@ -89,20 +89,20 @@ get_queue_count_ <- function(sim_, name_) {
     .Call('simmer_get_queue_count_', PACKAGE = 'simmer', sim_, name_)
 }
 
-Seize__new <- function(verbose_, resource_, amount_, priority_, preemptible_, restart_) {
-    .Call('simmer_Seize__new', PACKAGE = 'simmer', verbose_, resource_, amount_, priority_, preemptible_, restart_)
+Seize__new <- function(verbose_, resource_, amount_) {
+    .Call('simmer_Seize__new', PACKAGE = 'simmer', verbose_, resource_, amount_)
 }
 
-Seize__new_func <- function(verbose_, resource_, amount, provide_attrs_, priority_, preemptible_, restart_) {
-    .Call('simmer_Seize__new_func', PACKAGE = 'simmer', verbose_, resource_, amount, provide_attrs_, priority_, preemptible_, restart_)
+Seize__new_func <- function(verbose_, resource_, amount, provide_attrs_) {
+    .Call('simmer_Seize__new_func', PACKAGE = 'simmer', verbose_, resource_, amount, provide_attrs_)
 }
 
-SeizeSelected__new <- function(verbose_, id_, amount_, priority_, preemptible_, restart_) {
-    .Call('simmer_SeizeSelected__new', PACKAGE = 'simmer', verbose_, id_, amount_, priority_, preemptible_, restart_)
+SeizeSelected__new <- function(verbose_, id_, amount_) {
+    .Call('simmer_SeizeSelected__new', PACKAGE = 'simmer', verbose_, id_, amount_)
 }
 
-SeizeSelected__new_func <- function(verbose_, id_, amount, provide_attrs_, priority_, preemptible_, restart_) {
-    .Call('simmer_SeizeSelected__new_func', PACKAGE = 'simmer', verbose_, id_, amount, provide_attrs_, priority_, preemptible_, restart_)
+SeizeSelected__new_func <- function(verbose_, id_, amount, provide_attrs_) {
+    .Call('simmer_SeizeSelected__new_func', PACKAGE = 'simmer', verbose_, id_, amount, provide_attrs_)
 }
 
 Release__new <- function(verbose_, resource_, amount_) {

@@ -25,7 +25,7 @@ public:
    * @param name          the name of the activity
    * @param resource      the resource associated
    * @param provide_attrs whether the activity should expose the arrival's attributes
-   * @param priority      resource accessing priority
+   * @param priority      simulation priority
    */
   Activity(std::string name, bool verbose, bool provide_attrs, int priority = 0): 
     name(name), verbose(verbose), provide_attrs(provide_attrs), n(1), 
@@ -83,10 +83,8 @@ class Seize: public Activity {
 public:
   CLONEABLE(Seize<T>)
   
-  Seize(bool verbose, std::string resource, T amount, bool provide_attrs, 
-        int priority, int preemptible, bool restart):
-    Activity("Seize", verbose, provide_attrs, std::abs(priority)), resource(resource),
-    amount(amount), preemptible(std::abs(preemptible)), restart(restart) {}
+  Seize(bool verbose, std::string resource, T amount, bool provide_attrs):
+    Activity("Seize", verbose, provide_attrs), resource(resource), amount(amount) {}
   
   virtual void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);
@@ -100,8 +98,6 @@ public:
 protected:
   std::string resource;
   T amount;
-  int preemptible;
-  bool restart;
 };
 
 /**
@@ -112,10 +108,8 @@ class SeizeSelected: public Seize<T> {
 public:
   CLONEABLE(SeizeSelected<T>)
   
-  SeizeSelected(bool verbose, int id, T amount, bool provide_attrs, 
-                int priority, int preemptible, bool restart):
-    Seize<T>(verbose, "[]", amount, provide_attrs, priority, preemptible, restart),
-    id(id) {}
+  SeizeSelected(bool verbose, int id, T amount, bool provide_attrs):
+    Seize<T>(verbose, "[]", amount, provide_attrs), id(id) {}
   
   double run(Arrival* arrival);
   

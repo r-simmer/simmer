@@ -1,18 +1,14 @@
 context("resource-preemption")
 
 test_that("a lower priority arrival gets rejected before accessing the server", {
-  t0 <- create_trajectory() %>%
+  t <- create_trajectory() %>%
     seize("dummy", 1) %>%
-    timeout(10) %>%
-    release("dummy", 1)
-  t1 <- create_trajectory() %>%
-    seize("dummy", 1, priority=1) %>%
     timeout(10) %>%
     release("dummy", 1)
   
   env <- simmer() %>%
-    add_generator("p0a", t0, at(0, 0)) %>%
-    add_generator("p1a", t1, at(2, 3)) %>%
+    add_generator("p0a", t, at(0, 0)) %>%
+    add_generator("p1a", t, at(2, 3), priority=1) %>%
     add_resource("dummy", 1, 2, preemptive=TRUE) %>%
     run()
   
@@ -25,17 +21,17 @@ test_that("a lower priority arrival gets rejected before accessing the server", 
 
 test_that("tasks are NOT restarted", {
   t0 <- create_trajectory() %>%
-    seize("dummy", 1, restart=FALSE) %>%
+    seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
   t1 <- create_trajectory() %>%
-    seize("dummy", 2, priority=1) %>%
+    seize("dummy", 2) %>%
     timeout(10) %>%
     release("dummy", 2)
   
   env <- simmer() %>%
-    add_generator("p0a", t0, at(0, 0)) %>%
-    add_generator("p1a", t1, at(2, 15)) %>%
+    add_generator("p0a", t0, at(0, 0), restart=FALSE) %>%
+    add_generator("p1a", t1, at(2, 15), priority=1) %>%
     add_resource("dummy", 2, preemptive=TRUE) %>%
     run()
   
@@ -49,17 +45,17 @@ test_that("tasks are NOT restarted", {
 
 test_that("tasks are restarted", {
   t0 <- create_trajectory() %>%
-    seize("dummy", 1, restart=TRUE) %>%
+    seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
   t1 <- create_trajectory() %>%
-    seize("dummy", 2, priority=1) %>%
+    seize("dummy", 2) %>%
     timeout(10) %>%
     release("dummy", 2)
   
   env <- simmer() %>%
-    add_generator("p0a", t0, at(0, 0)) %>%
-    add_generator("p1a", t1, at(2, 15)) %>%
+    add_generator("p0a", t0, at(0, 0), restart=TRUE) %>%
+    add_generator("p1a", t1, at(2, 15), priority=1) %>%
     add_resource("dummy", 2, preemptive=TRUE) %>%
     run()
   
@@ -71,18 +67,14 @@ test_that("tasks are restarted", {
 })
 
 test_that("tasks are preempted in a FIFO basis", {
-  t0 <- create_trajectory() %>%
-    seize("dummy", 1, restart=TRUE) %>%
-    timeout(10) %>%
-    release("dummy", 1)
-  t1 <- create_trajectory() %>%
-    seize("dummy", 1, priority=1) %>%
+  t <- create_trajectory() %>%
+    seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
   
   env <- simmer() %>%
-    add_generator("p0a", t0, at(0, 1)) %>%
-    add_generator("p1a", t1, at(2, 3)) %>%
+    add_generator("p0a", t, at(0, 1), restart=TRUE) %>%
+    add_generator("p1a", t, at(2, 3), priority=1) %>%
     add_resource("dummy", 2, preemptive=TRUE, preempt_order="fifo") %>%
     run()
   
@@ -94,18 +86,14 @@ test_that("tasks are preempted in a FIFO basis", {
 })
 
 test_that("tasks are preempted in a LIFO basis", {
-  t0 <- create_trajectory() %>%
-    seize("dummy", 1, restart=TRUE) %>%
-    timeout(10) %>%
-    release("dummy", 1)
-  t1 <- create_trajectory() %>%
-    seize("dummy", 1, priority=1) %>%
+  t <- create_trajectory() %>%
+    seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
   
   env <- simmer() %>%
-    add_generator("p0a", t0, at(0, 1)) %>%
-    add_generator("p1a", t1, at(2, 3)) %>%
+    add_generator("p0a", t, at(0, 1), restart=TRUE) %>%
+    add_generator("p1a", t, at(2, 3), priority=1) %>%
     add_resource("dummy", 2, preemptive=TRUE, preempt_order="lifo") %>%
     run()
   
@@ -117,18 +105,14 @@ test_that("tasks are preempted in a LIFO basis", {
 })
 
 test_that("queue can exceed queue_size by default", {
-  t0 <- create_trajectory() %>%
+  t <- create_trajectory() %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
-    release("dummy")
-  t1 <- create_trajectory() %>%
-    seize("dummy", priority=1) %>%
-    timeout(10) %>%
-    release("dummy")
+    release("dummy", 1)
   
   env <- simmer() %>%
-    add_generator("p0a", t0, at(0, 0)) %>%
-    add_generator("p1a", t1, at(1)) %>%
+    add_generator("p0a", t, at(0, 0)) %>%
+    add_generator("p1a", t, at(1), priority=1) %>%
     add_resource("dummy", 1, 1, preemptive=TRUE) %>%
     run()
   
@@ -145,18 +129,14 @@ test_that("queue can exceed queue_size by default", {
 })
 
 test_that("queue cannot exceed queue_size with hard limit (preempted rejected)", {
-  t0 <- create_trajectory() %>%
+  t <- create_trajectory() %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
-    release("dummy")
-  t1 <- create_trajectory() %>%
-    seize("dummy", priority=1) %>%
-    timeout(10) %>%
-    release("dummy")
+    release("dummy", 1)
   
   env <- simmer() %>%
-    add_generator("p0a", t0, at(0, 0)) %>%
-    add_generator("p1a", t1, at(1)) %>%
+    add_generator("p0a", t, at(0, 0)) %>%
+    add_generator("p1a", t, at(1), priority=1) %>%
     add_resource("dummy", 1, 1, preemptive=TRUE, queue_size_strict=TRUE) %>%
     run()
   
@@ -173,23 +153,15 @@ test_that("queue cannot exceed queue_size with hard limit (preempted rejected)",
 })
 
 test_that("queue cannot exceed queue_size with hard limit (preempted to queue)", {
-  t0 <- create_trajectory() %>%
+  t <- create_trajectory() %>%
     seize("dummy", 1) %>%
-    timeout(10) %>%
-    release("dummy")
-  t1 <- create_trajectory() %>%
-    seize("dummy", priority=1) %>%
-    timeout(10) %>%
-    release("dummy")
-  t2 <- create_trajectory() %>%
-    seize("dummy", priority=2) %>%
     timeout(10) %>%
     release("dummy")
   
   env <- simmer() %>%
-    add_generator("p0a", t0, at(0)) %>%
-    add_generator("p1a", t1, at(0)) %>%
-    add_generator("p2a", t2, at(1)) %>%
+    add_generator("p0a", t, at(0), priority=0) %>%
+    add_generator("p1a", t, at(0), priority=1) %>%
+    add_generator("p2a", t, at(1), priority=2) %>%
     add_resource("dummy", 1, 1, preemptive=TRUE, queue_size_strict=TRUE) %>%
     run()
   

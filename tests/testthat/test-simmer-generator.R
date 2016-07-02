@@ -42,3 +42,8 @@ test_that("generators are reset", {
     get_mon_arrivals() %>% nrow()
   )
 })
+
+test_that("preemptible < priority shows a warning", {
+  t <- create_trajectory() %>% timeout(0)
+  expect_warning(simmer() %>% add_generator("dummy", t, at(0), priority=3, preemptible=1))
+})

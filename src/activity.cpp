@@ -11,28 +11,24 @@ T Activity::execute_call(Rcpp::Function call, Arrival* arrival) {
 
 template <>
 double Seize<int>::run(Arrival* arrival) {
-  return arrival->sim->get_resource(resource)->seize(arrival, amount, 
-                                    priority, preemptible, restart);
+  return arrival->sim->get_resource(resource)->seize(arrival, amount);
 }
 
 template <>
 double Seize<Rcpp::Function>::run(Arrival* arrival) {
   int ret = execute_call<int>(amount, arrival);
-  return arrival->sim->get_resource(resource)->seize(arrival, ret,
-                                    priority, preemptible, restart);
+  return arrival->sim->get_resource(resource)->seize(arrival, ret);
 }
 
 template <>
 double SeizeSelected<int>::run(Arrival* arrival) {
-  return arrival->get_selected(id)->seize(arrival, amount, 
-                               priority, preemptible, restart);
+  return arrival->get_selected(id)->seize(arrival, amount);
 }
 
 template <>
 double SeizeSelected<Rcpp::Function>::run(Arrival* arrival) {
   int ret = execute_call<int>(amount, arrival);
-  return arrival->get_selected(id)->seize(arrival, ret, 
-                               priority, preemptible, restart);
+  return arrival->get_selected(id)->seize(arrival, ret);
 }
 
 template <>

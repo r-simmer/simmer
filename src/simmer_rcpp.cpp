@@ -60,14 +60,18 @@ void run_(SEXP sim_, SEXP until_) {
 }
 
 //[[Rcpp::export]]
-bool add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_activity_, SEXP dist_, SEXP mon_) {
+bool add_generator_(SEXP sim_, SEXP name_prefix_, SEXP first_activity_, SEXP dist_, SEXP mon_,
+                    SEXP priority_, SEXP preemptible_, SEXP restart_) {
   XPtr<Simulator> sim(sim_);
   std::string name_prefix = as<std::string>(name_prefix_);
   XPtr<Activity> first_activity(first_activity_);
   Function dist(dist_);
   int mon = as<int>(mon_);
+  int priority = as<int>(priority_);
+  int preemptible = as<int>(preemptible_);
+  bool restart = as<bool>(restart_);
   
-  return sim->add_generator(name_prefix, first_activity, dist, mon);
+  return sim->add_generator(name_prefix, first_activity, dist, mon, priority, preemptible, restart);
 }
 
 //[[Rcpp::export]]
@@ -249,65 +253,45 @@ int get_queue_count_(SEXP sim_, SEXP name_){
 }
 
 //[[Rcpp::export]]
-SEXP Seize__new(SEXP verbose_, SEXP resource_, SEXP amount_, 
-                SEXP priority_, SEXP preemptible_, SEXP restart_) {
+SEXP Seize__new(SEXP verbose_, SEXP resource_, SEXP amount_) {
   bool verbose = as<bool>(verbose_);
   std::string resource = as<std::string>(resource_);
   int amount = as<int>(amount_);
-  int priority = as<int>(priority_);
-  int preemptible = as<int>(preemptible_);
-  bool restart = as<bool>(restart_);
 
-  XPtr<Seize<int> > ptr(new Seize<int>(verbose, resource, amount, 0, 
-                                       priority, preemptible, restart), false);
+  XPtr<Seize<int> > ptr(new Seize<int>(verbose, resource, amount, 0), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Seize__new_func(SEXP verbose_, SEXP resource_, Function amount, SEXP provide_attrs_, 
-                     SEXP priority_, SEXP preemptible_, SEXP restart_) {
+SEXP Seize__new_func(SEXP verbose_, SEXP resource_, Function amount, SEXP provide_attrs_) {
   bool verbose = as<bool>(verbose_);
   std::string resource = as<std::string>(resource_);
   bool provide_attrs = as<bool>(provide_attrs_);
-  int priority = as<int>(priority_);
-  int preemptible = as<int>(preemptible_);
-  bool restart = as<bool>(restart_);
   
   XPtr<Seize<Function> > 
-    ptr(new Seize<Function>(verbose, resource, amount, provide_attrs, 
-                            priority, preemptible, restart), false);
+    ptr(new Seize<Function>(verbose, resource, amount, provide_attrs), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP SeizeSelected__new(SEXP verbose_, SEXP id_, SEXP amount_, 
-                        SEXP priority_, SEXP preemptible_, SEXP restart_) {
+SEXP SeizeSelected__new(SEXP verbose_, SEXP id_, SEXP amount_) {
   bool verbose = as<bool>(verbose_);
   int id = as<int>(id_);
   int amount = as<int>(amount_);
-  int priority = as<int>(priority_);
-  int preemptible = as<int>(preemptible_);
-  bool restart = as<bool>(restart_);
   
   XPtr<SeizeSelected<int> > 
-    ptr(new SeizeSelected<int>(verbose, id, amount, 0, 
-                               priority, preemptible, restart), false);
+    ptr(new SeizeSelected<int>(verbose, id, amount, 0), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP SeizeSelected__new_func(SEXP verbose_, SEXP id_, Function amount, SEXP provide_attrs_, 
-                             SEXP priority_, SEXP preemptible_, SEXP restart_) {
+SEXP SeizeSelected__new_func(SEXP verbose_, SEXP id_, Function amount, SEXP provide_attrs_) {
   bool verbose = as<bool>(verbose_);
   int id = as<int>(id_);
   bool provide_attrs = as<bool>(provide_attrs_);
-  int priority = as<int>(priority_);
-  int preemptible = as<int>(preemptible_);
-  bool restart = as<bool>(restart_);
   
   XPtr<SeizeSelected<Function> > 
-    ptr(new SeizeSelected<Function>(verbose, id, amount, provide_attrs, 
-                                    priority, preemptible, restart), false);
+    ptr(new SeizeSelected<Function>(verbose, id, amount, provide_attrs), false);
   return ptr;
 }
 

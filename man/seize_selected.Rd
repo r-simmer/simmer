@@ -4,26 +4,16 @@
 \alias{seize_selected}
 \title{Add a seize activity}
 \usage{
-seize_selected(traj, amount = 1, priority = 0, preemptible = priority,
-  restart = FALSE, id = 0)
+seize_selected(traj, amount = 1, id = 0, ...)
 }
 \arguments{
 \item{traj}{the trajectory object.}
 
 \item{amount}{the amount to seize, accepts either a callable object (a function) or a numeric value.}
 
-\item{priority}{the priority of the seize (a higher integer equals higher 
-priority; defaults to the minimum priority, which is 0).}
-
-\item{preemptible}{if the seize occurs in a preemptive resource, this parameter 
-establishes the minimum incoming priority that can preempt this arrival (a seize 
-with a priority greater than `preemptible` gains the resource). In any case,
-`preemptible` must be equal or greater than `priority`, and thus only higher
-priority seizes can trigger the preemption.}
-
-\item{restart}{whether the activity must be restarted after being preempted.}
-
 \item{id}{selection identifier for nested usage.}
+
+\item{...}{unused arguments}
 }
 \value{
 The trajectory object.

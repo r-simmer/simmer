@@ -17,7 +17,7 @@ void Generator::run() {
     // format the name and create the next arrival
     char numstr[21];
     sprintf(numstr, "%d", count);
-    Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), first_activity, this);
+    Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), order, first_activity, this);
     
     if (sim->verbose) Rcpp::Rcout << 
       FMT(10, right) << sim->now() << " |" << FMT(12, right) << "generator: " << FMT(15, left) << name << "|" << 

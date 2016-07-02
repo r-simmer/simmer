@@ -23,7 +23,7 @@ t0 <- create_trajectory("") %>%
 
 test_that("the simulator is reset", {
   t1 <- create_trajectory() %>%
-    seize("server", 1, preemptible=10, priority=10) %>%
+    seize("server", 1) %>%
     set_attribute("dummy", 1) %>%
     timeout(1) %>%
     release("server", 1)
@@ -33,7 +33,7 @@ test_that("the simulator is reset", {
   env <- simmer() %>%
     add_resource("server", inf_sch, queue_size=1, preemptive=TRUE) %>%
     add_generator("entity0", t0, function() 0.5) %>%
-    add_generator("entity1", t1, function() 0.5, mon=2) %>%
+    add_generator("entity1", t1, function() 0.5, mon=2, preemptible=10, priority=10) %>%
     run(4) %>%
     reset()
   

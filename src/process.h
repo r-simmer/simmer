@@ -61,6 +61,40 @@ private:
 
 typedef UMAP<std::string, double> Attr;
 
+struct Order {
+public:
+  Order(int priority=0, int preemptible=0, bool restart=false) {
+    set_priority(priority);
+    set_preemptible(preemptible);
+    set_restart(restart);
+  }
+  
+  void set_priority(int value) {
+    if (value < 0) {
+      Rcpp::warning("`priority` level has changed from ", value, " to 0");
+      value = 0;
+    }
+    priority = value;
+    if (preemptible < priority) preemptible = priority;
+  }
+  int get_priority() { return priority; }
+  void set_preemptible(int value) {
+    if (value < priority) {
+      Rcpp::warning("`preemptible` level has changed from ", value, " to ", priority);
+      value = priority;
+    }
+    preemptible = value;
+  }
+  int get_preemptible() { return preemptible; }
+  void set_restart(bool value) { restart = value; }
+  bool get_restart() { return restart; }
+  
+private:
+  int priority;       /**< arrival priority */
+  int preemptible;    /**< maximum priority that cannot cause preemption (>=priority) */
+  bool restart;       /**< whether activity must be restarted after preemption */
+};
+
 /**
  * Generation process.
  */
@@ -73,10 +107,12 @@ public:
    * @param mon             int that indicates whether this entity must be monitored
    * @param first_activity  the first activity of a user-defined R trajectory
    * @param dist            an user-defined R function that provides random numbers
+   * @param order           priority, preemptible, restart
    */
-  Generator(Simulator* sim, std::string name_prefix, int mon,
-            Activity* first_activity, Rcpp::Function dist): 
-    Process(sim, name_prefix, mon), count(0), first_activity(first_activity), dist(dist) {}
+  Generator(Simulator* sim, std::string name_prefix, int mon, Activity* first_activity, 
+            Rcpp::Function dist, Order order): 
+    Process(sim, name_prefix, mon), count(0), first_activity(first_activity), dist(dist),
+    order(order) {}
   
   /**
    * Reset the generator: counter, statistics.
@@ -144,6 +180,7 @@ private:
   StatsMap traj_stats;      /**< arrival statistics per trajectory */
   StatsMap res_stats;       /**< arrival statistics per resource */
   StatsMap attr_stats;      /**< attribute statistics */
+  Order order;              /**< priority, preemptible, restart */
 };
 
 /** 
@@ -159,15 +196,19 @@ class Arrival: public Process {
   typedef UMAP<int, Resource*> SelMap;
   
 public:
+  Order order;        /**< priority, preemptible, restart */
+
   /**
   * Constructor.
   * @param sim             a pointer to the simulator
   * @param name            the name
   * @param mon             int that indicates whether this entity must be monitored
   * @param first_activity  the first activity of a user-defined R trajectory
+  * @param order           priority, preemptible, restart
   */
-  Arrival(Simulator* sim, std::string name, int mon, Activity* first_activity, Generator* gen):
-    Process(sim, name, mon, true), activity(first_activity), gen(gen), busy_until(-1), remaining(0) {}
+  Arrival(Simulator* sim, std::string name, int mon, Order order, Activity* first_activity, Generator* gen):
+    Process(sim, name, mon, true), order(order), activity(first_activity), gen(gen), 
+    busy_until(-1), remaining(0) {}
   
   void run();
   void activate();
@@ -177,8 +218,8 @@ public:
   Attr* get_attributes() { return &attributes; }
   double get_remaining() { return remaining; }
   
-  void set_start(std::string name, double start) { restime[name].start = start; }
-  void set_activity(std::string name, double act) { restime[name].activity = act; }
+  void set_start(std::string name, double value) { restime[name].start = value; }
+  void set_activity(std::string name, double value) { restime[name].activity = value; }
   double get_activity(std::string name) { return restime[name].activity; }
   void set_selected(int id, Resource* res) { selected[id] = res; }
   Resource* get_selected(int id) { return selected[id]; }
