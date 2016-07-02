@@ -5,8 +5,7 @@
 #' @param ... a vector or multiple parameters of times at which to initiate an arrival.
 #'
 #' @return Returns a generator function.
-#' @seealso \link{add_generator}, \link{from}, 
-#' \link{to}, \link{from_to}.
+#' @seealso \code{\link{add_generator}}.
 #' @export
 #'
 #' @examples
@@ -28,8 +27,7 @@ at <- function(...) {
 #' @param ... a vector or multiple parameters of intervals between arrivals.
 #'
 #' @return Returns a generator function.
-#' @seealso \link{add_generator}, \link{at}, \link{from}, 
-#' \link{to}, \link{from_to}.
+#' @seealso \code{\link{add_generator}}.
 #' @export
 every <- function(...) {
   .Deprecated("function() c(...)")  # nocov
@@ -50,8 +48,7 @@ every <- function(...) {
 #' \code{start_time}).
 #' 
 #' @return Returns a generator function.
-#' @seealso \link{add_generator}, \link{at},  
-#' \link{to}, \link{from_to}.
+#' @seealso \code{\link{add_generator}}.
 #' @export
 #'
 #' @examples
@@ -83,8 +80,7 @@ from <- function(start_time, dist, arrive=TRUE) {
 #' @param dist a function modelling the interarrival times.
 #'
 #' @return Returns a generator function.
-#' @seealso \link{add_generator}, \link{at}, \link{from}, 
-#' \link{from_to}.
+#' @seealso \code{\link{add_generator}}.
 #' @export
 #'
 #' @examples
@@ -118,8 +114,7 @@ to <- function(stop_time, dist) {
 #' \code{start_time}).
 #' 
 #' @return Returns a generator function.
-#' @seealso \link{add_generator}, \link{at}, \link{from}, 
-#' \link{to}.
+#' @seealso \code{\link{add_generator}}.
 #' @export
 #'
 #' @examples
@@ -224,7 +219,7 @@ simmer.schedule <- R6Class("simmer.schedule",
 #' @param period period of repetition.
 #' 
 #' @return Returns a Schedule object.
-#' @seealso \link{add_resource}.
+#' @seealso \code{\link{add_resource}}.
 #' @export
 #' 
 #' @examples

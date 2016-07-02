@@ -20,10 +20,7 @@ The trajectory object.
 Adds a new activity capable of releasing a resource to the tail of a trajectory.
 }
 \seealso{
-Other methods for dealing with trajectories:
-\link{create_trajectory}, \link{get_head}, \link{get_tail}, 
-\link{get_n_activities}, \link{join}, \link{seize},
-\link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}, 
-\link{seize_selected}, \link{release_selected}, \link{select}.
+\code{\link{seize}}, \code{\link{seize_selected}}, 
+\code{\link{release_selected}}, \code{\link{select}}.
 }
 

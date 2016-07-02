@@ -20,11 +20,4 @@ The trajectory object.
 Adds a new activity capable of executing any user-defined task and setting
 an associated delay to the tail of a trajectory.
 }
-\seealso{
-Other methods for dealing with trajectories:
-\link{create_trajectory}, \link{get_head}, \link{get_tail}, 
-\link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
-\link{set_attribute}, \link{branch}, \link{rollback}, \link{leave}, 
-\link{seize_selected}, \link{release_selected}, \link{select}.
-}
 

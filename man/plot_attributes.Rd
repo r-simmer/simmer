@@ -18,7 +18,7 @@ a ggplot2 object.
 Plot the evolution of user-supplied attribute data.
 }
 \seealso{
-\link{plot_resource_usage}, \link{plot_resource_utilization},
-\link{plot_evolution_arrival_times}.
+\code{\link{plot_resource_usage}}, \code{\link{plot_resource_utilization}},
+\code{\link{plot_evolution_arrival_times}}.
 }
 

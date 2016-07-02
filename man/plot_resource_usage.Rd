@@ -23,7 +23,7 @@ a ggplot2 object.
 Plot the usage of a resource over the simulation time frame.
 }
 \seealso{
-\link{plot_resource_utilization},
-\link{plot_evolution_arrival_times}, \link{plot_attributes}.
+\code{\link{plot_resource_utilization}},
+\code{\link{plot_evolution_arrival_times}}, \code{\link{plot_attributes}}.
 }
 

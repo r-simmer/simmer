@@ -16,7 +16,6 @@ An external pointer to an activity object.
 It takes an external pointer to an activity an returns the next activity.
 }
 \seealso{
-Other methods for dealing with activities: 
-\link{print_activity}, \link{get_prev_activity}.
+\code{\link{print_activity}}, \code{\link{get_prev_activity}}.
 }
 

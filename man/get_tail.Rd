@@ -16,10 +16,6 @@ An external pointer to an activity object.
 It can be used to get the pointer to a trajectory's last activity.
 }
 \seealso{
-Other methods for dealing with trajectories:
-\link{create_trajectory}, \link{get_head}, \link{get_n_activities}, 
-\link{join}, \link{seize}, \link{release}, 
-\link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}, 
-\link{seize_selected}, \link{release_selected}, \link{select}.
+\code{\link{get_head}}, \code{\link{get_n_activities}}, \code{\link{join}}.
 }
 

@@ -13,7 +13,6 @@ print_activity(activity)
 It can be used to visualise an activity's internal structure.
 }
 \seealso{
-Other methods for dealing with activities: 
-\link{get_next_activity}, \link{get_prev_activity}.
+\code{\link{get_next_activity}}, \code{\link{get_prev_activity}}.
 }
 

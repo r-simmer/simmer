@@ -17,7 +17,6 @@ Generator convenience function to generate arrivals every specific interval.
 When the generator reaches the last interval, it starts again from the first one.
 }
 \seealso{
-\link{add_generator}, \link{at}, \link{from}, 
-\link{to}, \link{from_to}.
+\code{\link{add_generator}}.
 }
 

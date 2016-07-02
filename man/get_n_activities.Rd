@@ -16,10 +16,6 @@ The number of activities in the trajectory.
 It can be used to get the total number of activities defined inside a trajectory.
 }
 \seealso{
-Other methods for dealing with trajectories:
-\link{create_trajectory}, \link{get_head}, \link{get_tail}, 
-\link{join}, \link{seize}, \link{release}, 
-\link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}, 
-\link{seize_selected}, \link{release_selected}, \link{select}.
+\code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{join}}.
 }
 

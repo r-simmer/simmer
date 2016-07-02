@@ -4,8 +4,7 @@
 #'
 #' @param activity an external pointer to the activity.
 #' 
-#' @seealso Other methods for dealing with activities: 
-#' \link{get_next_activity}, \link{get_prev_activity}.
+#' @seealso \code{\link{get_next_activity}}, \code{\link{get_prev_activity}}.
 #' @export
 print_activity <- function(activity) activity_print_(activity, 0)
 
@@ -16,8 +15,7 @@ print_activity <- function(activity) activity_print_(activity, 0)
 #' @param activity an external pointer to the activity.
 #' 
 #' @return An external pointer to an activity object.
-#' @seealso Other methods for dealing with activities: 
-#' \link{print_activity}, \link{get_prev_activity}.
+#' @seealso \code{\link{print_activity}}, \code{\link{get_prev_activity}}.
 #' @export
 get_next_activity <- function(activity) activity_get_next_(activity)
 
@@ -28,7 +26,6 @@ get_next_activity <- function(activity) activity_get_next_(activity)
 #' @param activity an external pointer to the activity.
 #' 
 #' @return An external pointer to an activity object.
-#' @seealso Other methods for dealing with activities: 
-#' \link{print_activity}, \link{get_next_activity}.
+#' @seealso \code{\link{print_activity}}, \code{\link{get_next_activity}}.
 #' @export
 get_prev_activity <- function(activity) activity_get_prev_(activity)

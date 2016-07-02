@@ -29,6 +29,6 @@ env <- simmer() \%>\%
   add_resource("dummy", capacity_schedule)
 }
 \seealso{
-\link{add_resource}.
+\code{\link{add_resource}}.
 }
 

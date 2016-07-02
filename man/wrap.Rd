@@ -37,9 +37,9 @@ envs <- mclapply(1:4, function(i) {
 plot_resource_usage(envs, "server")
 }
 \seealso{
-Other methods for dealing with a simulation wrapper:
-\link{get_mon_arrivals}, \link{get_mon_attributes}, \link{get_mon_resources}, 
-\link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-\link{get_server_count}, \link{get_queue_count}.
+Methods for dealing with a simulation wrapper:
+\code{\link{get_mon_arrivals}}, \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}, 
+\code{\link{get_n_generated}}, \code{\link{get_capacity}}, \code{\link{get_queue_size}},
+\code{\link{get_server_count}}, \code{\link{get_queue_count}}.
 }
 

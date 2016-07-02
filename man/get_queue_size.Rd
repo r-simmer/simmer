@@ -18,10 +18,7 @@ Returns a numeric value.
 Gets a resource's queue size by name.
 }
 \seealso{
-Other methods for dealing with a simulation environment:
-\link{simmer}, \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
-\link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
-\link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity},
-\link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+\code{\link{get_capacity}}, \code{\link{set_capacity}}, \code{\link{set_queue_size}}, 
+\code{\link{get_server_count}}, \code{\link{get_queue_count}}.
 }
 
