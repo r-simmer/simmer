@@ -442,6 +442,31 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// SetPrior__new
+SEXP SetPrior__new(SEXP verbose_, SEXP values_);
+RcppExport SEXP simmer_SetPrior__new(SEXP verbose_SEXP, SEXP values_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type values_(values_SEXP);
+    __result = Rcpp::wrap(SetPrior__new(verbose_, values_));
+    return __result;
+END_RCPP
+}
+// SetPrior__new_func
+SEXP SetPrior__new_func(SEXP verbose_, Function values, SEXP provide_attrs_);
+RcppExport SEXP simmer_SetPrior__new_func(SEXP verbose_SEXP, SEXP valuesSEXP, SEXP provide_attrs_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
+    Rcpp::traits::input_parameter< Function >::type values(valuesSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type provide_attrs_(provide_attrs_SEXP);
+    __result = Rcpp::wrap(SetPrior__new_func(verbose_, values, provide_attrs_));
+    return __result;
+END_RCPP
+}
 // Timeout__new
 SEXP Timeout__new(SEXP verbose_, SEXP delay_);
 RcppExport SEXP simmer_Timeout__new(SEXP verbose_SEXP, SEXP delay_SEXP) {

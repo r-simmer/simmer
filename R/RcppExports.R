@@ -137,6 +137,14 @@ SetAttribute__new_func <- function(verbose_, key_, value, provide_attrs_) {
     .Call('simmer_SetAttribute__new_func', PACKAGE = 'simmer', verbose_, key_, value, provide_attrs_)
 }
 
+SetPrior__new <- function(verbose_, values_) {
+    .Call('simmer_SetPrior__new', PACKAGE = 'simmer', verbose_, values_)
+}
+
+SetPrior__new_func <- function(verbose_, values, provide_attrs_) {
+    .Call('simmer_SetPrior__new_func', PACKAGE = 'simmer', verbose_, values, provide_attrs_)
+}
+
 Timeout__new <- function(verbose_, delay_) {
     .Call('simmer_Timeout__new', PACKAGE = 'simmer', verbose_, delay_)
 }

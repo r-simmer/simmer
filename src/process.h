@@ -71,7 +71,7 @@ public:
   
   void set_priority(int value) {
     if (value < 0) {
-      Rcpp::warning("`priority` level has changed from ", value, " to 0");
+      Rcpp::warning("`priority` level cannot be < 0, `priority` set to 0");
       value = 0;
     }
     priority = value;
@@ -80,7 +80,7 @@ public:
   int get_priority() { return priority; }
   void set_preemptible(int value) {
     if (value < priority) {
-      Rcpp::warning("`preemptible` level has changed from ", value, " to ", priority);
+      Rcpp::warning("`preemptible` level cannot be < `priority`, `preemptible` set to %d", priority);
       value = priority;
     }
     preemptible = value;

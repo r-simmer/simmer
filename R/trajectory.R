@@ -83,6 +83,13 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       else private$add_activity(SetAttribute__new(private$verbose, key, value))
     },
     
+    
+    set_prioritization = function(values) {
+      if (is.function(values))
+        private$add_activity(SetPrior__new_func(private$verbose, values, needs_attrs(values)))
+      else private$add_activity(SetPrior__new(private$verbose, values))
+    },
+    
     branch = function(option, continue, ...) {
       trj <- list(...)
       if (length(continue) != length(trj))
@@ -416,7 +423,7 @@ timeout <- function(traj, task) traj$timeout(task)
 
 #' Add a set attribute activity
 #'
-#' Adds a new key/value attribute. The value should be numeric.
+#' Adds or modifies a key/value attribute. The value must be numeric.
 #' 
 #' @param traj the trajectory object.
 #' @param key the attribute key (is coerced to a string).
@@ -432,6 +439,24 @@ timeout <- function(traj, task) traj$timeout(task)
 #' @export
 set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
 
+#' Add a set prioritization activity
+#'
+#' Modifies the arrival's prioritization values.
+#' 
+#' @param traj the trajectory object.
+#' @param values expects either a vector/list or a callable object (a function)
+#' returning a vector/list of three values \code{c(priority, preemptible, restart)}.
+#' A negative value leaves the corresponding parameter unchanged.
+#' See \code{\link{add_generator}} for more information about these parameters.
+#' 
+#' @return The trajectory object.
+#' @seealso Other methods for dealing with trajectories:
+#' \link{create_trajectory}, \link{get_head}, \link{get_tail}, 
+#' \link{get_n_activities}, \link{join}, \link{seize}, \link{release}, 
+#' \link{set_attribute}, \link{timeout}, \link{branch}, \link{rollback}, \link{leave}, 
+#' \link{seize_selected}, \link{release_selected}, \link{select}.
+#' @export
+set_prioritization <- function(traj, values) traj$set_prioritization(values)
 
 #' Add a branch activity
 #'

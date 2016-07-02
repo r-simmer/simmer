@@ -382,6 +382,24 @@ SEXP SetAttribute__new_func(SEXP verbose_, SEXP key_, Function value, SEXP provi
 }
 
 //[[Rcpp::export]]
+SEXP SetPrior__new(SEXP verbose_, SEXP values_) {
+  bool verbose = as<bool>(verbose_);
+  VEC<int> values = as<VEC<int> >(values_);
+  
+  XPtr<SetPrior<VEC<int>> > ptr(new SetPrior<VEC<int> >(verbose, values, 0), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP SetPrior__new_func(SEXP verbose_, Function values, SEXP provide_attrs_) {
+  bool verbose = as<bool>(verbose_);
+  bool provide_attrs = as<bool>(provide_attrs_);
+  
+  XPtr<SetPrior<Function> > ptr(new SetPrior<Function>(verbose, values, provide_attrs), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
 SEXP Timeout__new(SEXP verbose_, SEXP delay_) {
   bool verbose = as<bool>(verbose_);
   double delay = as<double>(delay_);

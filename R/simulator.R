@@ -112,11 +112,6 @@ Simmer <- R6Class("simmer",
       mon <- evaluate_value(mon)
       priority <- evaluate_value(priority)
       preemptible <- evaluate_value(preemptible)
-      if (preemptible < priority) {
-        warning("`preemptible` level has changed from ", preemptible, " to ", priority,
-                " (see ?add_generator for more details)")
-        preemptible <- priority
-      }
       restart <- evaluate_value(restart)
       
       init <- as.list(environment(dist))

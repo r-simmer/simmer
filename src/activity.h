@@ -208,6 +208,25 @@ protected:
 };
 
 /**
+ * Set prioritization.
+ */
+template <typename T>
+class SetPrior: public Activity {
+public:
+  CLONEABLE(SetPrior<T>)
+  
+  SetPrior(bool verbose, T values, bool provide_attrs):
+    Activity("SetPrior", verbose, provide_attrs), values(values) {}
+  
+  void print(int indent=0, bool brief=false);
+  
+  double run(Arrival* arrival);
+  
+protected:
+  T values;
+};
+
+/**
  * Timeout.
  */
 template <typename T>

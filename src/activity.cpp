@@ -73,10 +73,45 @@ double SetAttribute<Rcpp::Function>::run(Arrival* arrival) {
   return arrival->set_attribute(key, ret);
 }
 
+template <>
+void SetPrior<VEC<int> >::print(int indent, bool brief) {
+  if (values.size() != 3) Rcpp::stop("%s: 3 values needed", name);
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << "values: " << 
+    values[0] << " " << values[1] << " " << values[2] << " }" << std::endl;
+  else Rcpp::Rcout << values[0] << " " << values[1] << " " << values[2] << std::endl;
+}
+
+template <>
+void SetPrior<Rcpp::Function>::print(int indent, bool brief) {
+  Activity::print(indent, brief);
+  if (!brief) Rcpp::Rcout << "values: " << values << " }" << std::endl;
+  else Rcpp::Rcout << values << std::endl;
+}
+
+template <>
+double SetPrior<VEC<int> >::run(Arrival* arrival) {
+  if (values.size() != 3) Rcpp::stop("%s: 3 values needed", name);
+  if (values[0] >= 0) arrival->order.set_priority(values[0]);
+  if (values[1] >= 0) arrival->order.set_preemptible(values[1]);
+  if (values[2] >= 0) arrival->order.set_restart((bool)values[2]);
+  return 0;
+}
+
+template <>
+double SetPrior<Rcpp::Function>::run(Arrival* arrival) {
+  VEC<int> ret = execute_call<VEC<int> >(values, arrival);
+  if (ret.size() != 3) Rcpp::stop("%s: 3 values needed", name);
+  if (ret[0] >= 0) arrival->order.set_priority(ret[0]);
+  if (ret[1] >= 0) arrival->order.set_preemptible(ret[1]);
+  if (ret[2] >= 0) arrival->order.set_restart((bool)ret[2]);
+  return 0;
+}
+
 double Branch::run(Arrival* arrival) {
   unsigned int ret = execute_call<unsigned int>(option, arrival);
   if (ret < 1 || ret > heads.size())
-    Rcpp::stop("index out of range");
+    Rcpp::stop("%s: index out of range", name);
   selected = heads[ret-1];
   return 0;
 }

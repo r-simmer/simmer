@@ -18,7 +18,7 @@ set_attribute(traj, key, value)
 The trajectory object.
 }
 \description{
-Adds a new key/value attribute. The value should be numeric.
+Adds or modifies a key/value attribute. The value must be numeric.
 }
 \seealso{
 Other methods for dealing with trajectories:

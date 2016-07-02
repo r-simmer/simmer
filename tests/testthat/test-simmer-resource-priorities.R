@@ -1,24 +1,6 @@
 context("resource-priorities")
 
-test_that("priority queues are adhered to (1)", {
-  t <- create_trajectory() %>%
-    seize("server", 1) %>%
-    timeout(2) %>%
-    release("server", 1)
-  
-  env <- simmer() %>%
-    add_resource("server", 1) %>%
-    add_generator("__nonprior", t, at(c(0, 1)), priority=0) %>%
-    add_generator("__prior", t, at(1), priority=1) %>% # should be served second
-    run()
-  
-  arrs <-
-    env%>%get_mon_arrivals()
-  
-  expect_equal(arrs[arrs$name=="__prior0",]$end_time, 4)
-})
-
-test_that("priority queues are adhered to (2)", {
+test_that("priority queues are adhered to", {
   t <- create_trajectory() %>%
     seize("server", 1) %>%
     timeout(2) %>%
