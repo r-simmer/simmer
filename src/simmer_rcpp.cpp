@@ -386,7 +386,7 @@ SEXP SetPrior__new(SEXP verbose_, SEXP values_) {
   bool verbose = as<bool>(verbose_);
   VEC<int> values = as<VEC<int> >(values_);
   
-  XPtr<SetPrior<VEC<int>> > ptr(new SetPrior<VEC<int> >(verbose, values, 0), false);
+  XPtr<SetPrior<VEC<int> > > ptr(new SetPrior<VEC<int> >(verbose, values, 0), false);
   return ptr;
 }
 
