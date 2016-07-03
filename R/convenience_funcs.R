@@ -77,7 +77,7 @@ from <- function(start_time, dist, arrive=TRUE) {
 #' Generator convenience function to generate inter-arrivals with a specified stop time.
 #'
 #' @param stop_time the time at which to stop the generator.
-#' @param dist a function modelling the interarrival times.
+#' @inheritParams from
 #'
 #' @return Returns a generator function.
 #' @seealso \code{\link{add_generator}}.
@@ -104,14 +104,8 @@ to <- function(stop_time, dist) {
 #' 
 #' Generator convenience function to generate inter-arrivals with specified start and stop times.
 #'
-#' @param start_time the time at which to launch the initial arrival.
-#' @param stop_time the time at which to stop the generator.
-#' @param dist a function modelling the interarrival times.
-#' @param arrive if set to \code{TRUE} (default) the first arrival will be 
-#' generated at \code{start_time} and will follow \code{dist} from then on. 
-#' If set to \code{FALSE}, will initiate \code{dist} at \code{start_time} 
-#' (and the first arrival will most likely start at a time later than 
-#' \code{start_time}).
+#' @inheritParams from
+#' @inheritParams to
 #' 
 #' @return Returns a generator function.
 #' @seealso \code{\link{add_generator}}.

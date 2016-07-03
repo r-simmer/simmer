@@ -13,7 +13,7 @@ print_activity <- function(activity) activity_print_(activity, 0)
 #' 
 #' It takes an external pointer to an activity an returns the next/prev activity.
 #'
-#' @param activity an external pointer to the activity.
+#' @inheritParams print_activity
 #' 
 #' @return An external pointer to an activity object.
 #' @seealso \code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{print_activity}}.

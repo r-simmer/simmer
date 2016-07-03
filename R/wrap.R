@@ -128,7 +128,7 @@ simmer.wrap <- R6Class("simmer.wrap",
 #' to parallelize heavy replicas (see the example below), because the C++ 
 #' simulation backend is destroyed when the threads exit.
 #' 
-#' @param env the simulation environment.
+#' @inheritParams reset
 #' 
 #' @return Returns a simulation wrapper.
 #' @seealso Methods for dealing with a simulation wrapper:

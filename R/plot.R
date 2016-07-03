@@ -58,7 +58,7 @@ plot_resource_usage <- function(envs, resource_name, items=c("system", "queue", 
 #' 
 #' Plot the utilization of specified resources in the simulation.
 #' 
-#' @param envs a single simmer environment or a list of environments representing several replications.
+#' @inheritParams plot_resource_usage
 #' @param resources a character vector with at least one resource specified - e.g. "c('res1','res2')".
 #' 
 #' @return a ggplot2 object.
@@ -107,7 +107,7 @@ plot_resource_utilization <- function(envs, resources) {
 #' 
 #' Plot the evolution of arrival related times (flow, activity and waiting time).
 #' 
-#' @param envs a single simmer environment or a list of environments representing several replications.
+#' @inheritParams plot_resource_usage
 #' @param type one of \code{c("activity_time", "waiting_time", "flow_time")}.
 #' 
 #' @return a ggplot2 object.
@@ -160,7 +160,7 @@ plot_evolution_arrival_times <- function(envs, type=c("activity_time", "waiting_
 #' 
 #' Plot the evolution of user-supplied attribute data.
 #' 
-#' @param envs a single simmer environment or a list of environments representing several replications.
+#' @inheritParams plot_resource_usage
 #' @param keys the keys of attributes you want to plot (if left empty, all attributes are shown).
 #'
 #' @return a ggplot2 object.
