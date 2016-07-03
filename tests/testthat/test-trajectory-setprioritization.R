@@ -11,7 +11,7 @@ test_that("priority queues are adhered to (2)", {
     timeout(2) %>%
     release("server", 1)
   
-  env <- simmer() %>%
+  env <- simmer(verbose=TRUE) %>%
     add_resource("server", 1) %>%
     add_generator("__nonprior", t0, at(c(0, 0))) %>%
     add_generator("__prior", t1, at(1)) %>% # should be served second
@@ -34,7 +34,7 @@ test_that("priority queues are adhered to (3)", {
     timeout(2) %>%
     release("server", 1)
   
-  env <- simmer() %>%
+  env <- simmer(verbose=TRUE) %>%
     add_resource("server", 1) %>%
     add_generator("__nonprior", t0, at(c(0, 0))) %>%
     add_generator("__prior", t1, at(1)) %>% # should be served second
