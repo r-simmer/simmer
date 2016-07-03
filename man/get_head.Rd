@@ -2,9 +2,12 @@
 % Please edit documentation in R/trajectory.R
 \name{get_head}
 \alias{get_head}
-\title{Get the first activity}
+\alias{get_tail}
+\title{Get the first/last activity}
 \usage{
 get_head(traj)
+
+get_tail(traj)
 }
 \arguments{
 \item{traj}{the trajectory object.}
@@ -13,9 +16,9 @@ get_head(traj)
 An external pointer to an activity object.
 }
 \description{
-It can be used to get the pointer to a trajectory's first activity.
+Gets the pointer to a trajectory's first/last activity.
 }
 \seealso{
-\code{\link{get_tail}}, \code{\link{get_n_activities}}, \code{\link{join}}.
+\code{\link{get_n_activities}}, \code{\link{join}}.
 }
 

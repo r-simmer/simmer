@@ -13,7 +13,7 @@ get_n_activities(traj)
 The number of activities in the trajectory.
 }
 \description{
-It can be used to get the total number of activities defined inside a trajectory.
+Gets the total number of activities defined inside a trajectory.
 }
 \seealso{
 \code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{join}}.

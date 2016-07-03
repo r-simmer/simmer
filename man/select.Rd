@@ -26,7 +26,6 @@ The trajectory object.
 Selects a resource for a subsequent seize/release.
 }
 \seealso{
-\code{\link{seize}}, \code{\link{release}}, \code{\link{seize_selected}}, 
-\code{\link{release_selected}}.
+\code{\link{seize_selected}}, \code{\link{release_selected}}.
 }
 

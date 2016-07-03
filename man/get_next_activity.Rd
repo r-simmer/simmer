@@ -2,9 +2,12 @@
 % Please edit documentation in R/activity.R
 \name{get_next_activity}
 \alias{get_next_activity}
-\title{Get the next activity}
+\alias{get_prev_activity}
+\title{Get the next/prev activity}
 \usage{
 get_next_activity(activity)
+
+get_prev_activity(activity)
 }
 \arguments{
 \item{activity}{an external pointer to the activity.}
@@ -13,9 +16,9 @@ get_next_activity(activity)
 An external pointer to an activity object.
 }
 \description{
-It takes an external pointer to an activity an returns the next activity.
+It takes an external pointer to an activity an returns the next/prev activity.
 }
 \seealso{
-\code{\link{print_activity}}, \code{\link{get_prev_activity}}.
+\code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{print_activity}}.
 }
 
