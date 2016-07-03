@@ -229,7 +229,7 @@ protected:
   
   virtual bool try_free_server(bool verbose, double time) {
     typename T::iterator first = server.begin();
-    first->arrival->deactivate(first->restart());
+    first->arrival->deactivate();
     if (verbose) verbose_print(time, first->arrival->name, "PREEMPT");
     if (first->arrival->is_monitored()) {
       double last = first->arrival->get_activity(this->name);

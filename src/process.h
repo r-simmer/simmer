@@ -18,7 +18,7 @@ public:
   virtual ~Process(){}
   virtual void run() = 0;
   virtual void activate() {}
-  virtual void deactivate(bool restart);
+  virtual void deactivate();
   bool is_arrival() { return is_arrival_; }
   
 private:
@@ -110,9 +110,8 @@ public:
    * @param order           priority, preemptible, restart
    */
   Generator(Simulator* sim, std::string name_prefix, int mon, Activity* first_activity, 
-            Rcpp::Function dist, Order order): 
-    Process(sim, name_prefix, mon), count(0), first_activity(first_activity), dist(dist),
-    order(order) {}
+            Rcpp::Function dist, Order order): Process(sim, name_prefix, mon), 
+            count(0), first_activity(first_activity), dist(dist), order(order) {}
   
   /**
    * Reset the generator: counter, statistics.
@@ -177,10 +176,10 @@ private:
   int count;                /**< number of arrivals generated */
   Activity* first_activity;
   Rcpp::Function dist;
+  Order order;
   StatsMap traj_stats;      /**< arrival statistics per trajectory */
   StatsMap res_stats;       /**< arrival statistics per resource */
   StatsMap attr_stats;      /**< attribute statistics */
-  Order order;              /**< priority, preemptible, restart */
 };
 
 /** 
@@ -190,7 +189,9 @@ class Arrival: public Process {
   struct ArrTime {
     double start;
     double activity;
-    ArrTime(): start(-1), activity(0) {}
+    double busy_until;
+    double remaining;
+    ArrTime(): start(-1), activity(0), busy_until(-1), remaining(0) {}
   };
   typedef UMAP<std::string, ArrTime> ResTime;
   typedef UMAP<int, Resource*> SelMap;
@@ -207,16 +208,15 @@ public:
   * @param order           priority, preemptible, restart
   */
   Arrival(Simulator* sim, std::string name, int mon, Order order, Activity* first_activity, Generator* gen):
-    Process(sim, name, mon, true), order(order), activity(first_activity), gen(gen), 
-    busy_until(-1), remaining(0) {}
+    Process(sim, name, mon, true), order(order), activity(first_activity), gen(gen) {}
   
   void run();
   void activate();
-  void deactivate(bool restart);
+  void deactivate();
   
   int set_attribute(std::string key, double value);
   Attr* get_attributes() { return &attributes; }
-  double get_remaining() { return remaining; }
+  double get_remaining() { return lifetime.remaining; }
   
   void set_start(std::string name, double value) { restime[name].start = value; }
   void set_activity(std::string name, double value) { restime[name].activity = value; }
@@ -230,7 +230,7 @@ public:
   }
   
   void terminate(double time, bool finished) {
-    lifetime.activity -= remaining;
+    lifetime.activity -= lifetime.remaining;
     if (is_monitored() >= 1)
       gen->notify_end(name, lifetime.start, time, lifetime.activity, finished);
     delete this;
@@ -242,8 +242,6 @@ private:
   Activity* activity; /**< current activity from an R trajectory */
   Generator* gen;     /**< parent generator */
   Attr attributes;    /**< user-defined (key, value) pairs */
-  double busy_until;  /**< next scheduled event time */
-  double remaining;   /**< time remaining in a deactivated arrival */
   SelMap selected;    /**< selected resource */
 };
 

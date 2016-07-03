@@ -2,7 +2,7 @@
 #include "simulator.h"
 #include "activity.h"
 
-void Process::deactivate(bool restart) { sim->unschedule(this); }
+void Process::deactivate() { sim->unschedule(this); }
 
 void Generator::run() {
   // get the delay for the next (n) arrival(s)
@@ -78,7 +78,7 @@ void Arrival::run() {
   activity = activity->get_next();
   if (delay == ENQUEUED) goto end;
   
-  busy_until = sim->now() + delay;
+  lifetime.busy_until = sim->now() + delay;
   lifetime.activity += delay;
   sim->schedule(delay, this, activity ? activity->priority : 0);
   goto end;
@@ -91,17 +91,17 @@ end:
 
 void Arrival::activate() {
   Process::activate();
-  busy_until = sim->now() + remaining;
-  sim->schedule(remaining, this, 1);
-  remaining = 0;
+  lifetime.busy_until = sim->now() + lifetime.remaining;
+  sim->schedule(lifetime.remaining, this, 1);
+  lifetime.remaining = 0;
 }
 
-void Arrival::deactivate(bool restart) {
-  Process::deactivate(restart);
-  remaining = busy_until - sim->now();
-  if (remaining && restart) {
-    lifetime.activity -= remaining;
-    remaining = 0;
+void Arrival::deactivate() {
+  Process::deactivate();
+  lifetime.remaining = lifetime.busy_until - sim->now();
+  if (lifetime.remaining && order.get_restart()) {
+    lifetime.activity -= lifetime.remaining;
+    lifetime.remaining = 0;
     activity = activity->get_prev();
   }
 }
