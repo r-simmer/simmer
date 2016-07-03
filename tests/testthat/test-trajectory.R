@@ -8,6 +8,7 @@ t0 <- create_trajectory(verbose=TRUE) %>%
   leave(0) %>%
   branch(function() 1, T, create_trajectory(verbose=TRUE)%>%timeout(function() 1)) %>%
   set_attribute("dummy", 1) %>%
+  set_prioritization(c(0, 0, FALSE)) %>%
   rollback(1) %>%
   release_selected(1) %>%
   release("nurse", 1)
@@ -19,15 +20,18 @@ trajs <- c(create_trajectory(verbose=TRUE) %>% seize("nurse", 1),
            create_trajectory(verbose=TRUE) %>% leave(0),
            create_trajectory(verbose=TRUE) %>% branch(function() 1, T, create_trajectory(verbose=TRUE)%>%timeout(function() 1)),
            create_trajectory(verbose=TRUE) %>% set_attribute("dummy", 1),
+           create_trajectory(verbose=TRUE) %>% set_prioritization(c(0, 0, FALSE)),
            create_trajectory(verbose=TRUE) %>% rollback(1),
            create_trajectory(verbose=TRUE) %>% release_selected(1),
            create_trajectory(verbose=TRUE) %>% release("nurse", 1))
 
+N <- 10
+
 test_that("the activity chain grows as expected", {
   head <- t0%>%get_head()
-  for (i in 1:9) head <- get_next_activity(head)
+  for (i in 1:N) head <- get_next_activity(head)
   tail <- t0%>%get_tail()
-  for (i in 1:9) tail <- get_prev_activity(tail)
+  for (i in 1:N) tail <- get_prev_activity(tail)
   
   expect_output(print_activity(head), "Release")
   expect_output(print_activity(t0%>%get_tail()), "Release")
@@ -41,9 +45,9 @@ test_that("the activity chain grows as expected using join", {
   t <- join(trajs)
   
   head <- t%>%get_head()
-  for (i in 1:9) head <- get_next_activity(head)
+  for (i in 1:N) head <- get_next_activity(head)
   tail <- t%>%get_tail()
-  for (i in 1:9) tail <- get_prev_activity(tail)
+  for (i in 1:N) tail <- get_prev_activity(tail)
   
   expect_output(print_activity(head), "Release")
   expect_output(print_activity(t%>%get_tail()), "Release")
