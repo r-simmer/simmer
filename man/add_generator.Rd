@@ -13,7 +13,7 @@ add_generator(env, name_prefix, trajectory, dist, mon = 1, priority = 0,
 \item{name_prefix}{the name prefix of the generated arrivals.}
 
 \item{trajectory}{the trajectory that the generated arrivals will follow (see
-\link{create_trajectory}).}
+\code{\link{create_trajectory}}).}
 
 \item{dist}{a function modelling the interarrival times (returning a negative 
 value stops the generator).}
@@ -27,9 +27,9 @@ priority; defaults to the minimum priority, which is 0).}
 
 \item{preemptible}{if a seize occurs in a preemptive resource, this parameter 
 establishes the minimum incoming priority that can preempt these arrivals (an 
-arrival with a priority greater than `preemptible` gains the resource). In any 
-case, `preemptible` must be equal or greater than `priority`, and thus only 
-higher priority arrivals can trigger preemption.}
+arrival with a priority greater than \code{preemptible} gains the resource). In 
+any case, \code{preemptible} must be equal or greater than \code{priority}, and 
+thus only higher priority arrivals can trigger preemption.}
 
 \item{restart}{whether the activity must be restarted after being preempted.}
 }

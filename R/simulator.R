@@ -284,10 +284,11 @@ Simmer <- R6Class("simmer",
 #' 
 #' @return Returns a simulation environment.
 #' @seealso Methods for dealing with a simulation environment:
-#' \link{reset}, \link{now}, \link{peek}, \link{onestep}, \link{run}, 
-#' \link{add_resource}, \link{add_generator}, \link{get_mon_arrivals}, \link{get_mon_attributes},
-#' \link{get_mon_resources}, \link{get_n_generated}, \link{get_capacity}, \link{get_queue_size},
-#' \link{set_capacity}, \link{set_queue_size}, \link{get_server_count}, \link{get_queue_count}.
+#' \code{\link{reset}}, \code{\link{now}}, \code{\link{peek}}, \code{\link{onestep}}, \code{\link{run}}, 
+#' \code{\link{add_resource}}, \code{\link{add_generator}}, \code{\link{get_mon_arrivals}}, 
+#' \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}, \code{\link{get_n_generated}}, 
+#' \code{\link{get_capacity}}, \code{\link{get_queue_size}}, \code{\link{set_capacity}}, 
+#' \code{\link{set_queue_size}}, \code{\link{get_server_count}}, \code{\link{get_queue_count}}.
 #' @export
 #' 
 #' @examples
@@ -370,7 +371,7 @@ now <- function(env) env$now()
 #' @param steps number of steps to peek.
 #' @param verbose show additional information (i.e., the name of the process) about future events.
 #' 
-#' @return Returns numeric values if `verbose=F` and a data frame otherwise.
+#' @return Returns numeric values if \code{verbose=F} and a data frame otherwise.
 #' @seealso \code{\link{now}}.
 #' @export
 peek <- function(env, steps=1, verbose=FALSE) env$peek(steps, verbose)
@@ -388,8 +389,8 @@ peek <- function(env, steps=1, verbose=FALSE) env$peek(steps, verbose)
 #' on seize priorities.
 #' @param preempt_order if the resource is preemptive and preemption occurs with 
 #' more than one arrival in the server, this parameter defines which arrival should 
-#' be preempted first. It must be `fifo` (First In First Out: older preemptible 
-#' tasks are preempted first) or `lifo` (Last In First Out: newer preemptible tasks 
+#' be preempted first. It must be \code{fifo} (First In First Out: older preemptible 
+#' tasks are preempted first) or \code{lifo} (Last In First Out: newer preemptible tasks 
 #' are preempted first).
 #' @param queue_size_strict if the resource is preemptive and preemption occurs,
 #' this parameter controls whether the \code{queue_size} is a hard limit. By default,
@@ -411,7 +412,7 @@ add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE, preemp
 #' @param env the simulation environment.
 #' @param name_prefix the name prefix of the generated arrivals.
 #' @param trajectory the trajectory that the generated arrivals will follow (see
-#' \link{create_trajectory}).
+#' \code{\link{create_trajectory}}).
 #' @param dist a function modelling the interarrival times (returning a negative 
 #' value stops the generator).
 #' @param mon whether the simulator must monitor the generated arrivals or not 
@@ -421,9 +422,9 @@ add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE, preemp
 #' priority; defaults to the minimum priority, which is 0).
 #' @param preemptible if a seize occurs in a preemptive resource, this parameter 
 #' establishes the minimum incoming priority that can preempt these arrivals (an 
-#' arrival with a priority greater than `preemptible` gains the resource). In any 
-#' case, `preemptible` must be equal or greater than `priority`, and thus only 
-#' higher priority arrivals can trigger preemption.
+#' arrival with a priority greater than \code{preemptible} gains the resource). In 
+#' any case, \code{preemptible} must be equal or greater than \code{priority}, and 
+#' thus only higher priority arrivals can trigger preemption.
 #' @param restart whether the activity must be restarted after being preempted.
 #' 
 #' @return Returns the simulation environment.

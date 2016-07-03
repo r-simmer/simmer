@@ -24,8 +24,8 @@ on seize priorities.}
 
 \item{preempt_order}{if the resource is preemptive and preemption occurs with 
 more than one arrival in the server, this parameter defines which arrival should 
-be preempted first. It must be `fifo` (First In First Out: older preemptible 
-tasks are preempted first) or `lifo` (Last In First Out: newer preemptible tasks 
+be preempted first. It must be \code{fifo} (First In First Out: older preemptible 
+tasks are preempted first) or \code{lifo} (Last In First Out: newer preemptible tasks 
 are preempted first).}
 
 \item{queue_size_strict}{if the resource is preemptive and preemption occurs,
