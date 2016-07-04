@@ -209,3 +209,11 @@ env <- simmer(verbose=T) %>%
   add_resource("r3", Inf) %>%
   add_generator("arrival", t, at(0)) %>%
   run()
+
+####################################################################
+
+t <- create_trajectory(verbose=F) %>% 
+  seize("dummy", 1, continue=c(T, T), 
+        post.seize = create_trajectory() %>% timeout(1),
+        reject = create_trajectory() %>% timeout(1))
+

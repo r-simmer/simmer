@@ -253,45 +253,59 @@ int get_queue_count_(SEXP sim_, SEXP name_){
 }
 
 //[[Rcpp::export]]
-SEXP Seize__new(SEXP verbose_, SEXP resource_, SEXP amount_) {
+SEXP Seize__new(SEXP verbose_, SEXP resource_, SEXP amount_, SEXP cont_, SEXP trj_, SEXP mask_) {
   bool verbose = as<bool>(verbose_);
   std::string resource = as<std::string>(resource_);
   int amount = as<int>(amount_);
+  VEC<bool> cont = as<VEC<bool> >(cont_);
+  VEC<Environment> trj = as<VEC<Environment> >(trj_);
+  unsigned short mask = as<unsigned short>(mask_);
 
-  XPtr<Seize<int> > ptr(new Seize<int>(verbose, resource, amount, 0), false);
+  XPtr<Seize<int> > ptr(new Seize<int>(verbose, resource, amount, 0, cont, trj, mask), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Seize__new_func(SEXP verbose_, SEXP resource_, Function amount, SEXP provide_attrs_) {
+SEXP Seize__new_func(SEXP verbose_, SEXP resource_, Function amount, SEXP provide_attrs_, 
+                     SEXP cont_, SEXP trj_, SEXP mask_) {
   bool verbose = as<bool>(verbose_);
   std::string resource = as<std::string>(resource_);
   bool provide_attrs = as<bool>(provide_attrs_);
+  VEC<bool> cont = as<VEC<bool> >(cont_);
+  VEC<Environment> trj = as<VEC<Environment> >(trj_);
+  unsigned short mask = as<unsigned short>(mask_);
   
   XPtr<Seize<Function> > 
-    ptr(new Seize<Function>(verbose, resource, amount, provide_attrs), false);
+    ptr(new Seize<Function>(verbose, resource, amount, provide_attrs, cont, trj, mask), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP SeizeSelected__new(SEXP verbose_, SEXP id_, SEXP amount_) {
+SEXP SeizeSelected__new(SEXP verbose_, SEXP id_, SEXP amount_, SEXP cont_, SEXP trj_, SEXP mask_) {
   bool verbose = as<bool>(verbose_);
   int id = as<int>(id_);
   int amount = as<int>(amount_);
+  VEC<bool> cont = as<VEC<bool> >(cont_);
+  VEC<Environment> trj = as<VEC<Environment> >(trj_);
+  unsigned short mask = as<unsigned short>(mask_);
   
   XPtr<SeizeSelected<int> > 
-    ptr(new SeizeSelected<int>(verbose, id, amount, 0), false);
+    ptr(new SeizeSelected<int>(verbose, id, amount, 0, cont, trj, mask), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP SeizeSelected__new_func(SEXP verbose_, SEXP id_, Function amount, SEXP provide_attrs_) {
+SEXP SeizeSelected__new_func(SEXP verbose_, SEXP id_, Function amount, SEXP provide_attrs_, 
+                             SEXP cont_, SEXP trj_, SEXP mask_) {
   bool verbose = as<bool>(verbose_);
   int id = as<int>(id_);
   bool provide_attrs = as<bool>(provide_attrs_);
+  VEC<bool> cont = as<VEC<bool> >(cont_);
+  VEC<Environment> trj = as<VEC<Environment> >(trj_);
+  unsigned short mask = as<unsigned short>(mask_);
   
   XPtr<SeizeSelected<Function> > 
-    ptr(new SeizeSelected<Function>(verbose, id, amount, provide_attrs), false);
+    ptr(new SeizeSelected<Function>(verbose, id, amount, provide_attrs, cont, trj, mask), false);
   return ptr;
 }
 

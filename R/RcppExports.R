@@ -89,20 +89,20 @@ get_queue_count_ <- function(sim_, name_) {
     .Call('simmer_get_queue_count_', PACKAGE = 'simmer', sim_, name_)
 }
 
-Seize__new <- function(verbose_, resource_, amount_) {
-    .Call('simmer_Seize__new', PACKAGE = 'simmer', verbose_, resource_, amount_)
+Seize__new <- function(verbose_, resource_, amount_, cont_, trj_, mask_) {
+    .Call('simmer_Seize__new', PACKAGE = 'simmer', verbose_, resource_, amount_, cont_, trj_, mask_)
 }
 
-Seize__new_func <- function(verbose_, resource_, amount, provide_attrs_) {
-    .Call('simmer_Seize__new_func', PACKAGE = 'simmer', verbose_, resource_, amount, provide_attrs_)
+Seize__new_func <- function(verbose_, resource_, amount, provide_attrs_, cont_, trj_, mask_) {
+    .Call('simmer_Seize__new_func', PACKAGE = 'simmer', verbose_, resource_, amount, provide_attrs_, cont_, trj_, mask_)
 }
 
-SeizeSelected__new <- function(verbose_, id_, amount_) {
-    .Call('simmer_SeizeSelected__new', PACKAGE = 'simmer', verbose_, id_, amount_)
+SeizeSelected__new <- function(verbose_, id_, amount_, cont_, trj_, mask_) {
+    .Call('simmer_SeizeSelected__new', PACKAGE = 'simmer', verbose_, id_, amount_, cont_, trj_, mask_)
 }
 
-SeizeSelected__new_func <- function(verbose_, id_, amount, provide_attrs_) {
-    .Call('simmer_SeizeSelected__new_func', PACKAGE = 'simmer', verbose_, id_, amount, provide_attrs_)
+SeizeSelected__new_func <- function(verbose_, id_, amount, provide_attrs_, cont_, trj_, mask_) {
+    .Call('simmer_SeizeSelected__new_func', PACKAGE = 'simmer', verbose_, id_, amount, provide_attrs_, cont_, trj_, mask_)
 }
 
 Release__new <- function(verbose_, resource_, amount_) {
