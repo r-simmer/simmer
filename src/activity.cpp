@@ -1,34 +1,29 @@
-#include "entity.h"
-#include "simulator.h"
 #include "activity.h"
-
-template <typename T>
-T Activity::execute_call(Rcpp::Function call, Arrival* arrival) {
-  if (provide_attrs)
-    return Rcpp::as<T>(call(Rcpp::wrap(*arrival->get_attributes())));
-  else return Rcpp::as<T>(call());
-}
 
 template <>
 double Seize<int>::run(Arrival* arrival) {
-  return arrival->sim->get_resource(resource)->seize(arrival, amount);
+  int ret = arrival->sim->get_resource(resource)->seize(arrival, amount);
+  return select(arrival, ret);
 }
 
 template <>
 double Seize<Rcpp::Function>::run(Arrival* arrival) {
-  int ret = execute_call<int>(amount, arrival);
-  return arrival->sim->get_resource(resource)->seize(arrival, ret);
+  int value = execute_call<int>(amount, arrival);
+  int ret = arrival->sim->get_resource(resource)->seize(arrival, value);
+  return select(arrival, ret);
 }
 
 template <>
 double SeizeSelected<int>::run(Arrival* arrival) {
-  return arrival->get_selected(id)->seize(arrival, amount);
+  int ret = arrival->get_selected(id)->seize(arrival, amount);
+  return select(arrival, ret);
 }
 
 template <>
 double SeizeSelected<Rcpp::Function>::run(Arrival* arrival) {
-  int ret = execute_call<int>(amount, arrival);
-  return arrival->get_selected(id)->seize(arrival, ret);
+  int value = execute_call<int>(amount, arrival);
+  int ret = arrival->get_selected(id)->seize(arrival, value);
+  return select(arrival, ret);
 }
 
 template <>
@@ -38,8 +33,8 @@ double Release<int>::run(Arrival* arrival) {
 
 template <>
 double Release<Rcpp::Function>::run(Arrival* arrival) {
-  int ret = execute_call<int>(amount, arrival);
-  return arrival->sim->get_resource(resource)->release(arrival, ret);
+  int value = execute_call<int>(amount, arrival);
+  return arrival->sim->get_resource(resource)->release(arrival, value);
 }
 
 template <>
@@ -49,8 +44,8 @@ double ReleaseSelected<int>::run(Arrival* arrival) {
 
 template <>
 double ReleaseSelected<Rcpp::Function>::run(Arrival* arrival) {
-  int ret = execute_call<int>(amount, arrival);
-  return arrival->get_selected(id)->release(arrival, ret);
+  int value = execute_call<int>(amount, arrival);
+  return arrival->get_selected(id)->release(arrival, value);
 }
 
 template <>
@@ -58,8 +53,8 @@ double Timeout<double>::run(Arrival* arrival) { return std::abs(delay); }
 
 template <>
 double Timeout<Rcpp::Function>::run(Arrival* arrival) {
-  double ret = execute_call<double>(delay, arrival);
-  return std::abs(ret);
+  double value = execute_call<double>(delay, arrival);
+  return std::abs(value);
 }
 
 template <>
@@ -105,14 +100,6 @@ double SetPrior<Rcpp::Function>::run(Arrival* arrival) {
   if (ret[0] >= 0) arrival->order.set_priority(ret[0]);
   if (ret[1] >= 0) arrival->order.set_preemptible(ret[1]);
   if (ret[2] >= 0) arrival->order.set_restart((bool)ret[2]);
-  return 0;
-}
-
-double Branch::run(Arrival* arrival) {
-  unsigned int ret = execute_call<unsigned int>(option, arrival);
-  if (ret < 1 || ret > heads.size())
-    Rcpp::stop("%s: index out of range", name);
-  selected = heads[ret-1];
   return 0;
 }
 

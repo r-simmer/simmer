@@ -13,6 +13,11 @@
 #define USET boost::unordered_set
 #define UMAP boost::unordered_map
 
+#include <boost/optional.hpp>
+
+#define OPT boost::optional
+#define NONE boost::none
+
 #include <boost/foreach.hpp>
 
 #define foreach_    BOOST_FOREACH

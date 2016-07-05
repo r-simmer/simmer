@@ -209,3 +209,4 @@ env <- simmer(verbose=T) %>%
   add_resource("r3", Inf) %>%
   add_generator("arrival", t, at(0)) %>%
   run()
+

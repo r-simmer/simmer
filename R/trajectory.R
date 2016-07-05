@@ -28,18 +28,36 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     
     get_n_activities = function() { private$n_activities },
     
-    seize = function(resource, amount=1, id=0) {
+    seize = function(resource, amount=1, id=0, continue=NULL, post.seize=NULL, reject=NULL) {
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
       id <- evaluate_value(id)
+      trj <- list()
+      mask <- 0
+      if (!is.null(post.seize)) {
+        if (!inherits(post.seize, "simmer.trajectory")) stop("not a trajectory")
+        trj <- c(trj, post.seize)
+        mask <- mask + 1
+      }
+      if (!is.null(reject)) {
+        if (!inherits(reject, "simmer.trajectory")) stop("not a trajectory")
+        trj <- c(trj, reject)
+        mask <- mask + 2
+      }
+      if (length(continue) != length(trj))
+        stop("the number of elements does not match")
+      if (!length(continue)) continue <- TRUE
+      
       if (is.na(resource)) {
         if (is.function(amount))
-          private$add_activity(SeizeSelected__new_func(private$verbose, id, amount, needs_attrs(amount)))
-        else private$add_activity(SeizeSelected__new(private$verbose, id, amount))
+          private$add_activity(SeizeSelected__new_func(private$verbose, id, amount, needs_attrs(amount),
+                                                       continue, trj, mask))
+        else private$add_activity(SeizeSelected__new(private$verbose, id, amount, continue, trj, mask))
       } else {
         if (is.function(amount))
-          private$add_activity(Seize__new_func(private$verbose, resource, amount, needs_attrs(amount)))
-        else private$add_activity(Seize__new(private$verbose, resource, amount))
+          private$add_activity(Seize__new_func(private$verbose, resource, amount, needs_attrs(amount),
+                                               continue, trj, mask))
+        else private$add_activity(Seize__new(private$verbose, resource, amount, continue, trj, mask))
       }
     },
     
@@ -282,27 +300,32 @@ join <- function(...) {
 #' @inheritParams select
 #' @param resource the name of the resource.
 #' @param amount the amount to seize/release, accepts either a callable object (a function) or a numeric value.
+#' @param continue a boolean (if \code{post.seize} OR \code{reject} is defined) or a pair of booleans
+#' (if \code{post.seize} AND \code{reject} are defined) to indicate whether these subtrajectories
+#' should continue to the next activity in the main trajectory.
+#' @param post.seize an optional trajectory object which will be followed after a successful seize.
+#' @param reject an optional trajectory object which will be followed if the arrival is rejected.
 #' @param ... unused arguments
 #' 
 #' @return The trajectory object.
 #' @seealso \code{\link{select}}.
 #' @export
-seize <- function(traj, resource, amount=1, ...) {
+seize <- function(traj, resource, amount=1, continue=NULL, post.seize=NULL, reject=NULL, ...) {
   args <- list(...)
   if ("priority" %in% names(args)) warning("unused argument `priority` has been moved to `add_generator`")
   if ("preemptible" %in% names(args)) warning("unused argument `preemptible` has been moved to `add_generator`")
   if ("restart" %in% names(args)) warning("unused argument `restart` has been moved to `add_generator`")
-  traj$seize(resource, amount)
+  traj$seize(resource, amount, 0, continue, post.seize, reject)
 }
 
 #' @rdname seize
 #' @export
-seize_selected <- function(traj, amount=1, id=0, ...) {
+seize_selected <- function(traj, amount=1, id=0, continue=NULL, post.seize=NULL, reject=NULL, ...) {
   args <- list(...)
   if ("priority" %in% names(args)) warning("unused argument `priority` has been moved to `add_generator`")
   if ("preemptible" %in% names(args)) warning("unused argument `preemptible` has been moved to `add_generator`")
   if ("restart" %in% names(args)) warning("unused argument `restart` has been moved to `add_generator`")
-  traj$seize(NA, amount, id)
+  traj$seize(NA, amount, id, continue, post.seize, reject)
 }
 
 #' @rdname seize

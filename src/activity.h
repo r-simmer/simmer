@@ -2,10 +2,8 @@
 #define ACTIVITY_H
 
 #include "simmer.h"
+#include "simulator.h"
 #include "policy.h"
-
-// forward declarations
-class Arrival;
 
 /** 
  *  Base class.
@@ -72,25 +70,116 @@ protected:
   Activity* prev;
   
   template <typename T>
-  T execute_call(Rcpp::Function call, Arrival* arrival);
+  T execute_call(Rcpp::Function call, Arrival* arrival) {
+    if (provide_attrs)
+      return Rcpp::as<T>(call(Rcpp::wrap(*arrival->get_attributes())));
+    else return Rcpp::as<T>(call());
+  }
+};
+
+// abstract class for multipath activities
+class Fork: public Activity {
+public:
+  Fork(std::string name, bool verbose, bool provide_attrs, VEC<bool> cont, VEC<Rcpp::Environment> trj):
+    Activity(name, verbose, provide_attrs), cont(cont), trj(trj), selected(NULL) {
+    foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
+      Rcpp::Function get_head(itr["get_head"]);
+      Rcpp::Function get_tail(itr["get_tail"]);
+      heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_head()));
+      tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_tail()));
+      Rcpp::Function get_n_activities(itr["get_n_activities"]);
+      n += Rcpp::as<int>(get_n_activities());
+    }
+    foreach_ (VEC<Activity*>::value_type& itr, heads)
+    itr->set_prev(this);
+  }
+  
+  Fork(const Fork& o): Activity(o.name, o.verbose, o.provide_attrs), 
+    cont(o.cont), trj(o.trj), selected(NULL) {
+    heads.clear();
+    tails.clear();
+    foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
+      Rcpp::Function clone(itr["clone"]);
+      itr = clone();
+      Rcpp::Function get_head(itr["get_head"]);
+      Rcpp::Function get_tail(itr["get_tail"]);
+      heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_head()));
+      tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_tail()));
+    }
+    foreach_ (VEC<Activity*>::value_type& itr, heads)
+      itr->set_prev(this);
+  }
+  
+  virtual void print(int indent=0, bool brief=false) {
+    indent += 2;
+    if (!brief)
+      for (unsigned int i = 0; i < trj.size(); i++) {
+        for (int j = 0; j < indent; ++j) Rcpp::Rcout << " ";
+        Rcpp::Rcout << "Fork " << i+1 << (cont[i] ? ", continue," : ", stop,");
+        Rcpp::Function print(trj[i]["print"]);
+        print(indent);
+      }
+    else Rcpp::Rcout << trj.size() << " paths" << std::endl;
+  }
+  
+  virtual void set_next(Activity* activity) {
+    Activity::set_next(activity);
+    for (unsigned int i = 0; i < tails.size(); i++) {
+      if (cont[i]) tails[i]->set_next(activity);
+    }
+  }
+  
+  virtual Activity* get_next() {
+    if (selected) {
+      Activity* aux = selected;
+      selected = NULL;
+      return aux;
+    }
+    return Activity::get_next();
+  }
+  
+protected:
+  VEC<bool> cont;
+  VEC<Rcpp::Environment> trj;
+  Activity* selected;
+  VEC<Activity*> heads;
+  VEC<Activity*> tails;
 };
 
 /**
  * Seize a resource.
  */
 template <typename T>
-class Seize: public Activity {
+class Seize: public Fork {
 public:
   CLONEABLE(Seize<T>)
   
-  Seize(bool verbose, std::string resource, T amount, bool provide_attrs):
-    Activity("Seize", verbose, provide_attrs), resource(resource), amount(amount) {}
+  Seize(bool verbose, std::string resource, T amount, bool provide_attrs, 
+        VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask): 
+    Fork("Seize", verbose, provide_attrs, cont, trj), resource(resource), amount(amount), mask(mask) {}
   
   virtual void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << 
       "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
-    else Rcpp::Rcout << resource << ", " << amount << std::endl;
+    else Rcpp::Rcout << resource << ", " << amount << ", ";
+    Fork::print(indent, brief);
+  }
+  
+  virtual int select(Arrival* arrival, int ret) {
+    switch (ret) {
+    case REJECTED:
+      if (mask & 2) {
+        ret = SUCCESS;
+        if (mask & 1) selected = heads[1];
+        else selected = heads[0];
+      } else arrival->terminate(arrival->sim->now(), false);
+      break;
+    default:
+      if (mask & 1) selected = heads[0];
+      break;
+    }
+    return ret;
   }
   
   virtual double run(Arrival* arrival);
@@ -98,6 +187,7 @@ public:
 protected:
   std::string resource;
   T amount;
+  unsigned short mask;
 };
 
 /**
@@ -108,8 +198,9 @@ class SeizeSelected: public Seize<T> {
 public:
   CLONEABLE(SeizeSelected<T>)
   
-  SeizeSelected(bool verbose, int id, T amount, bool provide_attrs):
-    Seize<T>(verbose, "[]", amount, provide_attrs), id(id) {}
+  SeizeSelected(bool verbose, int id, T amount, bool provide_attrs, 
+                VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask):
+    Seize<T>(verbose, "[]", amount, provide_attrs, cont, trj, mask), id(id) {}
   
   double run(Arrival* arrival);
   
@@ -253,76 +344,30 @@ protected:
  * Branch. It runs as another activity, but encloses other trajectories
  * that are selected at runtime through a user-defined function.
  */
-class Branch: public Activity {
+class Branch: public Fork {
 public:
   CLONEABLE(Branch)
   
   Branch(bool verbose, Rcpp::Function option, bool provide_attrs, VEC<bool> cont, VEC<Rcpp::Environment> trj):
-    Activity("Branch", verbose, provide_attrs), option(option), cont(cont), trj(trj), selected(NULL) {
-    foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
-      Rcpp::Function get_head(itr["get_head"]);
-      Rcpp::Function get_tail(itr["get_tail"]);
-      heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_head()));
-      tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_tail()));
-      Rcpp::Function get_n_activities(itr["get_n_activities"]);
-      n += Rcpp::as<int>(get_n_activities());
-    }
-    foreach_ (VEC<Activity*>::value_type& itr, heads)
-      itr->set_prev(this);
-  }
-  
-  Branch(const Branch& o): Activity("Branch", o.verbose, o.provide_attrs), 
-    option(o.option), cont(o.cont), trj(o.trj), selected(NULL) {
-    heads.clear();
-    tails.clear();
-    foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
-      Rcpp::Function clone(itr["clone"]);
-      itr = clone();
-      Rcpp::Function get_head(itr["get_head"]);
-      Rcpp::Function get_tail(itr["get_tail"]);
-      heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_head()));
-      tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_tail()));
-    }
-    foreach_ (VEC<Activity*>::value_type& itr, heads)
-      itr->set_prev(this);
-  }
+    Fork("Branch", verbose, provide_attrs, cont, trj), option(option) {}
   
   void print(int indent=0, bool brief=false) {
-    if (!brief)
-      for (unsigned int i = 0; i < trj.size(); i++) {
-        Activity::print(indent, brief);
-        Rcpp::Rcout << "continue: " << cont[i] << " }" << std::endl;
-        Rcpp::Function print(trj[i]["print"]);
-        print(indent+2);
-      }
-    else Rcpp::Rcout << trj.size() << " options" << std::endl;
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << "option: " << option << " }" << std::endl;
+    else Rcpp::Rcout << option << ", ";
+    Fork::print(indent, brief);
   }
   
-  double run(Arrival* arrival);
-  
-  void set_next(Activity* activity) {
-    Activity::set_next(activity);
-    for (unsigned int i = 0; i < tails.size(); i++) {
-      if (cont[i]) tails[i]->set_next(activity);
-    }
-  }
-  
-  Activity* get_next() {
-    if (selected) {
-      Activity* aux = selected;
-      selected = NULL;
-      return aux;
-    }
-    return Activity::get_next();
+  double run(Arrival* arrival) {
+    unsigned int ret = execute_call<unsigned int>(option, arrival);
+    if (ret < 1 || ret > heads.size())
+      Rcpp::stop("%s: index out of range", name);
+    selected = heads[ret-1];
+    return 0;
   }
   
 protected:
   Rcpp::Function option;
-  VEC<bool> cont;
-  VEC<Rcpp::Environment> trj;
-  Activity* selected;
-  VEC<Activity*> heads;
-  VEC<Activity*> tails;
 };
 
 /**

@@ -7,9 +7,11 @@
 \alias{seize_selected}
 \title{Add a seize/release activity}
 \usage{
-seize(traj, resource, amount = 1, ...)
+seize(traj, resource, amount = 1, continue = NULL, post.seize = NULL,
+  reject = NULL, ...)
 
-seize_selected(traj, amount = 1, id = 0, ...)
+seize_selected(traj, amount = 1, id = 0, continue = NULL,
+  post.seize = NULL, reject = NULL, ...)
 
 release(traj, resource, amount = 1)
 
@@ -21,6 +23,14 @@ release_selected(traj, amount = 1, id = 0)
 \item{resource}{the name of the resource.}
 
 \item{amount}{the amount to seize/release, accepts either a callable object (a function) or a numeric value.}
+
+\item{continue}{a boolean (if \code{post.seize} OR \code{reject} is defined) or a pair of booleans
+(if \code{post.seize} AND \code{reject} are defined) to indicate whether these subtrajectories
+should continue to the next activity in the main trajectory.}
+
+\item{post.seize}{an optional trajectory object which will be followed after a successful seize.}
+
+\item{reject}{an optional trajectory object which will be followed if the arrival is rejected.}
 
 \item{...}{unused arguments}
 
