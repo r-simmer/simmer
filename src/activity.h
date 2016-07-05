@@ -2,10 +2,8 @@
 #define ACTIVITY_H
 
 #include "simmer.h"
+#include "simulator.h"
 #include "policy.h"
-
-// forward declarations
-class Arrival;
 
 /** 
  *  Base class.
@@ -72,7 +70,11 @@ protected:
   Activity* prev;
   
   template <typename T>
-  T execute_call(Rcpp::Function call, Arrival* arrival);
+  T execute_call(Rcpp::Function call, Arrival* arrival) {
+    if (provide_attrs)
+      return Rcpp::as<T>(call(Rcpp::wrap(*arrival->get_attributes())));
+    else return Rcpp::as<T>(call());
+  }
 };
 
 // abstract class for multipath activities
@@ -152,9 +154,9 @@ class Seize: public Fork {
 public:
   CLONEABLE(Seize<T>)
   
-  Seize(bool verbose, std::string resource, T amount, bool provide_attrs, VEC<bool> cont, 
-        VEC<Rcpp::Environment> trj, unsigned short mask): 
-  Fork("Seize", verbose, provide_attrs, cont, trj), resource(resource), amount(amount), mask(mask) {}
+  Seize(bool verbose, std::string resource, T amount, bool provide_attrs, 
+        VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask): 
+    Fork("Seize", verbose, provide_attrs, cont, trj), resource(resource), amount(amount), mask(mask) {}
   
   virtual void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);
@@ -162,6 +164,22 @@ public:
       "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
     else Rcpp::Rcout << resource << ", " << amount << ", ";
     Fork::print(indent, brief);
+  }
+  
+  virtual int select(Arrival* arrival, int ret) {
+    switch (ret) {
+    case REJECTED:
+      if (mask & 2) {
+        ret = SUCCESS;
+        if (mask & 1) selected = heads[1];
+        else selected = heads[0];
+      } else arrival->terminate(arrival->sim->now(), false);
+      break;
+    default:
+      if (mask & 1) selected = heads[0];
+      break;
+    }
+    return ret;
   }
   
   virtual double run(Arrival* arrival);
@@ -340,7 +358,13 @@ public:
     Fork::print(indent, brief);
   }
   
-  double run(Arrival* arrival);
+  double run(Arrival* arrival) {
+    unsigned int ret = execute_call<unsigned int>(option, arrival);
+    if (ret < 1 || ret > heads.size())
+      Rcpp::stop("%s: index out of range", name);
+    selected = heads[ret-1];
+    return 0;
+  }
   
 protected:
   Rcpp::Function option;

@@ -1,5 +1,5 @@
-#include "resource.h"
 #include "simulator.h"
+#include "resource.h"
 
 void Resource::set_capacity(int value) {
   if (capacity == value) return;
@@ -45,7 +45,6 @@ int Resource::seize(Arrival* arrival, int amount) {
   // reject
   else {
     if (sim->verbose) verbose_print(sim->now(), arrival->name, "REJECT");
-    arrival->terminate(sim->now(), false);
     return REJECTED;
   }
   
