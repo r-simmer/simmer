@@ -1,5 +1,9 @@
 # Changes in version 3.3.0.9000
 
+## New features:
+
+* Prioritization (`priority`, `preemptible`, `restart`) has been moved from `seize` to `add_generator` (#69). This leads to a more natural interpretation of prioritization values as attributes of arrivals from the same generator, rather than attributes of a `seize`. Still, prioritization values can be redefined dynamically from inside a trajectory with the new activity `set_prioritization`.
+
 ## Minor changes and fixes
 
 * New vignette "The Bank Tutorial: Part I", by Duncan Garmonsway @nacnudus (#68).

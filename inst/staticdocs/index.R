@@ -12,6 +12,7 @@ sd_section("Build trajectories",
     "seize_selected",
     "select",
     "set_attribute",
+    "set_prioritization",
     "timeout"
   )
 )
