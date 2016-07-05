@@ -3,6 +3,7 @@
 ## New features:
 
 * Prioritization (`priority`, `preemptible`, `restart`) has been moved from `seize` to `add_generator` (#69). This leads to a more natural interpretation of prioritization values as attributes of arrivals from the same generator, rather than attributes of a `seize`. Still, prioritization values can be redefined dynamically from inside a trajectory with the new activity `set_prioritization`.
+* New optional `post.seize` and `reject` subtrajectories in `seize` and `seize_selected` (#49). This feature allows us to fine-tune what happens to an arrival if it cannot seize a resource: instead of getting dropped, it may execute a given subtrajectory.
 
 ## Minor changes and fixes
 
