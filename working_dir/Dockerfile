@@ -10,7 +10,7 @@ MAINTAINER Iñaki Úcar <i.ucar86@gmail.com>
 ENV LANG=en_US.utf-8
 
 ## Install & Update packages
-RUN dnf install -y \
+RUN dnf update -y && dnf install -y \
   automake \
   binutils \
   bison \
@@ -51,15 +51,13 @@ RUN dnf install -y \
   xdg-utils \
   xz-devel \
   zip \
-  zlib-devel
-RUN dnf update -y
+  zlib-devel \
+  && dnf clean all
 
-## Check out R-devel
+## Check out R-devel, build, install, clean
 RUN cd /tmp \
   && svn co http://svn.r-project.org/R/trunk R-devel 
-
-## Build & Install
-RUN cd /tmp/R-devel \
+  && cd /tmp/R-devel \
   && CC="clang" \
      CXX="clang++" \
      CXX1X="clang++" \
@@ -73,13 +71,12 @@ RUN cd /tmp/R-devel \
        --disable-openmp \
   && make \
   && make install \
-  && make clean
-
-## Set default CRAN repo
-RUN echo 'options("repos"="http://cran.rstudio.com")' >> /usr/local/lib64/R/etc/Rprofile.site
-
-## Set Makevars
-RUN mkdir ~/.R \
+  && cd /tmp \
+  && rm -rf R-devel
+  
+## Set default CRAN repo, Makevars
+RUN echo 'options("repos"="http://cran.rstudio.com")' >> /usr/local/lib64/R/etc/Rprofile.site \
+  && mkdir ~/.R \
   && echo $'CFLAGS +=   -O3 -Wall -pipe -pedantic -std=gnu99\n\
 CXXFLAGS += -O3 -Wall -pipe -Wno-unused -pedantic\n\
 CC=clang\n\
