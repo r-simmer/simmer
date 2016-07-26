@@ -13,30 +13,35 @@ test_that("an empty trajectory fails", {
   expect_error(create_trajectory()%>%branch(function() 1, T, create_trajectory()))
 })
 
-test_that("an index out of range fails", {
+test_that("an index equal to 0 skips the branch", {
   t0 <- create_trajectory() %>% 
     branch(function() 0, T, 
-      create_trajectory()%>%timeout(function() 1)
-    )
+           create_trajectory()%>%timeout(1)
+    ) %>%
+    timeout(2)
+  
+  env <- simmer() %>%
+    add_generator("entity", t0, at(0)) %>%
+    run()
+  expect_equal(env%>%now(), 2)
+})
+
+test_that("an index out of range fails", {
   t1 <- create_trajectory() %>% 
     branch(function() 1, T, 
-      create_trajectory()%>%timeout(function() 1)
+      create_trajectory()%>%timeout(1)
     )
   t2 <- create_trajectory() %>% 
     branch(function() 2, T, 
-      create_trajectory()%>%timeout(function() 1)
+      create_trajectory()%>%timeout(1)
     )
   
   env <- simmer() %>%
-    add_generator("entity", t0, function() 1)
-  expect_error(env%>%run(10))
+    add_generator("entity", t2, at(0))
+  expect_error(env%>%run())
   
   env <- simmer() %>%
-    add_generator("entity", t2, function() 1)
-  expect_error(env%>%run(10))
-  
-  env <- simmer() %>%
-    add_generator("entity", t1, function() 1) %>%
-    run(10)
-  expect_equal(env%>%now(), 10)
+    add_generator("entity", t1, at(0)) %>%
+    run()
+  expect_equal(env%>%now(), 1)
 })

@@ -359,10 +359,10 @@ public:
   }
   
   double run(Arrival* arrival) {
-    unsigned int ret = execute_call<unsigned int>(option, arrival);
-    if (ret < 1 || ret > heads.size())
+    int ret = execute_call<int>(option, arrival);
+    if (ret < 0 || ret > heads.size())
       Rcpp::stop("%s: index out of range", name);
-    selected = heads[ret-1];
+    if (ret) selected = heads[ret-1];
     return 0;
   }
   

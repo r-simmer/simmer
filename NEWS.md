@@ -7,6 +7,7 @@
 
 ## Minor changes and fixes
 
+* If a `branch`'s `option` returns `0`, the arrival skips the `branch` and continues to the next activity instead of throwing an `index out of range` error (#70). 
 * New vignette "The Bank Tutorial: Part I", by Duncan Garmonsway @nacnudus (#68).
 
 # Changes in version 3.3.0

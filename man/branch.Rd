@@ -9,13 +9,15 @@ branch(traj, option, continue, ..., merge = "_deprecated")
 \arguments{
 \item{traj}{the trajectory object.}
 
-\item{option}{a callable object (a function) that must return an integer 
-between 1 and \code{n}; it will be used by the arrivals to select a path to follow.}
+\item{option}{a callable object (a function) that must return an integer between
+\code{0} and \code{N}. A return value equal to \code{0} skips the branch and
+continues to the next activity. A returning value between \code{1} to \code{N}
+makes the arrival to follow the corresponding sub-trajectory.}
 
-\item{continue}{a vector of \code{n} booleans that indicate whether the arrival must 
-continue executing activities after each path or not.}
+\item{continue}{a vector of \code{N} booleans that indicate whether the arrival must 
+continue to the main trajectory after each sub-trajectory or not.}
 
-\item{...}{\code{n} trajectory objects describing each path.}
+\item{...}{\code{N} trajectory objects describing each sub-trajectory.}
 
 \item{merge}{(deprecated) same as \code{continue}, for compatibility reasons. Support
 for this argument will be dropped in upcoming versions.}
@@ -24,6 +26,7 @@ for this argument will be dropped in upcoming versions.}
 The trajectory object.
 }
 \description{
-Adds a new activity that defines n alternative paths to the tail of a trajectory.
+Adds a new activity that defines \code{N} alternative sub-trajectories
+to the tail of a trajectory.
 }
 
