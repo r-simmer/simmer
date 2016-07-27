@@ -88,25 +88,36 @@ mm1.T ; mean(mm1.t_system)
 
 It seems that it matches the theoretical value pretty well. But of course we are picky, so let's take a closer look, just to be sure. Replication can be done with standard R tools:
 
-```{r}
-envs <- mclapply(1:1000, function(i) {
+```{r, eval=FALSE}
+envs <- mclapply(1:100, function(i) {
   simmer() %>%
     add_resource("resource", capacity=1, queue_size=Inf) %>%
     add_generator("arrival", mm1.trajectory, function() rexp(100, lambda)) %>%
     run(1000/lambda) %>%
     wrap()
-})
+}, mc.set.seed=FALSE)
 ```
 
 Parallelizing has the shortcoming that we lose the underlying C++ objects when each thread finishes, but the `wrap` function does all the magic for us retrieving the monitored data. Let's perform a simple test:
 
-```{r}
+```{r, eval=FALSE}
 t_system <- get_mon_arrivals(envs) %>%
   mutate(t_system = end_time - start_time) %>%
   group_by(replication) %>%
   summarise(mean = mean(t_system))
 
 t.test(t_system$mean)
+#> 
+#> 	One Sample t-test
+#> 
+#> data:  t_system$mean
+#> t = 112.35, df = 99, p-value < 2.2e-16
+#> alternative hypothesis: true mean is not equal to 0
+#> 95 percent confidence interval:
+#>  0.4883420 0.5059016
+#> sample estimates:
+#> mean of x 
+#> 0.4971218 
 ```
 
 Finally, the inverse of the mean difference between arrivals is the effective rate, which matches (approx.) the real lambda because there are no rejections.
