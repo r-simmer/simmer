@@ -3,6 +3,7 @@ sd_section("Build trajectories",
   c(
     "create_trajectory",
     "branch",
+    "clone",
     "join",
     "leave",
     "release",
@@ -13,6 +14,7 @@ sd_section("Build trajectories",
     "select",
     "set_attribute",
     "set_prioritization",
+    "synchronize",
     "timeout"
   )
 )

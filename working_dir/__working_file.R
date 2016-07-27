@@ -210,3 +210,14 @@ env <- simmer(verbose=T) %>%
   add_generator("arrival", t, at(0)) %>%
   run()
 
+####################################################################
+
+t <- create_trajectory() %>%
+  clone(create_trajectory("original") %>%
+          ...,
+        create_trajectory("clone 1") %>%
+          ...,
+        ...,
+        create_trajectory("clone N") %>%
+          ...) %>%
+  syncronize()

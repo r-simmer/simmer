@@ -53,9 +53,10 @@ t1
 }
 \seealso{
 Methods for dealing with trajectories:
-\code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{get_n_activities}}, 
-\code{\link{join}}, \code{\link{seize}}, \code{\link{release}}, \code{\link{set_prioritization}},
-\code{\link{set_attribute}}, \code{\link{timeout}}, \code{\link{branch}}, \code{\link{rollback}}, 
-\code{\link{leave}}, \code{\link{seize_selected}}, \code{\link{release_selected}}, \code{\link{select}}.
+\code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{get_n_activities}}, \code{\link{join}},
+\code{\link{seize}}, \code{\link{release}}, \code{\link{seize_selected}}, \code{\link{release_selected}}, 
+\code{\link{select}}, \code{\link{set_prioritization}}, \code{\link{set_attribute}}, 
+\code{\link{timeout}}, \code{\link{branch}}, \code{\link{rollback}}, \code{\link{leave}}, 
+\code{\link{clone}}, \code{\link{synchronize}}.
 }
 

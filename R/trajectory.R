@@ -133,6 +133,21 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       else private$add_activity(Leave__new(private$verbose, prob))
     },
     
+    replicate = function(n, ...) {
+      n <- evaluate_value(n)
+      trj <- list(...)
+      for (i in trj) if (!inherits(i, "simmer.trajectory"))
+        stop("not a trajectory")
+      if (is.function(n))
+        private$add_activity(Clone__new_func(private$verbose, n, needs_attrs(n), trj))
+      else private$add_activity(Clone__new(private$verbose, n, trj))
+    },
+    
+    synchronize = function(wait=TRUE) {
+      wait <- evaluate_value(wait)
+      private$add_activity(Synchronize__new(private$verbose, wait))
+    },
+    
     join = function(traj) {
       if (!inherits(traj, "simmer.trajectory"))
         stop("not a trajectory")
@@ -199,10 +214,11 @@ simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 #' 
 #' @return Returns an environment that represents the trajectory.
 #' @seealso Methods for dealing with trajectories:
-#' \code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{get_n_activities}}, 
-#' \code{\link{join}}, \code{\link{seize}}, \code{\link{release}}, \code{\link{set_prioritization}},
-#' \code{\link{set_attribute}}, \code{\link{timeout}}, \code{\link{branch}}, \code{\link{rollback}}, 
-#' \code{\link{leave}}, \code{\link{seize_selected}}, \code{\link{release_selected}}, \code{\link{select}}.
+#' \code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{get_n_activities}}, \code{\link{join}},
+#' \code{\link{seize}}, \code{\link{release}}, \code{\link{seize_selected}}, \code{\link{release_selected}}, 
+#' \code{\link{select}}, \code{\link{set_prioritization}}, \code{\link{set_attribute}}, 
+#' \code{\link{timeout}}, \code{\link{branch}}, \code{\link{rollback}}, \code{\link{leave}}, 
+#' \code{\link{clone}}, \code{\link{synchronize}}.
 #' @export
 #' 
 #' @examples
@@ -446,3 +462,31 @@ rollback <- function(traj, amount, times=1, check) traj$rollback(amount, times, 
 #' @return The trajectory object.
 #' @export
 leave <- function(traj, prob) traj$leave(prob)
+
+#' Add a clone activity
+#'
+#' Adds a new activity that produces \code{n} clones of an arrival 
+#' (the original one + \code{n-1} copies).
+#' 
+#' @inheritParams get_head
+#' @param n number of clones.
+#' @param ... optional sub-trajectories. Each clone will follow a different
+#' sub-trajectory if available.
+#' 
+#' @return The trajectory object.
+#' @seealso \code{\link{synchronize}}.
+#' @export
+clone <- function(traj, n, ...) traj$replicate(n, ...)
+
+#' Add a synchronize activity
+#'
+#' Adds a new activity that synchronizes clones (removes all but one).
+#' 
+#' @inheritParams get_head
+#' @param wait if \code{FALSE}, all clones but the first to arrive are removed.
+#' if \code{TRUE} (default), all clones but the last to arrive are removed.
+#' 
+#' @return The trajectory object.
+#' @seealso \code{\link{clone}}.
+#' @export
+synchronize <- function(traj, wait=TRUE) traj$synchronize(wait)
