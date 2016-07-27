@@ -481,6 +481,35 @@ SEXP Leave__new_func(SEXP verbose_, Function prob, SEXP provide_attrs_) {
 }
 
 //[[Rcpp::export]]
+SEXP Clone__new(SEXP verbose_, SEXP n_, SEXP trj_) {
+  bool verbose = as<bool>(verbose_);
+  int n = as<int>(n_);
+  VEC<Environment> trj = as<VEC<Environment> >(trj_);
+  
+  XPtr<Clone<int> > ptr(new Clone<int>(verbose, n, 0, trj), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP Clone__new_func(SEXP verbose_, Function n, SEXP provide_attrs_, SEXP trj_) {
+  bool verbose = as<bool>(verbose_);
+  bool provide_attrs = as<bool>(provide_attrs_);
+  VEC<Environment> trj = as<VEC<Environment> >(trj_);
+  
+  XPtr<Clone<Function> > ptr(new Clone<Function>(verbose, n, provide_attrs, trj), false);
+  return ptr;
+}
+
+// //[[Rcpp::export]]
+// SEXP Synchronize__new(SEXP verbose_, SEXP wait_) {
+//   bool verbose = as<bool>(verbose_);
+//   bool wait = as<bool>(wait_);
+//   
+//   XPtr<Synchronize> ptr(new Synchronize(verbose, wait), false);
+//   return ptr;
+// }
+
+//[[Rcpp::export]]
 int activity_get_n_(SEXP activity_) {
   XPtr<Activity> activity(activity_);
   

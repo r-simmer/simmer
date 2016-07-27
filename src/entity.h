@@ -16,6 +16,8 @@ class Simulator;
  */
 class Entity {
 public:
+  CLONEABLE(Entity)
+  
   Simulator* sim;
   std::string name;
   

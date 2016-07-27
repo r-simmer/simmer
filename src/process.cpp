@@ -89,6 +89,8 @@ end:
   return;
 }
 
+void Arrival::forward_activity() { activity = activity->get_next(); }
+
 void Arrival::activate() {
   Process::activate();
   lifetime.busy_until = sim->now() + lifetime.remaining;

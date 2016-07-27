@@ -197,6 +197,8 @@ class Arrival: public Process {
   typedef UMAP<int, Resource*> SelMap;
   
 public:
+  CLONEABLE(Arrival)
+  
   Order order;        /**< priority, preemptible, restart */
 
   /**
@@ -213,6 +215,7 @@ public:
   void run();
   void activate();
   void deactivate();
+  void forward_activity();
   
   int set_attribute(std::string key, double value);
   Attr* get_attributes() { return &attributes; }

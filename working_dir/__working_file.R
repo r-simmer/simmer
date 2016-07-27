@@ -213,11 +213,17 @@ env <- simmer(verbose=T) %>%
 ####################################################################
 
 t <- create_trajectory() %>%
-  clone(create_trajectory("original") %>%
-          ...,
+  clone(3,
+        create_trajectory("original") %>%
+          timeout(1),
         create_trajectory("clone 1") %>%
-          ...,
-        ...,
-        create_trajectory("clone N") %>%
-          ...) %>%
-  syncronize()
+          timeout(2),
+        create_trajectory("clone 2") %>%
+          timeout(3)) %>%
+  timeout(10)
+  syncronize(wait=TRUE)
+
+env <- simmer(verbose=TRUE) %>%
+  add_generator("arrival", t, at(0)) %>%
+  run()
+env %>% get_mon_arrivals()

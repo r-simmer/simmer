@@ -571,6 +571,33 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// Clone__new
+SEXP Clone__new(SEXP verbose_, SEXP n_, SEXP trj_);
+RcppExport SEXP simmer_Clone__new(SEXP verbose_SEXP, SEXP n_SEXP, SEXP trj_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type n_(n_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type trj_(trj_SEXP);
+    __result = Rcpp::wrap(Clone__new(verbose_, n_, trj_));
+    return __result;
+END_RCPP
+}
+// Clone__new_func
+SEXP Clone__new_func(SEXP verbose_, Function n, SEXP provide_attrs_, SEXP trj_);
+RcppExport SEXP simmer_Clone__new_func(SEXP verbose_SEXP, SEXP nSEXP, SEXP provide_attrs_SEXP, SEXP trj_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
+    Rcpp::traits::input_parameter< Function >::type n(nSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type provide_attrs_(provide_attrs_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type trj_(trj_SEXP);
+    __result = Rcpp::wrap(Clone__new_func(verbose_, n, provide_attrs_, trj_));
+    return __result;
+END_RCPP
+}
 // activity_get_n_
 int activity_get_n_(SEXP activity_);
 RcppExport SEXP simmer_activity_get_n_(SEXP activity_SEXP) {

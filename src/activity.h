@@ -91,7 +91,7 @@ public:
       n += Rcpp::as<int>(get_n_activities());
     }
     foreach_ (VEC<Activity*>::value_type& itr, heads)
-    itr->set_prev(this);
+      itr->set_prev(this);
   }
   
   Fork(const Fork& o): Activity(o.name, o.verbose, o.provide_attrs), 
@@ -435,6 +435,40 @@ public:
   
 protected:
   T prob;
+};
+
+/**
+ * Clone an arrival.
+ */
+template <typename T>
+class Clone: public Fork {
+public:
+  CLONEABLE(Clone<T>)
+  
+  Clone(bool verbose, T n, bool provide_attrs, VEC<Rcpp::Environment> trj): 
+    Fork("Clone", verbose, provide_attrs, VEC<bool>(trj.size(), true), trj), n(n) {}
+  
+  void print(int indent=0, bool brief=false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << "n: " << n << " }" << std::endl;
+    else Rcpp::Rcout << n << ", ";
+    Fork::print(indent, brief);
+  }
+  
+  void do_clone(Arrival* arrival, int value) {
+    for (unsigned int i = 1; i < value; i++) {
+      if (i < heads.size()) selected = heads[i];
+      Arrival* new_arrival = arrival->clone();
+      new_arrival->forward_activity();
+      arrival->sim->schedule(0, new_arrival);
+    }
+    if (heads.size()) selected = heads[0];
+  }
+  
+  double run(Arrival* arrival);
+  
+protected:
+  T n;
 };
 
 #endif

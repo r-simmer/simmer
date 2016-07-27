@@ -173,6 +173,14 @@ Leave__new_func <- function(verbose_, prob, provide_attrs_) {
     .Call('simmer_Leave__new_func', PACKAGE = 'simmer', verbose_, prob, provide_attrs_)
 }
 
+Clone__new <- function(verbose_, n_, trj_) {
+    .Call('simmer_Clone__new', PACKAGE = 'simmer', verbose_, n_, trj_)
+}
+
+Clone__new_func <- function(verbose_, n, provide_attrs_, trj_) {
+    .Call('simmer_Clone__new_func', PACKAGE = 'simmer', verbose_, n, provide_attrs_, trj_)
+}
+
 activity_get_n_ <- function(activity_) {
     .Call('simmer_activity_get_n_', PACKAGE = 'simmer', activity_)
 }

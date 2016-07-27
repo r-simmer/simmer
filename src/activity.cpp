@@ -205,3 +205,16 @@ double Leave<Rcpp::Function>::run(Arrival* arrival) {
   }
   return 0;
 }
+
+template <>
+double Clone<int>::run(Arrival* arrival) {
+  do_clone(arrival, n);
+  return 0;
+}
+
+template <>
+double Clone<Rcpp::Function>::run(Arrival* arrival) {
+  int value = std::abs(execute_call<int>(n, arrival));
+  do_clone(arrival, value);
+  return 0;
+}
