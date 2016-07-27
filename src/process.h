@@ -197,7 +197,7 @@ class Arrival: public Process {
   typedef UMAP<int, Resource*> SelMap;
   
 public:
-  CLONEABLE(Arrival)
+  CLONEABLE_COUNT(Arrival)
   
   Order order;        /**< priority, preemptible, restart */
 
@@ -210,7 +210,9 @@ public:
   * @param order           priority, preemptible, restart
   */
   Arrival(Simulator* sim, std::string name, int mon, Order order, Activity* first_activity, Generator* gen):
-    Process(sim, name, mon, true), order(order), activity(first_activity), gen(gen) {}
+    Process(sim, name, mon, true), clones(new int(1)), order(order), activity(first_activity), gen(gen) {}
+  
+  ~Arrival() { if (!--(*clones)) delete clones; }
   
   void run();
   void activate();

@@ -504,7 +504,7 @@ SEXP Clone__new_func(SEXP verbose_, Function n, SEXP provide_attrs_, SEXP trj_) 
 // SEXP Synchronize__new(SEXP verbose_, SEXP wait_) {
 //   bool verbose = as<bool>(verbose_);
 //   bool wait = as<bool>(wait_);
-//   
+// 
 //   XPtr<Synchronize> ptr(new Synchronize(verbose, wait), false);
 //   return ptr;
 // }
