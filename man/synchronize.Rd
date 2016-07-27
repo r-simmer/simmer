@@ -4,13 +4,16 @@
 \alias{synchronize}
 \title{Add a synchronize activity}
 \usage{
-synchronize(traj, wait = TRUE)
+synchronize(traj, wait = TRUE, mon_all = FALSE)
 }
 \arguments{
 \item{traj}{the trajectory object.}
 
 \item{wait}{if \code{FALSE}, all clones but the first to arrive are removed.
 if \code{TRUE} (default), all clones but the last to arrive are removed.}
+
+\item{mon_all}{if \code{TRUE}, \code{get_mon_arrivals} will show one
+line per clone.}
 }
 \value{
 The trajectory object.

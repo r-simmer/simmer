@@ -598,6 +598,19 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// Synchronize__new
+SEXP Synchronize__new(SEXP verbose_, SEXP wait_, SEXP terminate_);
+RcppExport SEXP simmer_Synchronize__new(SEXP verbose_SEXP, SEXP wait_SEXP, SEXP terminate_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type wait_(wait_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type terminate_(terminate_SEXP);
+    __result = Rcpp::wrap(Synchronize__new(verbose_, wait_, terminate_));
+    return __result;
+END_RCPP
+}
 // activity_get_n_
 int activity_get_n_(SEXP activity_);
 RcppExport SEXP simmer_activity_get_n_(SEXP activity_SEXP) {

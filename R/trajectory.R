@@ -143,9 +143,10 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       else private$add_activity(Clone__new(private$verbose, n, trj))
     },
     
-    synchronize = function(wait=TRUE) {
+    synchronize = function(wait=TRUE, mon_all=FALSE) {
       wait <- evaluate_value(wait)
-      private$add_activity(Synchronize__new(private$verbose, wait))
+      mon_all <- evaluate_value(mon_all)
+      private$add_activity(Synchronize__new(private$verbose, wait, mon_all))
     },
     
     join = function(traj) {
@@ -485,8 +486,10 @@ clone <- function(traj, n, ...) traj$replicate(n, ...)
 #' @inheritParams get_head
 #' @param wait if \code{FALSE}, all clones but the first to arrive are removed.
 #' if \code{TRUE} (default), all clones but the last to arrive are removed.
+#' @param mon_all if \code{TRUE}, \code{get_mon_arrivals} will show one
+#' line per clone.
 #' 
 #' @return The trajectory object.
 #' @seealso \code{\link{clone}}.
 #' @export
-synchronize <- function(traj, wait=TRUE) traj$synchronize(wait)
+synchronize <- function(traj, wait=TRUE, mon_all=FALSE) traj$synchronize(wait, mon_all)

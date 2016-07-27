@@ -471,4 +471,28 @@ protected:
   T n;
 };
 
+/**
+ * Synchronize clones.
+ */
+class Synchronize: public Activity {
+public:
+  CLONEABLE(Synchronize)
+  
+  Synchronize(bool verbose, bool wait, bool terminate): 
+    Activity("Synchronize", verbose, 0), wait(wait), terminate(terminate) {}
+  
+  void print(int indent=0, bool brief=false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << "wait: " << wait << " }" << std::endl;
+    else Rcpp::Rcout << wait << std::endl;
+  }
+  
+  double run(Arrival* arrival);
+  
+protected:
+  bool wait;
+  bool terminate;
+  UMAP<std::string, int> pending;
+};
+
 #endif

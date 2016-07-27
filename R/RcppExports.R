@@ -181,6 +181,10 @@ Clone__new_func <- function(verbose_, n, provide_attrs_, trj_) {
     .Call('simmer_Clone__new_func', PACKAGE = 'simmer', verbose_, n, provide_attrs_, trj_)
 }
 
+Synchronize__new <- function(verbose_, wait_, terminate_) {
+    .Call('simmer_Synchronize__new', PACKAGE = 'simmer', verbose_, wait_, terminate_)
+}
+
 activity_get_n_ <- function(activity_) {
     .Call('simmer_activity_get_n_', PACKAGE = 'simmer', activity_)
 }

@@ -218,3 +218,21 @@ double Clone<Rcpp::Function>::run(Arrival* arrival) {
   do_clone(arrival, value);
   return 0;
 }
+
+double Synchronize::run(Arrival* arrival) {
+  if (!wait) {
+    UMAP<std::string, int>::iterator search = pending.find(arrival->name);
+    if (search == pending.end()) {
+      if (*(arrival->clones) > 1)
+        pending.emplace(arrival->name, *(arrival->clones)-1);
+      return 0;
+    } else {
+      search->second--;
+      if (!search->second) pending.erase(search);
+    }
+  } else if (*(arrival->clones) == 1) return 0;
+  
+  if (!terminate) delete arrival;
+  else arrival->terminate(arrival->sim->now(), true);
+  return REJECTED;
+}

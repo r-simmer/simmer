@@ -500,14 +500,15 @@ SEXP Clone__new_func(SEXP verbose_, Function n, SEXP provide_attrs_, SEXP trj_) 
   return ptr;
 }
 
-// //[[Rcpp::export]]
-// SEXP Synchronize__new(SEXP verbose_, SEXP wait_) {
-//   bool verbose = as<bool>(verbose_);
-//   bool wait = as<bool>(wait_);
-// 
-//   XPtr<Synchronize> ptr(new Synchronize(verbose, wait), false);
-//   return ptr;
-// }
+//[[Rcpp::export]]
+SEXP Synchronize__new(SEXP verbose_, SEXP wait_, SEXP terminate_) {
+  bool verbose = as<bool>(verbose_);
+  bool wait = as<bool>(wait_);
+  bool terminate = as<bool>(terminate_);
+
+  XPtr<Synchronize> ptr(new Synchronize(verbose, wait, terminate), false);
+  return ptr;
+}
 
 //[[Rcpp::export]]
 int activity_get_n_(SEXP activity_) {
