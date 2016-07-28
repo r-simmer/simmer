@@ -6,10 +6,12 @@ t0 <- create_trajectory(verbose=TRUE) %>%
   seize_selected(1) %>%
   timeout(function() rnorm(1, 15)) %>%
   leave(0) %>%
-  branch(function() 1, T, create_trajectory(verbose=TRUE)%>%timeout(function() 1)) %>%
+  branch(function() 1, T, create_trajectory(verbose=TRUE) %>% timeout(function() 1)) %>%
   set_attribute("dummy", 1) %>%
   set_prioritization(c(0, 0, FALSE)) %>%
   rollback(1) %>%
+  clone(2, create_trajectory(verbose=TRUE) %>% timeout(1)) %>%
+  synchronize() %>%
   release_selected(1) %>%
   release("nurse", 1)
 
@@ -22,10 +24,12 @@ trajs <- c(create_trajectory(verbose=TRUE) %>% seize("nurse", 1),
            create_trajectory(verbose=TRUE) %>% set_attribute("dummy", 1),
            create_trajectory(verbose=TRUE) %>% set_prioritization(c(0, 0, FALSE)),
            create_trajectory(verbose=TRUE) %>% rollback(1),
+           create_trajectory(verbose=TRUE) %>% clone(2, create_trajectory(verbose=TRUE) %>% timeout(1)),
+           create_trajectory(verbose=TRUE) %>% synchronize(),
            create_trajectory(verbose=TRUE) %>% release_selected(1),
            create_trajectory(verbose=TRUE) %>% release("nurse", 1))
 
-N <- 10
+N <- 12
 
 test_that("the activity chain grows as expected", {
   head <- t0%>%get_head()
