@@ -471,8 +471,8 @@ leave <- function(traj, prob) traj$leave(prob)
 #' 
 #' @inheritParams get_head
 #' @param n number of clones.
-#' @param ... optional sub-trajectories. Each clone will follow a different
-#' sub-trajectory if available.
+#' @param ... optional parallel sub-trajectories. Each clone will follow 
+#' a different sub-trajectory if available.
 #' 
 #' @return The trajectory object.
 #' @seealso \code{\link{synchronize}}.

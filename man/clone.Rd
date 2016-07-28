@@ -11,8 +11,8 @@ clone(traj, n, ...)
 
 \item{n}{number of clones.}
 
-\item{...}{optional sub-trajectories. Each clone will follow a different
-sub-trajectory if available.}
+\item{...}{optional parallel sub-trajectories. Each clone will follow 
+a different sub-trajectory if available.}
 }
 \value{
 The trajectory object.
