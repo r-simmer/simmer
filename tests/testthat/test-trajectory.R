@@ -10,7 +10,7 @@ t0 <- create_trajectory(verbose=TRUE) %>%
   set_attribute("dummy", 1) %>%
   set_prioritization(c(0, 0, FALSE)) %>%
   rollback(1) %>%
-  clone(2, create_trajectory(verbose=TRUE) %>% timeout(1)) %>%
+  clone(function() 2, create_trajectory(verbose=TRUE) %>% timeout(1)) %>%
   synchronize() %>%
   release_selected(1) %>%
   release("nurse", 1)
@@ -24,7 +24,7 @@ trajs <- c(create_trajectory(verbose=TRUE) %>% seize("nurse", 1),
            create_trajectory(verbose=TRUE) %>% set_attribute("dummy", 1),
            create_trajectory(verbose=TRUE) %>% set_prioritization(c(0, 0, FALSE)),
            create_trajectory(verbose=TRUE) %>% rollback(1),
-           create_trajectory(verbose=TRUE) %>% clone(2, create_trajectory(verbose=TRUE) %>% timeout(1)),
+           create_trajectory(verbose=TRUE) %>% clone(function() 2, create_trajectory(verbose=TRUE) %>% timeout(1)),
            create_trajectory(verbose=TRUE) %>% synchronize(),
            create_trajectory(verbose=TRUE) %>% release_selected(1),
            create_trajectory(verbose=TRUE) %>% release("nurse", 1))

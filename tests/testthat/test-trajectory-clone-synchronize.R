@@ -22,7 +22,7 @@ test_that("each clone follows a trajectory 1", {
 
 test_that("each clone follows a trajectory 2", {
   t <- create_trajectory() %>%
-    clone(3,
+    clone(function() 3,
           create_trajectory("original") %>%
             timeout(1),
           create_trajectory("clone 1") %>%
@@ -56,7 +56,7 @@ test_that("each clone follows a trajectory 3", {
 
 test_that("each clone follows a trajectory 4", {
   t <- create_trajectory() %>%
-    clone(3) %>%
+    clone(function() 3) %>%
     timeout(0.5)
   
   arrivals <- simmer(verbose=TRUE) %>%
