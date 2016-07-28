@@ -382,10 +382,8 @@ public:
     Activity("Rollback", verbose, provide_attrs), amount(std::abs(amount)), times(times),
     cached(NULL), selected(NULL) {}
   
-  Rollback(const Rollback& o): Activity("Rollback", o.verbose, "-", o.provide_attrs), 
-    amount(o.amount), times(o.times), cached(NULL), selected(NULL) {
-    pending.clear();
-  }
+  Rollback(const Rollback& o): Activity(o.name, o.verbose, o.provide_attrs), amount(o.amount), 
+    times(o.times), cached(NULL), selected(NULL) { pending.clear(); }
   
   void print(int indent=0, bool brief=false);
   double run(Arrival* arrival);
@@ -480,6 +478,9 @@ public:
   
   Synchronize(bool verbose, bool wait, bool terminate): 
     Activity("Synchronize", verbose, 0), wait(wait), terminate(terminate) {}
+  
+  Synchronize(const Synchronize& o): Activity(o.name, o.verbose, o.provide_attrs), 
+    wait(o.wait), terminate(o.terminate) { pending.clear(); }
   
   void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);

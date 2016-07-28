@@ -220,7 +220,6 @@ t <- create_trajectory() %>%
           timeout(2),
         create_trajectory("clone 2") %>%
           timeout(3)) %>%
-  timeout(10) %>%
   synchronize(wait=T) %>%
   timeout(0.5)
 
