@@ -15,8 +15,8 @@ create_trajectory(name = "anonymous", verbose = FALSE)
 Returns an environment that represents the trajectory.
 }
 \description{
-This function initialises a trajectory, which is a chain of activities followed 
-by arrivals of the same type.
+This method initialises a trajectory object, which comprises a chain of 
+activities that can be attached to a generator.
 }
 \examples{
 t0 <- create_trajectory("my trajectory") \%>\%

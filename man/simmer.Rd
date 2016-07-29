@@ -15,7 +15,7 @@ simmer(name = "anonymous", verbose = FALSE)
 Returns a simulation environment.
 }
 \description{
-This function initialises a simulation environment.
+This method initialises a simulation environment.
 }
 \examples{
 t0 <- create_trajectory("my trajectory") \%>\%

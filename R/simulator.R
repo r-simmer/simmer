@@ -277,7 +277,7 @@ Simmer <- R6Class("simmer",
 
 #' Create a simulator
 #'
-#' This function initialises a simulation environment.
+#' This method initialises a simulation environment.
 #' 
 #' @param name the name of the simulator.
 #' @param verbose enable showing activity information.
@@ -470,26 +470,26 @@ get_n_generated <- function(env, name) env$get_n_generated(name)
 #' @param value new value to set.
 #' 
 #' @return Return the simulation environment (setters) or a numeric value (getters).
-#' @name set_get_resource
+#' @name resource
 #' @export
 set_capacity <- function(env, name, value) env$set_capacity(name, value)
 
-#' @rdname set_get_resource
+#' @rdname resource
 #' @export
 get_capacity <- function(env, name) env$get_capacity(name)
 
-#' @rdname set_get_resource
+#' @rdname resource
 #' @export
 set_queue_size <- function(env, name, value) env$set_queue_size(name, value)
 
-#' @rdname set_get_resource
+#' @rdname resource
 #' @export
 get_queue_size <- function(env, name) env$get_queue_size(name)
 
-#' @rdname set_get_resource
+#' @rdname resource
 #' @export
 get_server_count <- function(env, name) env$get_server_count(name)
 
-#' @rdname set_get_resource
+#' @rdname resource
 #' @export
 get_queue_count <- function(env, name) env$get_queue_count(name)

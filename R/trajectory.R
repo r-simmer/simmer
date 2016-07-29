@@ -207,8 +207,8 @@ simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 
 #' Create a trajectory
 #'
-#' This function initialises a trajectory, which is a chain of activities followed 
-#' by arrivals of the same type.
+#' This method initialises a trajectory object, which comprises a chain of 
+#' activities that can be attached to a generator.
 #' 
 #' @param name the name of the trajectory.
 #' @param verbose enable showing additional information.
@@ -464,10 +464,10 @@ rollback <- function(traj, amount, times=1, check) traj$rollback(amount, times, 
 #' @export
 leave <- function(traj, prob) traj$leave(prob)
 
-#' Add a clone activity
+#' Add a clone/synchronize activity
 #'
-#' Adds a new activity that produces \code{n} clones of an arrival 
-#' (the original one + \code{n-1} copies).
+#' A \code{clone} activity replicates an arrival \code{n} times (the original
+#' one + \code{n-1} copies). A \code{synchronize} activity removes all but one clone.
 #' 
 #' @inheritParams get_head
 #' @param n number of clones.
@@ -475,21 +475,15 @@ leave <- function(traj, prob) traj$leave(prob)
 #' a different sub-trajectory if available.
 #' 
 #' @return The trajectory object.
-#' @seealso \code{\link{synchronize}}.
 #' @export
 clone <- function(traj, n, ...) traj$replicate(n, ...)
 
-#' Add a synchronize activity
-#'
-#' Adds a new activity that synchronizes clones (removes all but one).
-#' 
 #' @inheritParams get_head
 #' @param wait if \code{FALSE}, all clones but the first to arrive are removed.
 #' if \code{TRUE} (default), all clones but the last to arrive are removed.
 #' @param mon_all if \code{TRUE}, \code{get_mon_arrivals} will show one
 #' line per clone.
 #' 
-#' @return The trajectory object.
-#' @seealso \code{\link{clone}}.
+#' @rdname clone
 #' @export
 synchronize <- function(traj, wait=TRUE, mon_all=FALSE) traj$synchronize(wait, mon_all)

@@ -2,9 +2,12 @@
 % Please edit documentation in R/trajectory.R
 \name{clone}
 \alias{clone}
-\title{Add a clone activity}
+\alias{synchronize}
+\title{Add a clone/synchronize activity}
 \usage{
 clone(traj, n, ...)
+
+synchronize(traj, wait = TRUE, mon_all = FALSE)
 }
 \arguments{
 \item{traj}{the trajectory object.}
@@ -13,15 +16,18 @@ clone(traj, n, ...)
 
 \item{...}{optional parallel sub-trajectories. Each clone will follow 
 a different sub-trajectory if available.}
+
+\item{wait}{if \code{FALSE}, all clones but the first to arrive are removed.
+if \code{TRUE} (default), all clones but the last to arrive are removed.}
+
+\item{mon_all}{if \code{TRUE}, \code{get_mon_arrivals} will show one
+line per clone.}
 }
 \value{
 The trajectory object.
 }
 \description{
-Adds a new activity that produces \code{n} clones of an arrival 
-(the original one + \code{n-1} copies).
-}
-\seealso{
-\code{\link{synchronize}}.
+A \code{clone} activity replicates an arrival \code{n} times (the original
+one + \code{n-1} copies). A \code{synchronize} activity removes all but one clone.
 }
 
