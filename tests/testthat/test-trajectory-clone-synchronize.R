@@ -151,3 +151,19 @@ test_that("clones synchonize with the first 2", {
   expect_equal(arrivals$activity_time, c(1.5, 2, 3))
   expect_equal(arrivals$finished, rep(TRUE, 3))
 })
+
+test_that("synchronize does not affect other arrivals", {
+  t <- create_trajectory() %>%
+    timeout(0.5) %>%
+    synchronize(wait=TRUE, mon_all=TRUE) %>%
+    timeout(0.5)
+  
+  arrivals <- simmer(verbose=TRUE) %>%
+    add_generator("arrival", t, at(0, 1)) %>%
+    run() %>%
+    get_mon_arrivals()
+  
+  expect_equal(arrivals$end_time, c(1, 2))
+  expect_equal(arrivals$activity_time, c(1, 1))
+  expect_equal(arrivals$finished, rep(TRUE, 2))
+})
