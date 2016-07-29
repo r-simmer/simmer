@@ -19,7 +19,6 @@ theme_set(theme_bw())
 ```
 
 ```{r, message=FALSE}
-library(dplyr)
 library(simmer)
 library(ggplot2)
 ```
@@ -353,7 +352,7 @@ env <- simmer() %>%
 arrivals <- get_mon_arrivals(env, per_resource = T)
 
 # Times that each branch was entered
-arrivals %>% count(resource)
+table(arrivals$resource)
 
 # The `activity_time` is the total time inside each branch for each arrival
 # Let's see the distributions
