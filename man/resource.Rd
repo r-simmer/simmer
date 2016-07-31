@@ -33,6 +33,6 @@ get_queue_count(env, name)
 Return the simulation environment (setters) or a numeric value (getters).
 }
 \description{
-Set/Get a resource's server capacity/count and queue size/count.
+Simulator getters/setters for a resource's server capacity/count and queue size/count.
 }
 

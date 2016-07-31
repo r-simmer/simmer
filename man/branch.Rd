@@ -26,7 +26,6 @@ for this argument will be dropped in upcoming versions.}
 The trajectory object.
 }
 \description{
-Adds a new activity that defines \code{N} alternative sub-trajectories
-to the tail of a trajectory.
+Define a fork with \code{N} alternative sub-trajectories.
 }
 

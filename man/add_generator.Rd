@@ -37,7 +37,7 @@ thus only higher priority arrivals can trigger preemption.}
 Returns the simulation environment.
 }
 \description{
-Adds a generator of arrivals to a simulation environment.
+Define a new generator of arrivals in a simulation environment.
 }
 \seealso{
 Convenience functions: \code{\link{at}}, \code{\link{from}}, 

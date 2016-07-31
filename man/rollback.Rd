@@ -21,6 +21,6 @@ function to check whether the rollback must be done or not.}
 The trajectory object.
 }
 \description{
-Adds a new activity that goes backwards in the trajectory.
+Go backwards to a previous point in the trajectory. Useful to implement loops.
 }
 

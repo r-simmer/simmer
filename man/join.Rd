@@ -13,7 +13,7 @@ join(...)
 A new trajectory object.
 }
 \description{
-Concatenate any number of trajectories in the order specified.
+Concatenate any number of trajectories in the specified order.
 }
 \examples{
 t1 <- create_trajectory() \%>\% seize("dummy", 1)

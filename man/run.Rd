@@ -18,7 +18,7 @@ onestep(env)
 Returns the simulation environment.
 }
 \description{
-Executes steps until the given criterion.
+Execute steps until the given criterion.
 }
 \seealso{
 \code{\link{reset}}.

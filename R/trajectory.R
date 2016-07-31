@@ -258,7 +258,7 @@ create_trajectory <- function(name="anonymous", verbose=FALSE) simmer.trajectory
 
 #' Get the first/last activity
 #'
-#' Gets the pointer to a trajectory's first/last activity.
+#' Trajectory getters for obtaining the pointer to its first/last activity.
 #' 
 #' @param traj the trajectory object.
 #' 
@@ -273,7 +273,7 @@ get_tail <- function(traj) traj$get_tail()
 
 #' Get the number of activities
 #'
-#' Gets the total number of activities defined inside a trajectory.
+#' Trajectory getter for obtaining the total number of activities defined inside it.
 #' 
 #' @inheritParams get_head
 #' 
@@ -284,7 +284,7 @@ get_n_activities <- function(traj) traj$get_n_activities()
 
 #' Join trajectories
 #'
-#' Concatenate any number of trajectories in the order specified.
+#' Concatenate any number of trajectories in the specified order.
 #' 
 #' @param ... trajectory objects.
 #' 
@@ -311,7 +311,7 @@ join <- function(...) {
 
 #' Add a seize/release activity
 #'
-#' Adds a new activity capable of seizing/releasing a resource to the tail of a trajectory.
+#' Activities for seizing/releasing a resource, by name or a previously selected one.
 #' 
 #' @inheritParams get_head
 #' @inheritParams select
@@ -355,7 +355,7 @@ release_selected <- function(traj, amount=1, id=0) traj$release(NA, amount, id)
 
 #' Select a resource
 #'
-#' Selects a resource for a subsequent seize/release.
+#' Resource selector for a subsequent seize/release.
 #' 
 #' @inheritParams get_head
 #' @param resources one or more resource names, or a callable object (a function) which
@@ -374,8 +374,7 @@ select <- function(traj, resources, policy=c("shortest-queue", "round-robin",
 
 #' Add a timeout activity
 #'
-#' Adds a new activity capable of executing any user-defined task and setting
-#' an associated delay to the tail of a trajectory.
+#' Insert delays and execute user-defined tasks.
 #' 
 #' @inheritParams get_head
 #' @param task the timeout duration supplied by either passing a numeric value or a 
@@ -388,10 +387,10 @@ timeout <- function(traj, task) traj$timeout(task)
 
 #' Add a set attribute activity
 #'
-#' Adds or modifies a key/value attribute. The value must be numeric.
+#' Modify an attribute in the form of a key/value pair.
 #' 
 #' @inheritParams get_head
-#' @param key the attribute key (is coerced to a string).
+#' @param key the attribute key (coerced to a string).
 #' @param value the value to set, accepts either a numeric or a callable object 
 #' (a function) which returns a numeric.
 #' 
@@ -401,7 +400,7 @@ set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
 
 #' Add a set prioritization activity
 #'
-#' Modifies the arrival's prioritization values.
+#' Modify the arrival's prioritization values.
 #' 
 #' @inheritParams get_head
 #' @param values expects either a vector/list or a callable object (a function)
@@ -415,8 +414,7 @@ set_prioritization <- function(traj, values) traj$set_prioritization(values)
 
 #' Add a branch activity
 #'
-#' Adds a new activity that defines \code{N} alternative sub-trajectories
-#' to the tail of a trajectory.
+#' Define a fork with \code{N} alternative sub-trajectories.
 #' 
 #' @inheritParams get_head
 #' @param option a callable object (a function) that must return an integer between
@@ -440,7 +438,7 @@ branch <- function(traj, option, continue, ..., merge="_deprecated") {
 
 #' Add a rollback activity
 #'
-#' Adds a new activity that goes backwards in the trajectory.
+#' Go backwards to a previous point in the trajectory. Useful to implement loops.
 #' 
 #' @inheritParams get_head
 #' @param amount the amount of activities (of the same or parent trajectories) to roll back.
@@ -455,7 +453,7 @@ rollback <- function(traj, amount, times=1, check) traj$rollback(amount, times, 
 
 #' Add a leave activity
 #'
-#' Adds a new activity that terminates the trajectory with some probability.
+#' Leave the trajectory with some probability.
 #' 
 #' @inheritParams get_head
 #' @param prob a probability or a function returning a probability.

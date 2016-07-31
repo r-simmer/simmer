@@ -17,7 +17,7 @@ peek(env, steps = 1, verbose = FALSE)
 Returns numeric values if \code{verbose=F} and a data frame otherwise.
 }
 \description{
-Looks for future events in the event queue.
+Look for future events in the event queue and (optionally) obtain info about them.
 }
 \seealso{
 \code{\link{now}}.

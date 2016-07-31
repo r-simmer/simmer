@@ -17,7 +17,6 @@ automatically coerced to positive).}
 The trajectory object.
 }
 \description{
-Adds a new activity capable of executing any user-defined task and setting
-an associated delay to the tail of a trajectory.
+Insert delays and execute user-defined tasks.
 }
 

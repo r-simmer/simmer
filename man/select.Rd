@@ -23,7 +23,7 @@ it is ignored.}
 The trajectory object.
 }
 \description{
-Selects a resource for a subsequent seize/release.
+Resource selector for a subsequent seize/release.
 }
 \seealso{
 \code{\link{seize_selected}}, \code{\link{release_selected}}.

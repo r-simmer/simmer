@@ -40,7 +40,7 @@ should continue to the next activity in the main trajectory.}
 The trajectory object.
 }
 \description{
-Adds a new activity capable of seizing/releasing a resource to the tail of a trajectory.
+Activities for seizing/releasing a resource, by name or a previously selected one.
 }
 \seealso{
 \code{\link{select}}.

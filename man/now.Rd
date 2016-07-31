@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulator.R
 \name{now}
 \alias{now}
-\title{Get the current time}
+\title{Get current time}
 \usage{
 now(env)
 }
@@ -13,7 +13,7 @@ now(env)
 Returns a numeric value.
 }
 \description{
-Gets the current simulation time.
+Get the current simulation time.
 }
 \seealso{
 \code{\link{peek}}.

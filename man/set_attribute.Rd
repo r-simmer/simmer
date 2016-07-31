@@ -9,7 +9,7 @@ set_attribute(traj, key, value)
 \arguments{
 \item{traj}{the trajectory object.}
 
-\item{key}{the attribute key (is coerced to a string).}
+\item{key}{the attribute key (coerced to a string).}
 
 \item{value}{the value to set, accepts either a numeric or a callable object 
 (a function) which returns a numeric.}
@@ -18,6 +18,6 @@ set_attribute(traj, key, value)
 The trajectory object.
 }
 \description{
-Adds or modifies a key/value attribute. The value must be numeric.
+Modify an attribute in the form of a key/value pair.
 }
 

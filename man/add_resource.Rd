@@ -38,7 +38,7 @@ queue, and the maximum \code{queue_size} is guaranteed (rejection may occur).}
 Returns the simulation environment.
 }
 \description{
-Adds a resource to a simulation environment.
+Define a new resource in a simulation environment.
 }
 \seealso{
 Convenience functions: \code{\link{schedule}}.

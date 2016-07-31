@@ -15,6 +15,6 @@ leave(traj, prob)
 The trajectory object.
 }
 \description{
-Adds a new activity that terminates the trajectory with some probability.
+Leave the trajectory with some probability.
 }
 

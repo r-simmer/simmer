@@ -16,7 +16,7 @@ get_tail(traj)
 An external pointer to an activity object.
 }
 \description{
-Gets the pointer to a trajectory's first/last activity.
+Trajectory getters for obtaining the pointer to its first/last activity.
 }
 \seealso{
 \code{\link{get_n_activities}}, \code{\link{join}}.

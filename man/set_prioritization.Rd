@@ -18,6 +18,6 @@ See \code{\link{add_generator}} for more information about these parameters.}
 The trajectory object.
 }
 \description{
-Modifies the arrival's prioritization values.
+Modify the arrival's prioritization values.
 }
 
