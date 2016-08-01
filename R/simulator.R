@@ -131,96 +131,40 @@ Simmer <- R6Class("simmer",
     },
     
     get_mon_arrivals = function(per_resource=FALSE) {
-      if (per_resource) {
-        if (sum(private$gen>0))
-          do.call(rbind, lapply(names(private$gen[private$gen>0]), function(i) {
-            monitor_data <- as.data.frame(
-              get_mon_arrivals_per_resource_(private$sim_obj, i)
-            )
-          }))
-        else data.frame(name = character(),
-                        start_time = numeric(),
-                        end_time = numeric(), 
-                        activity_time = numeric(), 
-                        resource = character())
-      } else {
-        if (sum(private$gen>0))
-          do.call(rbind, lapply(names(private$gen[private$gen>0]), function(i) {
-            monitor_data <- as.data.frame(
-              get_mon_arrivals_(private$sim_obj, i)
-            )
-          }))
-        else data.frame(name = character(),
-                        start_time = numeric(),
-                        end_time = numeric(), 
-                        activity_time = numeric(), 
-                        finished = logical())
-      }
+      as.data.frame(
+        if (!per_resource) get_mon_arrivals_(private$sim_obj)
+        else get_mon_arrivals_per_resource_(private$sim_obj)
+        , stringsAsFactors=FALSE)
     },
     
-    get_mon_attributes = function() {
-      if (sum(private$gen>1))
-        do.call(rbind, lapply(names(private$gen[private$gen>1]), function(i) {
-          monitor_data <- as.data.frame(
-            get_mon_attributes_(private$sim_obj, i)
-          )
-        }))
-      else data.frame(time = numeric(),
-                      name = character(),
-                      key = character(),
-                      value = numeric())
-    },
+    get_mon_attributes = function() 
+      as.data.frame(get_mon_attributes_(private$sim_obj), stringsAsFactors=FALSE),
     
     get_mon_resources = function(data=c("counts", "limits")) {
       data <- match.arg(data, several.ok = TRUE)
-      if (sum(private$res>0))
-        do.call(rbind,
-          lapply(names(private$res[private$res>0]), function(i) {
-            monitor_data <- as.data.frame(
-              if (identical(data, "counts"))
-                get_mon_resource_counts_(private$sim_obj, i)
-              else if (identical(data, "limits"))
-                get_mon_resource_limits_(private$sim_obj, i)
-              else
-                get_mon_resource_(private$sim_obj, i)
-            )
-            tryCatch({
-              if (identical(data, "limits")) {
-                monitor_data$server <- 
-                  replace(monitor_data$server, monitor_data$server==-1, Inf)
-                monitor_data$queue <- 
-                  replace(monitor_data$queue, monitor_data$queue==-1, Inf)
-                monitor_data$system <- monitor_data$server + monitor_data$queue
-              } else if (all(c("counts", "limits") %in% data)) {
-                monitor_data$capacity <- 
-                  replace(monitor_data$capacity, monitor_data$capacity==-1, Inf)
-                monitor_data$queue_size <- 
-                  replace(monitor_data$queue_size, monitor_data$queue_size==-1, Inf)
-                monitor_data$system <- monitor_data$server + monitor_data$queue
-                monitor_data$limit <- monitor_data$capacity + monitor_data$queue_size
-              } else monitor_data$system <- monitor_data$server + monitor_data$queue
-              monitor_data$resource <- i
-            }, error = function(e) {
-              monitor_data$system <<- numeric()
-              monitor_data$limit <<- numeric()
-              monitor_data$resource <<- character()
-            })
-            monitor_data
-          })
-        )
-      else {
-        monitor_data <- data.frame(time = numeric(),
-                                   server = numeric(),
-                                   queue = numeric())
-        if (all(c("counts", "limits") %in% data)) {
-          monitor_data$capacity <- numeric()
-          monitor_data$queue_size <- numeric()
-          monitor_data$system <- numeric()
-          monitor_data$limit <- numeric()
-        } else monitor_data$system <- numeric()
-        monitor_data$resource <- character()
-        monitor_data
-      }
+      monitor_data <- as.data.frame(
+        if (identical(data, "counts"))
+          get_mon_resource_counts_(private$sim_obj)
+        else if (identical(data, "limits"))
+          get_mon_resource_limits_(private$sim_obj)
+        else
+          get_mon_resource_(private$sim_obj)
+        , stringsAsFactors=FALSE)
+      if (identical(data, "limits")) {
+        monitor_data$server <- 
+          replace(monitor_data$server, monitor_data$server==-1, Inf)
+        monitor_data$queue <- 
+          replace(monitor_data$queue, monitor_data$queue==-1, Inf)
+        monitor_data$system <- monitor_data$server + monitor_data$queue
+      } else if (all(c("counts", "limits") %in% data)) {
+        monitor_data$capacity <- 
+          replace(monitor_data$capacity, monitor_data$capacity==-1, Inf)
+        monitor_data$queue_size <- 
+          replace(monitor_data$queue_size, monitor_data$queue_size==-1, Inf)
+        monitor_data$system <- monitor_data$server + monitor_data$queue
+        monitor_data$limit <- monitor_data$capacity + monitor_data$queue_size
+      } else monitor_data$system <- monitor_data$server + monitor_data$queue
+      monitor_data
     },
     
     get_n_generated = function(name) { 

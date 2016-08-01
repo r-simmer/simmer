@@ -2,7 +2,6 @@
 #define ENTITY_H
 
 #include "simmer.h"
-#include "stats.h"
 
 #define SUCCESS 0
 #define ENQUEUED -1

@@ -17,7 +17,7 @@ void Generator::run() {
     // format the name and create the next arrival
     char numstr[21];
     sprintf(numstr, "%d", count);
-    Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), order, first_activity, this);
+    Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), order, first_activity);
     
     if (sim->verbose) Rcpp::Rcout << 
       FMT(10, right) << sim->now() << " |" << FMT(12, right) << "generator: " << FMT(15, left) << name << "|" << 
@@ -84,7 +84,7 @@ void Arrival::run() {
   goto end;
   
 finish:
-  terminate(sim->now(), true);
+  terminate(true);
 end:
   return;
 }
@@ -108,9 +108,20 @@ void Arrival::deactivate() {
   }
 }
 
+void Arrival::leave(std::string resource) {
+  sim->record_release(name, restime[resource].start, restime[resource].activity, resource);
+}
+
+void Arrival::terminate(bool finished) {
+  lifetime.activity -= lifetime.remaining;
+  if (is_monitored() >= 1)
+    sim->record_end(name, lifetime.start, lifetime.activity, finished);
+  delete this;
+}
+
 int Arrival::set_attribute(std::string key, double value) {
   attributes[key] = value;
   if (is_monitored() >= 2) 
-    gen->observe(sim->now(), name, key, value);
+    sim->record_attribute(name, key, value);
   return 0;
 }

@@ -114,13 +114,10 @@ public:
             count(0), first_activity(first_activity), dist(dist), order(order) {}
   
   /**
-   * Reset the generator: counter, statistics.
+   * Reset the generator: counter, trajectory
    */
   virtual void reset() { 
     count = 0;
-    traj_stats.clear();
-    res_stats.clear();
-    attr_stats.clear();
     Rcpp::Environment dist_env(dist.environment());
     Rcpp::Environment reset_env(dist_env[".reset"]);
     Rcpp::Function reset_fun(reset_env["reset"]);
@@ -129,47 +126,6 @@ public:
   
   void run();
   
-  /**
-   * Gather attribute statistics.
-   */
-  void observe(double time, std::string name, std::string key, double value) {
-    attr_stats.insert("time",   time);
-    attr_stats.insert("name",   name);
-    attr_stats.insert("key",    key);
-    attr_stats.insert("value",  value);
-  }
-  
-  /**
-   * Arrivals notify their end with this call.
-   * The generator is in charge of gathering statistics and deleting the arrival.
-   */
-  void notify_end(std::string name, double start, double end, 
-                         double activity, bool finished) {
-    traj_stats.insert("name",           name);
-    traj_stats.insert("start_time",     start);
-    traj_stats.insert("end_time",       end);
-    traj_stats.insert("activity_time",  activity);
-    traj_stats.insert("finished",       finished);
-  }
-  
-  /**
-   * Arrivals notify resource releases with this call.
-   */
-  void notify_release(std::string name, double start, double end, 
-                             double activity, std::string resource) {
-    res_stats.insert("name",          name);
-    res_stats.insert("start_time",    start);
-    res_stats.insert("end_time",      end);
-    res_stats.insert("activity_time", activity);
-    res_stats.insert("resource",      resource);
-  }
-  
-  /**
-   * Get the monitoring data.
-   */
-  StatsMap* get_traj_observations() { return &traj_stats; }
-  StatsMap* get_res_observations() { return &res_stats; }
-  StatsMap* get_attr_observations() { return &attr_stats; }
   int get_n_generated() { return count; }
   
 private:
@@ -177,9 +133,6 @@ private:
   Activity* first_activity;
   Rcpp::Function dist;
   Order order;
-  StatsMap traj_stats;      /**< arrival statistics per trajectory */
-  StatsMap res_stats;       /**< arrival statistics per resource */
-  StatsMap attr_stats;      /**< attribute statistics */
 };
 
 /** 
@@ -209,15 +162,17 @@ public:
   * @param first_activity  the first activity of a user-defined R trajectory
   * @param order           priority, preemptible, restart
   */
-  Arrival(Simulator* sim, std::string name, int mon, Order order, Activity* first_activity, Generator* gen):
-    Process(sim, name, mon, true), clones(new int(1)), order(order), activity(first_activity), gen(gen) {}
+  Arrival(Simulator* sim, std::string name, int mon, Order order, Activity* first_activity):
+    Process(sim, name, mon, true), clones(new int(1)), order(order), activity(first_activity) {}
   
-  ~Arrival() { if (!--(*clones)) delete clones; }
+  virtual ~Arrival() { if (!--(*clones)) delete clones; }
   
   void run();
+  void forward_activity();
   void activate();
   void deactivate();
-  void forward_activity();
+  void leave(std::string resource);
+  void terminate(bool finished);
   
   int set_attribute(std::string key, double value);
   Attr* get_attributes() { return &attributes; }
@@ -229,25 +184,27 @@ public:
   void set_selected(int id, Resource* res) { selected[id] = res; }
   Resource* get_selected(int id) { return selected[id]; }
   
-  void leave(std::string resource, double time) {
-    gen->notify_release(name, restime[resource].start, time, 
-                        restime[resource].activity, resource);
-  }
-  
-  void terminate(double time, bool finished) {
-    lifetime.activity -= lifetime.remaining;
-    if (is_monitored() >= 1)
-      gen->notify_end(name, lifetime.start, time, lifetime.activity, finished);
-    delete this;
-  }
-  
-private:
+protected:
   ArrTime lifetime;   /**< time spent in the whole trajectory */
   ResTime restime;    /**< time spent in resources */
   Activity* activity; /**< current activity from an R trajectory */
-  Generator* gen;     /**< parent generator */
   Attr attributes;    /**< user-defined (key, value) pairs */
   SelMap selected;    /**< selected resource */
+};
+
+/** 
+ *  Batch of arrivals.
+ */
+class Batch: public Arrival {
+public:
+  CLONEABLE_COUNT(Batch)
+
+  Batch(Simulator* sim, std::string name, int mon, Order order, Activity* first_activity):
+    Arrival(sim, name, mon, order, first_activity) {}
+  
+  Batch(const Arrival& o): Arrival(o) {}
+  
+  ~Batch() { if (!--(*clones)) delete clones; }
 };
 
 #endif

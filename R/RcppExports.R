@@ -37,28 +37,28 @@ add_resource_manager_ <- function(sim_, name_, param_, intervals_, values_, peri
     .Call('simmer_add_resource_manager_', PACKAGE = 'simmer', sim_, name_, param_, intervals_, values_, period_)
 }
 
-get_mon_arrivals_ <- function(sim_, name_) {
-    .Call('simmer_get_mon_arrivals_', PACKAGE = 'simmer', sim_, name_)
+get_mon_arrivals_ <- function(sim_) {
+    .Call('simmer_get_mon_arrivals_', PACKAGE = 'simmer', sim_)
 }
 
-get_mon_arrivals_per_resource_ <- function(sim_, name_) {
-    .Call('simmer_get_mon_arrivals_per_resource_', PACKAGE = 'simmer', sim_, name_)
+get_mon_arrivals_per_resource_ <- function(sim_) {
+    .Call('simmer_get_mon_arrivals_per_resource_', PACKAGE = 'simmer', sim_)
 }
 
-get_mon_attributes_ <- function(sim_, name_) {
-    .Call('simmer_get_mon_attributes_', PACKAGE = 'simmer', sim_, name_)
+get_mon_attributes_ <- function(sim_) {
+    .Call('simmer_get_mon_attributes_', PACKAGE = 'simmer', sim_)
 }
 
-get_mon_resource_ <- function(sim_, name_) {
-    .Call('simmer_get_mon_resource_', PACKAGE = 'simmer', sim_, name_)
+get_mon_resource_ <- function(sim_) {
+    .Call('simmer_get_mon_resource_', PACKAGE = 'simmer', sim_)
 }
 
-get_mon_resource_counts_ <- function(sim_, name_) {
-    .Call('simmer_get_mon_resource_counts_', PACKAGE = 'simmer', sim_, name_)
+get_mon_resource_counts_ <- function(sim_) {
+    .Call('simmer_get_mon_resource_counts_', PACKAGE = 'simmer', sim_)
 }
 
-get_mon_resource_limits_ <- function(sim_, name_) {
-    .Call('simmer_get_mon_resource_limits_', PACKAGE = 'simmer', sim_, name_)
+get_mon_resource_limits_ <- function(sim_) {
+    .Call('simmer_get_mon_resource_limits_', PACKAGE = 'simmer', sim_)
 }
 
 get_n_generated_ <- function(sim_, name_) {

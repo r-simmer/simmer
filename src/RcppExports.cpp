@@ -124,74 +124,68 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_mon_arrivals_
-SEXP get_mon_arrivals_(SEXP sim_, SEXP name_);
-RcppExport SEXP simmer_get_mon_arrivals_(SEXP sim_SEXP, SEXP name_SEXP) {
+SEXP get_mon_arrivals_(SEXP sim_);
+RcppExport SEXP simmer_get_mon_arrivals_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
-    __result = Rcpp::wrap(get_mon_arrivals_(sim_, name_));
+    __result = Rcpp::wrap(get_mon_arrivals_(sim_));
     return __result;
 END_RCPP
 }
 // get_mon_arrivals_per_resource_
-SEXP get_mon_arrivals_per_resource_(SEXP sim_, SEXP name_);
-RcppExport SEXP simmer_get_mon_arrivals_per_resource_(SEXP sim_SEXP, SEXP name_SEXP) {
+SEXP get_mon_arrivals_per_resource_(SEXP sim_);
+RcppExport SEXP simmer_get_mon_arrivals_per_resource_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
-    __result = Rcpp::wrap(get_mon_arrivals_per_resource_(sim_, name_));
+    __result = Rcpp::wrap(get_mon_arrivals_per_resource_(sim_));
     return __result;
 END_RCPP
 }
 // get_mon_attributes_
-SEXP get_mon_attributes_(SEXP sim_, SEXP name_);
-RcppExport SEXP simmer_get_mon_attributes_(SEXP sim_SEXP, SEXP name_SEXP) {
+SEXP get_mon_attributes_(SEXP sim_);
+RcppExport SEXP simmer_get_mon_attributes_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
-    __result = Rcpp::wrap(get_mon_attributes_(sim_, name_));
+    __result = Rcpp::wrap(get_mon_attributes_(sim_));
     return __result;
 END_RCPP
 }
 // get_mon_resource_
-SEXP get_mon_resource_(SEXP sim_, SEXP name_);
-RcppExport SEXP simmer_get_mon_resource_(SEXP sim_SEXP, SEXP name_SEXP) {
+SEXP get_mon_resource_(SEXP sim_);
+RcppExport SEXP simmer_get_mon_resource_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
-    __result = Rcpp::wrap(get_mon_resource_(sim_, name_));
+    __result = Rcpp::wrap(get_mon_resource_(sim_));
     return __result;
 END_RCPP
 }
 // get_mon_resource_counts_
-SEXP get_mon_resource_counts_(SEXP sim_, SEXP name_);
-RcppExport SEXP simmer_get_mon_resource_counts_(SEXP sim_SEXP, SEXP name_SEXP) {
+SEXP get_mon_resource_counts_(SEXP sim_);
+RcppExport SEXP simmer_get_mon_resource_counts_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
-    __result = Rcpp::wrap(get_mon_resource_counts_(sim_, name_));
+    __result = Rcpp::wrap(get_mon_resource_counts_(sim_));
     return __result;
 END_RCPP
 }
 // get_mon_resource_limits_
-SEXP get_mon_resource_limits_(SEXP sim_, SEXP name_);
-RcppExport SEXP simmer_get_mon_resource_limits_(SEXP sim_SEXP, SEXP name_SEXP) {
+SEXP get_mon_resource_limits_(SEXP sim_);
+RcppExport SEXP simmer_get_mon_resource_limits_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
-    __result = Rcpp::wrap(get_mon_resource_limits_(sim_, name_));
+    __result = Rcpp::wrap(get_mon_resource_limits_(sim_));
     return __result;
 END_RCPP
 }

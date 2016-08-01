@@ -13,13 +13,15 @@ void Resource::set_capacity(int value) {
     while (server_count > capacity) 
       if (!try_free_server(sim->verbose, sim->now())) break;
   }
-  if (is_monitored()) observe(sim->now());
+  if (is_monitored())
+    sim->record_resource(name, server_count, queue_count, capacity, queue_size);
 }
 
 void Resource::set_queue_size(int value) {
   if (queue_size == value) return;
   queue_size = value;
-  if (is_monitored()) observe(sim->now());
+  if (is_monitored()) 
+    sim->record_resource(name, server_count, queue_count, capacity, queue_size);
 }
 
 int Resource::seize(Arrival* arrival, int amount) {
@@ -48,7 +50,8 @@ int Resource::seize(Arrival* arrival, int amount) {
     return REJECTED;
   }
   
-  if (is_monitored()) observe(sim->now());
+  if (is_monitored()) 
+    sim->record_resource(name, server_count, queue_count, capacity, queue_size);
   return status;
 }
 
@@ -57,7 +60,7 @@ int Resource::release(Arrival* arrival, int amount) {
   if (arrival->is_monitored()) {
     double last = arrival->get_activity(this->name);
     arrival->set_activity(this->name, sim->now() - last);
-    arrival->leave(this->name, sim->now());
+    arrival->leave(this->name);
   }
   remove_from_server(sim->verbose, sim->now(), arrival, amount);
   
@@ -74,6 +77,7 @@ int Resource::post_release() {
   while (queue_count) 
     if (!try_serve_from_queue(sim->verbose, sim->now())) break;
     
-  if (is_monitored()) observe(sim->now());
+  if (is_monitored())
+    sim->record_resource(name, server_count, queue_count, capacity, queue_size);
   return SUCCESS;
 }

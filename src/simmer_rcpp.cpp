@@ -103,94 +103,45 @@ bool add_resource_manager_(SEXP sim_, SEXP name_, SEXP param_,
 }
 
 //[[Rcpp::export]]
-SEXP get_mon_arrivals_(SEXP sim_, SEXP name_) {
+SEXP get_mon_arrivals_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
-  std::string name = as<std::string>(name_);
   
-  StatsMap* stats = sim->get_generator(name)->get_traj_observations();
-  
-  return Rcpp::List::create(
-    Rcpp::Named("name")           = stats->get<std::string>("name"),
-    Rcpp::Named("start_time")     = stats->get<double>("start_time"),
-    Rcpp::Named("end_time")       = stats->get<double>("end_time"),
-    Rcpp::Named("activity_time")  = stats->get<double>("activity_time"),
-    Rcpp::Named("finished")       = stats->get<bool>("finished")
-  );
+  return sim->get_arr_traj_stats();
 }
 
 //[[Rcpp::export]]
-SEXP get_mon_arrivals_per_resource_(SEXP sim_, SEXP name_) {
+SEXP get_mon_arrivals_per_resource_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
-  std::string name = as<std::string>(name_);
-  
-  StatsMap* stats = sim->get_generator(name)->get_res_observations();
-  
-  return Rcpp::List::create(
-    Rcpp::Named("name")           = stats->get<std::string>("name"),
-    Rcpp::Named("start_time")     = stats->get<double>("start_time"),
-    Rcpp::Named("end_time")       = stats->get<double>("end_time"),
-    Rcpp::Named("activity_time")  = stats->get<double>("activity_time"),
-    Rcpp::Named("resource")       = stats->get<std::string>("resource")
-  );
+
+  return sim->get_arr_res_stats();
 }
 
 //[[Rcpp::export]]
-SEXP get_mon_attributes_(SEXP sim_, SEXP name_) {
+SEXP get_mon_attributes_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
-  std::string name = as<std::string>(name_);
   
-  StatsMap* stats = sim->get_generator(name)->get_attr_observations();
-  
-  return Rcpp::List::create(
-    Rcpp::Named("time")   = stats->get<double>("time"),
-    Rcpp::Named("name")   = stats->get<std::string>("name"),
-    Rcpp::Named("key")    = stats->get<std::string>("key"),
-    Rcpp::Named("value")  = stats->get<double>("value")
-  );
+  return sim->get_attr_stats();
 }
 
 //[[Rcpp::export]]
-SEXP get_mon_resource_(SEXP sim_, SEXP name_) {
+SEXP get_mon_resource_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
-  std::string name = as<std::string>(name_);
   
-  StatsMap* stats = sim->get_resource(name)->get_observations();
-  
-  return Rcpp::List::create(
-    Rcpp::Named("time")       = stats->get<double>("time"),
-    Rcpp::Named("server")     = stats->get<int>("server"),
-    Rcpp::Named("queue")      = stats->get<int>("queue"),
-    Rcpp::Named("capacity")   = stats->get<int>("capacity"),
-    Rcpp::Named("queue_size") = stats->get<int>("queue_size")
-  );
+  return sim->get_res_stats();
 }
 
 //[[Rcpp::export]]
-SEXP get_mon_resource_counts_(SEXP sim_, SEXP name_) {
+SEXP get_mon_resource_counts_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
-  std::string name = as<std::string>(name_);
   
-  StatsMap* stats = sim->get_resource(name)->get_observations();
-  
-  return Rcpp::List::create(
-    Rcpp::Named("time")   = stats->get<double>("time"),
-    Rcpp::Named("server") = stats->get<int>("server"),
-    Rcpp::Named("queue")  = stats->get<int>("queue")
-  );
+  return sim->get_res_stats_counts();
 }
 
 //[[Rcpp::export]]
-SEXP get_mon_resource_limits_(SEXP sim_, SEXP name_) {
+SEXP get_mon_resource_limits_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
-  std::string name = as<std::string>(name_);
-  
-  StatsMap* stats = sim->get_resource(name)->get_observations();
-  
-  return Rcpp::List::create(
-    Rcpp::Named("time")   = stats->get<double>("time"),
-    Rcpp::Named("server") = stats->get<int>("capacity"),
-    Rcpp::Named("queue")  = stats->get<int>("queue_size")
-  );
+
+  return sim->get_res_stats_limits();
 }
 
 //[[Rcpp::export]]

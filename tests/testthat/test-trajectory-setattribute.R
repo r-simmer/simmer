@@ -34,7 +34,7 @@ test_that("attributes can be correctly retrieved using get_mon_attributes()", {
   attributes <- env %>% get_mon_attributes()
   
   expect_equal(nrow(attributes), 1)
-  expect_equal(attributes[1,]$key, factor("test"))
+  expect_equal(attributes[1,]$key, "test")
   expect_equal(attributes[1,]$value, 123)
 })
 

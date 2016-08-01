@@ -2,6 +2,7 @@
 #define SIMULATOR_H
 
 #include "simmer.h"
+#include "stats.h"
 #include "process.h"
 #include "resource.h"
 
@@ -45,8 +46,6 @@ public:
   ~Simulator() {
     foreach_ (PQueue::value_type& itr, event_queue)
       if (itr.process->is_arrival()) delete itr.process;
-    event_queue.clear();
-    event_map.clear();
   }
   
   /**
@@ -64,6 +63,10 @@ public:
       ((Process*)itr.second)->reset();
       ((Process*)itr.second)->run();
     }
+    arr_traj_stats.clear();
+    arr_res_stats.clear();
+    attr_stats.clear();
+    res_stats.clear();
   }
   
   double now() { return now_; }
@@ -224,12 +227,105 @@ public:
     return (Resource*)search->second;
   }
   
+  /**
+   * Record monitoring data.
+   */
+  void record_end(std::string name, double start, double activity, bool finished) {
+    arr_traj_stats.insert("name",           name);
+    arr_traj_stats.insert("start_time",     start);
+    arr_traj_stats.insert("end_time",       now_);
+    arr_traj_stats.insert("activity_time",  activity);
+    arr_traj_stats.insert("finished",       finished);
+  }
+  void record_release(std::string name, double start, double activity, std::string resource) {
+    arr_res_stats.insert("name",            name);
+    arr_res_stats.insert("start_time",      start);
+    arr_res_stats.insert("end_time",        now_);
+    arr_res_stats.insert("activity_time",   activity);
+    arr_res_stats.insert("resource",        resource);
+  }
+  void record_attribute(std::string name, std::string key, double value) {
+    attr_stats.insert("time",               now_);
+    attr_stats.insert("name",               name);
+    attr_stats.insert("key",                key);
+    attr_stats.insert("value",              value);
+  }
+  void record_resource(std::string name, int server_count, int queue_count, 
+                       int capacity, int queue_size) {
+    res_stats.insert("resource",            name);
+    res_stats.insert("time",                now_);
+    res_stats.insert("server",              server_count);
+    res_stats.insert("queue",               queue_count);
+    res_stats.insert("capacity",            capacity);
+    res_stats.insert("queue_size",          queue_size);
+  }
+  
+  /**
+   * Get monitoring data.
+   */
+  Rcpp::List get_arr_traj_stats() {
+    return Rcpp::List::create(
+        Rcpp::Named("name")           = arr_traj_stats.get<std::string>("name"),
+        Rcpp::Named("start_time")     = arr_traj_stats.get<double>("start_time"),
+        Rcpp::Named("end_time")       = arr_traj_stats.get<double>("end_time"),
+        Rcpp::Named("activity_time")  = arr_traj_stats.get<double>("activity_time"),
+        Rcpp::Named("finished")       = arr_traj_stats.get<bool>("finished")
+    );
+  }
+  Rcpp::List get_arr_res_stats() {
+    return Rcpp::List::create(
+      Rcpp::Named("name")             = arr_res_stats.get<std::string>("name"),
+      Rcpp::Named("start_time")       = arr_res_stats.get<double>("start_time"),
+      Rcpp::Named("end_time")         = arr_res_stats.get<double>("end_time"),
+      Rcpp::Named("activity_time")    = arr_res_stats.get<double>("activity_time"),
+      Rcpp::Named("resource")         = arr_res_stats.get<std::string>("resource")
+    );
+  }
+  Rcpp::List get_attr_stats() {
+    return Rcpp::List::create(
+      Rcpp::Named("time")             = attr_stats.get<double>("time"),
+      Rcpp::Named("name")             = attr_stats.get<std::string>("name"),
+      Rcpp::Named("key")              = attr_stats.get<std::string>("key"),
+      Rcpp::Named("value")            = attr_stats.get<double>("value")
+    );
+  }
+  Rcpp::List get_res_stats() {
+    return Rcpp::List::create(
+      Rcpp::Named("resource")         = res_stats.get<std::string>("resource"),
+      Rcpp::Named("time")             = res_stats.get<double>("time"),
+      Rcpp::Named("server")           = res_stats.get<int>("server"),
+      Rcpp::Named("queue")            = res_stats.get<int>("queue"),
+      Rcpp::Named("capacity")         = res_stats.get<int>("capacity"),
+      Rcpp::Named("queue_size")       = res_stats.get<int>("queue_size")
+    );
+  }
+  Rcpp::List get_res_stats_counts() {
+    return Rcpp::List::create(
+      Rcpp::Named("resource")         = res_stats.get<std::string>("resource"),
+      Rcpp::Named("time")             = res_stats.get<double>("time"),
+      Rcpp::Named("server")           = res_stats.get<int>("server"),
+      Rcpp::Named("queue")            = res_stats.get<int>("queue")
+    );
+  }
+  Rcpp::List get_res_stats_limits() {
+    return Rcpp::List::create(
+      Rcpp::Named("resource")         = res_stats.get<std::string>("resource"),
+      Rcpp::Named("time")             = res_stats.get<double>("time"),
+      Rcpp::Named("server")           = res_stats.get<int>("capacity"),
+      Rcpp::Named("queue")            = res_stats.get<int>("queue_size")
+    );
+  }
+  
 private:
   double now_;              /**< simulation time */
   PQueue event_queue;       /**< the event queue */
   EntMap resource_map;      /**< map of resources */
   EntMap process_map;       /**< map of processes */
   EvMap event_map;          /**< map of pending events */
+  StatsMap arr_traj_stats;  /**< arrival statistics per trajectory */
+  StatsMap arr_res_stats;   /**< arrival statistics per resource */
+  StatsMap attr_stats;      /**< attribute statistics */
+  StatsMap res_stats;       /**< resource statistics */
 };
 
 #endif

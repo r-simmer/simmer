@@ -66,7 +66,7 @@ public:
     queue_count(0) {}
   
   /**
-  * Reset the resource: server, queue and statistics.
+  * Reset the resource: server, queue
   */
   virtual void reset() {
     server_count = 0;
@@ -74,7 +74,6 @@ public:
     foreach_ (RPQueue::value_type& itr, queue)
       delete itr.arrival;
     queue.clear();
-    res_stats.clear();
   }
   
   /**
@@ -96,18 +95,6 @@ public:
   int release(Arrival* arrival, int amount);
   int post_release();
   
-  /**
-  * Gather resource statistics.
-  */
-  void observe(double time) {
-    res_stats.insert("time",        time);
-    res_stats.insert("server",      server_count);
-    res_stats.insert("queue",       queue_count);
-    res_stats.insert("capacity",    capacity);
-    res_stats.insert("queue_size",  queue_size);
-  }
-  
-  StatsMap* get_observations() { return &res_stats; }
   void set_capacity(int value);
   int get_capacity() { return capacity; }
   void set_queue_size(int value);
@@ -121,7 +108,6 @@ protected:
   int server_count;     /**< number of arrivals being served */
   int queue_count;      /**< number of arrivals waiting */
   RPQueue queue;        /**< queue container */
-  StatsMap res_stats;   /**< resource statistics */
   
   void verbose_print(double time, std::string arrival, std::string status) {
     Rcpp::Rcout << 
@@ -164,7 +150,7 @@ protected:
     if (queue_size > 0) while (queue_count + amount > queue_size && amount > count) {
       RPQueue::iterator last = --queue.end();
       if (verbose) verbose_print(time, last->arrival->name, "REJECT");
-      last->arrival->terminate(time, false);
+      last->arrival->terminate(false);
       queue_count -= last->amount;
       count += last->amount;
       queue.erase(last);
@@ -238,7 +224,7 @@ protected:
     if (keep_queue) {
       if (!room_in_queue(first->amount, first->priority())) {
         if (verbose) verbose_print(time, first->arrival->name, "REJECT");
-        first->arrival->terminate(time, false);
+        first->arrival->terminate(false);
       } else insert_in_queue(verbose, time, first->arrival, first->amount);
     } else {
       preempted.insert((*first));

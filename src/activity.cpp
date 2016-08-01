@@ -190,7 +190,7 @@ template <>
 double Leave<double>::run(Arrival* arrival) {
   Rcpp::NumericVector val = Rcpp::runif(1);
   if (val[0] <= prob) {
-    arrival->terminate(arrival->sim->now(), false);
+    arrival->terminate(false);
     return REJECTED;
   }
   return 0;
@@ -200,7 +200,7 @@ template <>
 double Leave<Rcpp::Function>::run(Arrival* arrival) {
   Rcpp::NumericVector val = Rcpp::runif(1);
   if (val[0] <= execute_call<double>(prob, arrival)) {
-    arrival->terminate(arrival->sim->now(), false);
+    arrival->terminate(false);
     return REJECTED;
   }
   return 0;
@@ -233,6 +233,6 @@ double Synchronize::run(Arrival* arrival) {
   } else if (*(arrival->clones) == 1) return 0;
   
   if (!terminate) delete arrival;
-  else arrival->terminate(arrival->sim->now(), true);
+  else arrival->terminate(true);
   return REJECTED;
 }

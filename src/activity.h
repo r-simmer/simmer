@@ -173,7 +173,7 @@ public:
         ret = SUCCESS;
         if (mask & 1) selected = heads[1];
         else selected = heads[0];
-      } else arrival->terminate(arrival->sim->now(), false);
+      } else arrival->terminate(false);
       break;
     default:
       if (mask & 1) selected = heads[0];
