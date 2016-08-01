@@ -149,15 +149,16 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       private$add_activity(Synchronize__new(private$verbose, wait, mon_all))
     },
     
-    batch = function(n, timeout=NULL, rule=NULL, permanent=FALSE) {
+    batch = function(n, timeout=0, permanent=FALSE, rule=NULL) {
       n <- evaluate_value(n)
       timeout <- evaluate_value(timeout)
-      rule <- evaluate_value(rule)
       permanent <- evaluate_value(permanent)
-      private$add_activity(Batch__new(private$verbose, n, timeout, rule, permanent))
+      if (is.function(rule))
+        private$add_activity(Batch__new_func(private$verbose, n, timeout, permanent, rule, needs_attrs(rule)))
+      else private$add_activity(Batch__new(private$verbose, n, timeout, permanent))
     },
     
-    split = function() { private$add_activity(Split__new(private$verbose)) },
+    separate = function() { private$add_activity(Separate__new(private$verbose)) },
     
     join = function(traj) {
       if (!inherits(traj, "simmer.trajectory"))
@@ -498,7 +499,7 @@ clone <- function(traj, n, ...) traj$replicate(n, ...)
 #' @export
 synchronize <- function(traj, wait=TRUE, mon_all=FALSE) traj$synchronize(wait, mon_all)
 
-#' Add a batch/split activity
+#' Add a batch/separate activity
 #'
 #' Collect a number of arrivals before they can continue processing
 #' or split a previously established batch.
@@ -506,19 +507,19 @@ synchronize <- function(traj, wait=TRUE, mon_all=FALSE) traj$synchronize(wait, m
 #' @inheritParams get_head
 #' @param n batch size, accepts a numeric.
 #' @param timeout optional time limit after which the batch will continue
-#' even if the batch size has not been fulfilled, accepts a numeric.
+#' even if the batch size has not been fulfilled, accepts a numeric (0 = disabled).
+#' @param permanent if \code{TRUE}, batches cannot be split.
 #' @param rule an optional callable object (a function) which will be applied to 
 #' every arrival to determine whether it should be included into the batch, thus
 #  it must return a boolean.
-#' @param permanent if \code{TRUE}, batches cannot be split.
 #' 
 #' @return The trajectory object.
 #' @export
-batch <- function(traj, n, timeout=NULL, rule=NULL, permanent=FALSE) 
-  traj$batch(n, timeout, rule, permanent)
+batch <- function(traj, n, timeout=0, permanent=FALSE, rule=NULL)
+  traj$batch(n, timeout, permanent, rule)
 
 #' @inheritParams get_head
 #' 
 #' @rdname batch
 #' @export
-split <- function(traj) traj$split()
+separate <- function(traj) traj$separate()

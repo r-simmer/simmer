@@ -488,12 +488,79 @@ public:
     else Rcpp::Rcout << wait << std::endl;
   }
   
-  double run(Arrival* arrival);
+  double run(Arrival* arrival) {
+    if (!wait) {
+      UMAP<std::string, int>::iterator search = pending.find(arrival->name);
+      if (search == pending.end()) {
+        if (*(arrival->clones) > 1)
+          pending.emplace(arrival->name, *(arrival->clones)-1);
+        return 0;
+      } else {
+        search->second--;
+        if (!search->second) pending.erase(search);
+      }
+    } else if (*(arrival->clones) == 1) return 0;
+    
+    if (!terminate) delete arrival;
+    else arrival->terminate(true);
+    return REJECTED;
+  }
   
 protected:
   bool wait;
   bool terminate;
   UMAP<std::string, int> pending;
+};
+
+/**
+ * Create a batch.
+ */
+class Batch: public Activity {
+  typedef Rcpp::Nullable<Rcpp::Function> NullableFunc;
+  
+public:
+  CLONEABLE(Batch)
+  
+  Batch(bool verbose, int n, double timeout, bool permanent, NullableFunc rule=R_NilValue, 
+        bool provide_attrs=false): Activity("Batch", verbose, provide_attrs), 
+    n(n), timeout(timeout), permanent(permanent), rule(rule) {}
+  
+  void print(int indent=0, bool brief=false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << 
+      "n: " << n << ", timeout: " << timeout << ", permanent: " << permanent << " }" << std::endl;
+    else Rcpp::Rcout << n << ", " << timeout << ", " << permanent << std::endl;
+  }
+  
+  double run(Arrival* arrival) {
+    return 0;
+  }
+  
+protected:
+  int n;
+  double timeout;
+  bool permanent;
+  NullableFunc rule;
+};
+
+/**
+ * Separate a batch.
+ */
+class Separate: public Activity {
+public:
+  CLONEABLE(Separate)
+  
+  Separate(bool verbose): Activity("Separate", verbose, 0) {}
+  
+  void print(int indent=0, bool brief=false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << " }" << std::endl;
+    else Rcpp::Rcout << std::endl;
+  }
+  
+  double run(Arrival* arrival) {
+    return 0;
+  }
 };
 
 #endif

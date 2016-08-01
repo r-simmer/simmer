@@ -185,6 +185,18 @@ Synchronize__new <- function(verbose_, wait_, terminate_) {
     .Call('simmer_Synchronize__new', PACKAGE = 'simmer', verbose_, wait_, terminate_)
 }
 
+Batch__new <- function(verbose_, n_, timeout_, permanent_) {
+    .Call('simmer_Batch__new', PACKAGE = 'simmer', verbose_, n_, timeout_, permanent_)
+}
+
+Batch__new_func <- function(verbose_, n_, timeout_, permanent_, rule, provide_attrs_) {
+    .Call('simmer_Batch__new_func', PACKAGE = 'simmer', verbose_, n_, timeout_, permanent_, rule, provide_attrs_)
+}
+
+Separate__new <- function(verbose_) {
+    .Call('simmer_Separate__new', PACKAGE = 'simmer', verbose_)
+}
+
 activity_get_n_ <- function(activity_) {
     .Call('simmer_activity_get_n_', PACKAGE = 'simmer', activity_)
 }

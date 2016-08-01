@@ -124,14 +124,14 @@ int Arrival::set_attribute(std::string key, double value) {
   return 0;
 }
 
-void Batch::leave(std::string resource) {
+void Batched::leave(std::string resource) {
   foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
     if (itr->is_monitored())
       sim->record_release(itr->name, restime[resource].start, restime[resource].activity, resource);
   }
 }
 
-void Batch::terminate(bool finished) {
+void Batched::terminate(bool finished) {
   lifetime.activity -= lifetime.remaining;
   foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
     itr->lifetime.activity += lifetime.activity;
@@ -141,7 +141,7 @@ void Batch::terminate(bool finished) {
   delete this;
 }
 
-int Batch::set_attribute(std::string key, double value) {
+int Batched::set_attribute(std::string key, double value) {
   attributes[key] = value;
   foreach_ (VEC<Arrival*>::value_type& itr, arrivals)
     itr->set_attribute(key, value);

@@ -462,6 +462,38 @@ SEXP Synchronize__new(SEXP verbose_, SEXP wait_, SEXP terminate_) {
 }
 
 //[[Rcpp::export]]
+SEXP Batch__new(SEXP verbose_, SEXP n_, SEXP timeout_, SEXP permanent_) {
+  bool verbose = as<bool>(verbose_);
+  int n = as<int>(n_);
+  double timeout = as<double>(timeout_);
+  bool permanent = as<bool>(permanent_);
+  
+  XPtr<Batch> ptr(new Batch(verbose, n, timeout, permanent), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP Batch__new_func(SEXP verbose_, SEXP n_, SEXP timeout_, SEXP permanent_,
+                     Function rule, SEXP provide_attrs_) {
+  bool verbose = as<bool>(verbose_);
+  int n = as<int>(n_);
+  double timeout = as<double>(timeout_);
+  bool permanent = as<bool>(permanent_);
+  bool provide_attrs = as<bool>(provide_attrs_);
+  
+  XPtr<Batch> ptr(new Batch(verbose, n, timeout, permanent, rule, provide_attrs), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP Separate__new(SEXP verbose_) {
+  bool verbose = as<bool>(verbose_);
+  
+  XPtr<Separate> ptr(new Separate(verbose), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
 int activity_get_n_(SEXP activity_) {
   XPtr<Activity> activity(activity_);
   

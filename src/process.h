@@ -194,22 +194,22 @@ protected:
 /** 
  *  Batch of arrivals.
  */
-class Batch: public Arrival {
+class Batched: public Arrival {
 public:
-  CLONEABLE_COUNT(Batch)
+  CLONEABLE_COUNT(Batched)
   
   VEC<Arrival*> arrivals;
 
-  Batch(Simulator* sim, std::string name, Activity* batcher):
+  Batched(Simulator* sim, std::string name, Activity* batcher):
     Arrival(sim, name, true, Order(), batcher) {}
   
-  Batch(const Batch& o): Arrival(o), arrivals(arrivals) { 
+  Batched(const Batched& o): Arrival(o), arrivals(o.arrivals) { 
     for (unsigned int i=0; i<arrivals.size(); i++) {
       arrivals[i] = arrivals[i]->clone();
     }
   }
   
-  ~Batch() { 
+  ~Batched() { 
     foreach_ (VEC<Arrival*>::value_type& itr, arrivals)
       delete itr;
     arrivals.clear();

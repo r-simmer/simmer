@@ -2,12 +2,12 @@
 % Please edit documentation in R/trajectory.R
 \name{batch}
 \alias{batch}
-\alias{split}
-\title{Add a batch/split activity}
+\alias{separate}
+\title{Add a batch/separate activity}
 \usage{
-batch(traj, n, timeout = NULL, rule = NULL, permanent = FALSE)
+batch(traj, n, timeout = 0, permanent = FALSE, rule = NULL)
 
-split(traj)
+separate(traj)
 }
 \arguments{
 \item{traj}{the trajectory object.}
@@ -15,12 +15,12 @@ split(traj)
 \item{n}{batch size, accepts a numeric.}
 
 \item{timeout}{optional time limit after which the batch will continue
-even if the batch size has not been fulfilled, accepts a numeric.}
+even if the batch size has not been fulfilled, accepts a numeric (0 = disabled).}
+
+\item{permanent}{if \code{TRUE}, batches cannot be split.}
 
 \item{rule}{an optional callable object (a function) which will be applied to 
 every arrival to determine whether it should be included into the batch, thus}
-
-\item{permanent}{if \code{TRUE}, batches cannot be split.}
 }
 \value{
 The trajectory object.

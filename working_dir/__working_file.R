@@ -212,4 +212,12 @@ env <- simmer(verbose=T) %>%
 
 ####################################################################
 
+t <- create_trajectory(verbose=T) %>%
+  batch(3, timeout=0, rule=NULL) %>%
+  timeout(1) %>%
+  separate() %>%
+  timeout(1)
 
+simmer(verbose=TRUE) %>%
+  add_generator("arrival", t, at(0, 1, 2, 3)) %>%
+  run()
