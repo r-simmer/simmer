@@ -153,6 +153,7 @@ public:
   CLONEABLE_COUNT(Arrival)
   
   Order order;        /**< priority, preemptible, restart */
+  ArrTime lifetime;   /**< time spent in the whole trajectory */
 
   /**
   * Constructor.
@@ -168,24 +169,22 @@ public:
   virtual ~Arrival() { if (!--(*clones)) delete clones; }
   
   void run();
-  void forward_activity();
   void activate();
   void deactivate();
-  void leave(std::string resource);
-  void terminate(bool finished);
+  virtual void leave(std::string resource);
+  virtual void terminate(bool finished);
+  virtual int set_attribute(std::string key, double value);
   
-  int set_attribute(std::string key, double value);
   Attr* get_attributes() { return &attributes; }
   double get_remaining() { return lifetime.remaining; }
-  
   void set_start(std::string name, double value) { restime[name].start = value; }
+  void set_activity(Activity* ptr) { activity = ptr; }
   void set_activity(std::string name, double value) { restime[name].activity = value; }
   double get_activity(std::string name) { return restime[name].activity; }
   void set_selected(int id, Resource* res) { selected[id] = res; }
   Resource* get_selected(int id) { return selected[id]; }
   
 protected:
-  ArrTime lifetime;   /**< time spent in the whole trajectory */
   ResTime restime;    /**< time spent in resources */
   Activity* activity; /**< current activity from an R trajectory */
   Attr attributes;    /**< user-defined (key, value) pairs */
@@ -198,13 +197,27 @@ protected:
 class Batch: public Arrival {
 public:
   CLONEABLE_COUNT(Batch)
+  
+  VEC<Arrival*> arrivals;
 
-  Batch(Simulator* sim, std::string name, int mon, Order order, Activity* first_activity):
-    Arrival(sim, name, mon, order, first_activity) {}
+  Batch(Simulator* sim, std::string name, Activity* batcher):
+    Arrival(sim, name, true, Order(), batcher) {}
   
-  Batch(const Arrival& o): Arrival(o) {}
+  Batch(const Batch& o): Arrival(o), arrivals(arrivals) { 
+    for (unsigned int i=0; i<arrivals.size(); i++) {
+      arrivals[i] = arrivals[i]->clone();
+    }
+  }
   
-  ~Batch() { if (!--(*clones)) delete clones; }
+  ~Batch() { 
+    foreach_ (VEC<Arrival*>::value_type& itr, arrivals)
+      delete itr;
+    arrivals.clear();
+  }
+  
+  void leave(std::string resource);
+  void terminate(bool finished);
+  int set_attribute(std::string key, double value);
 };
 
 #endif

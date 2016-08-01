@@ -166,7 +166,14 @@ public:
     Fork::print(indent, brief);
   }
   
-  virtual int select(Arrival* arrival, int ret) {
+  virtual double run(Arrival* arrival);
+  
+protected:
+  std::string resource;
+  T amount;
+  unsigned short mask;
+  
+  int select(Arrival* arrival, int ret) {
     switch (ret) {
     case REJECTED:
       if (mask & 2) {
@@ -181,13 +188,6 @@ public:
     }
     return ret;
   }
-  
-  virtual double run(Arrival* arrival);
-  
-protected:
-  std::string resource;
-  T amount;
-  unsigned short mask;
 };
 
 /**
@@ -453,20 +453,20 @@ public:
     Fork::print(indent, brief);
   }
   
-  void do_clone(Arrival* arrival, int value) {
-    for (unsigned int i = 1; i < value; i++) {
-      if (i < heads.size()) selected = heads[i];
-      Arrival* new_arrival = arrival->clone();
-      new_arrival->forward_activity();
-      arrival->sim->schedule(0, new_arrival);
-    }
-    if (heads.size()) selected = heads[0];
-  }
-  
   double run(Arrival* arrival);
   
 protected:
   T n;
+  
+  void do_clone(Arrival* arrival, int value) {
+    for (unsigned int i = 1; i < value; i++) {
+      if (i < heads.size()) selected = heads[i];
+      Arrival* new_arrival = arrival->clone();
+      new_arrival->set_activity(this->get_next());
+      arrival->sim->schedule(0, new_arrival);
+    }
+    if (heads.size()) selected = heads[0];
+  }
 };
 
 /**

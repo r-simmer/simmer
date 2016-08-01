@@ -89,8 +89,6 @@ end:
   return;
 }
 
-void Arrival::forward_activity() { activity = activity->get_next(); }
-
 void Arrival::activate() {
   Process::activate();
   lifetime.busy_until = sim->now() + lifetime.remaining;
@@ -123,5 +121,29 @@ int Arrival::set_attribute(std::string key, double value) {
   attributes[key] = value;
   if (is_monitored() >= 2) 
     sim->record_attribute(name, key, value);
+  return 0;
+}
+
+void Batch::leave(std::string resource) {
+  foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
+    if (itr->is_monitored())
+      sim->record_release(itr->name, restime[resource].start, restime[resource].activity, resource);
+  }
+}
+
+void Batch::terminate(bool finished) {
+  lifetime.activity -= lifetime.remaining;
+  foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
+    itr->lifetime.activity += lifetime.activity;
+    itr->terminate(finished);
+  }
+  arrivals.clear();
+  delete this;
+}
+
+int Batch::set_attribute(std::string key, double value) {
+  attributes[key] = value;
+  foreach_ (VEC<Arrival*>::value_type& itr, arrivals)
+    itr->set_attribute(key, value);
   return 0;
 }
