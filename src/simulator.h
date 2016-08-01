@@ -45,7 +45,7 @@ public:
   
   ~Simulator() {
     foreach_ (PQueue::value_type& itr, event_queue)
-      if (itr.process->is_arrival()) delete itr.process;
+      if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
   }
   
   /**
@@ -54,7 +54,7 @@ public:
   void reset() {
     now_ = 0;
     foreach_ (PQueue::value_type& itr, event_queue)
-      if (itr.process->is_arrival()) delete itr.process;
+      if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
     event_queue.clear();
     event_map.clear();
     foreach_ (EntMap::value_type& itr, resource_map)

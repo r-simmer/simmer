@@ -523,7 +523,10 @@ public:
   
   Batch(bool verbose, int n, double timeout, bool permanent, NullableFunc rule=R_NilValue, 
         bool provide_attrs=false): Activity("Batch", verbose, provide_attrs), 
-    n(n), timeout(timeout), permanent(permanent), rule(rule) {}
+    n(n), timeout(timeout), permanent(permanent), rule(rule), batched(NULL) {}
+  
+  Batch(const Batch& o): Activity(o.name, o.verbose, o.provide_attrs), 
+    n(o.n), timeout(o.timeout), permanent(o.permanent), rule(o.rule), batched(NULL) {}
   
   void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);
@@ -533,7 +536,20 @@ public:
   }
   
   double run(Arrival* arrival) {
-    return 0;
+    if (rule.isNotNull()) {
+      bool ret = execute_call<bool>(Rcpp::as<Rcpp::Function>(rule), arrival);
+      if (!ret) return 0;
+    }
+    if (!batched) {
+      batched = new Batched(arrival->sim, arrival->name, this, permanent);
+      // set timer
+    }
+    batched->arrivals.push_back(arrival);
+    if (batched->arrivals.size() == n) {
+      batched->sim->schedule(0, batched);
+      batched = NULL;
+    }
+    return REJECTED;
   }
   
 protected:
@@ -541,6 +557,7 @@ protected:
   double timeout;
   bool permanent;
   NullableFunc rule;
+  Batched* batched;
 };
 
 /**
@@ -559,7 +576,15 @@ public:
   }
   
   double run(Arrival* arrival) {
-    return 0;
+    Batched* batched = dynamic_cast<Batched*>(arrival);
+    if (!batched || batched->is_permanent()) return 0;
+    foreach_ (VEC<Arrival*>::value_type& itr, batched->arrivals) {
+      itr->set_activity(this->get_next());
+      batched->sim->schedule(0, itr);
+    }
+    batched->arrivals.clear();
+    delete batched;
+    return REJECTED;
   }
 };
 

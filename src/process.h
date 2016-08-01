@@ -13,16 +13,11 @@ class Resource;
  */
 class Process: public Entity {
 public:
-  Process(Simulator* sim, std::string name, int mon, bool is_arrival=false): 
-    Entity(sim, name, mon), is_arrival_(is_arrival) {}
+  Process(Simulator* sim, std::string name, int mon): Entity(sim, name, mon) {}
   virtual ~Process(){}
   virtual void run() = 0;
   virtual void activate() {}
   virtual void deactivate();
-  bool is_arrival() { return is_arrival_; }
-  
-private:
-  bool is_arrival_;
 };
 
 class Manager: public Process {
@@ -164,7 +159,7 @@ public:
   * @param order           priority, preemptible, restart
   */
   Arrival(Simulator* sim, std::string name, int mon, Order order, Activity* first_activity):
-    Process(sim, name, mon, true), clones(new int(1)), order(order), activity(first_activity) {}
+    Process(sim, name, mon), clones(new int(1)), order(order), activity(first_activity) {}
   
   virtual ~Arrival() { if (!--(*clones)) delete clones; }
   
@@ -200,10 +195,10 @@ public:
   
   VEC<Arrival*> arrivals;
 
-  Batched(Simulator* sim, std::string name, Activity* batcher):
-    Arrival(sim, name, true, Order(), batcher) {}
+  Batched(Simulator* sim, std::string name, Activity* batcher, bool permanent):
+    Arrival(sim, name, true, Order(), batcher), permanent(permanent) {}
   
-  Batched(const Batched& o): Arrival(o), arrivals(o.arrivals) { 
+  Batched(const Batched& o): Arrival(o), arrivals(o.arrivals), permanent(o.permanent) { 
     for (unsigned int i=0; i<arrivals.size(); i++) {
       arrivals[i] = arrivals[i]->clone();
     }
@@ -218,6 +213,11 @@ public:
   void leave(std::string resource);
   void terminate(bool finished);
   int set_attribute(std::string key, double value);
+  
+  bool is_permanent() { return permanent; }
+  
+protected:
+  bool permanent;
 };
 
 #endif
