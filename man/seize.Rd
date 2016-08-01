@@ -22,7 +22,8 @@ release_selected(traj, amount = 1, id = 0)
 
 \item{resource}{the name of the resource.}
 
-\item{amount}{the amount to seize/release, accepts either a callable object (a function) or a numeric value.}
+\item{amount}{the amount to seize/release, accepts either a numeric or a callable object 
+(a function) which must return a numeric.}
 
 \item{continue}{a boolean (if \code{post.seize} OR \code{reject} is defined) or a pair of booleans
 (if \code{post.seize} AND \code{reject} are defined) to indicate whether these subtrajectories

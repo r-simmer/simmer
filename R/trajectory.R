@@ -149,6 +149,16 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       private$add_activity(Synchronize__new(private$verbose, wait, mon_all))
     },
     
+    batch = function(n, timeout=NULL, rule=NULL, permanent=FALSE) {
+      n <- evaluate_value(n)
+      timeout <- evaluate_value(timeout)
+      rule <- evaluate_value(rule)
+      permanent <- evaluate_value(permanent)
+      private$add_activity(Batch__new(private$verbose, n, timeout, rule, permanent))
+    },
+    
+    split = function() { private$add_activity(Split__new(private$verbose)) },
+    
     join = function(traj) {
       if (!inherits(traj, "simmer.trajectory"))
         stop("not a trajectory")
@@ -316,7 +326,8 @@ join <- function(...) {
 #' @inheritParams get_head
 #' @inheritParams select
 #' @param resource the name of the resource.
-#' @param amount the amount to seize/release, accepts either a callable object (a function) or a numeric value.
+#' @param amount the amount to seize/release, accepts either a numeric or a callable object 
+#' (a function) which must return a numeric.
 #' @param continue a boolean (if \code{post.seize} OR \code{reject} is defined) or a pair of booleans
 #' (if \code{post.seize} AND \code{reject} are defined) to indicate whether these subtrajectories
 #' should continue to the next activity in the main trajectory.
@@ -377,8 +388,8 @@ select <- function(traj, resources, policy=c("shortest-queue", "round-robin",
 #' Insert delays and execute user-defined tasks.
 #' 
 #' @inheritParams get_head
-#' @param task the timeout duration supplied by either passing a numeric value or a 
-#' callable object (a function) that returns a numeric value (negative values are 
+#' @param task the timeout duration supplied by either passing a numeric or a 
+#' callable object (a function) which must return a numeric (negative values are 
 #' automatically coerced to positive).
 #' 
 #' @return The trajectory object.
@@ -392,7 +403,7 @@ timeout <- function(traj, task) traj$timeout(task)
 #' @inheritParams get_head
 #' @param key the attribute key (coerced to a string).
 #' @param value the value to set, accepts either a numeric or a callable object 
-#' (a function) which returns a numeric.
+#' (a function) which must return a numeric.
 #' 
 #' @return The trajectory object.
 #' @export
@@ -417,7 +428,7 @@ set_prioritization <- function(traj, values) traj$set_prioritization(values)
 #' Define a fork with \code{N} alternative sub-trajectories.
 #' 
 #' @inheritParams get_head
-#' @param option a callable object (a function) that must return an integer between
+#' @param option a callable object (a function) which must return an integer between
 #' \code{0} and \code{N}. A return value equal to \code{0} skips the branch and
 #' continues to the next activity. A returning value between \code{1} to \code{N}
 #' makes the arrival to follow the corresponding sub-trajectory.
@@ -443,7 +454,7 @@ branch <- function(traj, option, continue, ..., merge="_deprecated") {
 #' @inheritParams get_head
 #' @param amount the amount of activities (of the same or parent trajectories) to roll back.
 #' @param times the number of repetitions until an arrival may continue.
-#' @param check a callable object (a function) that must return a boolean. If
+#' @param check a callable object (a function) which must return a boolean. If
 #' present, the \code{times} parameter is ignored, and the activity uses this
 #' function to check whether the rollback must be done or not.
 #' 
@@ -468,7 +479,8 @@ leave <- function(traj, prob) traj$leave(prob)
 #' one + \code{n-1} copies). A \code{synchronize} activity removes all but one clone.
 #' 
 #' @inheritParams get_head
-#' @param n number of clones.
+#' @param n number of clones, accepts either a numeric or a callable object 
+#' (a function) which must return a numeric.
 #' @param ... optional parallel sub-trajectories. Each clone will follow 
 #' a different sub-trajectory if available.
 #' 
@@ -485,3 +497,28 @@ clone <- function(traj, n, ...) traj$replicate(n, ...)
 #' @rdname clone
 #' @export
 synchronize <- function(traj, wait=TRUE, mon_all=FALSE) traj$synchronize(wait, mon_all)
+
+#' Add a batch/split activity
+#'
+#' Collect a number of arrivals before they can continue processing
+#' or split a previously established batch.
+#' 
+#' @inheritParams get_head
+#' @param n batch size, accepts a numeric.
+#' @param timeout optional time limit after which the batch will continue
+#' even if the batch size has not been fulfilled, accepts a numeric.
+#' @param rule an optional callable object (a function) which will be applied to 
+#' every arrival to determine whether it should be included into the batch, thus
+#  it must return a boolean.
+#' @param permanent if \code{TRUE}, batches cannot be split.
+#' 
+#' @return The trajectory object.
+#' @export
+batch <- function(traj, n, timeout=NULL, rule=NULL, permanent=FALSE) 
+  traj$batch(n, timeout, rule, permanent)
+
+#' @inheritParams get_head
+#' 
+#' @rdname batch
+#' @export
+split <- function(traj) traj$split()

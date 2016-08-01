@@ -12,7 +12,7 @@ set_attribute(traj, key, value)
 \item{key}{the attribute key (coerced to a string).}
 
 \item{value}{the value to set, accepts either a numeric or a callable object 
-(a function) which returns a numeric.}
+(a function) which must return a numeric.}
 }
 \value{
 The trajectory object.

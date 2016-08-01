@@ -9,7 +9,7 @@ branch(traj, option, continue, ..., merge = "_deprecated")
 \arguments{
 \item{traj}{the trajectory object.}
 
-\item{option}{a callable object (a function) that must return an integer between
+\item{option}{a callable object (a function) which must return an integer between
 \code{0} and \code{N}. A return value equal to \code{0} skips the branch and
 continues to the next activity. A returning value between \code{1} to \code{N}
 makes the arrival to follow the corresponding sub-trajectory.}
