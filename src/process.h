@@ -134,6 +134,7 @@ private:
  *  Arrival process.
  */
 class Arrival: public Process {
+public:
   struct ArrTime {
     double start;
     double activity;
@@ -144,11 +145,9 @@ class Arrival: public Process {
   typedef UMAP<std::string, ArrTime> ResTime;
   typedef UMAP<int, Resource*> SelMap;
   
-public:
   CLONEABLE_COUNT(Arrival)
   
   Order order;        /**< priority, preemptible, restart */
-  ArrTime lifetime;   /**< time spent in the whole trajectory */
 
   /**
   * Constructor.
@@ -174,12 +173,15 @@ public:
   double get_remaining() { return lifetime.remaining; }
   void set_start(std::string name, double value) { restime[name].start = value; }
   void set_activity(Activity* ptr) { activity = ptr; }
+  void set_activity(double value) { lifetime.activity += value; }
   void set_activity(std::string name, double value) { restime[name].activity = value; }
+  double get_activity() { return lifetime.activity; }
   double get_activity(std::string name) { return restime[name].activity; }
   void set_selected(int id, Resource* res) { selected[id] = res; }
   Resource* get_selected(int id) { return selected[id]; }
   
 protected:
+  ArrTime lifetime;   /**< time spent in the whole trajectory */
   ResTime restime;    /**< time spent in resources */
   Activity* activity; /**< current activity from an R trajectory */
   Attr attributes;    /**< user-defined (key, value) pairs */
@@ -215,6 +217,13 @@ public:
   int set_attribute(std::string key, double value);
   
   bool is_permanent() { return permanent; }
+  
+  VEC<std::string> get_resources() {
+    VEC<std::string> ret;
+    foreach_ (ResTime::value_type& itr, restime)
+      ret.push_back(itr.first);
+    return ret;
+  }
   
 protected:
   bool permanent;

@@ -541,7 +541,7 @@ public:
       if (!ret) return 0;
     }
     if (!batched) {
-      batched = new Batched(arrival->sim, arrival->name, this, permanent);
+      batched = new Batched(arrival->sim, "batch", this->get_next(), permanent);
       // set timer
     }
     batched->arrivals.push_back(arrival);
@@ -579,6 +579,9 @@ public:
     Batched* batched = dynamic_cast<Batched*>(arrival);
     if (!batched || batched->is_permanent()) return 0;
     foreach_ (VEC<Arrival*>::value_type& itr, batched->arrivals) {
+      itr->set_activity(itr->get_activity() + batched->get_activity());
+      foreach_ (std::string key, batched->get_resources())
+        itr->set_activity(key, itr->get_activity(key) + batched->get_activity(key));
       itr->set_activity(this->get_next());
       batched->sim->schedule(0, itr);
     }

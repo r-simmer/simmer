@@ -134,7 +134,9 @@ void Batched::leave(std::string resource) {
 void Batched::terminate(bool finished) {
   lifetime.activity -= lifetime.remaining;
   foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
-    itr->lifetime.activity += lifetime.activity;
+    itr->set_activity(itr->get_activity() + lifetime.activity);
+    foreach_ (ResTime::value_type& res, restime)
+      itr->set_activity(res.first, itr->get_activity(res.first) + res.second.activity);
     itr->terminate(finished);
   }
   arrivals.clear();
