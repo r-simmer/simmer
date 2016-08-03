@@ -13,6 +13,7 @@
 #define USET boost::unordered_set
 #define UMAP boost::unordered_map
 
+#include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 
 #define OPT boost::optional

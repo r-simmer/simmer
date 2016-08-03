@@ -522,11 +522,11 @@ public:
   CLONEABLE(Batch)
   
   Batch(bool verbose, int n, double timeout, bool permanent, NullableFunc rule=R_NilValue, 
-        bool provide_attrs=false): Activity("Batch", verbose, provide_attrs), 
-    n(n), timeout(std::abs(timeout)), permanent(permanent), rule(rule), batched(NULL) {}
+        bool provide_attrs=false): Activity("Batch", verbose, provide_attrs), n(n), 
+    timeout(std::abs(timeout)), permanent(permanent), rule(rule), batched(NULL), count(0) {}
   
-  Batch(const Batch& o): Activity(o.name, o.verbose, o.provide_attrs), 
-    n(o.n), timeout(o.timeout), permanent(o.permanent), rule(o.rule), batched(NULL) {}
+  Batch(const Batch& o): Activity(o.name, o.verbose, o.provide_attrs), n(o.n), 
+    timeout(o.timeout), permanent(o.permanent), rule(o.rule), batched(NULL), count(0) {}
   
   void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);
@@ -536,12 +536,11 @@ public:
   }
   
   double run(Arrival* arrival) {
-    if (rule.isNotNull()) {
-      bool ret = execute_call<bool>(Rcpp::as<Rcpp::Function>(rule), arrival);
-      if (!ret) return 0;
-    }
+    if (rule.isNotNull() && !execute_call<bool>(Rcpp::as<Rcpp::Function>(rule), arrival))
+      return 0;
     if (!batched) {
-      batched = new Batched(arrival->sim, "batch", this->get_next(), permanent);
+      std::string name = "batch" + boost::lexical_cast<std::string>(count++);
+      batched = new Batched(arrival->sim, name, this->get_next(), permanent);
       if (timeout) {
         DelayedTask* task = new DelayedTask(arrival->sim, "Batch-Timer", 
                                             boost::bind(&Batch::timer, this, batched));
@@ -559,6 +558,7 @@ protected:
   bool permanent;
   NullableFunc rule;
   Batched* batched;
+  int count;
   
   void schedule() {
     batched->sim->schedule(0, batched);

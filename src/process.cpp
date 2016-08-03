@@ -15,17 +15,15 @@ void Generator::run() {
     delay += delays[i];
     
     // format the name and create the next arrival
-    char numstr[21];
-    sprintf(numstr, "%d", count);
-    Arrival* arrival = new Arrival(sim, name + numstr, is_monitored(), order, first_activity);
+    std::string arr_name = name + boost::lexical_cast<std::string>(count++);
+    Arrival* arrival = new Arrival(sim, arr_name, is_monitored(), order, first_activity);
     
     if (sim->verbose) Rcpp::Rcout << 
       FMT(10, right) << sim->now() << " |" << FMT(12, right) << "generator: " << FMT(15, left) << name << "|" << 
-      FMT(12, right) << "new: " << FMT(15, left) << (name + numstr) << "| " << (sim->now() + delay) << std::endl;
+      FMT(12, right) << "new: " << FMT(15, left) << arr_name << "| " << (sim->now() + delay) << std::endl;
     
     // schedule the arrival
     sim->schedule(delay, arrival, count);
-    count++;
   }
   // schedule the generator
   sim->schedule(delay, this, PRIORITY_GENERATOR);
