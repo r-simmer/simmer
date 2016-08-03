@@ -373,20 +373,47 @@ protected:
 /**
  * Rollback to a previous activity.
  */
-template <typename T>
 class Rollback: public Activity {
 public:
-  CLONEABLE(Rollback<T>)
+  CLONEABLE(Rollback)
   
-  Rollback(bool verbose, int amount, T times, bool provide_attrs):
-    Activity("Rollback", verbose, provide_attrs), amount(std::abs(amount)), times(times),
-    cached(NULL), selected(NULL) {}
+  Rollback(bool verbose, int amount, int times, OPT<Rcpp::Function> check=NONE, 
+           bool provide_attrs=false): Activity("Rollback", verbose, provide_attrs), 
+    amount(std::abs(amount)), times(times), check(check), cached(NULL), selected(NULL) {}
   
   Rollback(const Rollback& o): Activity(o.name, o.verbose, o.provide_attrs), amount(o.amount), 
-    times(o.times), cached(NULL), selected(NULL) { pending.clear(); }
+    times(o.times), check(o.check), cached(NULL), selected(NULL) { pending.clear(); }
   
-  void print(int indent=0, bool brief=false);
-  double run(Arrival* arrival);
+  void print(int indent=0, bool brief=false) {
+    if (!cached) cached = goback();
+    Activity::print(indent, brief);
+    if (!brief) {
+      Rcpp::Rcout << "amount: " << amount << " (" << cached->name << "), ";
+      if (check) Rcpp::Rcout << "check: " << *check;
+      else {
+        if (times >= 0) Rcpp::Rcout << "times: " << times;
+        else Rcpp::Rcout << "times: Inf";
+      }
+      Rcpp::Rcout << " }" << std::endl;
+    } else Rcpp::Rcout << cached->name << std::endl;
+  }
+  
+  double run(Arrival* arrival) {
+    if (check) {
+      if (!execute_call<bool>(*check, arrival)) return 0;
+    } else if (times >= 0) {
+      if (pending.find(arrival) == pending.end()) 
+        pending[arrival] = times;
+      if (!pending[arrival]) {
+        pending.erase(arrival);
+        return 0;
+      }
+      pending[arrival]--;
+    }
+    if (!cached) cached = goback();
+    selected = cached;
+    return 0;
+  }
   
   Activity* get_next() {
     if (selected) {
@@ -399,7 +426,8 @@ public:
   
 protected:
   int amount;
-  T times;
+  int times;
+  OPT<Rcpp::Function> check;
   Activity* cached, *selected;
   UMAP<Arrival*, int> pending;
   

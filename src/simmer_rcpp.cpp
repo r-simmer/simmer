@@ -399,7 +399,7 @@ SEXP Rollback__new(SEXP verbose_, SEXP amount_, SEXP times_) {
   int amount = as<int>(amount_);
   int times = as<int>(times_);
   
-  XPtr<Rollback<int> > ptr(new Rollback<int>(verbose, amount, times, 0), false);
+  XPtr<Rollback> ptr(new Rollback(verbose, amount, times), false);
   return ptr;
 }
 
@@ -409,7 +409,7 @@ SEXP Rollback__new_func(SEXP verbose_, SEXP amount_, Function check, SEXP provid
   int amount = as<int>(amount_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Rollback<Function> > ptr(new Rollback<Function>(verbose, amount, check, provide_attrs), false);
+  XPtr<Rollback> ptr(new Rollback(verbose, amount, 0, check, provide_attrs), false);
   return ptr;
 }
 

@@ -104,51 +104,6 @@ double SetPrior<Rcpp::Function>::run(Arrival* arrival) {
 }
 
 template <>
-void Rollback<int>::print(int indent, bool brief) {
-  if (!cached) cached = goback();
-  Activity::print(indent, brief);
-  if (!brief) {
-    Rcpp::Rcout << "amount: " << amount << " (" << cached->name << "), ";
-    if (times >= 0) Rcpp::Rcout << "times: " << times << " }" << std::endl;
-    else Rcpp::Rcout << "times: Inf }" << std::endl;
-  } else Rcpp::Rcout << cached->name << std::endl;
-}
-
-template <>
-void Rollback<Rcpp::Function>::print(int indent, bool brief) {
-  if (!cached) cached = goback();
-  Activity::print(indent, brief);
-  if (!brief) Rcpp::Rcout << 
-    "amount: " << amount << " (" << cached->name << "), " << 
-    "check: " << times << " }" << std::endl;
-  else Rcpp::Rcout << cached->name << std::endl;
-}
-
-template <>
-double Rollback<int>::run(Arrival* arrival) {
-  if (times >= 0) {
-    if (pending.find(arrival) == pending.end()) 
-      pending[arrival] = times;
-    if (!pending[arrival]) {
-      pending.erase(arrival);
-      return 0;
-    }
-    pending[arrival]--;
-  }
-  if (!cached) cached = goback();
-  selected = cached;
-  return 0;
-}
-
-template <>
-double Rollback<Rcpp::Function>::run(Arrival* arrival) {
-  if (!execute_call<bool>(times, arrival)) return 0;
-  if (!cached) cached = goback();
-  selected = cached;
-  return 0;
-}
-
-template <>
 void Select<VEC<std::string> >::print(int indent, bool brief) {
   Activity::print(indent, brief);
   if (!brief) Rcpp::Rcout << 
