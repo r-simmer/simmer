@@ -523,7 +523,7 @@ public:
   
   Batch(bool verbose, int n, double timeout, bool permanent, NullableFunc rule=R_NilValue, 
         bool provide_attrs=false): Activity("Batch", verbose, provide_attrs), 
-    n(n), timeout(timeout), permanent(permanent), rule(rule), batched(NULL) {}
+    n(n), timeout(std::abs(timeout)), permanent(permanent), rule(rule), batched(NULL) {}
   
   Batch(const Batch& o): Activity(o.name, o.verbose, o.provide_attrs), 
     n(o.n), timeout(o.timeout), permanent(o.permanent), rule(o.rule), batched(NULL) {}
@@ -542,13 +542,14 @@ public:
     }
     if (!batched) {
       batched = new Batched(arrival->sim, "batch", this->get_next(), permanent);
-      // set timer
+      if (timeout) {
+        DelayedTask* task = new DelayedTask(arrival->sim, "Batch-Timer", 
+                                            boost::bind(&Batch::timer, this, batched));
+        arrival->sim->schedule(timeout, task, PRIORITY_LOW);
+      }
     }
     batched->arrivals.push_back(arrival);
-    if (batched->arrivals.size() == n) {
-      batched->sim->schedule(0, batched);
-      batched = NULL;
-    }
+    if (batched->arrivals.size() == n) schedule();
     return REJECTED;
   }
   
@@ -558,6 +559,15 @@ protected:
   bool permanent;
   NullableFunc rule;
   Batched* batched;
+  
+  void schedule() {
+    batched->sim->schedule(0, batched);
+    batched = NULL;
+  }
+  void timer(Batched* target) {
+    if (!batched || batched != target) return;
+    schedule();
+  }
 };
 
 /**
