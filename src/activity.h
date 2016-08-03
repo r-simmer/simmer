@@ -516,12 +516,10 @@ protected:
  * Create a batch.
  */
 class Batch: public Activity {
-  typedef Rcpp::Nullable<Rcpp::Function> NullableFunc;
-  
 public:
   CLONEABLE(Batch)
   
-  Batch(bool verbose, int n, double timeout, bool permanent, NullableFunc rule=R_NilValue, 
+  Batch(bool verbose, int n, double timeout, bool permanent, OPT<Rcpp::Function> rule=NONE, 
         bool provide_attrs=false): Activity("Batch", verbose, provide_attrs), n(n), 
     timeout(std::abs(timeout)), permanent(permanent), rule(rule), batched(NULL), count(0) {}
   
@@ -536,7 +534,7 @@ public:
   }
   
   double run(Arrival* arrival) {
-    if (rule.isNotNull() && !execute_call<bool>(Rcpp::as<Rcpp::Function>(rule), arrival))
+    if (rule && !execute_call<bool>(*rule, arrival))
       return 0;
     if (!batched) {
       std::string name = "batch" + boost::lexical_cast<std::string>(count++);
@@ -556,7 +554,7 @@ protected:
   int n;
   double timeout;
   bool permanent;
-  NullableFunc rule;
+  OPT<Rcpp::Function> rule;
   Batched* batched;
   int count;
   
