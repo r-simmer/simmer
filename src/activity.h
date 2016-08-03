@@ -545,7 +545,7 @@ public:
       if (timeout) {
         DelayedTask* task = new DelayedTask(arrival->sim, "Batch-Timer", 
                                             boost::bind(&Batch::timer, this, batched));
-        arrival->sim->schedule(timeout, task, PRIORITY_LOW);
+        arrival->sim->schedule(timeout, task, PRIORITY_MIN);
       }
     }
     batched->arrivals.push_back(arrival);
