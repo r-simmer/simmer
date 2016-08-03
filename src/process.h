@@ -218,13 +218,6 @@ public:
   
   bool is_permanent() { return permanent; }
   
-  VEC<std::string> get_resources() {
-    VEC<std::string> ret;
-    foreach_ (ResTime::value_type& itr, restime)
-      ret.push_back(itr.first);
-    return ret;
-  }
-  
 protected:
   bool permanent;
 };

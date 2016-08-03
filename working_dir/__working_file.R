@@ -213,7 +213,7 @@ env <- simmer(verbose=T) %>%
 ####################################################################
 
 t <- create_trajectory(verbose=T) %>%
-  batch(3, timeout=0, rule=NULL) %>%
+  batch(3, timeout=0, permanent=F, rule=NULL) %>%
   seize("dummy", 1) %>%
   timeout(1) %>%
   release("dummy", 1) %>%
