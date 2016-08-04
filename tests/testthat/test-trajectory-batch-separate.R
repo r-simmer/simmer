@@ -148,5 +148,5 @@ test_that("all arrivals inside a batch store an attribute change", {
   
   expect_equal(attr$time, c(1, 1, 3, 3))
   expect_equal(attr$key, c("asdf", "asdf", "asdf", "asdf"))
-  expect_equal(attr$key, c(3, 3, 3, 3))
+  expect_equal(attr$value, c(3, 3, 3, 3))
 })
