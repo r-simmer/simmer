@@ -132,3 +132,21 @@ test_that("a timeout can trigger early batches", {
   expect_equal(arr_res$end_time, c(1.5, 2.5, 3.5, 4.5))
   expect_equal(arr_res$activity_time, c(1, 1, 1, 1))
 })
+
+test_that("all arrivals inside a batch store an attribute change", {
+  t <- create_trajectory(verbose=T) %>%
+    batch(2, timeout=0, permanent=FALSE, rule=NULL) %>%
+    set_attribute("asdf", 3) %>%
+    separate()
+  
+  env <- simmer(verbose=TRUE) %>%
+    add_resource("dummy", 1, 0) %>%
+    add_generator("arrival", t, at(0, 1, 2, 3), mon=2) %>%
+    run()
+  
+  attr <- get_mon_attributes(env)
+  
+  expect_equal(attr$time, c(1, 1, 3, 3))
+  expect_equal(attr$key, c("asdf", "asdf", "asdf", "asdf"))
+  expect_equal(attr$key, c(3, 3, 3, 3))
+})
