@@ -5,6 +5,7 @@
 * Prioritization (`priority`, `preemptible`, `restart`) has been moved from `seize` to `add_generator` (#69). This leads to a more natural interpretation of prioritization values as attributes of arrivals from the same generator, rather than attributes of a `seize`. Still, prioritization values can be redefined dynamically from inside a trajectory with the new activity `set_prioritization`.
 * New optional `post.seize` and `reject` subtrajectories in `seize` and `seize_selected` (#49). This feature allows us to fine-tune what happens to an arrival if it cannot seize a resource: instead of getting dropped, it may execute a given subtrajectory.
 * New `clone` and `synchronize` activities (#71). `clone` implements the workflow pattern in which an entity is processed in multiple parallel threads. The user can define a different sub-trajectory for each clone. With `synchronize`, multiple parallel clones converge and are synchronized: only one continues (the first or the last to arrive), and the others are removed.
+* New `batch` and `separate` activities (#45). They can be used to implement a rollercoaster process: `batch` collects a number of arrivals before they can continue processing as a block, and `separate` splits a previously established batch.
 
 ## Minor changes and fixes
 
