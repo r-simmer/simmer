@@ -25,7 +25,7 @@ public:
    * @param provide_attrs whether the activity should expose the arrival's attributes
    * @param priority      simulation priority
    */
-  Activity(std::string name, bool verbose, bool provide_attrs, int priority = 0): 
+  Activity(std::string name, bool verbose, bool provide_attrs = 0, int priority = 0): 
     name(name), verbose(verbose), provide_attrs(provide_attrs), n(1), 
     priority(priority), next(NULL), prev(NULL) {}
   
@@ -70,7 +70,13 @@ protected:
   Activity* prev;
   
   template <typename T>
-  T execute_call(Rcpp::Function call, Arrival* arrival) {
+  T get(T var, Arrival* arrival) { return var; }
+  
+  template <typename T>
+  T get(VEC<T> var, Arrival* arrival) { return var[0]; }
+  
+  template <typename T>
+  T get(Rcpp::Function call, Arrival* arrival) {
     if (provide_attrs)
       return Rcpp::as<T>(call(Rcpp::wrap(*arrival->get_attributes())));
     else return Rcpp::as<T>(call());
@@ -80,8 +86,9 @@ protected:
 // abstract class for multipath activities
 class Fork: public Activity {
 public:
-  Fork(std::string name, bool verbose, bool provide_attrs, VEC<bool> cont, VEC<Rcpp::Environment> trj):
-    Activity(name, verbose, provide_attrs), cont(cont), trj(trj), selected(NULL) {
+  Fork(std::string name, bool verbose, VEC<bool> cont, VEC<Rcpp::Environment> trj, 
+       bool provide_attrs = 0, int priority = 0):
+    Activity(name, verbose, provide_attrs, priority), cont(cont), trj(trj), selected(NULL) {
     foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
       Rcpp::Function get_head(itr["get_head"]);
       Rcpp::Function get_tail(itr["get_tail"]);
@@ -94,7 +101,7 @@ public:
       itr->set_prev(this);
   }
   
-  Fork(const Fork& o): Activity(o.name, o.verbose, o.provide_attrs), 
+  Fork(const Fork& o): Activity(o.name, o.verbose, o.provide_attrs, o.priority), 
     cont(o.cont), trj(o.trj), selected(NULL) {
     heads.clear();
     tails.clear();
@@ -156,9 +163,9 @@ public:
   
   Seize(bool verbose, std::string resource, T amount, bool provide_attrs, 
         VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask): 
-    Fork("Seize", verbose, provide_attrs, cont, trj), resource(resource), amount(amount), mask(mask) {}
+    Fork("Seize", verbose, cont, trj, provide_attrs), resource(resource), amount(amount), mask(mask) {}
   
-  virtual void print(int indent=0, bool brief=false) {
+  void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << 
       "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
@@ -166,14 +173,21 @@ public:
     Fork::print(indent, brief);
   }
   
-  virtual double run(Arrival* arrival);
+  double run(Arrival* arrival) {
+    int value = std::abs(get<int>(amount, arrival));
+    return select_path(arrival, get_resource(arrival)->seize(arrival, value));
+  }
   
 protected:
   std::string resource;
   T amount;
   unsigned short mask;
   
-  int select(Arrival* arrival, int ret) {
+  virtual Resource* get_resource(Arrival* arrival) {
+    return arrival->sim->get_resource(resource);
+  }
+  
+  int select_path(Arrival* arrival, int ret) {
     switch (ret) {
     case REJECTED:
       if (mask & 2) {
@@ -202,10 +216,12 @@ public:
                 VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask):
     Seize<T>(verbose, "[]", amount, provide_attrs, cont, trj, mask), id(id) {}
   
-  double run(Arrival* arrival);
-  
 protected:
   int id;
+  
+  virtual Resource* get_resource(Arrival* arrival) {
+    return arrival->get_selected(id);
+  }
 };
 
 /**
@@ -220,18 +236,25 @@ public:
     Activity("Release", verbose, provide_attrs, PRIORITY_RELEASE), 
     resource(resource), amount(amount) {}
   
-  virtual void print(int indent=0, bool brief=false) {
+  void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << 
       "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
     else Rcpp::Rcout << resource << ", " << amount << std::endl;
   }
   
-  virtual double run(Arrival* arrival);
+  double run(Arrival* arrival) {
+    int value = std::abs(get<int>(amount, arrival));
+    return get_resource(arrival)->release(arrival, value);
+  }
   
 protected:
   std::string resource;
   T amount;
+  
+  virtual Resource* get_resource(Arrival* arrival) {
+    return arrival->sim->get_resource(resource);
+  }
 };
 
 /**
@@ -243,12 +266,14 @@ public:
   CLONEABLE(ReleaseSelected<T>)
   
   ReleaseSelected(bool verbose, int id, T amount, bool provide_attrs):
-    Release<T>(verbose, "<selected>", amount, provide_attrs), id(id) {}
-  
-  double run(Arrival* arrival);
+    Release<T>(verbose, "[]", amount, provide_attrs), id(id) {}
   
 protected:
   int id;
+  
+  virtual Resource* get_resource(Arrival* arrival) {
+    return arrival->get_selected(id);
+  }
 };
 
 /**
@@ -264,7 +289,16 @@ public:
     policy(policy), id(id), dispatcher(Policy(resources, policy)) {}
   
   void print(int indent=0, bool brief=false);
-  double run(Arrival* arrival);
+  
+  double run(Arrival* arrival) {
+    Resource* selected;
+    if (typeid(T) == typeid(Rcpp::Function)) {
+      std::string res = get<std::string>(resources, arrival);
+      selected = arrival->sim->get_resource(res);
+    } else selected = dispatcher.dispatch(arrival->sim);
+    arrival->set_selected(id, selected);
+    return 0;
+  }
   
 protected:
   T resources;
@@ -291,7 +325,10 @@ public:
     else Rcpp::Rcout << key << ": " << value << std::endl;
   }
   
-  double run(Arrival* arrival);
+  double run(Arrival* arrival) {
+    double ret = get<double>(value, arrival);
+    return arrival->set_attribute(key, ret);
+  }
   
 protected:
   std::string key;
@@ -311,7 +348,14 @@ public:
   
   void print(int indent=0, bool brief=false);
   
-  double run(Arrival* arrival);
+  double run(Arrival* arrival) {
+    VEC<int> ret = get<VEC<int> >(values, arrival);
+    if (ret.size() != 3) Rcpp::stop("%s: 3 values needed", name);
+    if (ret[0] >= 0) arrival->order.set_priority(ret[0]);
+    if (ret[1] >= 0) arrival->order.set_preemptible(ret[1]);
+    if (ret[2] >= 0) arrival->order.set_restart((bool)ret[2]);
+    return 0;
+  }
   
 protected:
   T values;
@@ -334,7 +378,10 @@ public:
     else Rcpp::Rcout << delay << std::endl;
   }
   
-  double run(Arrival* arrival);
+  double run(Arrival* arrival) {
+    double value = get<double>(delay, arrival);
+    return std::abs(value);
+  }
   
 protected:
   T delay;
@@ -349,7 +396,7 @@ public:
   CLONEABLE(Branch)
   
   Branch(bool verbose, Rcpp::Function option, bool provide_attrs, VEC<bool> cont, VEC<Rcpp::Environment> trj):
-    Fork("Branch", verbose, provide_attrs, cont, trj), option(option) {}
+    Fork("Branch", verbose, cont, trj, provide_attrs), option(option) {}
   
   void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);
@@ -359,7 +406,7 @@ public:
   }
   
   double run(Arrival* arrival) {
-    int ret = execute_call<int>(option, arrival);
+    int ret = get<int>(option, arrival);
     if (ret < 0 || ret > heads.size())
       Rcpp::stop("%s: index out of range", name);
     if (ret) selected = heads[ret-1];
@@ -400,7 +447,7 @@ public:
   
   double run(Arrival* arrival) {
     if (check) {
-      if (!execute_call<bool>(*check, arrival)) return 0;
+      if (!get<bool>(*check, arrival)) return 0;
     } else if (times >= 0) {
       if (pending.find(arrival) == pending.end()) 
         pending[arrival] = times;
@@ -457,7 +504,13 @@ public:
     else Rcpp::Rcout << prob << std::endl;
   }
   
-  double run(Arrival* arrival);
+  double run(Arrival* arrival) {
+    if (Rcpp::runif(1)[0] <= get<double>(prob, arrival)) {
+      arrival->terminate(false);
+      return REJECTED;
+    }
+    return 0;
+  }
   
 protected:
   T prob;
@@ -472,7 +525,7 @@ public:
   CLONEABLE(Clone<T>)
   
   Clone(bool verbose, T n, bool provide_attrs, VEC<Rcpp::Environment> trj): 
-    Fork("Clone", verbose, provide_attrs, VEC<bool>(trj.size(), true), trj), n(n) {}
+    Fork("Clone", verbose, VEC<bool>(trj.size(), true), trj, provide_attrs), n(n) {}
   
   void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);
@@ -481,12 +534,8 @@ public:
     Fork::print(indent, brief);
   }
   
-  double run(Arrival* arrival);
-  
-protected:
-  T n;
-  
-  void do_clone(Arrival* arrival, int value) {
+  double run(Arrival* arrival) {
+    int value = std::abs(get<int>(n, arrival));
     for (unsigned int i = 1; i < value; i++) {
       if (i < heads.size()) selected = heads[i];
       Arrival* new_arrival = arrival->clone();
@@ -494,7 +543,11 @@ protected:
       arrival->sim->schedule(0, new_arrival);
     }
     if (heads.size()) selected = heads[0];
+    return 0;
   }
+  
+protected:
+  T n;
 };
 
 /**
@@ -505,9 +558,9 @@ public:
   CLONEABLE(Synchronize)
   
   Synchronize(bool verbose, bool wait, bool terminate): 
-    Activity("Synchronize", verbose, 0), wait(wait), terminate(terminate) {}
+    Activity("Synchronize", verbose), wait(wait), terminate(terminate) {}
   
-  Synchronize(const Synchronize& o): Activity(o.name, o.verbose, o.provide_attrs), 
+  Synchronize(const Synchronize& o): Activity(o.name, o.verbose), 
     wait(o.wait), terminate(o.terminate) { pending.clear(); }
   
   void print(int indent=0, bool brief=false) {
@@ -562,7 +615,7 @@ public:
   }
   
   double run(Arrival* arrival) {
-    if (rule && !execute_call<bool>(*rule, arrival))
+    if (rule && !get<bool>(*rule, arrival))
       return 0;
     if (!batched) init(arrival->sim);
     batched->arrivals.push_back(arrival);
@@ -606,7 +659,7 @@ class Separate: public Activity {
 public:
   CLONEABLE(Separate)
   
-  Separate(bool verbose): Activity("Separate", verbose, 0) {}
+  Separate(bool verbose): Activity("Separate", verbose) {}
   
   void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);
@@ -645,7 +698,10 @@ public:
     else Rcpp::Rcout << t << std::endl;
   }
   
-  double run(Arrival* arrival);
+  double run(Arrival* arrival) {
+    double ret = get<double>(t, arrival);
+    return 0;
+  }
   
 protected:
   T t;

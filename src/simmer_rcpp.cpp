@@ -306,7 +306,6 @@ SEXP Select__new(SEXP verbose_, SEXP resources_, SEXP policy_, SEXP id_) {
   bool verbose = as<bool>(verbose_);
   VEC<std::string> resources = as<VEC<std::string> >(resources_);
   std::string policy = as<std::string>(policy_);
-  if (resources.size() == 1) policy = "none";
   int id = as<int>(id_);
   
   XPtr<Select<VEC<std::string> > > 
