@@ -133,11 +133,16 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       else private$add_activity(Leave__new(private$verbose, prob))
     },
     
-    renege_in = function(t) {
+    renege_in = function(t, out=NULL) {
       t <- evaluate_value(t)
+      traj <- list()
+      if (!is.null(out)) {
+        if (!inherits(out, "simmer.trajectory")) stop("not a trajectory")
+        traj <- c(traj, out)
+      }
       if (is.function(t))
-        private$add_activity(RenegeIn__new_func(private$verbose, t, needs_attrs(t)))
-      else private$add_activity(RenegeIn__new(private$verbose, t))
+        private$add_activity(RenegeIn__new_func(private$verbose, t, needs_attrs(t), traj))
+      else private$add_activity(RenegeIn__new(private$verbose, t, traj))
     },
     
     renege_abort = function() { private$add_activity(RenegeAbort__new(private$verbose)) },
@@ -491,10 +496,11 @@ leave <- function(traj, prob) traj$leave(prob)
 #' @inheritParams get_head
 #' @param t timeout to trigger reneging, accepts either a numeric or a callable object 
 #' (a function) which must return a numeric.
+#' @param out optional sub-trajectory in case of reneging.
 #' 
 #' @return The trajectory object.
 #' @export
-renege_in <- function(traj, t) traj$renege_in(t)
+renege_in <- function(traj, t, out=NULL) traj$renege_in(t, out)
 
 #' @inheritParams get_head
 #' 

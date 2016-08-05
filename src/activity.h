@@ -618,8 +618,8 @@ public:
     if (rule && !get<bool>(*rule, arrival))
       return 0;
     if (!batched) init(arrival->sim);
-    batched->arrivals.push_back(arrival);
-    if (batched->arrivals.size() == n) trigger(batched);
+    batched->insert(arrival);
+    if (batched->size() == n) trigger(batched);
     return REJECTED;
   }
   
@@ -642,7 +642,7 @@ protected:
   
   void trigger(Batched* target) {
     if (!batched || batched != target) return;
-    if (batched->arrivals.size()) {
+    if (batched->size()) {
       batched->sim->schedule(0, batched);
       init(batched->sim);
     } else {
@@ -670,12 +670,7 @@ public:
   double run(Arrival* arrival) {
     Batched* batched = dynamic_cast<Batched*>(arrival);
     if (!batched || batched->is_permanent()) return 0;
-    foreach_ (VEC<Arrival*>::value_type& itr, batched->arrivals) {
-      itr->set_activity(itr->get_activity() + batched->get_activity());
-      itr->set_activity(this->get_next());
-      batched->sim->schedule(0, itr);
-    }
-    batched->arrivals.clear();
+    batched->pop_all(this->get_next());
     delete batched;
     return REJECTED;
   }
@@ -685,26 +680,34 @@ public:
  * Renege after some time.
  */
 template <typename T>
-class RenegeIn: public Activity {
+class RenegeIn: public Fork {
 public:
   CLONEABLE(RenegeIn<T>)
   
-  RenegeIn(bool verbose, T t, bool provide_attrs):
-    Activity("RenegeIn", verbose, provide_attrs), t(t) {}
+  RenegeIn(bool verbose, T t, bool provide_attrs, VEC<Rcpp::Environment> trj): 
+    Fork("RenegeIn", verbose, VEC<bool>(trj.size(), false), trj, provide_attrs), t(t) {}
   
   void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << "t: " << t << " }" << std::endl;
-    else Rcpp::Rcout << t << std::endl;
+    else Rcpp::Rcout << t << ", ";
+    Fork::print(indent, brief);
   }
   
   double run(Arrival* arrival) {
-    double ret = get<double>(t, arrival);
+    double ret = std::abs(get<double>(t, arrival));
+    DelayedTask* task = new DelayedTask(arrival->sim, "Renege-Timer", 
+                                        boost::bind(&RenegeIn::trigger, this, arrival));
+    arrival->sim->schedule(ret, task, PRIORITY_MIN);
     return 0;
   }
   
 protected:
   T t;
+  
+  void trigger(Arrival* arrival) {
+    arrival->deactivate();
+  }
 };
 
 /**
@@ -714,7 +717,7 @@ class RenegeAbort: public Activity {
 public:
   CLONEABLE(RenegeAbort)
   
-  RenegeAbort(bool verbose): Activity("RenegeAbort", verbose, 0) {}
+  RenegeAbort(bool verbose): Activity("RenegeAbort", verbose) {}
   
   void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);

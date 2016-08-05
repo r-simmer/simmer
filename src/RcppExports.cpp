@@ -566,27 +566,29 @@ BEGIN_RCPP
 END_RCPP
 }
 // RenegeIn__new
-SEXP RenegeIn__new(SEXP verbose_, SEXP t_);
-RcppExport SEXP simmer_RenegeIn__new(SEXP verbose_SEXP, SEXP t_SEXP) {
+SEXP RenegeIn__new(SEXP verbose_, SEXP t_, SEXP trj_);
+RcppExport SEXP simmer_RenegeIn__new(SEXP verbose_SEXP, SEXP t_SEXP, SEXP trj_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type t_(t_SEXP);
-    __result = Rcpp::wrap(RenegeIn__new(verbose_, t_));
+    Rcpp::traits::input_parameter< SEXP >::type trj_(trj_SEXP);
+    __result = Rcpp::wrap(RenegeIn__new(verbose_, t_, trj_));
     return __result;
 END_RCPP
 }
 // RenegeIn__new_func
-SEXP RenegeIn__new_func(SEXP verbose_, Function t, SEXP provide_attrs_);
-RcppExport SEXP simmer_RenegeIn__new_func(SEXP verbose_SEXP, SEXP tSEXP, SEXP provide_attrs_SEXP) {
+SEXP RenegeIn__new_func(SEXP verbose_, Function t, SEXP provide_attrs_, SEXP trj_);
+RcppExport SEXP simmer_RenegeIn__new_func(SEXP verbose_SEXP, SEXP tSEXP, SEXP provide_attrs_SEXP, SEXP trj_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type verbose_(verbose_SEXP);
     Rcpp::traits::input_parameter< Function >::type t(tSEXP);
     Rcpp::traits::input_parameter< SEXP >::type provide_attrs_(provide_attrs_SEXP);
-    __result = Rcpp::wrap(RenegeIn__new_func(verbose_, t, provide_attrs_));
+    Rcpp::traits::input_parameter< SEXP >::type trj_(trj_SEXP);
+    __result = Rcpp::wrap(RenegeIn__new_func(verbose_, t, provide_attrs_, trj_));
     return __result;
 END_RCPP
 }

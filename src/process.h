@@ -165,6 +165,8 @@ public:
   void run();
   void activate();
   void deactivate();
+  void register_entity(Entity* ptr) { entities.insert(ptr); }
+  void unregister_entity(Entity* ptr) { entities.erase(ptr); }
   virtual void leave(std::string resource);
   virtual void terminate(bool finished);
   virtual int set_attribute(std::string key, double value);
@@ -181,11 +183,12 @@ public:
   Resource* get_selected(int id) { return selected[id]; }
   
 protected:
-  ArrTime lifetime;   /**< time spent in the whole trajectory */
-  ResTime restime;    /**< time spent in resources */
-  Activity* activity; /**< current activity from an R trajectory */
-  Attr attributes;    /**< user-defined (key, value) pairs */
-  SelMap selected;    /**< selected resource */
+  ArrTime lifetime;       /**< time spent in the whole trajectory */
+  ResTime restime;        /**< time spent in resources */
+  Activity* activity;     /**< current activity from an R trajectory */
+  Attr attributes;        /**< user-defined (key, value) pairs */
+  SelMap selected;        /**< selected resource */
+  USET<Entity*> entities; /**< entities that contain this arrival */
 };
 
 /** 
@@ -194,8 +197,6 @@ protected:
 class Batched: public Arrival {
 public:
   CLONEABLE_COUNT(Batched)
-  
-  VEC<Arrival*> arrivals;
 
   Batched(Simulator* sim, std::string name, Activity* batcher, bool permanent):
     Arrival(sim, name, true, Order(), batcher), permanent(permanent) {}
@@ -214,11 +215,22 @@ public:
   
   void leave(std::string resource);
   void terminate(bool finished);
+  void pop_all(Activity* next);
   int set_attribute(std::string key, double value);
   
   bool is_permanent() { return permanent; }
+  size_t size() { return arrivals.size(); }
+  void erase(Arrival* arrival) { 
+    arrivals.erase(std::remove(arrivals.begin(), arrivals.end(), arrival), arrivals.end());
+  }
+  
+  void insert(Arrival* arrival) { 
+    arrivals.push_back(arrival);
+    arrival->register_entity(this);
+  }
   
 protected:
+  VEC<Arrival*> arrivals;
   bool permanent;
 };
 

@@ -431,20 +431,22 @@ SEXP Leave__new_func(SEXP verbose_, Function prob, SEXP provide_attrs_) {
 }
 
 //[[Rcpp::export]]
-SEXP RenegeIn__new(SEXP verbose_, SEXP t_) {
+SEXP RenegeIn__new(SEXP verbose_, SEXP t_, SEXP trj_) {
   bool verbose = as<bool>(verbose_);
   double t = as<double>(t_);
+  VEC<Environment> trj = as<VEC<Environment> >(trj_);
   
-  XPtr<RenegeIn<double> > ptr(new RenegeIn<double>(verbose, t, 0), false);
+  XPtr<RenegeIn<double> > ptr(new RenegeIn<double>(verbose, t, 0, trj), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP RenegeIn__new_func(SEXP verbose_, Function t, SEXP provide_attrs_) {
+SEXP RenegeIn__new_func(SEXP verbose_, Function t, SEXP provide_attrs_, SEXP trj_) {
   bool verbose = as<bool>(verbose_);
   bool provide_attrs = as<bool>(provide_attrs_);
+  VEC<Environment> trj = as<VEC<Environment> >(trj_);
   
-  XPtr<RenegeIn<Function> > ptr(new RenegeIn<Function>(verbose, t, provide_attrs), false);
+  XPtr<RenegeIn<Function> > ptr(new RenegeIn<Function>(verbose, t, provide_attrs, trj), false);
   return ptr;
 }
 

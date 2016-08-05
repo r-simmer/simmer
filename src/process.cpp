@@ -139,6 +139,16 @@ void Batched::terminate(bool finished) {
   delete this;
 }
 
+void Batched::pop_all(Activity* next) {
+  foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
+    itr->set_activity(itr->get_activity() + lifetime.activity);
+    itr->set_activity(next);
+    itr->unregister_entity(this);
+    sim->schedule(0, itr);
+  }
+  arrivals.clear();
+}
+
 int Batched::set_attribute(std::string key, double value) {
   attributes[key] = value;
   foreach_ (VEC<Arrival*>::value_type& itr, arrivals)
