@@ -230,7 +230,7 @@ simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 #' \code{\link{seize}}, \code{\link{release}}, \code{\link{seize_selected}}, \code{\link{release_selected}}, 
 #' \code{\link{select}}, \code{\link{set_prioritization}}, \code{\link{set_attribute}}, 
 #' \code{\link{timeout}}, \code{\link{branch}}, \code{\link{rollback}}, \code{\link{leave}}, 
-#' \code{\link{clone}}, \code{\link{synchronize}}.
+#' \code{\link{clone}}, \code{\link{synchronize}}, \code{\link{batch}}, \code{\link{separate}}.
 #' @export
 #' 
 #' @examples
