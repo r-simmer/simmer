@@ -450,7 +450,7 @@ get_mon_resources(env)
 
 ### `clone` & `synchronize`
 
-The `clone(., n, ...)` method offers the possibility of replicate an arrival `n-1` times to be processed through up to `n` sub-trajectories in parallel. Then, the `synchronize(., wait, mon_all)` method synchronizes and removes replicas. By default, `synchronize` waits for all of the replicas to arrive and allows the last one to continue:
+The `clone(., n, ...)` method offers the possibility of replicating an arrival `n-1` times to be processed through up to `n` sub-trajectories in parallel. Then, the `synchronize(., wait, mon_all)` method synchronizes and removes replicas. By default, `synchronize` waits for all of the replicas to arrive and allows the last one to continue:
 
 ```{r}
 t <- create_trajectory() %>%
@@ -530,6 +530,68 @@ env <- simmer(verbose = TRUE) %>%
   run()
 
 get_mon_arrivals(env)
+```
+
+### `batch` & `separate`
+
+The `batch(., n, timeout, permanent, rule)` method offers the possibility of collecting a number of arrivals before they can continue processing as a block. Then, the `separate(.)` method splits a previously established non-permanent batch. This allows us to implement a rollercoaster process, for instance.
+
+Let us consider a rollercoaster, with up to 10 places and a queue of 20 people, that lasts 5 minutes. We can model this problem as follows: 
+
+```{r}
+set.seed(1234)
+
+t <- create_trajectory() %>%
+  batch(10, timeout = 5, permanent = FALSE) %>%
+  seize("rollercoaster", 1) %>%
+  timeout(5) %>%
+  release("rollercoaster", 1) %>%
+  separate()
+
+env <- simmer() %>%
+  # capacity and queue_size are defined in batches of 10
+  add_resource("rollercoaster", capacity = 1, queue_size = 2) %>%
+  add_generator("person", t, function() rexp(1, 2)) %>%
+  run(15)
+
+get_mon_arrivals(env, per_resource = TRUE)
+```
+
+We can see above that 3 batches have been created. The first 10 people arrive within 3.8 minutes and goes into the rollercoaster. When the ride ends, at 8.8, there are only 6 people waiting, but the `batch` timer (`timeout=5`) has run out, and another ride starts with them. These batches are non-permanent (`permanent=FALSE`), so that `separate` can split them and people can go their separate ways.
+
+The optional argument `rule` accepts a function to perform a fine-grained selection of which arrivals should be batched. For each particular arrival, it is batched if the function returns `TRUE`, or it simply continues otherwise. For instance, in the example above, we can prevent batching by returning always `FALSE`:
+
+```{r}
+t_batch <- create_trajectory() %>%
+  batch(10, timeout = 5, permanent = FALSE, rule = function() FALSE) %>%
+  seize("rollercoaster", 1) %>%
+  timeout(5) %>%
+  release("rollercoaster", 1) %>%
+  separate()
+
+t_nobatch <- create_trajectory() %>%
+  seize("rollercoaster", 1) %>%
+  timeout(5) %>%
+  release("rollercoaster", 1)
+
+set.seed(1234)
+
+env_batch <- simmer() %>%
+  # capacity and queue_size are defined in batches of 10
+  add_resource("rollercoaster", capacity = 1, queue_size = 2) %>%
+  add_generator("person", t_batch, function() rexp(1, 2)) %>%
+  run(15)
+
+set.seed(1234)
+
+env_nobatch <- simmer() %>%
+  # capacity and queue_size are defined in batches of 10
+  add_resource("rollercoaster", capacity = 1, queue_size = 2) %>%
+  add_generator("person", t_nobatch, function() rexp(1, 2)) %>%
+  run(15)
+
+get_mon_arrivals(env_batch, per_resource = TRUE)
+get_mon_arrivals(env_nobatch, per_resource = TRUE)
 ```
 
 ## Concatenating trajectories
