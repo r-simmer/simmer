@@ -133,6 +133,15 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       else private$add_activity(Leave__new(private$verbose, prob))
     },
     
+    renege_in = function(t) {
+      t <- evaluate_value(t)
+      if (is.function(t))
+        private$add_activity(RenegeIn__new_func(private$verbose, t, needs_attrs(t)))
+      else private$add_activity(RenegeIn__new(private$verbose, t))
+    },
+    
+    renege_abort = function() { private$add_activity(RenegeAbort__new(private$verbose)) },
+    
     replicate = function(n, ...) {
       n <- evaluate_value(n)
       trj <- list(...)
@@ -230,7 +239,8 @@ simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 #' \code{\link{seize}}, \code{\link{release}}, \code{\link{seize_selected}}, \code{\link{release_selected}}, 
 #' \code{\link{select}}, \code{\link{set_prioritization}}, \code{\link{set_attribute}}, 
 #' \code{\link{timeout}}, \code{\link{branch}}, \code{\link{rollback}}, \code{\link{leave}}, 
-#' \code{\link{clone}}, \code{\link{synchronize}}, \code{\link{batch}}, \code{\link{separate}}.
+#' \code{\link{renege_in}}, \code{\link{renege_abort}},\code{\link{clone}}, \code{\link{synchronize}}, 
+#' \code{\link{batch}}, \code{\link{separate}}.
 #' @export
 #' 
 #' @examples
@@ -473,6 +483,24 @@ rollback <- function(traj, amount, times=1, check) traj$rollback(amount, times, 
 #' @return The trajectory object.
 #' @export
 leave <- function(traj, prob) traj$leave(prob)
+
+#' Add a renege activity
+#'
+#' Set or unset a timer after which the arrival will abandon.
+#' 
+#' @inheritParams get_head
+#' @param t timeout to trigger reneging, accepts either a numeric or a callable object 
+#' (a function) which must return a numeric.
+#' 
+#' @return The trajectory object.
+#' @export
+renege_in <- function(traj, t) traj$renege_in(t)
+
+#' @inheritParams get_head
+#' 
+#' @rdname renege_in
+#' @export
+renege_abort <- function(traj) traj$renege_abort()
 
 #' Add a clone/synchronize activity
 #'
