@@ -14,8 +14,8 @@ separate(traj)
 
 \item{n}{batch size, accepts a numeric.}
 
-\item{timeout}{optional time limit after which the batch will continue
-even if the batch size has not been fulfilled, accepts a numeric (0 = disabled).}
+\item{timeout}{set an optional timer which triggers batches every \code{timeout} time
+units even if the batch size has not been fulfilled, accepts a numeric (0 = disabled).}
 
 \item{permanent}{if \code{TRUE}, batches cannot be split.}
 

@@ -506,8 +506,8 @@ synchronize <- function(traj, wait=TRUE, mon_all=FALSE) traj$synchronize(wait, m
 #' 
 #' @inheritParams get_head
 #' @param n batch size, accepts a numeric.
-#' @param timeout optional time limit after which the batch will continue
-#' even if the batch size has not been fulfilled, accepts a numeric (0 = disabled).
+#' @param timeout set an optional timer which triggers batches every \code{timeout} time
+#' units even if the batch size has not been fulfilled, accepts a numeric (0 = disabled).
 #' @param permanent if \code{TRUE}, batches cannot be split.
 #' @param rule an optional callable object (a function) which will be applied to 
 #' every arrival to determine whether it should be included into the batch, thus

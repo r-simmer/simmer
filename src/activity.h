@@ -564,17 +564,9 @@ public:
   double run(Arrival* arrival) {
     if (rule && !execute_call<bool>(*rule, arrival))
       return 0;
-    if (!batched) {
-      std::string name = "batch" + boost::lexical_cast<std::string>(count++);
-      batched = new Batched(arrival->sim, name, this->get_next(), permanent);
-      if (timeout) {
-        DelayedTask* task = new DelayedTask(arrival->sim, "Batch-Timer", 
-                                            boost::bind(&Batch::timer, this, batched));
-        arrival->sim->schedule(timeout, task, PRIORITY_MIN);
-      }
-    }
+    if (!batched) init(arrival->sim);
     batched->arrivals.push_back(arrival);
-    if (batched->arrivals.size() == n) schedule();
+    if (batched->arrivals.size() == n) trigger(batched);
     return REJECTED;
   }
   
@@ -586,13 +578,24 @@ protected:
   Batched* batched;
   int count;
   
-  void schedule() {
-    batched->sim->schedule(0, batched);
-    batched = NULL;
+  void init(Simulator* sim) {
+    std::string name = "batch" + boost::lexical_cast<std::string>(count++);
+    batched = new Batched(sim, name, this->get_next(), permanent);
+    if (!timeout) return;
+    DelayedTask* task = new DelayedTask(sim, "Batch-Timer", 
+                                        boost::bind(&Batch::trigger, this, batched));
+    sim->schedule(timeout, task, PRIORITY_MIN);
   }
-  void timer(Batched* target) {
+  
+  void trigger(Batched* target) {
     if (!batched || batched != target) return;
-    schedule();
+    if (batched->arrivals.size()) {
+      batched->sim->schedule(0, batched);
+      init(batched->sim);
+    } else {
+      delete batched;
+      batched = NULL;
+    }
   }
 };
 
