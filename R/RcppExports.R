@@ -173,6 +173,18 @@ Leave__new_func <- function(verbose_, prob, provide_attrs_) {
     .Call('simmer_Leave__new_func', PACKAGE = 'simmer', verbose_, prob, provide_attrs_)
 }
 
+RenegeIn__new <- function(verbose_, t_) {
+    .Call('simmer_RenegeIn__new', PACKAGE = 'simmer', verbose_, t_)
+}
+
+RenegeIn__new_func <- function(verbose_, t, provide_attrs_) {
+    .Call('simmer_RenegeIn__new_func', PACKAGE = 'simmer', verbose_, t, provide_attrs_)
+}
+
+RenegeAbort__new <- function(verbose_) {
+    .Call('simmer_RenegeAbort__new', PACKAGE = 'simmer', verbose_)
+}
+
 Clone__new <- function(verbose_, n_, trj_) {
     .Call('simmer_Clone__new', PACKAGE = 'simmer', verbose_, n_, trj_)
 }

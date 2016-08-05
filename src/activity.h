@@ -628,4 +628,47 @@ public:
   }
 };
 
+/**
+ * Renege after some time.
+ */
+template <typename T>
+class RenegeIn: public Activity {
+public:
+  CLONEABLE(RenegeIn<T>)
+  
+  RenegeIn(bool verbose, T t, bool provide_attrs):
+    Activity("RenegeIn", verbose, provide_attrs), t(t) {}
+  
+  void print(int indent=0, bool brief=false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << "t: " << t << " }" << std::endl;
+    else Rcpp::Rcout << t << std::endl;
+  }
+  
+  double run(Arrival* arrival);
+  
+protected:
+  T t;
+};
+
+/**
+ * Abort reneging.
+ */
+class RenegeAbort: public Activity {
+public:
+  CLONEABLE(RenegeAbort)
+  
+  RenegeAbort(bool verbose): Activity("RenegeAbort", verbose, 0) {}
+  
+  void print(int indent=0, bool brief=false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << " }" << std::endl;
+    else Rcpp::Rcout << std::endl;
+  }
+  
+  double run(Arrival* arrival) {
+    return 0;
+  }
+};
+
 #endif

@@ -432,6 +432,32 @@ SEXP Leave__new_func(SEXP verbose_, Function prob, SEXP provide_attrs_) {
 }
 
 //[[Rcpp::export]]
+SEXP RenegeIn__new(SEXP verbose_, SEXP t_) {
+  bool verbose = as<bool>(verbose_);
+  double t = as<double>(t_);
+  
+  XPtr<RenegeIn<double> > ptr(new RenegeIn<double>(verbose, t, 0), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP RenegeIn__new_func(SEXP verbose_, Function t, SEXP provide_attrs_) {
+  bool verbose = as<bool>(verbose_);
+  bool provide_attrs = as<bool>(provide_attrs_);
+  
+  XPtr<RenegeIn<Function> > ptr(new RenegeIn<Function>(verbose, t, provide_attrs), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
+SEXP RenegeAbort__new(SEXP verbose_) {
+  bool verbose = as<bool>(verbose_);
+  
+  XPtr<RenegeAbort> ptr(new RenegeAbort(verbose), false);
+  return ptr;
+}
+
+//[[Rcpp::export]]
 SEXP Clone__new(SEXP verbose_, SEXP n_, SEXP trj_) {
   bool verbose = as<bool>(verbose_);
   int n = as<int>(n_);

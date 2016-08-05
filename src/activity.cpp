@@ -173,3 +173,14 @@ double Clone<Rcpp::Function>::run(Arrival* arrival) {
   do_clone(arrival, value);
   return 0;
 }
+
+template <>
+double RenegeIn<double>::run(Arrival* arrival) {
+  return 0;
+}
+
+template <>
+double RenegeIn<Rcpp::Function>::run(Arrival* arrival) {
+  double ret = execute_call<double>(t, arrival);
+  return 0;
+}
