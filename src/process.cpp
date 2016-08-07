@@ -183,9 +183,13 @@ int Batched::set_attribute(std::string key, double value) {
 
 void Batched::erase(Arrival* arrival) {
   if (arrival->is_monitored()) {
-    foreach_ (ResMSet::value_type& itr, resources) {
-      double last = get_activity(itr->name);
-      sim->record_release(arrival->name, restime[itr->name].start, sim->now() - last, itr->name);
+    Batched* up = this;
+    while (up) {
+      foreach_ (ResMSet::value_type& itr, resources) {
+        double last = up->get_activity(itr->name);
+        sim->record_release(arrival->name, up->get_start(itr->name), sim->now() - last, itr->name);
+      }
+      up = up->batch;
     }
   }
   arrivals.erase(std::remove(arrivals.begin(), arrivals.end(), arrival), arrivals.end());
