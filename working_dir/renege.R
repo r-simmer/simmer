@@ -1,7 +1,7 @@
 library(simmer)
 
 t0 <- create_trajectory() %>%
-  batch(2, "shared") %>%
+  batch(2, name="shared") %>%
   seize("dummy", 1) %>%
   timeout(10) %>%
   release("dummy", 1)

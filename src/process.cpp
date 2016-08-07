@@ -180,3 +180,13 @@ int Batched::set_attribute(std::string key, double value) {
     itr->set_attribute(key, value);
   return 0;
 }
+
+void Batched::erase(Arrival* arrival) {
+  if (arrival->is_monitored()) {
+    foreach_ (ResMSet::value_type& itr, resources) {
+      double last = get_activity(itr->name);
+      sim->record_release(arrival->name, restime[itr->name].start, sim->now() - last, itr->name);
+    }
+  }
+  arrivals.erase(std::remove(arrivals.begin(), arrivals.end(), arrival), arrivals.end());
+}

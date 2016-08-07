@@ -238,10 +238,8 @@ public:
   
   bool is_permanent() { return permanent; }
   size_t size() { return arrivals.size(); }
-  void erase(Arrival* arrival) { 
-    arrivals.erase(std::remove(arrivals.begin(), arrivals.end(), arrival), arrivals.end());
-  }
   
+  void erase(Arrival* arrival);
   void insert(Arrival* arrival) { 
     arrivals.push_back(arrival);
     arrival->register_entity(this);
