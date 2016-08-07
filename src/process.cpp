@@ -115,28 +115,26 @@ void Arrival::terminate(bool finished) {
   delete this;
 }
 
-int Arrival::set_attribute(std::string key, double value) {
-  attributes[key] = value;
-  if (is_monitored() >= 2) 
-    sim->record_attribute(name, key, value);
-  return 0;
-}
-
 void Arrival::renege(Activity* next) {
   timer = NULL;
   if (batch) return; // renege from non-permanent batches?
-  foreach_ (const ResMSet::value_type& itr, resources) {
-    bool ret = itr->erase(this);
-    if (!ret) itr->release(this, -1);
-  }
-  resources.clear();
-  //Process::deactivate(); // is active? may crash here?
+  bool ret = false;
+  while (resources.begin() != resources.end())
+    ret |= (*resources.begin())->erase(this);
+  if (!ret) Process::deactivate();
   lifetime.remaining = lifetime.busy_until - sim->now();
   if (next) {
     lifetime.activity -= lifetime.remaining;
     activity = next;
     sim->schedule(0, this);
   } else terminate(false);
+}
+
+int Arrival::set_attribute(std::string key, double value) {
+  attributes[key] = value;
+  if (is_monitored() >= 2) 
+    sim->record_attribute(name, key, value);
+  return 0;
 }
 
 void Arrival::set_timeout(double timeout, Activity* next) {

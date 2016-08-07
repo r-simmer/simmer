@@ -26,6 +26,29 @@ test_that("resources are seized/released as expected", {
   expect_equal(env %>% get_server_count("dummy"), 0)
 })
 
+test_that("a release without a previous seize fails", {
+  t <- create_trajectory() %>% 
+    release("dummy", 1)
+  
+  env <- simmer() %>% 
+    add_resource("dummy", 1) %>% 
+    add_generator("asdf", t, at(0))
+  
+  expect_error(env %>% run)
+})
+
+test_that("a release greater than seize fails", {
+  t <- create_trajectory() %>% 
+    seize("dummy", 1) %>%
+    release("dummy", 2)
+  
+  env <- simmer() %>% 
+    add_resource("dummy", 1) %>% 
+    add_generator("asdf", t, at(0))
+  
+  expect_error(env %>% run)
+})
+
 test_that("incorrect types fail", {
   expect_error(create_trajectory() %>% seize(0, 0))
   expect_error(create_trajectory() %>% release(0, 0))

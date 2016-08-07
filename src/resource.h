@@ -20,6 +20,8 @@ public:
     Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), server_count(0), 
     queue_count(0) {}
   
+  ~Resource() { reset(); }
+  
   /**
   * Reset the resource: server, queue
   */
@@ -120,6 +122,7 @@ struct RSCompLIFO {
 };
 
 typedef MSET<RSeize, RQComp> RPQueue;
+typedef UMAP<Arrival*, RPQueue::iterator> QueueMap;
 typedef MSET<RSeize, RSCompFIFO> FIFO;
 typedef MSET<RSeize, RSCompLIFO> LIFO;
 
@@ -128,6 +131,8 @@ typedef MSET<RSeize, RSCompLIFO> LIFO;
 */
 template <typename T>
 class PriorityRes: public Resource {
+  typedef UMAP<Arrival*, typename T::iterator> ServerMap;
+  
 public:
   PriorityRes(Simulator* sim, std::string name, int mon, int capacity, int queue_size): 
     Resource(sim, name, mon, capacity, queue_size) {}
@@ -137,12 +142,16 @@ public:
     foreach_ (RPQueue::value_type& itr, queue)
       delete itr.arrival;
     queue.clear();
+    queue_map.clear();
     server.clear();
+    server_map.clear();
   }
   
 protected:
-  RPQueue queue;        /**< queue container */
-  T server;             /**< server container */
+  RPQueue queue;
+  QueueMap queue_map;
+  T server;
+  ServerMap server_map;
   
   virtual bool room_in_server(int amount, int priority) {
     if (capacity < 0) return true;
@@ -174,6 +183,7 @@ protected:
       next->arrival->activate();
       insert_in_server(verbose, time, next->arrival, next->amount);
       queue_count -= next->amount;
+      queue_map.erase(next->arrival);
       queue.erase(next);
       return true;
     }
@@ -185,11 +195,10 @@ protected:
       try_free_server(verbose, time);
     if (verbose) verbose_print(time, arrival->name, "SERVE");
     server_count += amount;
-    typename T::iterator itr = server.begin();
-    while (itr != server.end() && itr->arrival != arrival) ++itr;
-    if (itr == server.end())
-      server.emplace(time, arrival, amount);
-    else itr->amount += amount;
+    typename ServerMap::iterator search = server_map.find(arrival);
+    if (search == server_map.end())
+      server_map[arrival] = server.emplace(time, arrival, amount);
+    else search->second->amount += amount;
   }
   
   void insert_in_queue(bool verbose, double time, Arrival* arrival, int amount) {
@@ -200,39 +209,39 @@ protected:
       last->arrival->terminate(false);
       queue_count -= last->amount;
       count += last->amount;
+      queue_map.erase(last->arrival);
       queue.erase(last);
     }
     if (verbose) verbose_print(time, arrival->name, "ENQUEUE");
     queue_count += amount;
-    queue.emplace(time, arrival, amount);
+    queue_map[arrival] = queue.emplace(time, arrival, amount);
   }
   
   void remove_from_server(bool verbose, double time, Arrival* arrival, int amount) {
     if (verbose) verbose_print(time, arrival->name, "DEPART");
-    typename T::iterator itr = server.begin();
-    while (itr != server.end() && itr->arrival != arrival) ++itr;
-    if (itr == server.end() || itr->amount < amount)
+    typename ServerMap::iterator search = server_map.find(arrival);
+    if (search == server_map.end())
+      Rcpp::stop("%s: release: not previously seized", name);
+    if (search->second->amount < amount)
       Rcpp::stop("%s: release: incorrect amount (%d)", name, amount);
-    else if (amount < 0 || amount == itr->amount) {
-      server_count -= itr->amount;
-      server.erase(itr);
-      arrival->unregister_entity(this);
+    else if (amount < 0 || amount == search->second->amount) {
+      server_count -= search->second->amount;
+      server.erase(search->second);
+      server_map.erase(search);
     } else {
       server_count -= amount;
-      itr->amount -= amount;
+      search->second->amount -= amount;
     }
   }
   
   virtual bool remove_from_queue(bool verbose, double time, Arrival* arrival) {
-    foreach_ (RPQueue::value_type& itr, queue) {
-      if (itr.arrival == arrival) {
-        if (verbose) verbose_print(time, arrival->name, "DEPART");
-        queue_count -= itr.amount;
-        queue.erase(itr);
-        return true;
-      }
-    }
-    return false;
+    QueueMap::iterator search = queue_map.find(arrival);
+    if (search == queue_map.end()) return false;
+    if (verbose) verbose_print(time, arrival->name, "DEPART");
+    queue_count -= search->second->amount;
+    queue.erase(search->second);
+    queue_map.erase(search);
+    return true;
   }
 };
 
@@ -250,11 +259,13 @@ public:
     foreach_ (RPQueue::value_type& itr, preempted)
       delete itr.arrival;
     preempted.clear();
+    preempted_map.clear();
   }
   
 protected:
   bool keep_queue;
-  RPQueue preempted;    /**< preempted arrivals */
+  RPQueue preempted;
+  QueueMap preempted_map;
   
   bool room_in_server(int amount, int priority) {
     if (this->capacity < 0) return true;
@@ -283,10 +294,11 @@ protected:
         first->arrival->terminate(false);
       } else this->insert_in_queue(verbose, time, first->arrival, first->amount);
     } else {
-      preempted.insert((*first));
+      preempted_map[first->arrival] = preempted.insert((*first));
       this->queue_count += first->amount;
     }
     this->server_count -= first->amount;
+    this->server_map.erase(first->arrival);
     this->server.erase(first);
     return true;
   }
@@ -307,8 +319,13 @@ protected:
       next->arrival->activate();
       this->insert_in_server(verbose, time, next->arrival, next->amount);
       this->queue_count -= next->amount;
-      if (flag) preempted.erase(next);
-      else this->queue.erase(next);
+      if (flag) {
+        preempted_map.erase(next->arrival);
+        preempted.erase(next);
+      } else {
+        this->queue_map.erase(next->arrival);
+        this->queue.erase(next);
+      }
       return true;
     }
     return false;
@@ -316,16 +333,14 @@ protected:
   
   bool remove_from_queue(bool verbose, double time, Arrival* arrival) {
     if (PriorityRes<T>::remove_from_queue(verbose, time, arrival))
-      return true; 
-    foreach_ (RPQueue::value_type& itr, preempted) {
-      if (itr.arrival == arrival) {
-        if (verbose) this->verbose_print(time, arrival->name, "DEPART");
-        this->queue_count -= itr.amount;
-        preempted.erase(itr);
-        return true;
-      }
-    }
-    return false;
+      return true;
+    QueueMap::iterator search = preempted_map.find(arrival);
+    if (search == preempted_map.end()) return false;
+    if (verbose) this->verbose_print(time, arrival->name, "DEPART");
+    this->queue_count -= search->second->amount;
+    preempted.erase(search->second);
+    preempted_map.erase(search);
+    return true;
   }
 };
 

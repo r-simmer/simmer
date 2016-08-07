@@ -64,6 +64,7 @@ int Resource::release(Arrival* arrival, int amount) {
     arrival->leave(this->name);
   }
   remove_from_server(sim->verbose, sim->now(), arrival, amount);
+  arrival->unregister_entity(this);
   
   // serve another
   Task* task = new Task(sim, "Post-Release", boost::bind(&Resource::post_release, this));
@@ -84,9 +85,10 @@ int Resource::post_release() {
 
 bool Resource::erase(Arrival* arrival) {
   bool ret = remove_from_queue(sim->verbose, sim->now(), arrival);
-  if (!ret) remove_from_server(sim->verbose, sim->now(), arrival, -1);
+  if (!ret) release(arrival, -1);
+  else arrival->unregister_entity(this);
   
-  if (is_monitored())
+  if (ret && is_monitored())
     sim->record_resource(name, server_count, queue_count, capacity, queue_size);
   return ret;
 }

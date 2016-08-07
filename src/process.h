@@ -172,7 +172,7 @@ public:
   void deactivate();
   virtual void leave(std::string resource);
   virtual void terminate(bool finished);
-  virtual void renege(Activity* next);
+  void renege(Activity* next);
   virtual int set_attribute(std::string key, double value);
   
   Attr* get_attributes() { return &attributes; }

@@ -244,3 +244,4 @@ env <- simmer(verbose=TRUE) %>%
 
 get_mon_arrivals(env, per_resource=TRUE)
 get_mon_arrivals(env, per_resource=FALSE)
+get_mon_resources(env)
