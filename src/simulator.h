@@ -163,12 +163,11 @@ public:
     if (resource_map.find(name) == resource_map.end()) {
       Resource* res;
       if (!preemptive)
-        res = new Resource(this, name, mon, capacity, queue_size);
+        res = new PriorityRes<FIFO>(this, name, mon, capacity, queue_size);
       else {
         if (preempt_order.compare("fifo") == 0)
-          res = new PreemptiveResource<FIFO>(this, name, mon, capacity, queue_size, keep_queue);
-        else
-          res = new PreemptiveResource<LIFO>(this, name, mon, capacity, queue_size, keep_queue);
+          res = new PreemptiveRes<FIFO>(this, name, mon, capacity, queue_size, keep_queue);
+        else res = new PreemptiveRes<LIFO>(this, name, mon, capacity, queue_size, keep_queue);
       }
       resource_map[name] = res;
       return TRUE;

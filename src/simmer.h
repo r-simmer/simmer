@@ -15,9 +15,11 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
+#include <boost/typeof/typeof.hpp>
 
 #define OPT boost::optional
 #define NONE boost::none
+#define AUTO BOOST_AUTO
 
 #include <boost/foreach.hpp>
 

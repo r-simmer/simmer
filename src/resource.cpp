@@ -50,6 +50,7 @@ int Resource::seize(Arrival* arrival, int amount) {
     return REJECTED;
   }
   
+  arrival->register_entity(this);
   if (is_monitored()) 
     sim->record_resource(name, server_count, queue_count, capacity, queue_size);
   return status;
@@ -65,8 +66,7 @@ int Resource::release(Arrival* arrival, int amount) {
   remove_from_server(sim->verbose, sim->now(), arrival, amount);
   
   // serve another
-  DelayedTask* task = new DelayedTask(sim, "Post-Release", 
-                                      boost::bind(&Resource::post_release, this));
+  Task* task = new Task(sim, "Post-Release", boost::bind(&Resource::post_release, this));
   sim->schedule(0, task, PRIORITY_RELEASE_POST);
   
   return SUCCESS;
@@ -80,4 +80,13 @@ int Resource::post_release() {
   if (is_monitored())
     sim->record_resource(name, server_count, queue_count, capacity, queue_size);
   return SUCCESS;
+}
+
+bool Resource::erase(Arrival* arrival) {
+  bool ret = remove_from_queue(sim->verbose, sim->now(), arrival);
+  if (!ret) remove_from_server(sim->verbose, sim->now(), arrival, -1);
+  
+  if (is_monitored())
+    sim->record_resource(name, server_count, queue_count, capacity, queue_size);
+  return ret;
 }

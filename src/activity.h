@@ -635,8 +635,7 @@ protected:
     std::string name = "batch" + boost::lexical_cast<std::string>(count++);
     batched = new Batched(sim, name, this->get_next(), permanent);
     if (!timeout) return;
-    DelayedTask* task = new DelayedTask(sim, "Batch-Timer", 
-                                        boost::bind(&Batch::trigger, this, batched));
+    Task* task = new Task(sim, "Batch-Timer", boost::bind(&Batch::trigger, this, batched));
     sim->schedule(timeout, task, PRIORITY_MIN);
   }
   
@@ -696,18 +695,14 @@ public:
   
   double run(Arrival* arrival) {
     double ret = std::abs(get<double>(t, arrival));
-    DelayedTask* task = new DelayedTask(arrival->sim, "Renege-Timer", 
-                                        boost::bind(&RenegeIn::trigger, this, arrival));
-    arrival->sim->schedule(ret, task, PRIORITY_MIN);
+    Activity* next = NULL;
+    if (heads.size()) next = heads[0];
+    arrival->set_timeout(ret, next);
     return 0;
   }
   
 protected:
   T t;
-  
-  void trigger(Arrival* arrival) {
-    arrival->deactivate();
-  }
 };
 
 /**
@@ -726,6 +721,7 @@ public:
   }
   
   double run(Arrival* arrival) {
+    arrival->cancel_timeout();
     return 0;
   }
 };

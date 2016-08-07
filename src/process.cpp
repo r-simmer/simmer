@@ -48,7 +48,7 @@ end:
   return;
 }
 
-void DelayedTask::run() {
+void Task::run() {
   if (sim->verbose) Rcpp::Rcout <<
     FMT(10, right) << sim->now() << " |" << FMT(12, right) << "task: " << FMT(15, left) << name << "|" << 
     FMT(12, right) << " " << FMT(15, left) << " " << "| " << std::endl;
@@ -120,6 +120,29 @@ int Arrival::set_attribute(std::string key, double value) {
   if (is_monitored() >= 2) 
     sim->record_attribute(name, key, value);
   return 0;
+}
+
+void Arrival::renege(Activity* next) {
+  timer = NULL;
+  if (batch) return; // renege from non-permanent batches?
+  foreach_ (const ResMSet::value_type& itr, resources) {
+    bool ret = itr->erase(this);
+    if (!ret) itr->release(this, -1);
+  }
+  resources.clear();
+  //Process::deactivate(); // is active? may crash here?
+  lifetime.remaining = lifetime.busy_until - sim->now();
+  if (next) {
+    lifetime.activity -= lifetime.remaining;
+    activity = next;
+    sim->schedule(0, this);
+  } else terminate(false);
+}
+
+void Arrival::set_timeout(double timeout, Activity* next) {
+  cancel_timeout();
+  timer = new Task(sim, "Renege-Timer", boost::bind(&Arrival::renege, this, next));
+  sim->schedule(timeout, timer, PRIORITY_MIN);
 }
 
 void Batched::leave(std::string resource) {

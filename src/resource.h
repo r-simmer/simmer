@@ -3,6 +3,81 @@
 
 #include "process.h"
 
+/** 
+ *  Generic resource, a passive entity that comprises server + a queue.
+ */
+class Resource: public Entity {
+public:
+  /**
+  * Constructor.
+  * @param sim         a pointer to the simulator
+  * @param name        the name
+  * @param mon         int that indicates whether this entity must be monitored
+  * @param capacity    server capacity (-1 means infinity)
+  * @param queue_size  room in the queue (-1 means infinity)
+  */
+  Resource(Simulator* sim, std::string name, int mon, int capacity, int queue_size): 
+    Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), server_count(0), 
+    queue_count(0) {}
+  
+  /**
+  * Reset the resource: server, queue
+  */
+  virtual void reset() {
+    server_count = 0;
+    queue_count = 0;
+  }
+  
+  /**
+  * Seize resources.
+  * @param   arrival  a pointer to the arrival trying to seize resources
+  * @param   amount   the amount of resources needed
+  * 
+  * @return  SUCCESS, ENQUEUED, REJECTED
+  */
+  int seize(Arrival* arrival, int amount);
+  
+  /**
+  * Release resources.
+  * @param   arrival a pointer to the arrival that releases resources
+  * @param   amount  the amount of resources released
+  * 
+  * @return  SUCCESS
+  */
+  int release(Arrival* arrival, int amount);
+  bool erase(Arrival* arrival);
+  
+  void set_capacity(int value);
+  int get_capacity() { return capacity; }
+  void set_queue_size(int value);
+  int get_queue_size() { return queue_size; }
+  int get_server_count() { return server_count; }
+  int get_queue_count() { return queue_count; }
+  
+protected:
+  int capacity;
+  int queue_size;
+  int server_count;     /**< number of arrivals being served */
+  int queue_count;      /**< number of arrivals waiting */
+  
+  int post_release();
+  
+  void verbose_print(double time, std::string arrival, std::string status) {
+    Rcpp::Rcout << 
+      FMT(10, right) << time << " |" << FMT(12, right) << "resource: " << FMT(15, left) << name << "|" << 
+        FMT(12, right) << "arrival: " << FMT(15, left) << arrival << "| " << status << std::endl;
+  }
+  
+  virtual bool room_in_server(int amount, int priority) = 0;
+  virtual bool room_in_queue(int amount, int priority) = 0;
+  virtual bool try_free_server(bool verbose, double time) = 0;
+  virtual bool try_serve_from_queue(bool verbose, double time) = 0;
+  virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount) = 0;
+  virtual void insert_in_queue(bool verbose, double time, Arrival* arrival, int amount) = 0;
+  virtual void remove_from_server(bool verbose, double time, Arrival* arrival, int amount) = 0;
+  virtual bool remove_from_queue(bool verbose, double time, Arrival* arrival) = 0;
+};
+
 struct RSeize {
   double arrived_at;
   Arrival* arrival;
@@ -49,90 +124,32 @@ typedef MSET<RSeize, RSCompFIFO> FIFO;
 typedef MSET<RSeize, RSCompLIFO> LIFO;
 
 /** 
-*  Generic resource, a passive entity that comprises server + a priority queue.
+*  Priority resource.
 */
-class Resource: public Entity {
+template <typename T>
+class PriorityRes: public Resource {
 public:
-  /**
-  * Constructor.
-  * @param sim         a pointer to the simulator
-  * @param name        the name
-  * @param mon         int that indicates whether this entity must be monitored
-  * @param capacity    server capacity (-1 means infinity)
-  * @param queue_size  room in the queue (-1 means infinity)
-  */
-  Resource(Simulator* sim, std::string name, int mon, int capacity, int queue_size): 
-    Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), server_count(0), 
-    queue_count(0) {}
+  PriorityRes(Simulator* sim, std::string name, int mon, int capacity, int queue_size): 
+    Resource(sim, name, mon, capacity, queue_size) {}
   
-  /**
-  * Reset the resource: server, queue
-  */
   virtual void reset() {
-    server_count = 0;
-    queue_count = 0;
+    Resource::reset();
     foreach_ (RPQueue::value_type& itr, queue)
       delete itr.arrival;
     queue.clear();
+    server.clear();
   }
-  
-  /**
-  * Seize resources.
-  * @param   arrival  a pointer to the arrival trying to seize resources
-  * @param   amount   the amount of resources needed
-  * 
-  * @return  SUCCESS, ENQUEUED, REJECTED
-  */
-  int seize(Arrival* arrival, int amount);
-  
-  /**
-  * Release resources.
-  * @param   arrival a pointer to the arrival that releases resources
-  * @param   amount  the amount of resources released
-  * 
-  * @return  SUCCESS
-  */
-  int release(Arrival* arrival, int amount);
-  int post_release();
-  
-  void set_capacity(int value);
-  int get_capacity() { return capacity; }
-  void set_queue_size(int value);
-  int get_queue_size() { return queue_size; }
-  int get_server_count() { return server_count; }
-  int get_queue_count() { return queue_count; }
   
 protected:
-  int capacity;
-  int queue_size;
-  int server_count;     /**< number of arrivals being served */
-  int queue_count;      /**< number of arrivals waiting */
   RPQueue queue;        /**< queue container */
-  
-  void verbose_print(double time, std::string arrival, std::string status) {
-    Rcpp::Rcout << 
-      FMT(10, right) << time << " |" << FMT(12, right) << "resource: " << FMT(15, left) << name << "|" << 
-      FMT(12, right) << "arrival: " << FMT(15, left) << arrival << "| " << status << std::endl;
-  }
+  T server;             /**< server container */
   
   virtual bool room_in_server(int amount, int priority) {
     if (capacity < 0) return true;
     return server_count + amount <= capacity;
   }
   
-  virtual bool try_free_server(bool verbose, double time) { return false; }
-  
-  virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount) {
-    if (verbose) verbose_print(time, arrival->name, "SERVE");
-    server_count += amount;
-  }
-  
-  virtual void remove_from_server(bool verbose, double time, Arrival* arrival, int amount) {
-    if (verbose) verbose_print(time, arrival->name, "DEPART");
-    server_count -= amount;
-  }
-  
-  virtual bool room_in_queue(int amount, int priority) {
+  bool room_in_queue(int amount, int priority) {
     if (queue_size < 0) return true;
     if (queue_count + amount <= queue_size) return true;
     int count = 0;
@@ -145,20 +162,7 @@ protected:
     return false;
   }
   
-  virtual void insert_in_queue(bool verbose, double time, Arrival* arrival, int amount) {
-    int count = 0;
-    if (queue_size > 0) while (queue_count + amount > queue_size && amount > count) {
-      RPQueue::iterator last = --queue.end();
-      if (verbose) verbose_print(time, last->arrival->name, "REJECT");
-      last->arrival->terminate(false);
-      queue_count -= last->amount;
-      count += last->amount;
-      queue.erase(last);
-    }
-    if (verbose) verbose_print(time, arrival->name, "ENQUEUE");
-    queue_count += amount;
-    queue.emplace(time, arrival, amount);
-  }
+  virtual bool try_free_server(bool verbose, double time) { return false; }
   
   virtual bool try_serve_from_queue(bool verbose, double time) {
     RPQueue::iterator next = queue.begin();
@@ -175,36 +179,88 @@ protected:
     }
     return false;
   }
+  
+  void insert_in_server(bool verbose, double time, Arrival* arrival, int amount) {
+    if (capacity > 0) while (server_count + amount > capacity)
+      try_free_server(verbose, time);
+    if (verbose) verbose_print(time, arrival->name, "SERVE");
+    server_count += amount;
+    typename T::iterator itr = server.begin();
+    while (itr != server.end() && itr->arrival != arrival) ++itr;
+    if (itr == server.end())
+      server.emplace(time, arrival, amount);
+    else itr->amount += amount;
+  }
+  
+  void insert_in_queue(bool verbose, double time, Arrival* arrival, int amount) {
+    int count = 0;
+    if (queue_size > 0) while (queue_count + amount > queue_size && amount > count) {
+      RPQueue::iterator last = --queue.end();
+      if (verbose) verbose_print(time, last->arrival->name, "REJECT");
+      last->arrival->terminate(false);
+      queue_count -= last->amount;
+      count += last->amount;
+      queue.erase(last);
+    }
+    if (verbose) verbose_print(time, arrival->name, "ENQUEUE");
+    queue_count += amount;
+    queue.emplace(time, arrival, amount);
+  }
+  
+  void remove_from_server(bool verbose, double time, Arrival* arrival, int amount) {
+    if (verbose) verbose_print(time, arrival->name, "DEPART");
+    typename T::iterator itr = server.begin();
+    while (itr != server.end() && itr->arrival != arrival) ++itr;
+    if (itr == server.end() || itr->amount < amount)
+      Rcpp::stop("%s: release: incorrect amount (%d)", name, amount);
+    else if (amount < 0 || amount == itr->amount) {
+      server_count -= itr->amount;
+      server.erase(itr);
+      arrival->unregister_entity(this);
+    } else {
+      server_count -= amount;
+      itr->amount -= amount;
+    }
+  }
+  
+  virtual bool remove_from_queue(bool verbose, double time, Arrival* arrival) {
+    foreach_ (RPQueue::value_type& itr, queue) {
+      if (itr.arrival == arrival) {
+        if (verbose) verbose_print(time, arrival->name, "DEPART");
+        queue_count -= itr.amount;
+        queue.erase(itr);
+        return true;
+      }
+    }
+    return false;
+  }
 };
 
 /** 
 *  Preemptive resource.
 */
 template <typename T>
-class PreemptiveResource: public Resource {
+class PreemptiveRes: public PriorityRes<T> {
 public:
-  PreemptiveResource(Simulator* sim, std::string name, int mon, 
-                     int capacity, int queue_size, bool keep_queue):
-    Resource(sim, name, mon, capacity, queue_size), keep_queue(keep_queue) {}
+  PreemptiveRes(Simulator* sim, std::string name, int mon, int capacity, int queue_size, bool keep_queue):
+    PriorityRes<T>(sim, name, mon, capacity, queue_size), keep_queue(keep_queue) {}
   
-  virtual void reset() {
-    Resource::reset();
+  void reset() {
+    PriorityRes<T>::reset();
     foreach_ (RPQueue::value_type& itr, preempted)
       delete itr.arrival;
     preempted.clear();
-    server.clear();
   }
   
 protected:
   bool keep_queue;
   RPQueue preempted;    /**< preempted arrivals */
-  T server;             /**< server container */
   
-  virtual bool room_in_server(int amount, int priority) {
-    if (capacity < 0) return true;
-    if (server_count + amount <= capacity) return true;
+  bool room_in_server(int amount, int priority) {
+    if (this->capacity < 0) return true;
+    if (this->server_count + amount <= this->capacity) return true;
     int count = 0;
-    foreach_ (typename T::value_type& itr, server) {
+    foreach_ (typename T::value_type& itr, this->server) {
       if (priority > itr.preemptible())
         count += itr.amount;
       else break;
@@ -213,63 +269,61 @@ protected:
     return false;
   }
   
-  virtual bool try_free_server(bool verbose, double time) {
-    typename T::iterator first = server.begin();
+  bool try_free_server(bool verbose, double time) {
+    typename T::iterator first = this->server.begin();
     first->arrival->deactivate();
-    if (verbose) verbose_print(time, first->arrival->name, "PREEMPT");
+    if (verbose) this->verbose_print(time, first->arrival->name, "PREEMPT");
     if (first->arrival->is_monitored()) {
       double last = first->arrival->get_activity(this->name);
       first->arrival->set_activity(this->name, time - last);
     }
     if (keep_queue) {
-      if (!room_in_queue(first->amount, first->priority())) {
-        if (verbose) verbose_print(time, first->arrival->name, "REJECT");
+      if (!this->room_in_queue(first->amount, first->priority())) {
+        if (verbose) this->verbose_print(time, first->arrival->name, "REJECT");
         first->arrival->terminate(false);
-      } else insert_in_queue(verbose, time, first->arrival, first->amount);
+      } else this->insert_in_queue(verbose, time, first->arrival, first->amount);
     } else {
       preempted.insert((*first));
-      queue_count += first->amount;
+      this->queue_count += first->amount;
     }
-    server_count -= first->amount;
-    server.erase(first);
+    this->server_count -= first->amount;
+    this->server.erase(first);
     return true;
   }
   
-  virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount) {
-    if (capacity > 0) while (server_count + amount > capacity)
-      try_free_server(verbose, time);
-    if (verbose) verbose_print(time, arrival->name, "SERVE");
-    server_count += amount;
-    server.emplace(time, arrival, amount);
-  }
-  
-  virtual void remove_from_server(bool verbose, double time, Arrival* arrival, int amount) {
-    if (verbose) verbose_print(time, arrival->name, "DEPART");
-    typename T::iterator itr = server.begin();
-    while (itr->arrival != arrival) ++itr;
-    server.erase(itr);
-    server_count -= amount;
-  }
-  
-  virtual bool try_serve_from_queue(bool verbose, double time) {
+  bool try_serve_from_queue(bool verbose, double time) {
     RPQueue::iterator next;
     bool flag = false;
     if (!preempted.empty()) {
       next = preempted.begin();
       flag = true;
     }
-    else next = queue.begin();
+    else next = this->queue.begin();
     if (room_in_server(next->amount, next->priority())) {
       if (next->arrival->is_monitored()) {
         double last = next->arrival->get_activity(this->name);
         next->arrival->set_activity(this->name, time - last);
       }
       next->arrival->activate();
-      insert_in_server(verbose, time, next->arrival, next->amount);
-      queue_count -= next->amount;
+      this->insert_in_server(verbose, time, next->arrival, next->amount);
+      this->queue_count -= next->amount;
       if (flag) preempted.erase(next);
-      else queue.erase(next);
+      else this->queue.erase(next);
       return true;
+    }
+    return false;
+  }
+  
+  bool remove_from_queue(bool verbose, double time, Arrival* arrival) {
+    if (PriorityRes<T>::remove_from_queue(verbose, time, arrival))
+      return true; 
+    foreach_ (RPQueue::value_type& itr, preempted) {
+      if (itr.arrival == arrival) {
+        if (verbose) this->verbose_print(time, arrival->name, "DEPART");
+        this->queue_count -= itr.amount;
+        preempted.erase(itr);
+        return true;
+      }
     }
     return false;
   }

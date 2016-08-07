@@ -6,6 +6,7 @@
 // forward declarations
 class Activity;
 class Arrival;
+class Batched;
 class Resource;
 
 /** 
@@ -41,24 +42,23 @@ private:
   unsigned int index;
 };
 
-class DelayedTask: public Process {
-  typedef boost::function<void ()> Task;
+class Task: public Process {
+  typedef boost::function<void ()> Bind;
   
 public:
-  DelayedTask(Simulator* sim, std::string name, Task task): 
-    Process(sim, name, false), task(task) {}
+  Task(Simulator* sim, std::string name, Bind task): Process(sim, name, false), task(task) {}
   
   void run();
   
 private:
-  Task task;
+  Bind task;
 };
 
 typedef UMAP<std::string, double> Attr;
 
 struct Order {
 public:
-  Order(int priority=0, int preemptible=0, bool restart=false) {
+  Order(int priority=0, int preemptible=0, bool restart=false): preemptible(preemptible) {
     set_priority(priority);
     set_preemptible(preemptible);
     set_restart(restart);
@@ -144,7 +144,8 @@ public:
   };
   typedef UMAP<std::string, ArrTime> ResTime;
   typedef UMAP<int, Resource*> SelMap;
-  
+  typedef MSET<Resource*> ResMSet;
+
   CLONEABLE_COUNT(Arrival)
   
   Order order;        /**< priority, preemptible, restart */
@@ -154,21 +155,24 @@ public:
   * @param sim             a pointer to the simulator
   * @param name            the name
   * @param mon             int that indicates whether this entity must be monitored
-  * @param first_activity  the first activity of a user-defined R trajectory
   * @param order           priority, preemptible, restart
+  * @param first_activity  the first activity of a user-defined R trajectory
   */
   Arrival(Simulator* sim, std::string name, int mon, Order order, Activity* first_activity):
-    Process(sim, name, mon), clones(new int(1)), order(order), activity(first_activity) {}
+    Process(sim, name, mon), clones(new int(1)), order(order), activity(first_activity), 
+    timer(NULL), batch(NULL) {}
   
-  virtual ~Arrival() { if (!--(*clones)) delete clones; }
+  virtual ~Arrival() {
+    cancel_timeout();
+    if (!--(*clones)) delete clones;
+  }
   
   void run();
   void activate();
   void deactivate();
-  void register_entity(Entity* ptr) { entities.insert(ptr); }
-  void unregister_entity(Entity* ptr) { entities.erase(ptr); }
   virtual void leave(std::string resource);
   virtual void terminate(bool finished);
+  virtual void renege(Activity* next);
   virtual int set_attribute(std::string key, double value);
   
   Attr* get_attributes() { return &attributes; }
@@ -182,13 +186,27 @@ public:
   void set_selected(int id, Resource* res) { selected[id] = res; }
   Resource* get_selected(int id) { return selected[id]; }
   
+  void register_entity(Resource* ptr) { resources.insert(ptr); }
+  void register_entity(Batched* ptr) { batch = ptr; }
+  void unregister_entity(Resource* ptr) { resources.erase(resources.find(ptr)); }
+  void unregister_entity(Batched* ptr) { batch = NULL; }
+  void set_timeout(double timeout, Activity* next);
+  void cancel_timeout() {
+    if (!timer) return;
+    timer->deactivate();
+    delete timer;
+    timer = NULL;
+  }
+  
 protected:
-  ArrTime lifetime;       /**< time spent in the whole trajectory */
-  ResTime restime;        /**< time spent in resources */
-  Activity* activity;     /**< current activity from an R trajectory */
-  Attr attributes;        /**< user-defined (key, value) pairs */
-  SelMap selected;        /**< selected resource */
-  USET<Entity*> entities; /**< entities that contain this arrival */
+  ArrTime lifetime;     /**< time spent in the whole trajectory */
+  ResTime restime;      /**< time spent in resources */
+  Activity* activity;   /**< current activity from an R trajectory */
+  Attr attributes;      /**< user-defined (key, value) pairs */
+  SelMap selected;      /**< selected resource */
+  Task* timer;          /**< timer that triggers reneging */
+  Batched* batch;       /**< batch that contains this arrival */
+  ResMSet resources;     /**< resources that contain this arrival */
 };
 
 /** 
