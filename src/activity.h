@@ -407,7 +407,7 @@ public:
   
   double run(Arrival* arrival) {
     int ret = get<int>(option, arrival);
-    if (ret < 0 || ret > heads.size())
+    if (ret < 0 || ret > (int)heads.size())
       Rcpp::stop("%s: index out of range", name);
     if (ret) selected = heads[ret-1];
     return 0;
@@ -536,8 +536,8 @@ public:
   
   double run(Arrival* arrival) {
     int value = std::abs(get<int>(n, arrival));
-    for (unsigned int i = 1; i < value; i++) {
-      if (i < heads.size()) selected = heads[i];
+    for (int i = 1; i < value; i++) {
+      if (i < (int)heads.size()) selected = heads[i];
       Arrival* new_arrival = arrival->clone();
       new_arrival->set_activity(this->get_next());
       arrival->sim->schedule(0, new_arrival);
@@ -631,7 +631,7 @@ public:
       (*ptr)->set_activity(this->get_next());
     } else *ptr = init(arrival->sim);
     (*ptr)->insert(arrival);
-    if ((*ptr)->size() == n) trigger(*ptr);
+    if ((int)(*ptr)->size() == n) trigger(*ptr);
     return REJECTED;
   }
   
