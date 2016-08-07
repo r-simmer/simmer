@@ -9,7 +9,8 @@
 
 ## Minor changes and fixes
 
-* If a `branch`'s `option` returns `0`, the arrival skips the `branch` and continues to the next activity instead of throwing an `index out of range` error (#70). 
+* If a `branch`'s `option` returns `0`, the arrival skips the `branch` and continues to the next activity instead of throwing an `index out of range` error (#70).
+* Throw errors on incorrect releases (#72).
 * New "The Bank Tutorial: Part I" vignette, by Duncan Garmonsway @nacnudus (#68).
 * Update "Advanced Trajectory Usage" vignette.
 
