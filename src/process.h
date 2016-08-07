@@ -171,6 +171,7 @@ public:
   void activate();
   void deactivate();
   virtual void leave(std::string resource);
+  virtual void leave(std::string resource, double start, double activity);
   virtual void terminate(bool finished);
   void renege(Activity* next);
   virtual int set_attribute(std::string key, double value);
@@ -232,7 +233,20 @@ public:
     arrivals.clear();
   }
   
-  void leave(std::string resource);
+  void leave(std::string resource) {
+    foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
+      if (itr->is_monitored())
+        itr->leave(resource, restime[resource].start, restime[resource].activity);
+    }
+  }
+  
+  void leave(std::string resource, double start, double activity) {
+    foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
+      if (itr->is_monitored())
+        itr->leave(resource, start, activity);
+    }
+  }
+  
   void terminate(bool finished);
   void pop_all(Activity* next);
   int set_attribute(std::string key, double value);

@@ -643,7 +643,7 @@ protected:
   OPT<Rcpp::Function> rule;
   Batched* batched;
   static BatchedMap pool;
-  static int count;
+  static unsigned int count;
   
   Batched* init(Simulator* sim) {
     std::string str;

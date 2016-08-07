@@ -1,6 +1,6 @@
 #include "activity.h"
 
-int Batch::count = 0;
+unsigned int Batch::count = 0;
 BatchedMap Batch::pool = BatchedMap();
 
 template <>

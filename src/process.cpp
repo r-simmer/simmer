@@ -108,6 +108,10 @@ void Arrival::leave(std::string resource) {
   sim->record_release(name, restime[resource].start, restime[resource].activity, resource);
 }
 
+void Arrival::leave(std::string resource, double start, double activity) {
+  sim->record_release(name, start, activity, resource);
+}
+
 void Arrival::terminate(bool finished) {
   lifetime.activity -= lifetime.remaining;
   if (is_monitored() >= 1)
@@ -147,13 +151,6 @@ void Arrival::set_timeout(double timeout, Activity* next) {
   sim->schedule(timeout, timer, PRIORITY_MIN);
 }
 
-void Batched::leave(std::string resource) {
-  foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
-    if (itr->is_monitored())
-      sim->record_release(itr->name, restime[resource].start, restime[resource].activity, resource);
-  }
-}
-
 void Batched::terminate(bool finished) {
   lifetime.activity -= lifetime.remaining;
   foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
@@ -182,15 +179,27 @@ int Batched::set_attribute(std::string key, double value) {
 }
 
 void Batched::erase(Arrival* arrival) {
-  if (arrival->is_monitored()) {
-    Batched* up = this;
-    while (up) {
-      foreach_ (ResMSet::value_type& itr, resources) {
-        double last = up->get_activity(itr->name);
-        sim->record_release(arrival->name, up->get_start(itr->name), sim->now() - last, itr->name);
+  bool ret = false;
+  if (arrivals.size() == 1 && batch && !batch->is_permanent()) {
+    batch->erase(this);
+    ret = true;
+  } else if (arrivals.size() == 1) {
+    while (resources.begin() != resources.end())
+      ret |= (*resources.begin())->erase(this);
+    if (!ret) Process::deactivate();
+  } else {
+    if (arrival->is_monitored()) {
+      Batched* up = this;
+      while (up) {
+        foreach_ (ResMSet::value_type& itr, resources) {
+          double last = up->get_activity(itr->name);
+          arrival->leave(itr->name, up->get_start(itr->name), sim->now() - last);
+        }
+        up = up->batch;
       }
-      up = up->batch;
     }
   }
   arrivals.erase(std::remove(arrivals.begin(), arrivals.end(), arrival), arrivals.end());
+  arrival->unregister_entity(this);
+  if (!arrivals.size()) delete this;
 }
