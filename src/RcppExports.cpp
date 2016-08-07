@@ -644,8 +644,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // Batch__new
-SEXP Batch__new(SEXP verbose_, SEXP n_, SEXP timeout_, SEXP permanent_);
-RcppExport SEXP simmer_Batch__new(SEXP verbose_SEXP, SEXP n_SEXP, SEXP timeout_SEXP, SEXP permanent_SEXP) {
+SEXP Batch__new(SEXP verbose_, SEXP n_, SEXP timeout_, SEXP permanent_, SEXP name_);
+RcppExport SEXP simmer_Batch__new(SEXP verbose_SEXP, SEXP n_SEXP, SEXP timeout_SEXP, SEXP permanent_SEXP, SEXP name_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -653,13 +653,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type n_(n_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type timeout_(timeout_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type permanent_(permanent_SEXP);
-    __result = Rcpp::wrap(Batch__new(verbose_, n_, timeout_, permanent_));
+    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
+    __result = Rcpp::wrap(Batch__new(verbose_, n_, timeout_, permanent_, name_));
     return __result;
 END_RCPP
 }
 // Batch__new_func
-SEXP Batch__new_func(SEXP verbose_, SEXP n_, SEXP timeout_, SEXP permanent_, Function rule, SEXP provide_attrs_);
-RcppExport SEXP simmer_Batch__new_func(SEXP verbose_SEXP, SEXP n_SEXP, SEXP timeout_SEXP, SEXP permanent_SEXP, SEXP ruleSEXP, SEXP provide_attrs_SEXP) {
+SEXP Batch__new_func(SEXP verbose_, SEXP n_, SEXP timeout_, SEXP permanent_, SEXP name_, Function rule, SEXP provide_attrs_);
+RcppExport SEXP simmer_Batch__new_func(SEXP verbose_SEXP, SEXP n_SEXP, SEXP timeout_SEXP, SEXP permanent_SEXP, SEXP name_SEXP, SEXP ruleSEXP, SEXP provide_attrs_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -667,9 +668,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type n_(n_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type timeout_(timeout_SEXP);
     Rcpp::traits::input_parameter< SEXP >::type permanent_(permanent_SEXP);
+    Rcpp::traits::input_parameter< SEXP >::type name_(name_SEXP);
     Rcpp::traits::input_parameter< Function >::type rule(ruleSEXP);
     Rcpp::traits::input_parameter< SEXP >::type provide_attrs_(provide_attrs_SEXP);
-    __result = Rcpp::wrap(Batch__new_func(verbose_, n_, timeout_, permanent_, rule, provide_attrs_));
+    __result = Rcpp::wrap(Batch__new_func(verbose_, n_, timeout_, permanent_, name_, rule, provide_attrs_));
     return __result;
 END_RCPP
 }

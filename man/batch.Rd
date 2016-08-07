@@ -5,7 +5,7 @@
 \alias{separate}
 \title{Add a batch/separate activity}
 \usage{
-batch(traj, n, timeout = 0, permanent = FALSE, rule = NULL)
+batch(traj, n, timeout = 0, permanent = FALSE, name = "", rule = NULL)
 
 separate(traj)
 }
@@ -18,6 +18,10 @@ separate(traj)
 units even if the batch size has not been fulfilled, accepts a numeric (0 = disabled).}
 
 \item{permanent}{if \code{TRUE}, batches cannot be split.}
+
+\item{name}{optional string. Unnamed batches from different \code{batch} activities are 
+independent. However, if you want to feed arrivals from different trajectories into a 
+same batch, you need to specify a common name across all your \code{batch} activities.}
 
 \item{rule}{an optional callable object (a function) which will be applied to 
 every arrival to determine whether it should be included into the batch, thus}

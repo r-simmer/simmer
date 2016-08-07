@@ -116,9 +116,13 @@ void Arrival::terminate(bool finished) {
 }
 
 void Arrival::renege(Activity* next) {
-  timer = NULL;
-  if (batch) return; // renege from non-permanent batches?
   bool ret = false;
+  timer = NULL;
+  if (batch) {
+    if (batch->is_permanent()) return;
+    ret = true;
+    batch->erase(this);
+  }
   while (resources.begin() != resources.end())
     ret |= (*resources.begin())->erase(this);
   if (!ret) Process::deactivate();

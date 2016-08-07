@@ -163,13 +163,14 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       private$add_activity(Synchronize__new(private$verbose, wait, mon_all))
     },
     
-    batch = function(n, timeout=0, permanent=FALSE, rule=NULL) {
+    batch = function(n, timeout=0, permanent=FALSE, name="", rule=NULL) {
       n <- evaluate_value(n)
       timeout <- evaluate_value(timeout)
       permanent <- evaluate_value(permanent)
+      name <- evaluate_value(name)
       if (is.function(rule))
-        private$add_activity(Batch__new_func(private$verbose, n, timeout, permanent, rule, needs_attrs(rule)))
-      else private$add_activity(Batch__new(private$verbose, n, timeout, permanent))
+        private$add_activity(Batch__new_func(private$verbose, n, timeout, permanent, name, rule, needs_attrs(rule)))
+      else private$add_activity(Batch__new(private$verbose, n, timeout, permanent, name))
     },
     
     separate = function() { private$add_activity(Separate__new(private$verbose)) },
@@ -543,14 +544,17 @@ synchronize <- function(traj, wait=TRUE, mon_all=FALSE) traj$synchronize(wait, m
 #' @param timeout set an optional timer which triggers batches every \code{timeout} time
 #' units even if the batch size has not been fulfilled, accepts a numeric (0 = disabled).
 #' @param permanent if \code{TRUE}, batches cannot be split.
+#' @param name optional string. Unnamed batches from different \code{batch} activities are 
+#' independent. However, if you want to feed arrivals from different trajectories into a 
+#' same batch, you need to specify a common name across all your \code{batch} activities.
 #' @param rule an optional callable object (a function) which will be applied to 
 #' every arrival to determine whether it should be included into the batch, thus
 #  it must return a boolean.
 #' 
 #' @return The trajectory object.
 #' @export
-batch <- function(traj, n, timeout=0, permanent=FALSE, rule=NULL)
-  traj$batch(n, timeout, permanent, rule)
+batch <- function(traj, n, timeout=0, permanent=FALSE, name="", rule=NULL)
+  traj$batch(n, timeout, permanent, name, rule)
 
 #' @inheritParams get_head
 #' 

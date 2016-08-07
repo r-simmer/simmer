@@ -489,26 +489,28 @@ SEXP Synchronize__new(SEXP verbose_, SEXP wait_, SEXP terminate_) {
 }
 
 //[[Rcpp::export]]
-SEXP Batch__new(SEXP verbose_, SEXP n_, SEXP timeout_, SEXP permanent_) {
+SEXP Batch__new(SEXP verbose_, SEXP n_, SEXP timeout_, SEXP permanent_, SEXP name_) {
   bool verbose = as<bool>(verbose_);
   int n = as<int>(n_);
   double timeout = as<double>(timeout_);
   bool permanent = as<bool>(permanent_);
+  std::string name = as<std::string>(name_);
   
-  XPtr<Batch> ptr(new Batch(verbose, n, timeout, permanent), false);
+  XPtr<Batch> ptr(new Batch(verbose, n, timeout, permanent, name), false);
   return ptr;
 }
 
 //[[Rcpp::export]]
-SEXP Batch__new_func(SEXP verbose_, SEXP n_, SEXP timeout_, SEXP permanent_,
+SEXP Batch__new_func(SEXP verbose_, SEXP n_, SEXP timeout_, SEXP permanent_, SEXP name_,
                      Function rule, SEXP provide_attrs_) {
   bool verbose = as<bool>(verbose_);
   int n = as<int>(n_);
   double timeout = as<double>(timeout_);
   bool permanent = as<bool>(permanent_);
+  std::string name = as<std::string>(name_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Batch> ptr(new Batch(verbose, n, timeout, permanent, rule, provide_attrs), false);
+  XPtr<Batch> ptr(new Batch(verbose, n, timeout, permanent, name, rule, provide_attrs), false);
   return ptr;
 }
 

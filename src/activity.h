@@ -424,8 +424,8 @@ class Rollback: public Activity {
 public:
   CLONEABLE(Rollback)
   
-  Rollback(bool verbose, int amount, int times, OPT<Rcpp::Function> check=NONE, 
-           bool provide_attrs=false): Activity("Rollback", verbose, provide_attrs), 
+  Rollback(bool verbose, int amount, int times, OPT<Rcpp::Function> check = NONE, 
+           bool provide_attrs = false): Activity("Rollback", verbose, provide_attrs), 
     amount(std::abs(amount)), times(times), check(check), cached(NULL), selected(NULL) {}
   
   Rollback(const Rollback& o): Activity(o.name, o.verbose, o.provide_attrs), amount(o.amount), 
@@ -593,6 +593,8 @@ protected:
   UMAP<std::string, int> pending;
 };
 
+typedef PTRMAP<std::string, Batched*> BatchedMap;
+
 /**
  * Create a batch.
  */
@@ -600,26 +602,36 @@ class Batch: public Activity {
 public:
   CLONEABLE(Batch)
   
-  Batch(bool verbose, int n, double timeout, bool permanent, OPT<Rcpp::Function> rule=NONE, 
-        bool provide_attrs=false): Activity("Batch", verbose, provide_attrs), n(n), 
-    timeout(std::abs(timeout)), permanent(permanent), rule(rule), batched(NULL), count(0) {}
+  Batch(bool verbose, int n, double timeout, bool permanent, std::string id = "",
+        OPT<Rcpp::Function> rule = NONE, bool provide_attrs = false): 
+    Activity("Batch", verbose, provide_attrs), n(n), timeout(std::abs(timeout)), 
+    permanent(permanent), id(id), rule(rule), batched(NULL) {
+    if (pool.find(id) == pool.end())
+      pool[id] = NULL;
+  }
   
   Batch(const Batch& o): Activity(o.name, o.verbose, o.provide_attrs), n(o.n), 
-    timeout(o.timeout), permanent(o.permanent), rule(o.rule), batched(NULL), count(0) {}
+    timeout(o.timeout), permanent(o.permanent), id(o.id), rule(o.rule), batched(NULL) {}
   
   void print(int indent=0, bool brief=false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << 
-      "n: " << n << ", timeout: " << timeout << ", permanent: " << permanent << " }" << std::endl;
-    else Rcpp::Rcout << n << ", " << timeout << ", " << permanent << std::endl;
+      "n: " << n << ", timeout: " << timeout << ", permanent: " << permanent << 
+      ", name: " << id << " }" << std::endl;
+    else Rcpp::Rcout << n << ", " << timeout << ", " << permanent << ", " << id << std::endl;
   }
   
   double run(Arrival* arrival) {
     if (rule && !get<bool>(*rule, arrival))
       return 0;
-    if (!batched) init(arrival->sim);
-    batched->insert(arrival);
-    if (batched->size() == n) trigger(batched);
+    Batched** ptr = &batched;
+    if (id.size()) ptr = &pool[id];
+    if ((*ptr)) {
+      (*ptr)->sim = arrival->sim;
+      (*ptr)->set_activity(this->get_next());
+    } else *ptr = init(arrival->sim);
+    (*ptr)->insert(arrival);
+    if ((*ptr)->size() == n) trigger(*ptr);
     return REJECTED;
   }
   
@@ -627,26 +639,34 @@ protected:
   int n;
   double timeout;
   bool permanent;
+  std::string id;
   OPT<Rcpp::Function> rule;
   Batched* batched;
-  int count;
+  static BatchedMap pool;
+  static int count;
   
-  void init(Simulator* sim) {
-    std::string name = "batch" + boost::lexical_cast<std::string>(count++);
-    batched = new Batched(sim, name, this->get_next(), permanent);
-    if (!timeout) return;
-    Task* task = new Task(sim, "Batch-Timer", boost::bind(&Batch::trigger, this, batched));
-    sim->schedule(timeout, task, PRIORITY_MIN);
+  Batched* init(Simulator* sim) {
+    std::string str;
+    if (id.size()) str = "batch_" + id;
+    else str= "batch" + boost::lexical_cast<std::string>(count++);
+    Batched* ptr = new Batched(sim, str, this->get_next(), permanent);
+    if (timeout) {
+      Task* task = new Task(sim, "Batch-Timer", boost::bind(&Batch::trigger, this, ptr));
+      sim->schedule(timeout, task, PRIORITY_MIN);
+    }
+    return ptr;
   }
   
   void trigger(Batched* target) {
-    if (!batched || batched != target) return;
-    if (batched->size()) {
-      batched->sim->schedule(0, batched);
-      init(batched->sim);
+    Batched** ptr = &batched;
+    if (id.size()) ptr = &pool[id];
+    if (!(*ptr) || *ptr != target) return;
+    if ((*ptr)->size()) {
+      (*ptr)->sim->schedule(0, (*ptr));
+      *ptr = init((*ptr)->sim);
     } else {
-      delete batched;
-      batched = NULL;
+      delete *ptr;
+      *ptr = NULL;
     }
   }
 };
