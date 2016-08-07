@@ -182,7 +182,6 @@ public:
   void set_activity(Activity* ptr) { activity = ptr; }
   void set_activity(double value) { lifetime.activity += value; }
   void set_activity(std::string name, double value) { restime[name].activity = value; }
-  double get_start(std::string name) { return restime[name].start; }
   double get_activity() { return lifetime.activity; }
   double get_activity(std::string name) { return restime[name].activity; }
   void set_selected(int id, Resource* res) { selected[id] = res; }
@@ -254,11 +253,12 @@ public:
   bool is_permanent() { return permanent; }
   size_t size() { return arrivals.size(); }
   
-  void erase(Arrival* arrival);
   void insert(Arrival* arrival) { 
     arrivals.push_back(arrival);
     arrival->register_entity(this);
   }
+  void erase(Arrival* arrival);
+  void report(Arrival* arrival);
   
 protected:
   VEC<Arrival*> arrivals;

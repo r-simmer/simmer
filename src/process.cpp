@@ -179,27 +179,30 @@ int Batched::set_attribute(std::string key, double value) {
 }
 
 void Batched::erase(Arrival* arrival) {
-  bool ret = false;
-  if (arrivals.size() == 1 && batch && !batch->is_permanent()) {
-    batch->erase(this);
-    ret = true;
-  } else if (arrivals.size() == 1) {
-    while (resources.begin() != resources.end())
-      ret |= (*resources.begin())->erase(this);
-    if (!ret) Process::deactivate();
-  } else {
+  bool del = true;
+  if (arrivals.size() > 1 || (batch && batch->is_permanent())) {
+    del = false;
     if (arrival->is_monitored()) {
       Batched* up = this;
       while (up) {
-        foreach_ (ResMSet::value_type& itr, resources) {
-          double last = up->get_activity(itr->name);
-          arrival->leave(itr->name, up->get_start(itr->name), sim->now() - last);
-        }
+        up->report(arrival);
         up = up->batch;
       }
     }
-  }
+  } else if (arrivals.size() == 1 && !batch) {
+    bool ret = false;
+    while (resources.begin() != resources.end())
+      ret |= (*resources.begin())->erase(this);
+    if (!ret) Process::deactivate();
+  } else batch->erase(this);
   arrivals.erase(std::remove(arrivals.begin(), arrivals.end(), arrival), arrivals.end());
   arrival->unregister_entity(this);
-  if (!arrivals.size()) delete this;
+  if (del) delete this;
+}
+
+void Batched::report(Arrival* arrival) {
+  foreach_ (ResMSet::value_type& itr, resources) {
+    double last = get_activity(itr->name);
+    arrival->leave(itr->name, restime[itr->name].start, sim->now() - last);
+  }
 }
