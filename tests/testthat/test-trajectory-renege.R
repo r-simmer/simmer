@@ -125,7 +125,7 @@ test_that("a preempted arrival reneges", {
   
   t0 <- create_trajectory() %>%
     renege_in(2) %>%
-    join(t0)
+    join(t1)
   
   env <- simmer(verbose=TRUE) %>%
     add_resource("dummy", 1, preemptive=TRUE) %>%
