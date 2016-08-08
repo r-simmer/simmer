@@ -132,7 +132,6 @@ void Arrival::renege(Activity* next) {
   if (!ret) Process::deactivate();
   lifetime.remaining = lifetime.busy_until - sim->now();
   if (next) {
-    lifetime.activity -= lifetime.remaining;
     activity = next;
     sim->schedule(0, this);
   } else terminate(false);
