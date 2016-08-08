@@ -7,13 +7,11 @@
 #include <boost/container/set.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
-#include <boost/ptr_container/ptr_map.hpp>
 
 #define VEC std::vector
 #define MSET boost::container::multiset
 #define USET boost::unordered_set
 #define UMAP boost::unordered_map
-#define PTRMAP boost::ptr_map
 
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>

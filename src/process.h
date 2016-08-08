@@ -15,7 +15,6 @@ class Resource;
 class Process: public Entity {
 public:
   Process(Simulator* sim, std::string name, int mon): Entity(sim, name, mon) {}
-  virtual ~Process(){}
   virtual void run() = 0;
   virtual void activate() {}
   virtual void deactivate();
@@ -30,7 +29,7 @@ public:
     Process(sim, name, false), param(param), duration(duration), value(value), 
     period(period), set(set), index(0) {}
   
-  virtual void reset() { index = 0; }
+  void reset() { index = 0; }
   void run();
   
 private:
@@ -111,7 +110,7 @@ public:
   /**
    * Reset the generator: counter, trajectory
    */
-  virtual void reset() { 
+  void reset() {
     count = 0;
     Rcpp::Environment dist_env(dist.environment());
     Rcpp::Environment reset_env(dist_env[".reset"]);
@@ -162,7 +161,9 @@ public:
     Process(sim, name, mon), clones(new int(1)), order(order), activity(first_activity), 
     timer(NULL), batch(NULL) {}
   
-  virtual ~Arrival() {
+  ~Arrival() { reset(); }
+  
+  void reset() {
     cancel_timeout();
     if (!--(*clones)) delete clones;
   }
@@ -217,16 +218,17 @@ class Batched: public Arrival {
 public:
   CLONEABLE_COUNT(Batched)
 
-  Batched(Simulator* sim, std::string name, Activity* batcher, bool permanent):
-    Arrival(sim, name, true, Order(), batcher), permanent(permanent) {}
+  Batched(Simulator* sim, std::string name, bool permanent):
+    Arrival(sim, name, true, Order(), NULL), permanent(permanent) {}
   
   Batched(const Batched& o): Arrival(o), arrivals(o.arrivals), permanent(o.permanent) { 
-    for (unsigned int i=0; i<arrivals.size(); i++) {
+    for (unsigned int i=0; i<arrivals.size(); i++)
       arrivals[i] = arrivals[i]->clone();
-    }
   }
   
-  ~Batched() { 
+  ~Batched() { reset(); }
+  
+  void reset() {
     foreach_ (VEC<Arrival*>::value_type& itr, arrivals)
       delete itr;
     arrivals.clear();

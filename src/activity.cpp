@@ -1,8 +1,5 @@
 #include "activity.h"
 
-unsigned int Batch::count = 0;
-BatchedMap Batch::pool = BatchedMap();
-
 template <>
 void SetPrior<VEC<int> >::print(int indent, bool brief) {
   if (values.size() != 3) Rcpp::stop("%s: 3 values needed", name);

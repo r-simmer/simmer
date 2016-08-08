@@ -29,13 +29,13 @@ public:
     name(name), verbose(verbose), provide_attrs(provide_attrs), n(1), 
     priority(priority), next(NULL), prev(NULL) {}
   
-  virtual ~Activity(){}
+  virtual ~Activity() {}
   
   /**
    * Print the activity info.
    * @param indent number of spaces at the beginning of each line
    */
-  virtual void print(int indent=0, bool brief=false) {
+  virtual void print(int indent = 0, bool brief = false) {
     if (!brief) {
       for (int i = 0; i < indent; ++i) Rcpp::Rcout << " ";
       Rcpp::Rcout << "{ Activity: " << FMT(12, left) << name << " | ";
@@ -117,7 +117,7 @@ public:
       itr->set_prev(this);
   }
   
-  virtual void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     indent += 2;
     if (!brief)
       for (unsigned int i = 0; i < trj.size(); i++) {
@@ -129,14 +129,14 @@ public:
     else Rcpp::Rcout << trj.size() << " paths" << std::endl;
   }
   
-  virtual void set_next(Activity* activity) {
+  void set_next(Activity* activity) {
     Activity::set_next(activity);
     for (unsigned int i = 0; i < tails.size(); i++) {
       if (cont[i]) tails[i]->set_next(activity);
     }
   }
   
-  virtual Activity* get_next() {
+  Activity* get_next() {
     if (selected) {
       Activity* aux = selected;
       selected = NULL;
@@ -165,7 +165,7 @@ public:
         VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask): 
     Fork("Seize", verbose, cont, trj, provide_attrs), resource(resource), amount(amount), mask(mask) {}
   
-  void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << 
       "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
@@ -219,7 +219,7 @@ public:
 protected:
   int id;
   
-  virtual Resource* get_resource(Arrival* arrival) {
+  Resource* get_resource(Arrival* arrival) {
     return arrival->get_selected(id);
   }
 };
@@ -236,7 +236,7 @@ public:
     Activity("Release", verbose, provide_attrs, PRIORITY_RELEASE), 
     resource(resource), amount(amount) {}
   
-  void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << 
       "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
@@ -271,7 +271,7 @@ public:
 protected:
   int id;
   
-  virtual Resource* get_resource(Arrival* arrival) {
+  Resource* get_resource(Arrival* arrival) {
     return arrival->get_selected(id);
   }
 };
@@ -288,7 +288,7 @@ public:
     Activity("Select", verbose, provide_attrs), resources(resources),
     policy(policy), id(id), dispatcher(Policy(resources, policy)) {}
   
-  void print(int indent=0, bool brief=false);
+  void print(int indent = 0, bool brief = false);
   
   double run(Arrival* arrival) {
     Resource* selected;
@@ -318,7 +318,7 @@ public:
   SetAttribute(bool verbose, std::string key, T value, bool provide_attrs):
     Activity("SetAttribute", verbose, provide_attrs), key(key), value(value) {}
   
-  void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << 
       "key: " << key << ", value: " << value << " }" << std::endl;
@@ -346,7 +346,7 @@ public:
   SetPrior(bool verbose, T values, bool provide_attrs):
     Activity("SetPrior", verbose, provide_attrs), values(values) {}
   
-  void print(int indent=0, bool brief=false);
+  void print(int indent = 0, bool brief = false);
   
   double run(Arrival* arrival) {
     VEC<int> ret = get<VEC<int> >(values, arrival);
@@ -372,7 +372,7 @@ public:
   Timeout(bool verbose, T delay, bool provide_attrs):
     Activity("Timeout", verbose, provide_attrs), delay(delay) {}
   
-  void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << "delay: " << delay << " }" << std::endl;
     else Rcpp::Rcout << delay << std::endl;
@@ -398,7 +398,7 @@ public:
   Branch(bool verbose, Rcpp::Function option, bool provide_attrs, VEC<bool> cont, VEC<Rcpp::Environment> trj):
     Fork("Branch", verbose, cont, trj, provide_attrs), option(option) {}
   
-  void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << "option: " << option << " }" << std::endl;
     else Rcpp::Rcout << option << ", ";
@@ -431,7 +431,7 @@ public:
   Rollback(const Rollback& o): Activity(o.name, o.verbose, o.provide_attrs), amount(o.amount), 
     times(o.times), check(o.check), cached(NULL), selected(NULL) { pending.clear(); }
   
-  void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     if (!cached) cached = goback();
     Activity::print(indent, brief);
     if (!brief) {
@@ -498,7 +498,7 @@ public:
   Leave(bool verbose, T prob, bool provide_attrs):
     Activity("Leave", verbose, provide_attrs), prob(prob) {}
   
-  void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << "prob: " << prob << " }" << std::endl;
     else Rcpp::Rcout << prob << std::endl;
@@ -527,7 +527,7 @@ public:
   Clone(bool verbose, T n, bool provide_attrs, VEC<Rcpp::Environment> trj): 
     Fork("Clone", verbose, VEC<bool>(trj.size(), true), trj, provide_attrs), n(n) {}
   
-  void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << "n: " << n << " }" << std::endl;
     else Rcpp::Rcout << n << ", ";
@@ -563,7 +563,7 @@ public:
   Synchronize(const Synchronize& o): Activity(o.name, o.verbose), 
     wait(o.wait), terminate(o.terminate) { pending.clear(); }
   
-  void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << "wait: " << wait << " }" << std::endl;
     else Rcpp::Rcout << wait << std::endl;
@@ -593,8 +593,6 @@ protected:
   UMAP<std::string, int> pending;
 };
 
-typedef PTRMAP<std::string, Batched*> BatchedMap;
-
 /**
  * Create a batch.
  */
@@ -605,15 +603,9 @@ public:
   Batch(bool verbose, int n, double timeout, bool permanent, std::string id = "",
         OPT<Rcpp::Function> rule = NONE, bool provide_attrs = false): 
     Activity("Batch", verbose, provide_attrs), n(n), timeout(std::abs(timeout)), 
-    permanent(permanent), id(id), rule(rule), batched(NULL) {
-    if (pool.find(id) == pool.end())
-      pool[id] = NULL;
-  }
+    permanent(permanent), id(id), rule(rule) {}
   
-  Batch(const Batch& o): Activity(o.name, o.verbose, o.provide_attrs), n(o.n), 
-    timeout(o.timeout), permanent(o.permanent), id(o.id), rule(o.rule), batched(NULL) {}
-  
-  void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << 
       "n: " << n << ", timeout: " << timeout << ", permanent: " << permanent << 
@@ -624,12 +616,8 @@ public:
   double run(Arrival* arrival) {
     if (rule && !get<bool>(*rule, arrival))
       return 0;
-    Batched** ptr = &batched;
-    if (id.size()) ptr = &pool[id];
-    if ((*ptr)) {
-      (*ptr)->sim = arrival->sim;
-      (*ptr)->set_activity(this->get_next());
-    } else *ptr = init(arrival->sim);
+    Batched** ptr = arrival->sim->get_batch(this, id);
+    if (!(*ptr)) *ptr = init(arrival->sim);
     (*ptr)->insert(arrival);
     if ((int)(*ptr)->size() == n) trigger(*ptr);
     return REJECTED;
@@ -641,15 +629,12 @@ protected:
   bool permanent;
   std::string id;
   OPT<Rcpp::Function> rule;
-  Batched* batched;
-  static BatchedMap pool;
-  static unsigned int count;
-  
+
   Batched* init(Simulator* sim) {
     std::string str;
     if (id.size()) str = "batch_" + id;
-    else str= "batch" + boost::lexical_cast<std::string>(count++);
-    Batched* ptr = new Batched(sim, str, this->get_next(), permanent);
+    else str= "batch" + boost::lexical_cast<std::string>(sim->get_batch_count());
+    Batched* ptr = new Batched(sim, str, permanent);
     if (timeout) {
       Task* task = new Task(sim, "Batch-Timer", boost::bind(&Batch::trigger, this, ptr));
       sim->schedule(timeout, task, PRIORITY_MIN);
@@ -658,10 +643,10 @@ protected:
   }
   
   void trigger(Batched* target) {
-    Batched** ptr = &batched;
-    if (id.size()) ptr = &pool[id];
+    Batched** ptr = target->sim->get_batch(this, id);
     if (!(*ptr) || *ptr != target) return;
     if ((*ptr)->size()) {
+      (*ptr)->set_activity(this->get_next());
       (*ptr)->sim->schedule(0, (*ptr));
       *ptr = init((*ptr)->sim);
     } else {
@@ -680,7 +665,7 @@ public:
   
   Separate(bool verbose): Activity("Separate", verbose) {}
   
-  void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << " }" << std::endl;
     else Rcpp::Rcout << std::endl;
@@ -706,7 +691,7 @@ public:
   RenegeIn(bool verbose, T t, bool provide_attrs, VEC<Rcpp::Environment> trj): 
     Fork("RenegeIn", verbose, VEC<bool>(trj.size(), false), trj, provide_attrs), t(t) {}
   
-  void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << "t: " << t << " }" << std::endl;
     else Rcpp::Rcout << t << ", ";
@@ -734,7 +719,7 @@ public:
   
   RenegeAbort(bool verbose): Activity("RenegeAbort", verbose) {}
   
-  void print(int indent=0, bool brief=false) {
+  void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << " }" << std::endl;
     else Rcpp::Rcout << std::endl;

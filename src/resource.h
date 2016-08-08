@@ -20,12 +20,10 @@ public:
     Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), server_count(0), 
     queue_count(0) {}
   
-  ~Resource() { reset(); }
-  
   /**
   * Reset the resource: server, queue
   */
-  virtual void reset() {
+  void reset() {
     server_count = 0;
     queue_count = 0;
   }
@@ -137,7 +135,9 @@ public:
   PriorityRes(Simulator* sim, std::string name, int mon, int capacity, int queue_size): 
     Resource(sim, name, mon, capacity, queue_size) {}
   
-  virtual void reset() {
+  ~PriorityRes() { reset(); }
+  
+  void reset() {
     Resource::reset();
     foreach_ (RPQueue::value_type& itr, queue)
       delete itr.arrival;
@@ -153,7 +153,7 @@ protected:
   T server;
   ServerMap server_map;
   
-  virtual bool room_in_server(int amount, int priority) {
+  bool room_in_server(int amount, int priority) {
     if (capacity < 0) return true;
     return server_count + amount <= capacity;
   }
@@ -171,9 +171,9 @@ protected:
     return false;
   }
   
-  virtual bool try_free_server(bool verbose, double time) { return false; }
+  bool try_free_server(bool verbose, double time) { return false; }
   
-  virtual bool try_serve_from_queue(bool verbose, double time) {
+  bool try_serve_from_queue(bool verbose, double time) {
     RPQueue::iterator next = queue.begin();
     if (room_in_server(next->amount, next->priority())) {
       if (next->arrival->is_monitored()) {
@@ -234,7 +234,7 @@ protected:
     }
   }
   
-  virtual bool remove_from_queue(bool verbose, double time, Arrival* arrival) {
+  bool remove_from_queue(bool verbose, double time, Arrival* arrival) {
     QueueMap::iterator search = queue_map.find(arrival);
     if (search == queue_map.end()) return false;
     if (verbose) verbose_print(time, arrival->name, "DEPART");
@@ -253,6 +253,8 @@ class PreemptiveRes: public PriorityRes<T> {
 public:
   PreemptiveRes(Simulator* sim, std::string name, int mon, int capacity, int queue_size, bool keep_queue):
     PriorityRes<T>(sim, name, mon, capacity, queue_size), keep_queue(keep_queue) {}
+  
+  ~PreemptiveRes() { reset(); }
   
   void reset() {
     PriorityRes<T>::reset();

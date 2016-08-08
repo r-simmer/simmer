@@ -6,6 +6,8 @@
 #include "process.h"
 #include "resource.h"
 
+class Activity;
+
 /**
  * The simulator.
  */
@@ -31,6 +33,8 @@ class Simulator {
   typedef MSET<Event> PQueue;
   typedef UMAP<Process*, PQueue::iterator> EvMap;
   typedef UMAP<std::string, Entity*> EntMap;
+  typedef UMAP<std::string, Batched*> NamBMap;
+  typedef UMAP<Activity*, Batched*> UnnBMap;
   
 public:
   std::string name;
@@ -41,11 +45,19 @@ public:
    * @param name    simulator name
    * @param verbose verbose flag
    */
-  Simulator(std::string name, bool verbose): name(name), verbose(verbose), now_(0) {}
+  Simulator(std::string name, bool verbose): name(name), verbose(verbose), now_(0), b_count(0) {}
   
   ~Simulator() {
     foreach_ (PQueue::value_type& itr, event_queue)
       if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
+    foreach_ (EntMap::value_type& itr, resource_map)
+      delete itr.second;
+    foreach_ (EntMap::value_type& itr, process_map)
+      delete itr.second;
+    foreach_ (NamBMap::value_type& itr, namedb_map)
+      if (itr.second) delete itr.second;
+    foreach_ (UnnBMap::value_type& itr, unnamedb_map)
+      if (itr.second) delete itr.second;
   }
   
   /**
@@ -63,6 +75,13 @@ public:
       ((Process*)itr.second)->reset();
       ((Process*)itr.second)->run();
     }
+    foreach_ (NamBMap::value_type& itr, namedb_map)
+      if (itr.second) delete itr.second;
+    foreach_ (UnnBMap::value_type& itr, unnamedb_map)
+      if (itr.second) delete itr.second;
+    namedb_map.clear();
+    unnamedb_map.clear();
+    b_count = 0;
     arr_traj_stats.clear();
     arr_res_stats.clear();
     attr_stats.clear();
@@ -226,6 +245,20 @@ public:
     return (Resource*)search->second;
   }
   
+  Batched** get_batch(Activity* ptr, std::string id) {
+    if (id.size()) {
+      if (namedb_map.find(id) == namedb_map.end())
+        namedb_map[id] = NULL;
+      return &namedb_map[id];
+    } else {
+      if (unnamedb_map.find(ptr) == unnamedb_map.end())
+        unnamedb_map[ptr] = NULL;
+      return &unnamedb_map[ptr];
+    }
+  }
+  
+  unsigned int get_batch_count() { return b_count++; }
+  
   /**
    * Record monitoring data.
    */
@@ -321,6 +354,9 @@ private:
   EntMap resource_map;      /**< map of resources */
   EntMap process_map;       /**< map of processes */
   EvMap event_map;          /**< map of pending events */
+  NamBMap namedb_map;       /**< map of named batches */
+  UnnBMap unnamedb_map;     /**< map of unnamed batches */
+  unsigned int b_count;     /**< unnamed batch counter */
   StatsMap arr_traj_stats;  /**< arrival statistics per trajectory */
   StatsMap arr_res_stats;   /**< arrival statistics per resource */
   StatsMap attr_stats;      /**< attribute statistics */
