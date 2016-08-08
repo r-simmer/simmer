@@ -76,7 +76,6 @@ sd_section("Convenience functions",
   "Helper methods for generators and resources.",
   c(
     "at",
-    "every",
     "from",
     "from_to",
     "schedule",

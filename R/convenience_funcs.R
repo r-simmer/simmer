@@ -19,22 +19,6 @@ at <- function(...) {
   function() return(c(time_diffs, -1))
 }
 
-#' [Deprecated] Arrivals every specific interval
-#' 
-#' Generator convenience function to generate arrivals every specific interval.
-#' When the generator reaches the last interval, it starts again from the first one.
-#'
-#' @param ... a vector or multiple parameters of intervals between arrivals.
-#'
-#' @return Returns a generator function.
-#' @seealso \code{\link{add_generator}}.
-#' @export
-every <- function(...) {
-  .Deprecated("function() c(...)")  # nocov
-  time_diffs <- c(...)              # nocov
-  function() return(time_diffs)     # nocov
-}
-
 #' Generate arrivals starting at a specified time
 #' 
 #' Generator convenience function to generate inter-arrivals with a specified start time.

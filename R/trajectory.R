@@ -451,18 +451,11 @@ set_prioritization <- function(traj, values) traj$set_prioritization(values)
 #' makes the arrival to follow the corresponding sub-trajectory.
 #' @param continue a vector of \code{N} booleans that indicate whether the arrival must 
 #' continue to the main trajectory after each sub-trajectory or not.
-#' @param merge (deprecated) same as \code{continue}, for compatibility reasons. Support
-#' for this argument will be dropped in upcoming versions.
 #' @param ... \code{N} trajectory objects describing each sub-trajectory.
 #' 
 #' @return The trajectory object.
 #' @export
-branch <- function(traj, option, continue, ..., merge="_deprecated") {
-  if(!identical(merge, "_deprecated")) {
-    warning("'merge' is deprecated, use 'continue' instead") # nocov
-    traj$branch(option, merge, continue, ...) # nocov
-  } else traj$branch(option, continue, ...)
-}
+branch <- function(traj, option, continue, ...) traj$branch(option, continue, ...)
 
 #' Add a rollback activity
 #'
