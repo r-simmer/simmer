@@ -448,6 +448,31 @@ get_mon_arrivals(env)
 get_mon_resources(env)
 ```
 
+### `renege_in` & `renege_abort`
+
+The `renege_in(., t, out)` method offers the possibility of setting a timeout after which the arrival will abandon the trajectory. After reneging, the arrival can follow an optional sub-trajectory `out`. The `renege_abort(.)` method cancels a previously established timeout. Together, they allows us, for instance, to model arrivals with limited patience. In the example below, `customer1` arrives at the bank, where there is only one busy clerk. He/she waits in the queue for 5 minutes and then leaves. 
+
+```{r}
+t <- create_trajectory(name = "bank") %>%
+  timeout(function() { print("Here I am"); 0 } ) %>%
+  # renege in 5 minutes
+  renege_in(5, 
+            out = create_trajectory() %>%
+              timeout(function() { print("Lost my patience. Reneging..."); 0 } )) %>%
+  seize("clerk", 1) %>%
+  # stay if I'm being attended within 5 minutes
+  renege_abort() %>%
+  timeout(function() { print("I'm being attended"); 0 } ) %>%
+  timeout(10) %>%
+  release("clerk", 1) %>%
+  timeout(function() { print("Finished"); 0 } )
+
+env <- simmer(verbose = TRUE) %>%
+  add_resource("clerk", 1) %>%
+  add_generator("customer", t, at(0, 1)) %>%
+  run()
+```
+
 ### `clone` & `synchronize`
 
 The `clone(., n, ...)` method offers the possibility of replicating an arrival `n-1` times to be processed through up to `n` sub-trajectories in parallel. Then, the `synchronize(., wait, mon_all)` method synchronizes and removes replicas. By default, `synchronize` waits for all of the replicas to arrive and allows the last one to continue:
