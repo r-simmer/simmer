@@ -184,7 +184,7 @@ test_that("a shared name in different trajectories collects arrivals in the same
   expect_equal(arr_res$activity_time, c(1, 1, 1, 1))
 })
 
-test_that("unnamed batches in different trajectories collects arrivals in the same batch", {
+test_that("unnamed batches in different trajectories collects arrivals in different batches", {
   t <- create_trajectory(verbose=TRUE) %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
