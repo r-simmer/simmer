@@ -20,7 +20,7 @@ test_that("an index equal to 0 skips the branch", {
     ) %>%
     timeout(2)
   
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("entity", t0, at(0)) %>%
     run()
   expect_equal(env%>%now(), 2)

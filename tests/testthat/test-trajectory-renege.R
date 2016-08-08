@@ -117,6 +117,38 @@ test_that("an enqueued arrival reneges", {
   expect_equal(res$queue, c(0, 1, 0, 0))
 })
 
+test_that("a preempted arrival reneges", {
+  t1 <- create_trajectory() %>%
+    seize("dummy", 1) %>%
+    timeout(4) %>%
+    release("dummy", 1)
+  
+  t0 <- create_trajectory() %>%
+    renege_in(2) %>%
+    join(t0)
+  
+  env <- simmer(verbose=TRUE) %>%
+    add_resource("dummy", 1, preemptive=TRUE) %>%
+    add_generator("arrival0", t0, at(0), priority = 0) %>%
+    add_generator("arrival1", t1, at(1), priority = 1) %>%
+    run()
+  
+  arr_res <- get_mon_arrivals(env, per_resource=TRUE)
+  arr_glb <- get_mon_arrivals(env, per_resource=FALSE)
+  res <- get_mon_resources(env)
+  
+  expect_equal(arr_res$start_time, 1)
+  expect_equal(arr_res$end_time, 5)
+  expect_equal(arr_res$activity_time, 4)
+  expect_equal(arr_glb$name, c("arrival00", "arrival10"))
+  expect_equal(arr_glb$end_time, c(2, 5))
+  expect_equal(arr_glb$activity_time, c(2, 4))
+  expect_equal(arr_glb$finished, c(FALSE, TRUE))
+  expect_equal(res$time, c(0, 1, 2, 5))
+  expect_equal(res$server, c(1, 1, 1, 0))
+  expect_equal(res$queue, c(0, 1, 0, 0))
+})
+
 test_that("an arrival inside a batch reneges, but the batch continues", {
   t0 <- create_trajectory() %>%
     batch(2, name="shared") %>%
@@ -151,7 +183,8 @@ test_that("an arrival inside a batch reneges, but the batch continues", {
 
 test_that("the only arrival inside a batch reneges, and the batch stops", {
   t0 <- create_trajectory() %>%
-    batch(1, name="shared") %>%
+    batch(1) %>%
+    batch(1) %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)

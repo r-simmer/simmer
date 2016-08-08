@@ -24,6 +24,7 @@ test_that("arrivals are batched", {
   
   arr_glb <- get_mon_arrivals(env, per_resource=FALSE)
   arr_res <- get_mon_arrivals(env, per_resource=TRUE)
+  env %>% reset()
   
   expect_equal(arr_glb$start_time, c(0, 1, 2, 3))
   expect_equal(arr_glb$end_time, c(2, 2, 5, 5))
