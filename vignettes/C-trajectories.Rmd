@@ -534,7 +534,7 @@ get_mon_arrivals(env)
 
 ### `batch` & `separate`
 
-The `batch(., n, timeout, permanent, rule)` method offers the possibility of collecting a number of arrivals before they can continue processing as a block. Then, the `separate(.)` method splits a previously established non-permanent batch. This allows us to implement a rollercoaster process, for instance.
+The `batch(., n, timeout, permanent, name, rule)` method offers the possibility of collecting a number of arrivals before they can continue processing as a block. Then, the `separate(.)` method splits a previously established non-permanent batch. This allows us to implement a rollercoaster process, for instance.
 
 Let us consider a rollercoaster, with up to 10 places and a queue of 20 people, that lasts 5 minutes. We can model this problem as follows: 
 
@@ -592,6 +592,83 @@ env_nobatch <- simmer() %>%
 
 get_mon_arrivals(env_batch, per_resource = TRUE)
 get_mon_arrivals(env_nobatch, per_resource = TRUE)
+```
+
+By default, batches are unnamed (`name=""`), which makes them independent of one another. However, it may be interesting to feed a common batch from different trajectories. For instance, we can try this:
+
+```{r}
+t0 <- create_trajectory() %>%
+  batch(2) %>%
+  timeout(2) %>%
+  separate()
+
+t1 <- create_trajectory() %>%
+  timeout(1) %>%
+  join(t0)
+
+env <- simmer(verbose = TRUE) %>%
+  add_generator("t0_", t0, at(0)) %>%
+  add_generator("t1_", t1, at(0)) %>%
+  run()
+
+get_mon_arrivals(env)
+```
+
+But we don't get the expected output because the arrivals are feeding two different batches. The arrival following `t1` join `t0` after the timeout, but effectively this is __a clone__ of `t0`, which means that the above definition is equivalent to the following:
+
+```{r}
+t0 <- create_trajectory() %>%
+  batch(2) %>%
+  timeout(2) %>%
+  separate()
+
+t1 <- create_trajectory() %>%
+  timeout(1) %>%
+  batch(2) %>%
+  timeout(2) %>%
+  separate()
+```
+
+Thus, arrivals following a different trajectory will end up in a different batch in general. Nonetheless, there is one way to share a common batch across `batch` activities. This can be done by using a common name:
+
+```{r}
+t0 <- create_trajectory() %>%
+  batch(2, name = "mybatch") %>%
+  timeout(2) %>%
+  separate()
+
+t1 <- create_trajectory() %>%
+  timeout(1) %>%
+  batch(2, name = "mybatch") %>%
+  timeout(2) %>%
+  separate()
+
+env <- simmer(verbose = TRUE) %>%
+  add_generator("t0_", t0, at(0)) %>%
+  add_generator("t1_", t1, at(0)) %>%
+  run()
+
+get_mon_arrivals(env)
+```
+
+Or, equivalently,
+
+```{r}
+t0 <- create_trajectory() %>%
+  batch(2, name = "mybatch") %>%
+  timeout(2) %>%
+  separate()
+
+t1 <- create_trajectory() %>%
+  timeout(1) %>%
+  join(t0)
+
+env <- simmer(verbose = TRUE) %>%
+  add_generator("t0_", t0, at(0)) %>%
+  add_generator("t1_", t1, at(0)) %>%
+  run()
+
+get_mon_arrivals(env)
 ```
 
 ## Concatenating trajectories
