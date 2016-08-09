@@ -206,11 +206,11 @@ protected:
     if (queue_size > 0) while (queue_count + amount > queue_size && amount > count) {
       RPQueue::iterator last = --queue.end();
       if (verbose) verbose_print(time, last->arrival->name, "REJECT");
-      last->arrival->unregister_entity(this);
-      last->arrival->terminate(false);
       queue_count -= last->amount;
       count += last->amount;
       queue_map.erase(last->arrival);
+      last->arrival->unregister_entity(this);
+      last->arrival->terminate(false);
       queue.erase(last);
     }
     if (verbose) verbose_print(time, arrival->name, "ENQUEUE");
