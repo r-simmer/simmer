@@ -45,7 +45,7 @@ public:
   * @return  SUCCESS
   */
   int release(Arrival* arrival, int amount);
-  bool erase(Arrival* arrival, bool keep = false);
+  bool erase(Arrival* arrival, bool stay = false);
   
   void set_capacity(int value);
   int get_capacity() { return capacity; }

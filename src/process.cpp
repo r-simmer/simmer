@@ -113,8 +113,8 @@ void Arrival::leave(std::string resource, double start, double activity) {
 }
 
 void Arrival::terminate(bool finished) {
-  while (resources.begin() != resources.end())
-    (*resources.begin())->erase(this, true);
+  foreach_ (ResMSet::value_type& itr, resources)
+    itr->erase(this, true);
   lifetime.activity -= lifetime.remaining;
   if (is_monitored() >= 1)
     sim->record_end(name, lifetime.start, lifetime.activity, finished);

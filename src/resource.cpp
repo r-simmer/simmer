@@ -83,10 +83,9 @@ int Resource::post_release() {
   return SUCCESS;
 }
 
-bool Resource::erase(Arrival* arrival, bool keep) {
-  if (keep) {
-    server_count += remove_from_server(sim->verbose, sim->now(), arrival, -1);
-    arrival->unregister_entity(this);
+bool Resource::erase(Arrival* arrival, bool stay) {
+  if (stay) {
+    server_count += remove_from_server(false, sim->now(), arrival, -1);
     return false;
   }
   

@@ -54,7 +54,7 @@ test_that("resource slots are correctly filled", {
     seize("dummy", 1) %>%
     set_attribute("dummy", 1)
   
-  env <- simmer() %>%
+  env <- simmer(verbose=TRUE) %>%
     add_resource("dummy", 2, 2) %>%
     add_generator("customer", t0, at(1:5), mon=2) %>%
     run()
