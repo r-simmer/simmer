@@ -47,5 +47,6 @@ These are currently available:
 * [Introduction to simmer](https://cran.r-project.org/web/packages/simmer/vignettes/A-introduction.html)
 * [Terminology](https://cran.r-project.org/web/packages/simmer/vignettes/B-terminology.html)
 * [Advanced trajectory usage](https://cran.r-project.org/web/packages/simmer/vignettes/C-trajectories.html)
-* [Queueing systems](https://cran.r-project.org/web/packages/simmer/vignettes/D-queueing-systems.html)
-* [Continuous-Time Markov Chains](https://cran.r-project.org/web/packages/simmer/vignettes/E-ctmc.html)
+* [The Bank Tutorial: Part I](https://cran.r-project.org/web/packages/simmer/vignettes/D-bank-1.html)
+* [Queueing systems](https://cran.r-project.org/web/packages/simmer/vignettes/E-queueing-systems.html)
+* [Continuous-Time Markov Chains](https://cran.r-project.org/web/packages/simmer/vignettes/F-ctmc.html)

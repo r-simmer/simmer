@@ -7,18 +7,12 @@ sd_section("Build trajectories",
     "clone",
     "join",
     "leave",
-    "release",
-    "release_selected",
     "renege_in",
-    "renege_abort",
     "rollback",
     "seize",
-    "seize_selected",
     "select",
-    "separate",
     "set_attribute",
     "set_prioritization",
-    "synchronize",
     "timeout"
   )
 )
@@ -27,10 +21,8 @@ sd_section("Manage trajectories",
   "Methods for getting information about trajectory objects.",
   c(
     "get_head",
-    "get_tail",
     "get_n_activities",
     "get_next_activity",
-    "get_prev_activity",
     "print_activity"
   )
 )
@@ -41,7 +33,6 @@ sd_section("Build and run simulation environments",
     "simmer",
     "add_generator",
     "add_resource",
-    "onestep",
     "reset",
     "run",
     "wrap"
@@ -51,13 +42,8 @@ sd_section("Build and run simulation environments",
 sd_section("Manage simulation environments",
   "Methods for getting information about simulation components.",
   c(
-    "get_capacity",
-    "set_capacity",
     "get_n_generated",
-    "get_queue_size",
-    "set_queue_size",
-    "get_queue_count",
-    "get_server_count",
+    "resource",
     "now",
     "peek"
   )
@@ -66,9 +52,7 @@ sd_section("Manage simulation environments",
 sd_section("Statistics",
   "Methods for getting monitored statistics.",
   c(
-    "get_mon_arrivals",
-    "get_mon_attributes",
-    "get_mon_resources"
+    "get_mon"
   )
 )
 

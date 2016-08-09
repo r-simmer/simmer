@@ -4,7 +4,7 @@ This version implements 5 new features and 5 fixes and improvements. A couple of
 
 ## Test environments
 
-* Fedora 23 + clang (local), R 3.3.1
+* Fedora 24 + clang (local), R 3.3.1
 * Ubuntu 12.04 + GCC (on travis-ci), R 3.3.1
 * win-builder, R devel
 

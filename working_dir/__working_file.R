@@ -67,7 +67,7 @@ plot_resource_usage(env, "server")
 t0 <- create_trajectory("my trajectory") %>%
   seize("server", 1) %>%
   timeout(function() rexp(1, 1)) %>%
-  branch(function() sample(1:2, 1), merge=c(F, T), 
+  branch(function() sample(1:2, 1), c(F, T), 
     create_trajectory("branch1") %>%
       seize("server", 2) %>%
       timeout(function() 1) %>%
