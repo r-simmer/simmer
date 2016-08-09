@@ -21,7 +21,7 @@ test_that("a rollback points to the correct activity", {
            create_trajectory() %>% 
              rollback(2))
   
-  env <- simmer() %>%
+  env <- simmer(verbose=TRUE) %>%
     add_resource("dummy", 2, 0) %>%
     add_generator("one", t0, at(0)) %>%
     run()

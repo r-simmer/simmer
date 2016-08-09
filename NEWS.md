@@ -1,3 +1,9 @@
+# Changes in version 3.4.1
+
+## Minor changes and fixes
+
+* Fix memtest notes on CRAN (heap-use-after-free).
+
 # Changes in version 3.4.0
 
 ## New features:

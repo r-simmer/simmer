@@ -1,10 +1,11 @@
 ## Release summary
 
-This version implements 5 new features and 5 fixes and improvements. A couple of previously deprecated features have been removed.
+This patch release solves memtest notes on CRAN (gcc6-ASAN, gcc7-ASAN: heap-use-after-free).
 
 ## Test environments
 
 * Fedora 24 + clang (local), R 3.3.1
+* Rocker image, GCC + SAN + R devel
 * Ubuntu 12.04 + GCC (on travis-ci), R 3.3.1
 * win-builder, R devel
 

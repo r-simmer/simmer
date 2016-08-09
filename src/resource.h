@@ -45,7 +45,7 @@ public:
   * @return  SUCCESS
   */
   int release(Arrival* arrival, int amount);
-  bool erase(Arrival* arrival);
+  bool erase(Arrival* arrival, bool keep = false);
   
   void set_capacity(int value);
   int get_capacity() { return capacity; }
@@ -74,7 +74,7 @@ protected:
   virtual bool try_serve_from_queue(bool verbose, double time) = 0;
   virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount) = 0;
   virtual void insert_in_queue(bool verbose, double time, Arrival* arrival, int amount) = 0;
-  virtual void remove_from_server(bool verbose, double time, Arrival* arrival, int amount) = 0;
+  virtual int remove_from_server(bool verbose, double time, Arrival* arrival, int amount) = 0;
   virtual bool remove_from_queue(bool verbose, double time, Arrival* arrival) = 0;
 };
 
@@ -175,19 +175,18 @@ protected:
   
   bool try_serve_from_queue(bool verbose, double time) {
     RPQueue::iterator next = queue.begin();
-    if (room_in_server(next->amount, next->priority())) {
-      if (next->arrival->is_monitored()) {
-        double last = next->arrival->get_activity(this->name);
-        next->arrival->set_activity(this->name, time - last);
-      }
-      next->arrival->activate();
-      insert_in_server(verbose, time, next->arrival, next->amount);
-      queue_count -= next->amount;
-      queue_map.erase(next->arrival);
-      queue.erase(next);
-      return true;
+    if (!room_in_server(next->amount, next->priority()))
+      return false;
+    if (next->arrival->is_monitored()) {
+      double last = next->arrival->get_activity(this->name);
+      next->arrival->set_activity(this->name, time - last);
     }
-    return false;
+    next->arrival->activate();
+    insert_in_server(verbose, time, next->arrival, next->amount);
+    queue_count -= next->amount;
+    queue_map.erase(next->arrival);
+    queue.erase(next);
+    return true;
   }
   
   void insert_in_server(bool verbose, double time, Arrival* arrival, int amount) {
@@ -196,9 +195,10 @@ protected:
     if (verbose) verbose_print(time, arrival->name, "SERVE");
     server_count += amount;
     typename ServerMap::iterator search = server_map.find(arrival);
-    if (search == server_map.end())
-      server_map[arrival] = server.emplace(time, arrival, amount);
-    else search->second->amount += amount;
+    if (search != server_map.end()) {
+      search->second->amount += amount;
+      arrival->unregister_entity(this);
+    } else server_map[arrival] = server.emplace(time, arrival, amount);
   }
   
   void insert_in_queue(bool verbose, double time, Arrival* arrival, int amount) {
@@ -206,6 +206,7 @@ protected:
     if (queue_size > 0) while (queue_count + amount > queue_size && amount > count) {
       RPQueue::iterator last = --queue.end();
       if (verbose) verbose_print(time, last->arrival->name, "REJECT");
+      last->arrival->unregister_entity(this);
       last->arrival->terminate(false);
       queue_count -= last->amount;
       count += last->amount;
@@ -217,7 +218,7 @@ protected:
     queue_map[arrival] = queue.emplace(time, arrival, amount);
   }
   
-  void remove_from_server(bool verbose, double time, Arrival* arrival, int amount) {
+  int remove_from_server(bool verbose, double time, Arrival* arrival, int amount) {
     if (verbose) verbose_print(time, arrival->name, "DEPART");
     typename ServerMap::iterator search = server_map.find(arrival);
     if (search == server_map.end())
@@ -226,12 +227,15 @@ protected:
       Rcpp::stop("%s: release: incorrect amount (%d)", name, amount);
     else if (amount < 0 || amount == search->second->amount) {
       server_count -= search->second->amount;
+      amount = search->second->amount;
       server.erase(search->second);
       server_map.erase(search);
     } else {
       server_count -= amount;
       search->second->amount -= amount;
+      arrival->register_entity(this);
     }
+    return amount;
   }
   
   bool remove_from_queue(bool verbose, double time, Arrival* arrival) {
@@ -290,9 +294,11 @@ protected:
       double last = first->arrival->get_activity(this->name);
       first->arrival->set_activity(this->name, time - last);
     }
+    this->server_map.erase(first->arrival);
     if (keep_queue) {
       if (!this->room_in_queue(first->amount, first->priority())) {
         if (verbose) this->verbose_print(time, first->arrival->name, "REJECT");
+        first->arrival->unregister_entity(this);
         first->arrival->terminate(false);
       } else this->insert_in_queue(verbose, time, first->arrival, first->amount);
     } else {
@@ -300,7 +306,6 @@ protected:
       this->queue_count += first->amount;
     }
     this->server_count -= first->amount;
-    this->server_map.erase(first->arrival);
     this->server.erase(first);
     return true;
   }
@@ -313,24 +318,23 @@ protected:
       flag = true;
     }
     else next = this->queue.begin();
-    if (room_in_server(next->amount, next->priority())) {
-      if (next->arrival->is_monitored()) {
-        double last = next->arrival->get_activity(this->name);
-        next->arrival->set_activity(this->name, time - last);
-      }
-      next->arrival->activate();
-      this->insert_in_server(verbose, time, next->arrival, next->amount);
-      this->queue_count -= next->amount;
-      if (flag) {
-        preempted_map.erase(next->arrival);
-        preempted.erase(next);
-      } else {
-        this->queue_map.erase(next->arrival);
-        this->queue.erase(next);
-      }
-      return true;
+    if (!room_in_server(next->amount, next->priority()))
+      return false;
+    if (next->arrival->is_monitored()) {
+      double last = next->arrival->get_activity(this->name);
+      next->arrival->set_activity(this->name, time - last);
     }
-    return false;
+    next->arrival->activate();
+    this->insert_in_server(verbose, time, next->arrival, next->amount);
+    this->queue_count -= next->amount;
+    if (flag) {
+      preempted_map.erase(next->arrival);
+      preempted.erase(next);
+    } else {
+      this->queue_map.erase(next->arrival);
+      this->queue.erase(next);
+    }
+    return true;
   }
   
   bool remove_from_queue(bool verbose, double time, Arrival* arrival) {
