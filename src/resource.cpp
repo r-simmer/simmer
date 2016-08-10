@@ -85,7 +85,8 @@ int Resource::post_release() {
 
 bool Resource::erase(Arrival* arrival, bool stay) {
   if (stay) {
-    server_count += remove_from_server(false, sim->now(), arrival, -1);
+    int amount = remove_from_server(false, sim->now(), arrival, -1);
+    server_count += amount;
     return false;
   }
   
