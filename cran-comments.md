@@ -1,6 +1,6 @@
 ## Release summary
 
-This patch release solves memtest notes on CRAN (gcc6-ASAN, gcc7-ASAN: heap-use-after-free).
+This early patch release solves memtest notes on CRAN (gcc6-ASAN, gcc7-ASAN: heap-use-after-free).
 
 ## Test environments
 
