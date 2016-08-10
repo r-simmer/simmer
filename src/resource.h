@@ -243,6 +243,7 @@ protected:
     if (search == queue_map.end()) return false;
     if (verbose) verbose_print(time, arrival->name, "DEPART");
     queue_count -= search->second->amount;
+    search->second->arrival->unregister_entity(this);
     queue.erase(search->second);
     queue_map.erase(search);
     return true;
@@ -294,6 +295,7 @@ protected:
       double last = first->arrival->get_activity(this->name);
       first->arrival->set_activity(this->name, time - last);
     }
+    this->server_count -= first->amount;
     this->server_map.erase(first->arrival);
     if (keep_queue) {
       if (!this->room_in_queue(first->amount, first->priority())) {
@@ -302,22 +304,17 @@ protected:
         first->arrival->terminate(false);
       } else this->insert_in_queue(verbose, time, first->arrival, first->amount);
     } else {
-      preempted_map[first->arrival] = preempted.insert((*first));
+      preempted_map[first->arrival] = preempted.insert(*first);
       this->queue_count += first->amount;
     }
-    this->server_count -= first->amount;
     this->server.erase(first);
     return true;
   }
   
   bool try_serve_from_queue(bool verbose, double time) {
-    RPQueue::iterator next;
-    bool flag = false;
-    if (!preempted.empty()) {
-      next = preempted.begin();
-      flag = true;
-    }
-    else next = this->queue.begin();
+    RPQueue::iterator next = preempted.begin();
+    if (next == preempted.end())
+      return PriorityRes<T>::try_serve_from_queue(verbose, time);
     if (!room_in_server(next->amount, next->priority()))
       return false;
     if (next->arrival->is_monitored()) {
@@ -327,13 +324,8 @@ protected:
     next->arrival->activate();
     this->insert_in_server(verbose, time, next->arrival, next->amount);
     this->queue_count -= next->amount;
-    if (flag) {
-      preempted_map.erase(next->arrival);
-      preempted.erase(next);
-    } else {
-      this->queue_map.erase(next->arrival);
-      this->queue.erase(next);
-    }
+    preempted_map.erase(next->arrival);
+    preempted.erase(next);
     return true;
   }
   
@@ -344,6 +336,7 @@ protected:
     if (search == preempted_map.end()) return false;
     if (verbose) this->verbose_print(time, arrival->name, "DEPART");
     this->queue_count -= search->second->amount;
+    search->second->arrival->unregister_entity(this);
     preempted.erase(search->second);
     preempted_map.erase(search);
     return true;

@@ -89,11 +89,12 @@ bool Resource::erase(Arrival* arrival, bool stay) {
     return false;
   }
   
-  bool ret = remove_from_queue(sim->verbose, sim->now(), arrival);
-  if (!ret) release(arrival, -1);
-  else arrival->unregister_entity(this);
+  if (!remove_from_queue(sim->verbose, sim->now(), arrival)) {
+    release(arrival, -1);
+    return false;
+  }
   
-  if (ret && is_monitored())
+  if (is_monitored())
     sim->record_resource(name, server_count, queue_count, capacity, queue_size);
-  return ret;
+  return true;
 }
