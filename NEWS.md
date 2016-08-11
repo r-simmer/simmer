@@ -3,6 +3,7 @@
 ## Minor changes and fixes
 
 * Fix memtest notes on CRAN (heap-use-after-free).
+* Fix memory leaks.
 
 # Changes in version 3.4.0
 

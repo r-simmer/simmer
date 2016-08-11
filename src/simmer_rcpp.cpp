@@ -212,7 +212,7 @@ SEXP Seize__new(SEXP verbose_, SEXP resource_, SEXP amount_, SEXP cont_, SEXP tr
   VEC<Environment> trj = as<VEC<Environment> >(trj_);
   unsigned short mask = as<unsigned short>(mask_);
 
-  XPtr<Seize<int> > ptr(new Seize<int>(verbose, resource, amount, 0, cont, trj, mask), false);
+  XPtr<Seize<int> > ptr(new Seize<int>(verbose, resource, amount, 0, cont, trj, mask));
   return ptr;
 }
 
@@ -227,7 +227,7 @@ SEXP Seize__new_func(SEXP verbose_, SEXP resource_, Function amount, SEXP provid
   unsigned short mask = as<unsigned short>(mask_);
   
   XPtr<Seize<Function> > 
-    ptr(new Seize<Function>(verbose, resource, amount, provide_attrs, cont, trj, mask), false);
+    ptr(new Seize<Function>(verbose, resource, amount, provide_attrs, cont, trj, mask));
   return ptr;
 }
 
@@ -241,7 +241,7 @@ SEXP SeizeSelected__new(SEXP verbose_, SEXP id_, SEXP amount_, SEXP cont_, SEXP 
   unsigned short mask = as<unsigned short>(mask_);
   
   XPtr<SeizeSelected<int> > 
-    ptr(new SeizeSelected<int>(verbose, id, amount, 0, cont, trj, mask), false);
+    ptr(new SeizeSelected<int>(verbose, id, amount, 0, cont, trj, mask));
   return ptr;
 }
 
@@ -256,7 +256,7 @@ SEXP SeizeSelected__new_func(SEXP verbose_, SEXP id_, Function amount, SEXP prov
   unsigned short mask = as<unsigned short>(mask_);
   
   XPtr<SeizeSelected<Function> > 
-    ptr(new SeizeSelected<Function>(verbose, id, amount, provide_attrs, cont, trj, mask), false);
+    ptr(new SeizeSelected<Function>(verbose, id, amount, provide_attrs, cont, trj, mask));
   return ptr;
 }
 
@@ -266,7 +266,7 @@ SEXP Release__new(SEXP verbose_, SEXP resource_, SEXP amount_) {
   std::string resource = as<std::string>(resource_);
   int amount = as<int>(amount_);
   
-  XPtr<Release<int> > ptr(new Release<int>(verbose, resource, amount, 0), false);
+  XPtr<Release<int> > ptr(new Release<int>(verbose, resource, amount, 0));
   return ptr;
 }
 
@@ -276,7 +276,7 @@ SEXP Release__new_func(SEXP verbose_, SEXP resource_, Function amount, SEXP prov
   std::string resource = as<std::string>(resource_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Release<Function> > ptr(new Release<Function>(verbose, resource, amount, provide_attrs), false);
+  XPtr<Release<Function> > ptr(new Release<Function>(verbose, resource, amount, provide_attrs));
   return ptr;
 }
 
@@ -286,7 +286,7 @@ SEXP ReleaseSelected__new(SEXP verbose_, SEXP id_, SEXP amount_) {
   int id = as<int>(id_);
   int amount = as<int>(amount_);
   
-  XPtr<ReleaseSelected<int> > ptr(new ReleaseSelected<int>(verbose, id, amount, 0), false);
+  XPtr<ReleaseSelected<int> > ptr(new ReleaseSelected<int>(verbose, id, amount, 0));
   return ptr;
 }
 
@@ -297,7 +297,7 @@ SEXP ReleaseSelected__new_func(SEXP verbose_, SEXP id_, Function amount, SEXP pr
   bool provide_attrs = as<bool>(provide_attrs_);
   
   XPtr<ReleaseSelected<Function> > 
-    ptr(new ReleaseSelected<Function>(verbose, id, amount, provide_attrs), false);
+    ptr(new ReleaseSelected<Function>(verbose, id, amount, provide_attrs));
   return ptr;
 }
 
@@ -309,7 +309,7 @@ SEXP Select__new(SEXP verbose_, SEXP resources_, SEXP policy_, SEXP id_) {
   int id = as<int>(id_);
   
   XPtr<Select<VEC<std::string> > > 
-    ptr(new Select<VEC<std::string> >(verbose, resources, 0, policy, id), false);
+    ptr(new Select<VEC<std::string> >(verbose, resources, 0, policy, id));
   return ptr;
 }
 
@@ -320,7 +320,7 @@ SEXP Select__new_func(SEXP verbose_, Function resources, SEXP provide_attrs_, SE
   int id = as<int>(id_);
   
   XPtr<Select<Function> > 
-    ptr(new Select<Function>(verbose, resources, provide_attrs, "custom", id), false);
+    ptr(new Select<Function>(verbose, resources, provide_attrs, "custom", id));
   return ptr;
 }
 
@@ -330,7 +330,7 @@ SEXP SetAttribute__new(SEXP verbose_, SEXP key_, SEXP value_) {
   std::string key = as<std::string>(key_);
   double value = as<double>(value_);
   
-  XPtr<SetAttribute<double> > ptr(new SetAttribute<double>(verbose, key, value, 0), false);
+  XPtr<SetAttribute<double> > ptr(new SetAttribute<double>(verbose, key, value, 0));
   return ptr;
 }
 
@@ -341,7 +341,7 @@ SEXP SetAttribute__new_func(SEXP verbose_, SEXP key_, Function value, SEXP provi
   std::string key = as<std::string>(key_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<SetAttribute<Function> > ptr(new SetAttribute<Function>(verbose, key, value, provide_attrs), false);
+  XPtr<SetAttribute<Function> > ptr(new SetAttribute<Function>(verbose, key, value, provide_attrs));
   return ptr;
 }
 
@@ -350,7 +350,7 @@ SEXP SetPrior__new(SEXP verbose_, SEXP values_) {
   bool verbose = as<bool>(verbose_);
   VEC<int> values = as<VEC<int> >(values_);
   
-  XPtr<SetPrior<VEC<int> > > ptr(new SetPrior<VEC<int> >(verbose, values, 0), false);
+  XPtr<SetPrior<VEC<int> > > ptr(new SetPrior<VEC<int> >(verbose, values, 0));
   return ptr;
 }
 
@@ -359,7 +359,7 @@ SEXP SetPrior__new_func(SEXP verbose_, Function values, SEXP provide_attrs_) {
   bool verbose = as<bool>(verbose_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<SetPrior<Function> > ptr(new SetPrior<Function>(verbose, values, provide_attrs), false);
+  XPtr<SetPrior<Function> > ptr(new SetPrior<Function>(verbose, values, provide_attrs));
   return ptr;
 }
 
@@ -368,7 +368,7 @@ SEXP Timeout__new(SEXP verbose_, SEXP delay_) {
   bool verbose = as<bool>(verbose_);
   double delay = as<double>(delay_);
   
-  XPtr<Timeout<double> > ptr(new Timeout<double>(verbose, delay, 0), false);
+  XPtr<Timeout<double> > ptr(new Timeout<double>(verbose, delay, 0));
   return ptr;
 }
 
@@ -377,7 +377,7 @@ SEXP Timeout__new_func(SEXP verbose_, Function task, SEXP provide_attrs_) {
   bool verbose = as<bool>(verbose_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Timeout<Function> > ptr(new Timeout<Function>(verbose, task, provide_attrs), false);
+  XPtr<Timeout<Function> > ptr(new Timeout<Function>(verbose, task, provide_attrs));
   return ptr;
 }
 
@@ -388,7 +388,7 @@ SEXP Branch__new(SEXP verbose_, Function option, SEXP provide_attrs_, SEXP cont_
   VEC<bool> cont = as<VEC<bool> >(cont_);
   VEC<Environment> trj = as<VEC<Environment> >(trj_);
   
-  XPtr<Branch> ptr(new Branch(verbose, option, provide_attrs, cont, trj), false);
+  XPtr<Branch> ptr(new Branch(verbose, option, provide_attrs, cont, trj));
   return ptr;
 }
 
@@ -398,7 +398,7 @@ SEXP Rollback__new(SEXP verbose_, SEXP amount_, SEXP times_) {
   int amount = as<int>(amount_);
   int times = as<int>(times_);
   
-  XPtr<Rollback> ptr(new Rollback(verbose, amount, times), false);
+  XPtr<Rollback> ptr(new Rollback(verbose, amount, times));
   return ptr;
 }
 
@@ -408,7 +408,7 @@ SEXP Rollback__new_func(SEXP verbose_, SEXP amount_, Function check, SEXP provid
   int amount = as<int>(amount_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Rollback> ptr(new Rollback(verbose, amount, 0, check, provide_attrs), false);
+  XPtr<Rollback> ptr(new Rollback(verbose, amount, 0, check, provide_attrs));
   return ptr;
 }
 
@@ -417,7 +417,7 @@ SEXP Leave__new(SEXP verbose_, SEXP prob_) {
   bool verbose = as<bool>(verbose_);
   double prob = as<double>(prob_);
   
-  XPtr<Leave<double> > ptr(new Leave<double>(verbose, prob, 0), false);
+  XPtr<Leave<double> > ptr(new Leave<double>(verbose, prob, 0));
   return ptr;
 }
 
@@ -426,7 +426,7 @@ SEXP Leave__new_func(SEXP verbose_, Function prob, SEXP provide_attrs_) {
   bool verbose = as<bool>(verbose_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Leave<Function> > ptr(new Leave<Function>(verbose, prob, provide_attrs), false);
+  XPtr<Leave<Function> > ptr(new Leave<Function>(verbose, prob, provide_attrs));
   return ptr;
 }
 
@@ -436,7 +436,7 @@ SEXP RenegeIn__new(SEXP verbose_, SEXP t_, SEXP trj_) {
   double t = as<double>(t_);
   VEC<Environment> trj = as<VEC<Environment> >(trj_);
   
-  XPtr<RenegeIn<double> > ptr(new RenegeIn<double>(verbose, t, 0, trj), false);
+  XPtr<RenegeIn<double> > ptr(new RenegeIn<double>(verbose, t, 0, trj));
   return ptr;
 }
 
@@ -446,7 +446,7 @@ SEXP RenegeIn__new_func(SEXP verbose_, Function t, SEXP provide_attrs_, SEXP trj
   bool provide_attrs = as<bool>(provide_attrs_);
   VEC<Environment> trj = as<VEC<Environment> >(trj_);
   
-  XPtr<RenegeIn<Function> > ptr(new RenegeIn<Function>(verbose, t, provide_attrs, trj), false);
+  XPtr<RenegeIn<Function> > ptr(new RenegeIn<Function>(verbose, t, provide_attrs, trj));
   return ptr;
 }
 
@@ -454,7 +454,7 @@ SEXP RenegeIn__new_func(SEXP verbose_, Function t, SEXP provide_attrs_, SEXP trj
 SEXP RenegeAbort__new(SEXP verbose_) {
   bool verbose = as<bool>(verbose_);
   
-  XPtr<RenegeAbort> ptr(new RenegeAbort(verbose), false);
+  XPtr<RenegeAbort> ptr(new RenegeAbort(verbose));
   return ptr;
 }
 
@@ -464,7 +464,7 @@ SEXP Clone__new(SEXP verbose_, SEXP n_, SEXP trj_) {
   int n = as<int>(n_);
   VEC<Environment> trj = as<VEC<Environment> >(trj_);
   
-  XPtr<Clone<int> > ptr(new Clone<int>(verbose, n, 0, trj), false);
+  XPtr<Clone<int> > ptr(new Clone<int>(verbose, n, 0, trj));
   return ptr;
 }
 
@@ -474,7 +474,7 @@ SEXP Clone__new_func(SEXP verbose_, Function n, SEXP provide_attrs_, SEXP trj_) 
   bool provide_attrs = as<bool>(provide_attrs_);
   VEC<Environment> trj = as<VEC<Environment> >(trj_);
   
-  XPtr<Clone<Function> > ptr(new Clone<Function>(verbose, n, provide_attrs, trj), false);
+  XPtr<Clone<Function> > ptr(new Clone<Function>(verbose, n, provide_attrs, trj));
   return ptr;
 }
 
@@ -484,7 +484,7 @@ SEXP Synchronize__new(SEXP verbose_, SEXP wait_, SEXP terminate_) {
   bool wait = as<bool>(wait_);
   bool terminate = as<bool>(terminate_);
 
-  XPtr<Synchronize> ptr(new Synchronize(verbose, wait, terminate), false);
+  XPtr<Synchronize> ptr(new Synchronize(verbose, wait, terminate));
   return ptr;
 }
 
@@ -496,7 +496,7 @@ SEXP Batch__new(SEXP verbose_, SEXP n_, SEXP timeout_, SEXP permanent_, SEXP nam
   bool permanent = as<bool>(permanent_);
   std::string name = as<std::string>(name_);
   
-  XPtr<Batch> ptr(new Batch(verbose, n, timeout, permanent, name), false);
+  XPtr<Batch> ptr(new Batch(verbose, n, timeout, permanent, name));
   return ptr;
 }
 
@@ -510,7 +510,7 @@ SEXP Batch__new_func(SEXP verbose_, SEXP n_, SEXP timeout_, SEXP permanent_, SEX
   std::string name = as<std::string>(name_);
   bool provide_attrs = as<bool>(provide_attrs_);
   
-  XPtr<Batch> ptr(new Batch(verbose, n, timeout, permanent, name, rule, provide_attrs), false);
+  XPtr<Batch> ptr(new Batch(verbose, n, timeout, permanent, name, rule, provide_attrs));
   return ptr;
 }
 
@@ -518,7 +518,7 @@ SEXP Batch__new_func(SEXP verbose_, SEXP n_, SEXP timeout_, SEXP permanent_, SEX
 SEXP Separate__new(SEXP verbose_) {
   bool verbose = as<bool>(verbose_);
   
-  XPtr<Separate> ptr(new Separate(verbose), false);
+  XPtr<Separate> ptr(new Separate(verbose));
   return ptr;
 }
 
@@ -572,6 +572,6 @@ void activity_chain_(SEXP first_, SEXP second_) {
 SEXP activity_clone_(SEXP activity_) {
   XPtr<Activity> activity(activity_);
   
-  XPtr<Activity> ptr(activity->clone(), false);
+  XPtr<Activity> ptr(activity->clone());
   return ptr;
 }

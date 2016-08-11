@@ -1,6 +1,6 @@
-## Build: docker build -t simmer-check simmer/working_dir
+## Build: docker build -t san-check -f simmer/working_dir/san-check.Dockerfile .
 ##        R CMD build simmer
-## Usage: docker run --rm -ti -v $(pwd):/mnt simmer-check Rdevel CMD check --as-cran /mnt/simmer_x.x.x.tar.gz
+## Usage: docker run --rm -ti -v $(pwd):/mnt san-check Rdevel CMD check --as-cran /mnt/simmer_x.x.x.tar.gz
 
 ## Start with the base image
 FROM rocker/r-devel-san:latest
