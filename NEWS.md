@@ -1,3 +1,9 @@
+# Changes in version 3.4.1.9000
+
+## Minor changes and fixes
+
+* Simplify Rcpp glue (remove unnecessary `as<>()` calls).
+
 # Changes in version 3.4.1
 
 ## Minor changes and fixes
