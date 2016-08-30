@@ -50,7 +50,8 @@ void run_(SEXP sim_, double until) {
 
 //[[Rcpp::export]]
 bool add_generator_(SEXP sim_, std::string name_prefix, SEXP first_activity_, 
-                    Function dist, int mon, int priority, int preemptible, bool restart) {
+                    Function dist, int mon, int priority, int preemptible, bool restart)
+{
   XPtr<Simulator> sim(sim_);
   XPtr<Activity> first_activity(first_activity_);
   return sim->add_generator(name_prefix, first_activity, dist, mon, priority, preemptible, restart);
@@ -58,14 +59,16 @@ bool add_generator_(SEXP sim_, std::string name_prefix, SEXP first_activity_,
 
 //[[Rcpp::export]]
 bool add_resource_(SEXP sim_, std::string name, int capacity, int queue_size, bool mon,
-                   bool preemptive, std::string preempt_order, bool keep_queue) {
+                   bool preemptive, std::string preempt_order, bool keep_queue)
+{
   XPtr<Simulator> sim(sim_);
   return sim->add_resource(name, capacity, queue_size, mon, preemptive, preempt_order, keep_queue);
 }
 
 //[[Rcpp::export]]
 bool add_resource_manager_(SEXP sim_, std::string name, std::string param, 
-                           std::vector<double> intervals, std::vector<int> values, int period) {
+                           std::vector<double> intervals, std::vector<int> values, int period)
+{
   XPtr<Simulator> sim(sim_);
   return sim->add_resource_manager(name, param, intervals, values, period);
 }
@@ -151,27 +154,31 @@ int get_queue_count_(SEXP sim_, std::string name) {
 
 //[[Rcpp::export]]
 SEXP Seize__new(bool verbose, std::string resource, int amount, 
-                std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask) {
+                std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask)
+{
   return XPtr<Seize<int> >(new Seize<int>(verbose, resource, amount, 0, cont, trj, mask));
 }
 
 //[[Rcpp::export]]
 SEXP Seize__new_func(bool verbose, std::string resource, Function amount, bool provide_attrs, 
-                     std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask) {
+                     std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask)
+{
   return XPtr<Seize<Function> >(
       new Seize<Function>(verbose, resource, amount, provide_attrs, cont, trj, mask));
 }
 
 //[[Rcpp::export]]
 SEXP SeizeSelected__new(bool verbose, int id, int amount, 
-                        std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask) {
+                        std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask)
+{
   return XPtr<SeizeSelected<int> >(
       new SeizeSelected<int>(verbose, id, amount, 0, cont, trj, mask));
 }
 
 //[[Rcpp::export]]
 SEXP SeizeSelected__new_func(bool verbose, int id, Function amount, bool provide_attrs, 
-                             std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask) {
+                             std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask)
+{
   return XPtr<SeizeSelected<Function> >(
       new SeizeSelected<Function>(verbose, id, amount, provide_attrs, cont, trj, mask));
 }
@@ -242,7 +249,8 @@ SEXP Timeout__new_func(bool verbose, Function task, bool provide_attrs) {
 
 //[[Rcpp::export]]
 SEXP Branch__new(bool verbose, Function option, bool provide_attrs, 
-                 std::vector<bool> cont, std::vector<Environment> trj) {
+                 std::vector<bool> cont, std::vector<Environment> trj)
+{
   return XPtr<Branch>(new Branch(verbose, option, provide_attrs, cont, trj));
 }
 
@@ -303,7 +311,8 @@ SEXP Batch__new(bool verbose, int n, double timeout, bool permanent, std::string
 
 //[[Rcpp::export]]
 SEXP Batch__new_func(bool verbose, int n, double timeout, bool permanent, 
-                     std::string name,Function rule, bool provide_attrs) {
+                     std::string name,Function rule, bool provide_attrs)
+{
   return XPtr<Batch>(new Batch(verbose, n, timeout, permanent, name, rule, provide_attrs));
 }
 

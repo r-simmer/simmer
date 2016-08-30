@@ -20,8 +20,8 @@ public:
   Simulator* sim;
   std::string name;
   
-  Entity(Simulator* sim, std::string name, int mon): 
-    sim(sim), name(name), mon(std::abs(mon)) {}
+  Entity(Simulator* sim, std::string name, int mon)
+    : sim(sim), name(name), mon(std::abs(mon)) {}
   virtual ~Entity() {}
   virtual void reset() {};
   int is_monitored() { return mon; }

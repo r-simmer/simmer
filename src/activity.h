@@ -25,9 +25,9 @@ public:
    * @param provide_attrs whether the activity should expose the arrival's attributes
    * @param priority      simulation priority
    */
-  Activity(std::string name, bool verbose, bool provide_attrs = 0, int priority = 0): 
-    name(name), verbose(verbose), provide_attrs(provide_attrs), n(1), 
-    priority(priority), next(NULL), prev(NULL) {}
+  Activity(std::string name, bool verbose, bool provide_attrs = 0, int priority = 0)
+    : name(name), verbose(verbose), provide_attrs(provide_attrs), n(1),
+      priority(priority), next(NULL), prev(NULL) {}
   
   virtual ~Activity() {}
   
@@ -37,13 +37,13 @@ public:
    */
   virtual void print(int indent = 0, bool brief = false) {
     if (!brief) {
-      for (int i = 0; i < indent; ++i) Rcpp::Rcout << " ";
+      for (int i = 0; i < indent; ++i)
+        Rcpp::Rcout << " ";
       Rcpp::Rcout << "{ Activity: " << FMT(12, left) << name << " | ";
-      if (verbose) {
-        Rcpp::Rcout << FMT(9, right) << prev;
-        Rcpp::Rcout << " <- " << FMT(9, right) << this << " -> ";
-        Rcpp::Rcout << FMT(9, left) << next << " | ";
-      }
+      if (verbose) Rcpp::Rcout << 
+        FMT(9, right) << prev << " <- " <<
+        FMT(9, right) << this << " -> " <<
+        FMT(9, left) << next << " | ";
     }
   }
   
@@ -79,16 +79,18 @@ protected:
   T get(Rcpp::Function call, Arrival* arrival) {
     if (provide_attrs)
       return Rcpp::as<T>(call(Rcpp::wrap(*arrival->get_attributes())));
-    else return Rcpp::as<T>(call());
+    return Rcpp::as<T>(call());
   }
 };
 
 // abstract class for multipath activities
-class Fork: public Activity {
+class Fork : public Activity {
 public:
   Fork(std::string name, bool verbose, VEC<bool> cont, VEC<Rcpp::Environment> trj, 
-       bool provide_attrs = 0, int priority = 0):
-    Activity(name, verbose, provide_attrs, priority), cont(cont), trj(trj), selected(NULL) {
+       bool provide_attrs = 0, int priority = 0)
+    : Activity(name, verbose, provide_attrs, priority), 
+      cont(cont), trj(trj), selected(NULL)
+  {
     foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
       Rcpp::Function get_head(itr["get_head"]);
       Rcpp::Function get_tail(itr["get_tail"]);
@@ -101,8 +103,10 @@ public:
       itr->set_prev(this);
   }
   
-  Fork(const Fork& o): Activity(o.name, o.verbose, o.provide_attrs, o.priority), 
-    cont(o.cont), trj(o.trj), selected(NULL) {
+  Fork(const Fork& o)
+    : Activity(o.name, o.verbose, o.provide_attrs, o.priority), 
+      cont(o.cont), trj(o.trj), selected(NULL)
+  {
     heads.clear();
     tails.clear();
     foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
@@ -157,13 +161,14 @@ protected:
  * Seize a resource.
  */
 template <typename T>
-class Seize: public Fork {
+class Seize : public Fork {
 public:
   CLONEABLE(Seize<T>)
   
   Seize(bool verbose, std::string resource, T amount, bool provide_attrs, 
-        VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask): 
-    Fork("Seize", verbose, cont, trj, provide_attrs), resource(resource), amount(amount), mask(mask) {}
+        VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask)
+    : Fork("Seize", verbose, cont, trj, provide_attrs), 
+      resource(resource), amount(amount), mask(mask) {}
   
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
@@ -192,12 +197,15 @@ protected:
     case REJECTED:
       if (mask & 2) {
         ret = SUCCESS;
-        if (mask & 1) selected = heads[1];
-        else selected = heads[0];
+        if (mask & 1)
+          selected = heads[1];
+        else
+          selected = heads[0];
       } else arrival->terminate(false);
       break;
     default:
-      if (mask & 1) selected = heads[0];
+      if (mask & 1)
+        selected = heads[0];
       break;
     }
     return ret;
@@ -208,13 +216,13 @@ protected:
  * Seize a selected resource.
  */
 template <typename T>
-class SeizeSelected: public Seize<T> {
+class SeizeSelected : public Seize<T> {
 public:
   CLONEABLE(SeizeSelected<T>)
   
   SeizeSelected(bool verbose, int id, T amount, bool provide_attrs, 
-                VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask):
-    Seize<T>(verbose, "[]", amount, provide_attrs, cont, trj, mask), id(id) {}
+                VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask)
+    : Seize<T>(verbose, "[]", amount, provide_attrs, cont, trj, mask), id(id) {}
   
 protected:
   int id;
@@ -228,13 +236,13 @@ protected:
  * Release a resource.
  */
 template <typename T>
-class Release: public Activity {
+class Release : public Activity {
 public:
   CLONEABLE(Release<T>)
   
-  Release(bool verbose, std::string resource, T amount, bool provide_attrs):
-    Activity("Release", verbose, provide_attrs, PRIORITY_RELEASE), 
-    resource(resource), amount(amount) {}
+  Release(bool verbose, std::string resource, T amount, bool provide_attrs)
+    : Activity("Release", verbose, provide_attrs, PRIORITY_RELEASE), 
+      resource(resource), amount(amount) {}
   
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
@@ -261,12 +269,12 @@ protected:
  * Release a selected resource.
  */
 template <typename T>
-class ReleaseSelected: public Release<T> {
+class ReleaseSelected : public Release<T> {
 public:
   CLONEABLE(ReleaseSelected<T>)
   
-  ReleaseSelected(bool verbose, int id, T amount, bool provide_attrs):
-    Release<T>(verbose, "[]", amount, provide_attrs), id(id) {}
+  ReleaseSelected(bool verbose, int id, T amount, bool provide_attrs)
+    : Release<T>(verbose, "[]", amount, provide_attrs), id(id) {}
   
 protected:
   int id;
@@ -280,13 +288,13 @@ protected:
  * Select a resource based on some policy.
  */
 template <typename T>
-class Select: public Activity {
+class Select : public Activity {
 public:
   CLONEABLE(Select<T>)
   
-  Select(bool verbose, T resources, bool provide_attrs, std::string policy, int id):
-    Activity("Select", verbose, provide_attrs), resources(resources),
-    policy(policy), id(id), dispatcher(Policy(resources, policy)) {}
+  Select(bool verbose, T resources, bool provide_attrs, std::string policy, int id)
+    : Activity("Select", verbose, provide_attrs), resources(resources),
+      policy(policy), id(id), dispatcher(Policy(resources, policy)) {}
   
   void print(int indent = 0, bool brief = false);
   
@@ -311,12 +319,12 @@ protected:
  * Set attributes.
  */
 template <typename T>
-class SetAttribute: public Activity {
+class SetAttribute : public Activity {
 public:
   CLONEABLE(SetAttribute<T>)
   
-  SetAttribute(bool verbose, std::string key, T value, bool provide_attrs):
-    Activity("SetAttribute", verbose, provide_attrs), key(key), value(value) {}
+  SetAttribute(bool verbose, std::string key, T value, bool provide_attrs)
+    : Activity("SetAttribute", verbose, provide_attrs), key(key), value(value) {}
   
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
@@ -339,18 +347,19 @@ protected:
  * Set prioritization.
  */
 template <typename T>
-class SetPrior: public Activity {
+class SetPrior : public Activity {
 public:
   CLONEABLE(SetPrior<T>)
   
-  SetPrior(bool verbose, T values, bool provide_attrs):
-    Activity("SetPrior", verbose, provide_attrs), values(values) {}
+  SetPrior(bool verbose, T values, bool provide_attrs)
+    : Activity("SetPrior", verbose, provide_attrs), values(values) {}
   
   void print(int indent = 0, bool brief = false);
   
   double run(Arrival* arrival) {
     VEC<int> ret = get<VEC<int> >(values, arrival);
-    if (ret.size() != 3) Rcpp::stop("%s: 3 values needed", name);
+    if (ret.size() != 3) 
+      Rcpp::stop("%s: 3 values needed", name);
     if (ret[0] >= 0) arrival->order.set_priority(ret[0]);
     if (ret[1] >= 0) arrival->order.set_preemptible(ret[1]);
     if (ret[2] >= 0) arrival->order.set_restart((bool)ret[2]);
@@ -365,12 +374,12 @@ protected:
  * Timeout.
  */
 template <typename T>
-class Timeout: public Activity {
+class Timeout : public Activity {
 public:
   CLONEABLE(Timeout<T>)
   
-  Timeout(bool verbose, T delay, bool provide_attrs):
-    Activity("Timeout", verbose, provide_attrs), delay(delay) {}
+  Timeout(bool verbose, T delay, bool provide_attrs)
+    : Activity("Timeout", verbose, provide_attrs), delay(delay) {}
   
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
@@ -391,16 +400,18 @@ protected:
  * Branch. It runs as another activity, but encloses other trajectories
  * that are selected at runtime through a user-defined function.
  */
-class Branch: public Fork {
+class Branch : public Fork {
 public:
   CLONEABLE(Branch)
   
-  Branch(bool verbose, Rcpp::Function option, bool provide_attrs, VEC<bool> cont, VEC<Rcpp::Environment> trj):
-    Fork("Branch", verbose, cont, trj, provide_attrs), option(option) {}
+  Branch(bool verbose, Rcpp::Function option, bool provide_attrs, 
+         VEC<bool> cont, VEC<Rcpp::Environment> trj)
+    : Fork("Branch", verbose, cont, trj, provide_attrs), option(option) {}
   
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
-    if (!brief) Rcpp::Rcout << "option: " << option << " }" << std::endl;
+    if (!brief) Rcpp::Rcout << 
+      "option: " << option << " }" << std::endl;
     else Rcpp::Rcout << option << ", ";
     Fork::print(indent, brief);
   }
@@ -420,16 +431,21 @@ protected:
 /**
  * Rollback to a previous activity.
  */
-class Rollback: public Activity {
+class Rollback : public Activity {
 public:
   CLONEABLE(Rollback)
   
-  Rollback(bool verbose, int amount, int times, OPT<Rcpp::Function> check = NONE, 
-           bool provide_attrs = false): Activity("Rollback", verbose, provide_attrs), 
-    amount(std::abs(amount)), times(times), check(check), cached(NULL), selected(NULL) {}
+  Rollback(bool verbose, int amount, int times, 
+           OPT<Rcpp::Function> check = NONE, bool provide_attrs = false)
+    : Activity("Rollback", verbose, provide_attrs), amount(std::abs(amount)),
+      times(times), check(check), cached(NULL), selected(NULL) {}
   
-  Rollback(const Rollback& o): Activity(o.name, o.verbose, o.provide_attrs), amount(o.amount), 
-    times(o.times), check(o.check), cached(NULL), selected(NULL) { pending.clear(); }
+  Rollback(const Rollback& o)
+    : Activity(o.name, o.verbose, o.provide_attrs), amount(o.amount), 
+      times(o.times), check(o.check), cached(NULL), selected(NULL)
+  {
+    pending.clear();
+  }
   
   void print(int indent = 0, bool brief = false) {
     if (!cached) cached = goback();
@@ -447,7 +463,8 @@ public:
   
   double run(Arrival* arrival) {
     if (check) {
-      if (!get<bool>(*check, arrival)) return 0;
+      if (!get<bool>(*check, arrival))
+        return 0;
     } else if (times >= 0) {
       if (pending.find(arrival) == pending.end()) 
         pending[arrival] = times;
@@ -491,25 +508,25 @@ protected:
  * Leave the trajectory with some probability.
  */
 template <typename T>
-class Leave: public Activity {
+class Leave : public Activity {
 public:
   CLONEABLE(Leave<T>)
   
-  Leave(bool verbose, T prob, bool provide_attrs):
-    Activity("Leave", verbose, provide_attrs), prob(prob) {}
+  Leave(bool verbose, T prob, bool provide_attrs)
+    : Activity("Leave", verbose, provide_attrs), prob(prob) {}
   
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
-    if (!brief) Rcpp::Rcout << "prob: " << prob << " }" << std::endl;
+    if (!brief) Rcpp::Rcout << 
+      "prob: " << prob << " }" << std::endl;
     else Rcpp::Rcout << prob << std::endl;
   }
   
   double run(Arrival* arrival) {
-    if (Rcpp::runif(1)[0] <= get<double>(prob, arrival)) {
-      arrival->terminate(false);
-      return REJECTED;
-    }
-    return 0;
+    if (Rcpp::runif(1)[0] > get<double>(prob, arrival))
+      return 0;
+    arrival->terminate(false);
+    return REJECTED;
   }
   
 protected:
@@ -520,16 +537,18 @@ protected:
  * Clone an arrival.
  */
 template <typename T>
-class Clone: public Fork {
+class Clone : public Fork {
 public:
   CLONEABLE(Clone<T>)
   
-  Clone(bool verbose, T n, bool provide_attrs, VEC<Rcpp::Environment> trj): 
-    Fork("Clone", verbose, VEC<bool>(trj.size(), true), trj, provide_attrs), n(n) {}
+  Clone(bool verbose, T n, bool provide_attrs, VEC<Rcpp::Environment> trj)
+    : Fork("Clone", verbose, VEC<bool>(trj.size(), true), trj, provide_attrs), 
+      n(n) {}
   
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
-    if (!brief) Rcpp::Rcout << "n: " << n << " }" << std::endl;
+    if (!brief) Rcpp::Rcout << 
+      "n: " << n << " }" << std::endl;
     else Rcpp::Rcout << n << ", ";
     Fork::print(indent, brief);
   }
@@ -537,12 +556,14 @@ public:
   double run(Arrival* arrival) {
     int value = std::abs(get<int>(n, arrival));
     for (int i = 1; i < value; i++) {
-      if (i < (int)heads.size()) selected = heads[i];
+      if (i < (int)heads.size())
+        selected = heads[i];
       Arrival* new_arrival = arrival->clone();
       new_arrival->set_activity(this->get_next());
       arrival->sim->schedule(0, new_arrival);
     }
-    if (heads.size()) selected = heads[0];
+    if (heads.size())
+      selected = heads[0];
     return 0;
   }
   
@@ -553,19 +574,23 @@ protected:
 /**
  * Synchronize clones.
  */
-class Synchronize: public Activity {
+class Synchronize : public Activity {
 public:
   CLONEABLE(Synchronize)
   
-  Synchronize(bool verbose, bool wait, bool terminate): 
-    Activity("Synchronize", verbose), wait(wait), terminate(terminate) {}
+  Synchronize(bool verbose, bool wait, bool terminate)
+    : Activity("Synchronize", verbose), wait(wait), terminate(terminate) {}
   
-  Synchronize(const Synchronize& o): Activity(o.name, o.verbose), 
-    wait(o.wait), terminate(o.terminate) { pending.clear(); }
+  Synchronize(const Synchronize& o)
+    : Activity(o.name, o.verbose), wait(o.wait), terminate(o.terminate)
+  {
+    pending.clear();
+  }
   
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
-    if (!brief) Rcpp::Rcout << "wait: " << wait << " }" << std::endl;
+    if (!brief) Rcpp::Rcout << 
+      "wait: " << wait << " }" << std::endl;
     else Rcpp::Rcout << wait << std::endl;
   }
   
@@ -578,12 +603,16 @@ public:
         return 0;
       } else {
         search->second--;
-        if (!search->second) pending.erase(search);
+        if (!search->second)
+          pending.erase(search);
       }
-    } else if (*(arrival->clones) == 1) return 0;
+    } else if (*(arrival->clones) == 1)
+      return 0;
     
-    if (!terminate) delete arrival;
-    else arrival->terminate(true);
+    if (!terminate) 
+      delete arrival;
+    else 
+      arrival->terminate(true);
     return REJECTED;
   }
   
@@ -596,14 +625,14 @@ protected:
 /**
  * Create a batch.
  */
-class Batch: public Activity {
+class Batch : public Activity {
 public:
   CLONEABLE(Batch)
   
   Batch(bool verbose, int n, double timeout, bool permanent, std::string id = "",
-        OPT<Rcpp::Function> rule = NONE, bool provide_attrs = false): 
-    Activity("Batch", verbose, provide_attrs), n(n), timeout(std::abs(timeout)), 
-    permanent(permanent), id(id), rule(rule) {}
+        OPT<Rcpp::Function> rule = NONE, bool provide_attrs = false)
+    : Activity("Batch", verbose, provide_attrs), n(n), 
+      timeout(std::abs(timeout)), permanent(permanent), id(id), rule(rule) {}
   
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
@@ -617,9 +646,11 @@ public:
     if (rule && !get<bool>(*rule, arrival))
       return 0;
     Batched** ptr = arrival->sim->get_batch(this, id);
-    if (!(*ptr)) *ptr = init(arrival->sim);
+    if (!(*ptr))
+      *ptr = init(arrival->sim);
     (*ptr)->insert(arrival);
-    if ((int)(*ptr)->size() == n) trigger(*ptr);
+    if ((int)(*ptr)->size() == n)
+      trigger(*ptr);
     return REJECTED;
   }
   
@@ -632,8 +663,10 @@ protected:
 
   Batched* init(Simulator* sim) {
     std::string str;
-    if (id.size()) str = "batch_" + id;
-    else str= "batch" + boost::lexical_cast<std::string>(sim->get_batch_count());
+    if (id.size())
+      str = "batch_" + id;
+    else
+      str= "batch" + boost::lexical_cast<std::string>(sim->get_batch_count());
     Batched* ptr = new Batched(sim, str, permanent);
     if (timeout) {
       Task* task = new Task(sim, "Batch-Timer", boost::bind(&Batch::trigger, this, ptr));
@@ -644,7 +677,8 @@ protected:
   
   void trigger(Batched* target) {
     Batched** ptr = target->sim->get_batch(this, id);
-    if (!(*ptr) || *ptr != target) return;
+    if (!(*ptr) || *ptr != target)
+      return;
     if ((*ptr)->size()) {
       (*ptr)->set_activity(this->get_next());
       (*ptr)->sim->schedule(0, (*ptr));
@@ -659,11 +693,11 @@ protected:
 /**
  * Separate a batch.
  */
-class Separate: public Activity {
+class Separate : public Activity {
 public:
   CLONEABLE(Separate)
   
-  Separate(bool verbose): Activity("Separate", verbose) {}
+  Separate(bool verbose) : Activity("Separate", verbose) {}
   
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
@@ -673,7 +707,8 @@ public:
   
   double run(Arrival* arrival) {
     Batched* batched = dynamic_cast<Batched*>(arrival);
-    if (!batched || batched->is_permanent()) return 0;
+    if (!batched || batched->is_permanent())
+      return 0;
     batched->pop_all(this->get_next());
     delete batched;
     return REJECTED;
@@ -684,16 +719,18 @@ public:
  * Renege after some time.
  */
 template <typename T>
-class RenegeIn: public Fork {
+class RenegeIn : public Fork {
 public:
   CLONEABLE(RenegeIn<T>)
   
-  RenegeIn(bool verbose, T t, bool provide_attrs, VEC<Rcpp::Environment> trj): 
-    Fork("RenegeIn", verbose, VEC<bool>(trj.size(), false), trj, provide_attrs), t(t) {}
+  RenegeIn(bool verbose, T t, bool provide_attrs, VEC<Rcpp::Environment> trj)
+    : Fork("RenegeIn", verbose, VEC<bool>(trj.size(), false), trj, provide_attrs), 
+      t(t) {}
   
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
-    if (!brief) Rcpp::Rcout << "t: " << t << " }" << std::endl;
+    if (!brief) Rcpp::Rcout << 
+      "t: " << t << " }" << std::endl;
     else Rcpp::Rcout << t << ", ";
     Fork::print(indent, brief);
   }
@@ -701,7 +738,8 @@ public:
   double run(Arrival* arrival) {
     double ret = std::abs(get<double>(t, arrival));
     Activity* next = NULL;
-    if (heads.size()) next = heads[0];
+    if (heads.size())
+      next = heads[0];
     arrival->set_timeout(ret, next);
     return 0;
   }
@@ -713,11 +751,11 @@ protected:
 /**
  * Abort reneging.
  */
-class RenegeAbort: public Activity {
+class RenegeAbort : public Activity {
 public:
   CLONEABLE(RenegeAbort)
   
-  RenegeAbort(bool verbose): Activity("RenegeAbort", verbose) {}
+  RenegeAbort(bool verbose) : Activity("RenegeAbort", verbose) {}
   
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);

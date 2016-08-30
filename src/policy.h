@@ -15,7 +15,9 @@ public:
   std::string name;
   
   Policy(Rcpp::Function resources, std::string policy) {}
-  Policy(VEC<std::string> resources, std::string policy): name(policy), resources(resources) {
+  Policy(VEC<std::string> resources, std::string policy)
+    : name(policy), resources(resources)
+  {
     policies["shortest-queue"]    = &Policy::policy_shortest_queue;
     policies["round-robin"]       = &Policy::policy_round_robin;
     policies["first-available"]   = &Policy::policy_first_available;

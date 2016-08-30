@@ -12,22 +12,22 @@ class Resource;
 /** 
  * Abstract class for processes, active entities that need a method run().
  */
-class Process: public Entity {
+class Process : public Entity {
 public:
-  Process(Simulator* sim, std::string name, int mon): Entity(sim, name, mon) {}
+  Process(Simulator* sim, std::string name, int mon) : Entity(sim, name, mon) {}
   virtual void run() = 0;
   virtual void activate() {}
   virtual void deactivate();
 };
 
-class Manager: public Process {
+class Manager : public Process {
   typedef boost::function<void (int)> Setter;
   
 public:
   Manager(Simulator* sim, std::string name, std::string param,
-          VEC<double> duration, VEC<int> value, int period, Setter set):
-    Process(sim, name, false), param(param), duration(duration), value(value), 
-    period(period), set(set), index(0) {}
+          VEC<double> duration, VEC<int> value, int period, Setter set)
+    : Process(sim, name, false), param(param), duration(duration), 
+      value(value), period(period), set(set), index(0) {}
   
   void reset() { index = 0; }
   void run();
@@ -41,11 +41,12 @@ private:
   unsigned int index;
 };
 
-class Task: public Process {
+class Task : public Process {
   typedef boost::function<void ()> Bind;
   
 public:
-  Task(Simulator* sim, std::string name, Bind task): Process(sim, name, false), task(task) {}
+  Task(Simulator* sim, std::string name, Bind task) 
+    : Process(sim, name, false), task(task) {}
   
   void run();
   
@@ -57,7 +58,9 @@ typedef UMAP<std::string, double> Attr;
 
 struct Order {
 public:
-  Order(int priority=0, int preemptible=0, bool restart=false): preemptible(preemptible) {
+  Order(int priority=0, int preemptible=0, bool restart=false) 
+    : preemptible(preemptible)
+  {
     set_priority(priority);
     set_preemptible(preemptible);
     set_restart(restart);
@@ -69,7 +72,8 @@ public:
       value = 0;
     }
     priority = value;
-    if (preemptible < priority) preemptible = priority;
+    if (preemptible < priority) 
+      preemptible = priority;
   }
   int get_priority() { return priority; }
   void set_preemptible(int value) {
@@ -92,7 +96,7 @@ private:
 /**
  * Generation process.
  */
-class Generator: public Process {
+class Generator : public Process {
 public:
   /**
    * Constructor.
@@ -103,9 +107,10 @@ public:
    * @param dist            an user-defined R function that provides random numbers
    * @param order           priority, preemptible, restart
    */
-  Generator(Simulator* sim, std::string name_prefix, int mon, Activity* first_activity, 
-            Rcpp::Function dist, Order order): Process(sim, name_prefix, mon), 
-            count(0), first_activity(first_activity), dist(dist), order(order) {}
+  Generator(Simulator* sim, std::string name_prefix, int mon, 
+            Activity* first_activity, Rcpp::Function dist, Order order)
+    : Process(sim, name_prefix, mon), count(0), first_activity(first_activity),
+      dist(dist), order(order) {}
   
   /**
    * Reset the generator: counter, trajectory
@@ -132,14 +137,14 @@ private:
 /** 
  *  Arrival process.
  */
-class Arrival: public Process {
+class Arrival : public Process {
 public:
   struct ArrTime {
     double start;
     double activity;
     double busy_until;
     double remaining;
-    ArrTime(): start(-1), activity(0), busy_until(-1), remaining(0) {}
+    ArrTime() : start(-1), activity(0), busy_until(-1), remaining(0) {}
   };
   typedef UMAP<std::string, ArrTime> ResTime;
   typedef UMAP<int, Resource*> SelMap;
@@ -157,15 +162,16 @@ public:
   * @param order           priority, preemptible, restart
   * @param first_activity  the first activity of a user-defined R trajectory
   */
-  Arrival(Simulator* sim, std::string name, int mon, Order order, Activity* first_activity):
-    Process(sim, name, mon), clones(new int(1)), order(order), activity(first_activity), 
-    timer(NULL), batch(NULL) {}
+  Arrival(Simulator* sim, std::string name, int mon, Order order, Activity* first_activity)
+    : Process(sim, name, mon), clones(new int(1)), order(order), 
+      activity(first_activity), timer(NULL), batch(NULL) {}
   
   ~Arrival() { reset(); }
   
   void reset() {
     cancel_timeout();
-    if (!--(*clones)) delete clones;
+    if (!--(*clones)) 
+      delete clones;
   }
   
   void run();
@@ -194,7 +200,8 @@ public:
   void unregister_entity(Batched* ptr) { batch = NULL; }
   void set_timeout(double timeout, Activity* next);
   void cancel_timeout() {
-    if (!timer) return;
+    if (!timer) 
+      return;
     timer->deactivate();
     delete timer;
     timer = NULL;
@@ -214,14 +221,16 @@ protected:
 /** 
  *  Batch of arrivals.
  */
-class Batched: public Arrival {
+class Batched : public Arrival {
 public:
   CLONEABLE_COUNT(Batched)
 
-  Batched(Simulator* sim, std::string name, bool permanent):
-    Arrival(sim, name, true, Order(), NULL), permanent(permanent) {}
+  Batched(Simulator* sim, std::string name, bool permanent)
+    : Arrival(sim, name, true, Order(), NULL), permanent(permanent) {}
   
-  Batched(const Batched& o): Arrival(o), arrivals(o.arrivals), permanent(o.permanent) { 
+  Batched(const Batched& o)
+    : Arrival(o), arrivals(o.arrivals), permanent(o.permanent)
+  { 
     for (unsigned int i=0; i<arrivals.size(); i++)
       arrivals[i] = arrivals[i]->clone();
   }

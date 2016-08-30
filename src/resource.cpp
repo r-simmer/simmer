@@ -2,23 +2,27 @@
 #include "resource.h"
 
 void Resource::set_capacity(int value) {
-  if (capacity == value) return;
+  if (capacity == value)
+    return;
   int last = capacity;
   capacity = value;
   if (capacity > last || capacity < 0) {
     // serve another
     while (queue_count) 
-      if (!try_serve_from_queue(sim->verbose, sim->now())) break;
+      if (!try_serve_from_queue(sim->verbose, sim->now())) 
+        break;
   } else if (capacity < last) {
     while (server_count > capacity) 
-      if (!try_free_server(sim->verbose, sim->now())) break;
+      if (!try_free_server(sim->verbose, sim->now()))
+        break;
   }
   if (is_monitored())
     sim->record_resource(name, server_count, queue_count, capacity, queue_size);
 }
 
 void Resource::set_queue_size(int value) {
-  if (queue_size == value) return;
+  if (queue_size == value)
+    return;
   queue_size = value;
   if (is_monitored()) 
     sim->record_resource(name, server_count, queue_count, capacity, queue_size);
@@ -76,7 +80,8 @@ int Resource::release(Arrival* arrival, int amount) {
 int Resource::post_release() {
   // serve another
   while (queue_count) 
-    if (!try_serve_from_queue(sim->verbose, sim->now())) break;
+    if (!try_serve_from_queue(sim->verbose, sim->now()))
+      break;
     
   if (is_monitored())
     sim->record_resource(name, server_count, queue_count, capacity, queue_size);

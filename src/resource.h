@@ -6,7 +6,7 @@
 /** 
  *  Generic resource, a passive entity that comprises server + a queue.
  */
-class Resource: public Entity {
+class Resource : public Entity {
 public:
   /**
   * Constructor.
@@ -16,9 +16,9 @@ public:
   * @param capacity    server capacity (-1 means infinity)
   * @param queue_size  room in the queue (-1 means infinity)
   */
-  Resource(Simulator* sim, std::string name, int mon, int capacity, int queue_size): 
-    Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), server_count(0), 
-    queue_count(0) {}
+  Resource(Simulator* sim, std::string name, int mon, int capacity, int queue_size)
+    : Entity(sim, name, mon), capacity(capacity), queue_size(queue_size), 
+      server_count(0), queue_count(0) {}
   
   /**
   * Reset the resource: server, queue
@@ -48,8 +48,8 @@ public:
   bool erase(Arrival* arrival, bool stay = false);
   
   void set_capacity(int value);
-  int get_capacity() { return capacity; }
   void set_queue_size(int value);
+  int get_capacity() { return capacity; }
   int get_queue_size() { return queue_size; }
   int get_server_count() { return server_count; }
   int get_queue_count() { return queue_count; }
@@ -64,8 +64,10 @@ protected:
   
   void verbose_print(double time, std::string arrival, std::string status) {
     Rcpp::Rcout << 
-      FMT(10, right) << time << " |" << FMT(12, right) << "resource: " << FMT(15, left) << name << "|" << 
-        FMT(12, right) << "arrival: " << FMT(15, left) << arrival << "| " << status << std::endl;
+      FMT(10, right) << time << " |" << 
+      FMT(12, right) << "resource: " << FMT(15, left) << name << "|" << 
+      FMT(12, right) << "arrival: " << FMT(15, left) << arrival << "| " << 
+      status << std::endl;
   }
   
   virtual bool room_in_server(int amount, int priority) = 0;
@@ -83,8 +85,8 @@ struct RSeize {
   Arrival* arrival;
   int amount;
   
-  RSeize(double arrived_at, Arrival* arrival, int amount):
-    arrived_at(arrived_at), arrival(arrival), amount(amount) {}
+  RSeize(double arrived_at, Arrival* arrival, int amount)
+    : arrived_at(arrived_at), arrival(arrival), amount(amount) {}
   
   int priority() const { return arrival->order.get_priority(); }
   int preemptible() const { return arrival->order.get_preemptible(); }
@@ -128,12 +130,12 @@ typedef MSET<RSeize, RSCompLIFO> LIFO;
 *  Priority resource.
 */
 template <typename T>
-class PriorityRes: public Resource {
+class PriorityRes : public Resource {
   typedef UMAP<Arrival*, typename T::iterator> ServerMap;
   
 public:
-  PriorityRes(Simulator* sim, std::string name, int mon, int capacity, int queue_size): 
-    Resource(sim, name, mon, capacity, queue_size) {}
+  PriorityRes(Simulator* sim, std::string name, int mon, int capacity, int queue_size)
+    : Resource(sim, name, mon, capacity, queue_size) {}
   
   ~PriorityRes() { reset(); }
   
@@ -154,19 +156,22 @@ protected:
   ServerMap server_map;
   
   bool room_in_server(int amount, int priority) {
-    if (capacity < 0) return true;
+    if (capacity < 0) 
+      return true;
     return server_count + amount <= capacity;
   }
   
   bool room_in_queue(int amount, int priority) {
-    if (queue_size < 0) return true;
-    if (queue_count + amount <= queue_size) return true;
+    if (queue_size < 0 || queue_count + amount <= queue_size) 
+      return true;
     int count = 0;
     foreach_r_ (RPQueue::value_type& itr, queue) {
       if (priority > itr.priority())
         count += itr.amount;
-      else break;
-      if (count >= amount) return true;
+      else 
+        break;
+      if (count >= amount) 
+        return true;
     }
     return false;
   }
@@ -240,7 +245,8 @@ protected:
   
   bool remove_from_queue(bool verbose, double time, Arrival* arrival) {
     QueueMap::iterator search = queue_map.find(arrival);
-    if (search == queue_map.end()) return false;
+    if (search == queue_map.end())
+      return false;
     if (verbose) verbose_print(time, arrival->name, "DEPART");
     queue_count -= search->second->amount;
     search->second->arrival->unregister_entity(this);
@@ -254,10 +260,10 @@ protected:
 *  Preemptive resource.
 */
 template <typename T>
-class PreemptiveRes: public PriorityRes<T> {
+class PreemptiveRes : public PriorityRes<T> {
 public:
-  PreemptiveRes(Simulator* sim, std::string name, int mon, int capacity, int queue_size, bool keep_queue):
-    PriorityRes<T>(sim, name, mon, capacity, queue_size), keep_queue(keep_queue) {}
+  PreemptiveRes(Simulator* sim, std::string name, int mon, int capacity, int queue_size, bool keep_queue)
+    : PriorityRes<T>(sim, name, mon, capacity, queue_size), keep_queue(keep_queue) {}
   
   ~PreemptiveRes() { reset(); }
   
@@ -275,14 +281,16 @@ protected:
   QueueMap preempted_map;
   
   bool room_in_server(int amount, int priority) {
-    if (this->capacity < 0) return true;
-    if (this->server_count + amount <= this->capacity) return true;
+    if (this->capacity < 0 || this->server_count + amount <= this->capacity)
+      return true;
     int count = 0;
     foreach_ (typename T::value_type& itr, this->server) {
       if (priority > itr.preemptible())
         count += itr.amount;
-      else break;
-      if (count >= amount) return true;
+      else 
+        break;
+      if (count >= amount) 
+        return true;
     }
     return false;
   }
@@ -333,7 +341,8 @@ protected:
     if (PriorityRes<T>::remove_from_queue(verbose, time, arrival))
       return true;
     QueueMap::iterator search = preempted_map.find(arrival);
-    if (search == preempted_map.end()) return false;
+    if (search == preempted_map.end())
+      return false;
     if (verbose) this->verbose_print(time, arrival->name, "DEPART");
     this->queue_count -= search->second->amount;
     search->second->arrival->unregister_entity(this);

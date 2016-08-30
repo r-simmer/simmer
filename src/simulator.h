@@ -45,7 +45,8 @@ public:
    * @param name    simulator name
    * @param verbose verbose flag
    */
-  Simulator(std::string name, bool verbose): name(name), verbose(verbose), now_(0), b_count(0) {}
+  Simulator(std::string name, bool verbose)
+    : name(name), verbose(verbose), now_(0), b_count(0) {}
   
   ~Simulator() {
     foreach_ (PQueue::value_type& itr, event_queue)
@@ -111,11 +112,13 @@ public:
   std::pair<VEC<double>, VEC<std::string> > peek(int steps) {
     VEC<double> time;
     VEC<std::string> process;
-    if (steps) { foreach_ (PQueue::value_type& itr, event_queue) {
-      time.push_back(itr.time);
-      process.push_back(itr.process->name);
-      if (!--steps) break;
-    }}
+    if (steps) {
+      foreach_ (PQueue::value_type& itr, event_queue) {
+        time.push_back(itr.time);
+        process.push_back(itr.process->name);
+        if (!--steps) break;
+      }
+    }
     return std::make_pair(time, process);
   }
   
@@ -123,14 +126,13 @@ public:
    * Process the next event. Only one step, a giant leap for mankind.
    */
   bool step() {
-    if (event_queue.empty()) return 0;
+    if (event_queue.empty()) return false;
     PQueue::iterator ev = event_queue.begin();
     event_map.erase(ev->process);
     now_ = ev->time;
     ev->process->run();
     event_queue.erase(ev);
-    return 1;
-    // ... and that's it! :D
+    return true;
   }
   
   /**
@@ -155,16 +157,17 @@ public:
    * @param   restart         whether activity must be restarted after preemption
    */
   bool add_generator(std::string name_prefix, Activity* first_activity, Rcpp::Function dist, 
-                     int mon, int priority, int preemptible, bool restart) {
-    if (process_map.find(name_prefix) == process_map.end()) {
-      Generator* gen = new Generator(this, name_prefix, mon, first_activity, dist,
-                                     Order(priority, preemptible, restart));
-      process_map[name_prefix] = gen;
-      gen->run();
-      return TRUE;
+                     int mon, int priority, int preemptible, bool restart)
+  {
+    if (process_map.find(name_prefix) != process_map.end()) {
+      Rcpp::warning("process " + name_prefix + " already defined");
+      return false;
     }
-    Rcpp::warning("process " + name_prefix + " already defined");
-    return FALSE;
+    Generator* gen = new Generator(this, name_prefix, mon, first_activity, dist,
+                                   Order(priority, preemptible, restart));
+    process_map[name_prefix] = gen;
+    gen->run();
+    return true;
   }
   
   /**
@@ -178,21 +181,23 @@ public:
    * @param   keep_queue    whether the queue size is a hard limit
    */
   bool add_resource(std::string name, int capacity, int queue_size, bool mon,
-                    bool preemptive, std::string preempt_order, bool keep_queue) {
-    if (resource_map.find(name) == resource_map.end()) {
-      Resource* res;
-      if (!preemptive)
-        res = new PriorityRes<FIFO>(this, name, mon, capacity, queue_size);
-      else {
-        if (preempt_order.compare("fifo") == 0)
-          res = new PreemptiveRes<FIFO>(this, name, mon, capacity, queue_size, keep_queue);
-        else res = new PreemptiveRes<LIFO>(this, name, mon, capacity, queue_size, keep_queue);
-      }
-      resource_map[name] = res;
-      return TRUE;
+                    bool preemptive, std::string preempt_order, bool keep_queue)
+  {
+    if (resource_map.find(name) != resource_map.end()) {
+      Rcpp::warning("resource " + name + " already defined");
+      return false;
     }
-    Rcpp::warning("resource " + name + " already defined");
-    return FALSE;
+    Resource* res;
+    if (!preemptive) {
+      res = new PriorityRes<FIFO>(this, name, mon, capacity, queue_size);
+    } else {
+      if (preempt_order.compare("fifo") == 0)
+        res = new PreemptiveRes<FIFO>(this, name, mon, capacity, queue_size, keep_queue);
+      else 
+        res = new PreemptiveRes<LIFO>(this, name, mon, capacity, queue_size, keep_queue);
+    }
+    resource_map[name] = res;
+    return true;
   }
   
   /**
@@ -204,25 +209,26 @@ public:
    * @param   value     vector of values
    */
   bool add_resource_manager(std::string name, std::string param, 
-                            VEC<double> duration, VEC<int> value, int period) {
-    if (process_map.find(name) == process_map.end()) {
-      EntMap::iterator search = resource_map.find(name);
-      if (search == resource_map.end())
-        Rcpp::stop("resource '" + name + "' not found (typo?)");
-      Resource* res = (Resource*)search->second;
-      
-      Manager* manager;
-      if (param.compare("capacity") == 0)
-        manager = new Manager(this, name, param, duration, value, period,
-                              boost::bind(&Resource::set_capacity, res, _1));
-      else manager = new Manager(this, name, param, duration, value, period,
-                                 boost::bind(&Resource::set_queue_size, res, _1));
-      process_map[name + "_" + param] = manager;
-      manager->run();
-      return TRUE;
+                            VEC<double> duration, VEC<int> value, int period)
+  {
+    if (process_map.find(name) != process_map.end()) {
+      Rcpp::warning("process " + name + " already defined");
+      return false;
     }
-    Rcpp::warning("process " + name + " already defined");
-    return FALSE;
+    EntMap::iterator search = resource_map.find(name);
+    if (search == resource_map.end())
+      Rcpp::stop("resource '" + name + "' not found (typo?)");
+    Resource* res = (Resource*)search->second;
+    Manager* manager;
+    if (param.compare("capacity") == 0)
+      manager = new Manager(this, name, param, duration, value, period,
+                            boost::bind(&Resource::set_capacity, res, _1));
+    else 
+      manager = new Manager(this, name, param, duration, value, period,
+                            boost::bind(&Resource::set_queue_size, res, _1));
+    process_map[name + "_" + param] = manager;
+    manager->run();
+    return true;
   }
   
   /**

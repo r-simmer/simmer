@@ -24,8 +24,9 @@ Resource* Policy::policy_shortest_queue(Simulator* sim) {
 }
 
 Resource* Policy::policy_round_robin(Simulator* sim) {
-  static int i = -1; i++;
-  if (i == (int)resources.size()) i = 0;
+  static int i = -1;
+  if (++i == (int)resources.size())
+    i = 0;
   return sim->get_resource(resources[i]);
 } 
 
@@ -43,8 +44,8 @@ Resource* Policy::policy_first_available(Simulator* sim) {
       goto select;
   }
   return sim->get_resource(resources[0]);
-  select:
-    return selected;
+select:
+  return selected;
 }
 
 Resource* Policy::policy_random(Simulator* sim) {
