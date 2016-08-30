@@ -3,6 +3,7 @@
 ## Minor changes and fixes
 
 * Simplify Rcpp glue (remove unnecessary `as<>()` calls).
+* Simplify trajectory's head/tail management.
 
 # Changes in version 3.4.1
 

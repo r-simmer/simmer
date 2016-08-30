@@ -14,17 +14,17 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       margin <- paste(rep(" ", indent), collapse="")
       cat(paste0(margin, "simmer trajectory: ", self$name, ", ",
                  private$n_activities, " activities\n"))
-      ptr <- private$head
-      while (!identical(ptr, private$tail)) {
+      ptr <- self$get_head()
+      while (!identical(ptr, self$get_tail())) {
         activity_print_(ptr, indent)
         ptr <- activity_get_next_(ptr)
       }
       if (!is.null(ptr)) activity_print_(ptr, indent)
     },
     
-    get_head = function() { private$head },
+    get_head = function() { private$ptrs[[1]] },
     
-    get_tail = function() { private$tail },
+    get_tail = function() { private$ptrs[[length(private$ptrs)]] },
     
     get_n_activities = function() { private$n_activities },
     
@@ -180,14 +180,10 @@ simmer.trajectory <- R6Class("simmer.trajectory",
         stop("not a trajectory")
       new <- self$clone(deep=TRUE)
       traj <- traj$clone(deep=TRUE)
-      if (!is.null(traj$get_head())) {
-        if (!is.null(new$get_tail())) {
+      if (!is.null(traj$get_head()) && !is.null(new$get_tail()))
           activity_chain_(new$get_tail(), traj$get_head())
-          new$.__enclos_env__$private$ptrs <- 
-            c(new$.__enclos_env__$private$ptrs, traj$.__enclos_env__$private$ptrs)
-        } else new$.__enclos_env__$private$head <- traj$get_head()
-        new$.__enclos_env__$private$tail <- traj$get_tail()
-      }
+      new$.__enclos_env__$private$ptrs <- 
+        c(new$.__enclos_env__$private$ptrs, traj$.__enclos_env__$private$ptrs)
       new$.__enclos_env__$private$n_activities <- 
         new$.__enclos_env__$private$n_activities + traj$get_n_activities()
       new
@@ -197,17 +193,12 @@ simmer.trajectory <- R6Class("simmer.trajectory",
   private = list(
     verbose = FALSE,
     n_activities = 0,
-    head = NULL,
-    tail = NULL,
     ptrs = NULL,
     
     add_activity = function(activity) {
+      if (!is.null(private$ptrs))
+        activity_chain_(self$get_tail(), activity)
       private$ptrs <- c(private$ptrs, activity)
-      if (is.null(private$head))
-        private$head <- activity
-      else
-        activity_chain_(private$tail, activity)
-      private$tail <- activity
       private$n_activities <- private$n_activities + activity_get_n_(activity)
       self
     },
@@ -216,20 +207,16 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     copy = function(deep = FALSE) {
       new <- private$clone2(deep)
       new$.__enclos_env__$private$ptrs <- NULL
-      if (!is.null(new$get_head())) {
-        ptr <- new$get_head()
-        first <- activity_clone_(ptr)
-        new$.__enclos_env__$private$ptrs <- c(new$.__enclos_env__$private$ptrs, first)
-        last <- first
-        while (!identical(ptr, new$get_tail())) {
+      if (!is.null(self$get_head())) {
+        ptr <- self$get_head()
+        new_ptr <- activity_clone_(ptr)
+        new$.__enclos_env__$private$ptrs <- c(new$.__enclos_env__$private$ptrs, new_ptr)
+        while (!identical(ptr, self$get_tail())) {
           ptr <- activity_get_next_(ptr)
           new_ptr <- activity_clone_(ptr)
+          activity_chain_(new$get_tail(), new_ptr)
           new$.__enclos_env__$private$ptrs <- c(new$.__enclos_env__$private$ptrs, new_ptr)
-          activity_chain_(last, new_ptr)
-          last <- new_ptr
         }
-        new$.__enclos_env__$private$head <- first
-        new$.__enclos_env__$private$tail <- last
       }
       new
     }
