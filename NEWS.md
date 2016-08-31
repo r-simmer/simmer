@@ -4,6 +4,8 @@
 
 * Simplify Rcpp glue: remove unnecessary `as<>()` calls (ec4e51a).
 * Simplify trajectory's head/tail management (06432a8).
+* Ongoing (unfinished) arrivals are reported with `get_mon_arrivals(ongoing = TRUE)` (#73).
+* Now, `run(until)` runs the simulation exactly until `until`, instead of until the first event scheduled at a time >= `until`.
 
 # Changes in version 3.4.1
 

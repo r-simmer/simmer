@@ -130,11 +130,13 @@ Simmer <- R6Class("simmer",
       self
     },
     
-    get_mon_arrivals = function(per_resource=FALSE) {
+    get_mon_arrivals = function(per_resource=FALSE, ongoing=FALSE) {
+      per_resource <- evaluate_value(per_resource)
+      ongoing <- evaluate_value(ongoing)
       as.data.frame(
-        if (!per_resource) get_mon_arrivals_(private$sim_obj)
-        else get_mon_arrivals_per_resource_(private$sim_obj)
-        , stringsAsFactors=FALSE)
+        get_mon_arrivals_(private$sim_obj, per_resource, ongoing), 
+        stringsAsFactors=FALSE
+      )
     },
     
     get_mon_attributes = function() 
@@ -377,13 +379,15 @@ add_generator <- function(env, name_prefix, trajectory, dist, mon=1,
 #' Simulator getters for obtaining monitored data (if any) about arrivals, attributes and resources.
 #' 
 #' @param envs the simulation environment (or a list of environments).
-#' @param per_resource whether the activity should be reported on a per-resource basis (by default: FALSE).
+#' @param per_resource if \code{TRUE}, statistics will be reported on a per-resource basis.
+#' @param ongoing if \code{TRUE}, ongoing arrivals will be reported. The columns
+#' \code{end_time} and \code{finished} of these arrivals are reported as \code{NA}s.
 #' 
 #' @return Return a data frame.
 #' @name get_mon
 #' @export
-get_mon_arrivals <- function(envs, per_resource=FALSE) 
-  envs_apply(envs, "get_mon_arrivals", per_resource)
+get_mon_arrivals <- function(envs, per_resource=FALSE, ongoing=FALSE)
+  envs_apply(envs, "get_mon_arrivals", per_resource, ongoing)
 
 #' @rdname get_mon
 #' @export

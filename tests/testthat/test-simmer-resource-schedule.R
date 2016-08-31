@@ -8,7 +8,7 @@ test_that("capacity & queue size change", {
   
   limits <- simmer(verbose=TRUE) %>%
     add_resource("dummy", inf_sch) %>%
-    run(16) %>% reset() %>% run(48) %>%
+    run(17) %>% reset() %>% run(49) %>%
     get_mon_resources("limits")
   
   expect_equal(limits$time, c(8, 16, 24))
@@ -16,7 +16,7 @@ test_that("capacity & queue size change", {
   
   limits <- simmer() %>%
     add_resource("dummy", fin_sch) %>%
-    run(16) %>% reset() %>% run(48) %>%
+    run(17) %>% reset() %>% run(49) %>%
     get_mon_resources("limits")
   
   expect_equal(limits$time, c(8, 16, 24, 32, 40, 48))
@@ -29,7 +29,7 @@ test_that("queue size changes", {
   
   limits <- simmer() %>%
     add_resource("dummy", 1, inf_sch) %>%
-    run(16) %>% reset() %>% run(48) %>%
+    run(17) %>% reset() %>% run(49) %>%
     get_mon_resources("limits")
   
   expect_equal(limits$time, c(8, 16, 24))
@@ -37,7 +37,7 @@ test_that("queue size changes", {
   
   limits <- simmer() %>%
     add_resource("dummy", 1, fin_sch) %>%
-    run(16) %>% reset() %>% run(48) %>%
+    run(17) %>% reset() %>% run(49) %>%
     get_mon_resources("limits")
   
   expect_equal(limits$time, c(8, 16, 24, 32, 40, 48))

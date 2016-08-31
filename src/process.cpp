@@ -26,6 +26,7 @@ void Generator::run() {
       (sim->now() + delay) << std::endl;
     
     // schedule the arrival
+    sim->register_arrival(arrival);
     sim->schedule(delay, arrival, count);
   }
   // schedule the generator
@@ -63,6 +64,13 @@ void Task::run() {
   
   task();
   delete this;
+}
+
+void Arrival::reset() {
+  cancel_timeout();
+  if (!--(*clones))
+    delete clones;
+  sim->unregister_arrival(this);
 }
 
 void Arrival::run() {
@@ -158,6 +166,16 @@ int Arrival::set_attribute(std::string key, double value) {
   if (is_monitored() >= 2) 
     sim->record_attribute(name, key, value);
   return 0;
+}
+
+double Arrival::get_start(std::string name) {
+  double start = restime[name].start;
+  if (batch) {
+    double up = batch->get_start(name);
+    if (up >= 0 && (start < 0 || up < start))
+      start = up;
+  }
+  return start;
 }
 
 void Arrival::set_timeout(double timeout, Activity* next) {

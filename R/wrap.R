@@ -11,8 +11,8 @@ simmer.wrap <- R6Class("simmer.wrap",
       private$peek_val <- env$peek(Inf, TRUE)
       private$res <- env$get_resources()
       private$gen <- env$get_generators()
-      private$arrivals <- env$get_mon_arrivals()
-      private$arrivals_res <- env$get_mon_arrivals(TRUE)
+      private$arrivals <- env$get_mon_arrivals(ongoing=TRUE)
+      private$arrivals_res <- env$get_mon_arrivals(TRUE, ongoing=TRUE)
       private$attributes <- env$get_mon_attributes()
       private$resources_all <- env$get_mon_resources(data=c("counts", "limits"))
       private$resources_counts <- env$get_mon_resources(data="counts")
@@ -62,9 +62,16 @@ simmer.wrap <- R6Class("simmer.wrap",
       else ret # nocov
     },
     
-    get_mon_arrivals = function(per_resource=FALSE) {
-      if (per_resource) private$arrivals_res
-      else private$arrivals 
+    get_mon_arrivals = function(per_resource=FALSE, ongoing=FALSE) {
+      if (per_resource) {
+        if (!ongoing)
+          na.omit(private$arrivals_res)
+        else private$arrivals_res
+      } else {
+        if (!ongoing)
+          na.omit(private$arrivals)
+        else private$arrivals 
+      }
     },
     get_mon_attributes = function() { private$attributes },
     get_mon_resources = function(data=c("counts", "limits")) {

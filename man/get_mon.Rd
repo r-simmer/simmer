@@ -7,7 +7,7 @@
 \alias{get_mon_resources}
 \title{Get statistics}
 \usage{
-get_mon_arrivals(envs, per_resource = FALSE)
+get_mon_arrivals(envs, per_resource = FALSE, ongoing = FALSE)
 
 get_mon_attributes(envs)
 
@@ -16,7 +16,10 @@ get_mon_resources(envs, data = c("counts", "limits"))
 \arguments{
 \item{envs}{the simulation environment (or a list of environments).}
 
-\item{per_resource}{whether the activity should be reported on a per-resource basis (by default: FALSE).}
+\item{per_resource}{if \code{TRUE}, statistics will be reported on a per-resource basis.}
+
+\item{ongoing}{if \code{TRUE}, ongoing arrivals will be reported. The columns
+\code{end_time} and \code{finished} of these arrivals are reported as \code{NA}s.}
 
 \item{data}{whether to retrieve the "counts", the "limits" or both.}
 }

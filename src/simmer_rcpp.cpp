@@ -74,15 +74,9 @@ bool add_resource_manager_(SEXP sim_, std::string name, std::string param,
 }
 
 //[[Rcpp::export]]
-List get_mon_arrivals_(SEXP sim_) {
+List get_mon_arrivals_(SEXP sim_, bool per_resource, bool ongoing) {
   XPtr<Simulator> sim(sim_);
-  return sim->get_arr_traj_stats();
-}
-
-//[[Rcpp::export]]
-List get_mon_arrivals_per_resource_(SEXP sim_) {
-  XPtr<Simulator> sim(sim_);
-  return sim->get_arr_res_stats();
+  return sim->get_arr_stats(per_resource, ongoing);
 }
 
 //[[Rcpp::export]]

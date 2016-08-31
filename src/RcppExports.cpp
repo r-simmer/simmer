@@ -124,24 +124,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_mon_arrivals_
-List get_mon_arrivals_(SEXP sim_);
-RcppExport SEXP simmer_get_mon_arrivals_(SEXP sim_SEXP) {
+List get_mon_arrivals_(SEXP sim_, bool per_resource, bool ongoing);
+RcppExport SEXP simmer_get_mon_arrivals_(SEXP sim_SEXP, SEXP per_resourceSEXP, SEXP ongoingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    __result = Rcpp::wrap(get_mon_arrivals_(sim_));
-    return __result;
-END_RCPP
-}
-// get_mon_arrivals_per_resource_
-List get_mon_arrivals_per_resource_(SEXP sim_);
-RcppExport SEXP simmer_get_mon_arrivals_per_resource_(SEXP sim_SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    __result = Rcpp::wrap(get_mon_arrivals_per_resource_(sim_));
+    Rcpp::traits::input_parameter< bool >::type per_resource(per_resourceSEXP);
+    Rcpp::traits::input_parameter< bool >::type ongoing(ongoingSEXP);
+    __result = Rcpp::wrap(get_mon_arrivals_(sim_, per_resource, ongoing));
     return __result;
 END_RCPP
 }

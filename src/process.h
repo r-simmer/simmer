@@ -168,12 +168,7 @@ public:
   
   ~Arrival() { reset(); }
   
-  void reset() {
-    cancel_timeout();
-    if (!--(*clones)) 
-      delete clones;
-  }
-  
+  void reset();
   void run();
   void activate();
   void deactivate();
@@ -182,6 +177,7 @@ public:
   virtual void terminate(bool finished);
   void renege(Activity* next);
   virtual int set_attribute(std::string key, double value);
+  double get_start(std::string name);
   
   Attr* get_attributes() { return &attributes; }
   double get_remaining() { return lifetime.remaining; }
@@ -189,11 +185,12 @@ public:
   void set_activity(Activity* ptr) { activity = ptr; }
   void set_activity(double value) { lifetime.activity = value; }
   void set_activity(std::string name, double value) { restime[name].activity = value; }
-  double get_activity() { return lifetime.activity; }
+  double get_start() { return lifetime.start; }
+  double get_activity() { return lifetime.activity - lifetime.remaining; }
   double get_activity(std::string name) { return restime[name].activity; }
+  
   void set_selected(int id, Resource* res) { selected[id] = res; }
   Resource* get_selected(int id) { return selected[id]; }
-  
   void register_entity(Resource* ptr) { resources.insert(ptr); }
   void register_entity(Batched* ptr) { batch = ptr; }
   void unregister_entity(Resource* ptr) { resources.erase(resources.find(ptr)); }
@@ -215,7 +212,7 @@ protected:
   SelMap selected;      /**< selected resource */
   Task* timer;          /**< timer that triggers reneging */
   Batched* batch;       /**< batch that contains this arrival */
-  ResMSet resources;     /**< resources that contain this arrival */
+  ResMSet resources;    /**< resources that contain this arrival */
 };
 
 /** 

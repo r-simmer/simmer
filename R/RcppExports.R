@@ -37,12 +37,8 @@ add_resource_manager_ <- function(sim_, name, param, intervals, values, period) 
     .Call('simmer_add_resource_manager_', PACKAGE = 'simmer', sim_, name, param, intervals, values, period)
 }
 
-get_mon_arrivals_ <- function(sim_) {
-    .Call('simmer_get_mon_arrivals_', PACKAGE = 'simmer', sim_)
-}
-
-get_mon_arrivals_per_resource_ <- function(sim_) {
-    .Call('simmer_get_mon_arrivals_per_resource_', PACKAGE = 'simmer', sim_)
+get_mon_arrivals_ <- function(sim_, per_resource, ongoing) {
+    .Call('simmer_get_mon_arrivals_', PACKAGE = 'simmer', sim_, per_resource, ongoing)
 }
 
 get_mon_attributes_ <- function(sim_) {

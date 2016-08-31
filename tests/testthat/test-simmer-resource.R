@@ -71,7 +71,7 @@ test_that("resource slots are correctly filled", {
   expect_equal(sum(attributes$value), 2)
 })
 
-test_that("resources are  correctly monitored", {
+test_that("resources are correctly monitored", {
   t0 <- create_trajectory("") %>%
     seize("dummy", 1) %>%
     release("dummy", 1)

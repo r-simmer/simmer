@@ -33,6 +33,7 @@ class Simulator {
   typedef MSET<Event> PQueue;
   typedef UMAP<Process*, PQueue::iterator> EvMap;
   typedef UMAP<std::string, Entity*> EntMap;
+  typedef USET<Arrival*> ArrSet;
   typedef UMAP<std::string, Batched*> NamBMap;
   typedef UMAP<Activity*, Batched*> UnnBMap;
   
@@ -80,6 +81,7 @@ public:
       if (itr.second) delete itr.second;
     foreach_ (UnnBMap::value_type& itr, unnamedb_map)
       if (itr.second) delete itr.second;
+    arrival_set.clear();
     namedb_map.clear();
     unnamedb_map.clear();
     b_count = 0;
@@ -125,11 +127,17 @@ public:
   /**
    * Process the next event. Only one step, a giant leap for mankind.
    */
-  bool step() {
-    if (event_queue.empty()) return false;
+  bool step(double until = -1) {
+    if (event_queue.empty())
+      return false;
     PQueue::iterator ev = event_queue.begin();
-    event_map.erase(ev->process);
+    if (until >= 0 && until <= ev->time) {
+      if (until > now_)
+        now_ = until;
+      return false;
+    }
     now_ = ev->time;
+    event_map.erase(ev->process);
     ev->process->run();
     event_queue.erase(ev);
     return true;
@@ -141,7 +149,7 @@ public:
    */
   void run(double until) {
     long int nsteps = 0;
-    while ((now_ < until || until < 0) && step())
+    while (step(until))
       if (++nsteps % 100000 == 0)
         Rcpp::checkUserInterrupt();
   }
@@ -265,6 +273,9 @@ public:
   
   unsigned int get_batch_count() { return b_count++; }
   
+  void register_arrival(Arrival* arrival) { arrival_set.emplace(arrival); }
+  void unregister_arrival(Arrival* arrival) { arrival_set.erase(arrival); }
+  
   /**
    * Record monitoring data.
    */
@@ -301,23 +312,61 @@ public:
   /**
    * Get monitoring data.
    */
-  Rcpp::List get_arr_traj_stats() {
-    return Rcpp::List::create(
-        Rcpp::Named("name")           = arr_traj_stats.get<std::string>("name"),
-        Rcpp::Named("start_time")     = arr_traj_stats.get<double>("start_time"),
-        Rcpp::Named("end_time")       = arr_traj_stats.get<double>("end_time"),
-        Rcpp::Named("activity_time")  = arr_traj_stats.get<double>("activity_time"),
-        Rcpp::Named("finished")       = arr_traj_stats.get<bool>("finished")
-    );
-  }
-  Rcpp::List get_arr_res_stats() {
-    return Rcpp::List::create(
-      Rcpp::Named("name")             = arr_res_stats.get<std::string>("name"),
-      Rcpp::Named("start_time")       = arr_res_stats.get<double>("start_time"),
-      Rcpp::Named("end_time")         = arr_res_stats.get<double>("end_time"),
-      Rcpp::Named("activity_time")    = arr_res_stats.get<double>("activity_time"),
-      Rcpp::Named("resource")         = arr_res_stats.get<std::string>("resource")
-    );
+  Rcpp::List get_arr_stats(bool per_resource, bool ongoing) {
+    if (!per_resource) {
+      VEC<std::string> name             = arr_traj_stats.get<std::string>("name");
+      VEC<double> start_time            = arr_traj_stats.get<double>("start_time");
+      VEC<double> end_time              = arr_traj_stats.get<double>("end_time");
+      VEC<double> activity_time         = arr_traj_stats.get<double>("activity_time");
+      Rcpp::LogicalVector finished      = Rcpp::wrap(arr_traj_stats.get<bool>("finished"));
+      if (ongoing) {
+        foreach_ (Arrival* arrival, arrival_set) {
+          if (!arrival->is_monitored())
+            continue;
+          name.push_back(arrival->name);
+          start_time.push_back(arrival->get_start());
+          end_time.push_back(R_NaReal);
+          activity_time.push_back(R_NaReal);
+          finished.push_back(R_NaInt);
+        }
+      }
+      return Rcpp::List::create(
+          Rcpp::Named("name")           = name,
+          Rcpp::Named("start_time")     = start_time,
+          Rcpp::Named("end_time")       = end_time,
+          Rcpp::Named("activity_time")  = activity_time,
+          Rcpp::Named("finished")       = finished
+      );
+    } else {
+      VEC<std::string> name             = arr_res_stats.get<std::string>("name");
+      VEC<double> start_time            = arr_res_stats.get<double>("start_time");
+      VEC<double> end_time              = arr_res_stats.get<double>("end_time");
+      VEC<double> activity_time         = arr_res_stats.get<double>("activity_time");
+      VEC<std::string> resource         = arr_res_stats.get<std::string>("resource");
+      if (ongoing) {
+        foreach_ (Arrival* arrival, arrival_set) {
+          if (!arrival->is_monitored())
+            continue;
+          foreach_ (EntMap::value_type& itr, resource_map) {
+            double start = arrival->get_start(itr.second->name);
+            if (start < 0)
+              continue;
+            name.push_back(arrival->name);
+            start_time.push_back(start);
+            end_time.push_back(R_NaReal);
+            activity_time.push_back(R_NaReal);
+            resource.push_back(itr.second->name);
+          }
+        }
+      }
+      return Rcpp::List::create(
+        Rcpp::Named("name")             = name,
+        Rcpp::Named("start_time")       = start_time,
+        Rcpp::Named("end_time")         = end_time,
+        Rcpp::Named("activity_time")    = activity_time,
+        Rcpp::Named("resource")         = resource
+      );
+    }
   }
   Rcpp::List get_attr_stats() {
     return Rcpp::List::create(
@@ -360,6 +409,7 @@ private:
   EntMap resource_map;      /**< map of resources */
   EntMap process_map;       /**< map of processes */
   EvMap event_map;          /**< map of pending events */
+  ArrSet arrival_set;       /**< set of ongoing arrivals */
   NamBMap namedb_map;       /**< map of named batches */
   UnnBMap unnamedb_map;     /**< map of unnamed batches */
   unsigned int b_count;     /**< unnamed batch counter */
