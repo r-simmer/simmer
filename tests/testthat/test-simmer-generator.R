@@ -74,6 +74,7 @@ test_that("arrivals are correctly monitored", {
     add_generator("a", a, at(0)) %>%
     add_generator("b", b, at(0)) %>%
     add_generator("c", c, at(0)) %>%
+    add_generator("d", c, at(1), mon=FALSE) %>%
     run(until=4)
   
   arr1 <- get_mon_arrivals(env, per_resource = FALSE, ongoing = TRUE)
