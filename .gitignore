@@ -8,6 +8,8 @@
 *.o
 *.obj
 *.gcda
+*.gcno
+*.gcov
 # Precompiled Headers
 *.gch
 *.pch
