@@ -48,6 +48,7 @@ public:
   Task(Simulator* sim, std::string name, Bind task) 
     : Process(sim, name, false), task(task) {}
   
+  void reset() {}
   void run();
   
 private:
