@@ -1,4 +1,4 @@
-# Changes in version 3.4.1.9000
+# Changes in version 3.4.2
 
 ## New features:
 

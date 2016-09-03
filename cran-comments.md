@@ -1,12 +1,12 @@
 ## Release summary
 
-This early patch release solves memtest notes on CRAN (gcc6-ASAN, gcc7-ASAN: heap-use-after-free) as well as some previously unnoticed small memory leaks.
+One new feature, some refactoring, minor fixes.
 
 ## Test environments
 
 * Fedora 24 + clang (local), R 3.3.1
 * Rocker image, GCC + SAN + R devel
-* Ubuntu 12.04 + GCC (on travis-ci), R 3.3.1
+* Ubuntu 12.04 + GCC (on travis-ci), R 3.2.5, 3.3.1, devel
 * win-builder, R devel
 
 ## R CMD check results
