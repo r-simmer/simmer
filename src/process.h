@@ -163,6 +163,9 @@ public:
     : Process(sim, name, mon), clones(new int(1)), order(order), 
       activity(first_activity), timer(NULL), batch(NULL) {}
   
+  Arrival(const Arrival& o)
+    : Process(o), clones(o.clones), order(o.order), activity(NULL), timer(NULL), batch(NULL) {}
+  
   ~Arrival() { reset(); }
   
   void reset();
@@ -217,16 +220,16 @@ protected:
  */
 class Batched : public Arrival {
 public:
-  CLONEABLE_COUNT(Batched)
+  CLONEABLE_COUNT_DERIVED(Batched)
 
   Batched(Simulator* sim, std::string name, bool permanent)
     : Arrival(sim, name, true, Order(), NULL), permanent(permanent) {}
   
-  Batched(const Batched& o)
-    : Arrival(o), arrivals(o.arrivals), permanent(o.permanent)
-  { 
-    for (unsigned int i=0; i<arrivals.size(); i++)
+  Batched(const Batched& o) : Arrival(o), arrivals(o.arrivals), permanent(o.permanent) { 
+    for (unsigned int i=0; i<arrivals.size(); i++) {
       arrivals[i] = arrivals[i]->clone();
+      arrivals[i]->register_entity(this);
+    }
   }
   
   ~Batched() { reset(); }

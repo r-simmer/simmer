@@ -2,6 +2,7 @@ context("clone/synchronize")
 
 test_that("each clone follows a trajectory 1", {
   t <- create_trajectory() %>%
+    batch(1) %>%
     clone(3,
           create_trajectory("original") %>%
             timeout(1),
@@ -22,6 +23,7 @@ test_that("each clone follows a trajectory 1", {
 
 test_that("each clone follows a trajectory 2", {
   t <- create_trajectory() %>%
+    batch(1) %>%
     clone(function() 3,
           create_trajectory("original") %>%
             timeout(1),
@@ -40,6 +42,7 @@ test_that("each clone follows a trajectory 2", {
 
 test_that("each clone follows a trajectory 3", {
   t <- create_trajectory() %>%
+    batch(1) %>%
     clone(3,
           create_trajectory("original") %>%
             timeout(1)) %>%
@@ -56,6 +59,7 @@ test_that("each clone follows a trajectory 3", {
 
 test_that("each clone follows a trajectory 4", {
   t <- create_trajectory() %>%
+    batch(1) %>%
     clone(function() 3) %>%
     timeout(0.5)
   
@@ -70,6 +74,7 @@ test_that("each clone follows a trajectory 4", {
 
 test_that("clones synchonize with the last 1", {
   t <- create_trajectory() %>%
+    batch(1) %>%
     clone(3,
           create_trajectory("original") %>%
             timeout(1),
@@ -91,6 +96,7 @@ test_that("clones synchonize with the last 1", {
 
 test_that("clones synchonize with the last 2", {
   t <- create_trajectory() %>%
+    batch(1) %>%
     clone(3,
           create_trajectory("original") %>%
             timeout(1),
@@ -112,6 +118,7 @@ test_that("clones synchonize with the last 2", {
 
 test_that("clones synchonize with the first 1", {
   t <- create_trajectory() %>%
+    batch(1) %>%
     clone(3,
           create_trajectory("original") %>%
             timeout(1),
@@ -133,6 +140,7 @@ test_that("clones synchonize with the first 1", {
 
 test_that("clones synchonize with the first 2", {
   t <- create_trajectory() %>%
+    batch(1) %>%
     clone(3,
           create_trajectory("original") %>%
             timeout(1),
