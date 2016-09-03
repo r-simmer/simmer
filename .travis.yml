@@ -13,7 +13,7 @@ env:
     - _R_CHECK_CRAN_INCOMING_=FALSE
 
 r_github_packages:
-  - jimhester/covr
+  - Enchufa2/covr
 
 after_success:
   - Rscript -e 'covr::coveralls()'
