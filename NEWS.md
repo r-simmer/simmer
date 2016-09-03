@@ -9,6 +9,8 @@
 * Simplify Rcpp glue: remove unnecessary `as<>()` calls (ec4e51a).
 * Simplify trajectory's head/tail management (06432a8).
 * Now, `run(until)` runs the simulation exactly until `until`, instead of until the first event scheduled at a time >= `until` (e7264f6).
+* Fix batch cloning (c20bc1d).
+* Coverage improved.
 
 # Changes in version 3.4.1
 
