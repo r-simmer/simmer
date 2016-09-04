@@ -73,9 +73,6 @@ protected:
   T get(T var, Arrival* arrival) { return var; }
 
   template <typename T>
-  T get(VEC<T> var, Arrival* arrival) { return var[0]; }
-
-  template <typename T>
   T get(Rcpp::Function call, Arrival* arrival) {
     if (provide_attrs)
       return Rcpp::as<T>(call(Rcpp::wrap(*arrival->get_attributes())));
@@ -301,8 +298,8 @@ public:
   double run(Arrival* arrival) {
     Resource* selected;
     if (typeid(T) == typeid(Rcpp::Function)) {
-      std::string res = get<std::string>(resources, arrival);
-      selected = arrival->sim->get_resource(res);
+      VEC<std::string> res = get<VEC<std::string> >(resources, arrival);
+      selected = arrival->sim->get_resource(res[0]);
     } else selected = dispatcher.dispatch(arrival->sim);
     arrival->set_selected(id, selected);
     return 0;
@@ -650,7 +647,7 @@ public:
       *ptr = init(arrival->sim);
     (*ptr)->insert(arrival);
     if ((int)(*ptr)->size() == n)
-      trigger(*ptr);
+      trigger(arrival->sim, *ptr);
     return REJECTED;
   }
 
@@ -669,14 +666,14 @@ protected:
       str= "batch" + boost::lexical_cast<std::string>(sim->get_batch_count());
     Batched* ptr = new Batched(sim, str, permanent);
     if (timeout) {
-      Task* task = new Task(sim, "Batch-Timer", boost::bind(&Batch::trigger, this, ptr));
+      Task* task = new Task(sim, "Batch-Timer", boost::bind(&Batch::trigger, this, sim, ptr));
       sim->schedule(timeout, task, PRIORITY_MIN);
     }
     return ptr;
   }
 
-  void trigger(Batched* target) {
-    Batched** ptr = target->sim->get_batch(this, id);
+  void trigger(Simulator* sim, Batched* target) {
+    Batched** ptr = sim->get_batch(this, id);
     if (!(*ptr) || *ptr != target)
       return;
     if ((*ptr)->size()) {

@@ -150,8 +150,7 @@ public:
   void run(double until) {
     long int nsteps = 0;
     while (step(until))
-      if (++nsteps % 100000 == 0)
-        Rcpp::checkUserInterrupt();
+      if (++nsteps % 100000 == 0) Rcpp::checkUserInterrupt();
   }
 
   /**
@@ -219,10 +218,8 @@ public:
   bool add_resource_manager(std::string name, std::string param,
                             VEC<double> duration, VEC<int> value, int period)
   {
-    if (process_map.find(name) != process_map.end()) {
-      Rcpp::warning("process " + name + " already defined");
-      return false;
-    }
+    if (process_map.find(name) != process_map.end())
+      Rcpp::stop("process " + name + " already defined");
     EntMap::iterator search = resource_map.find(name);
     if (search == resource_map.end())
       Rcpp::stop("resource '" + name + "' not found (typo?)");

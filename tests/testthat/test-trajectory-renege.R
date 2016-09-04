@@ -64,7 +64,7 @@ test_that("reneging can be aborted", {
   expect_true(arr$finished)
 })
 
-test_that("an arrival being served reneges", {
+test_that("an arrival being served reneges (1)", {
   t <- create_trajectory() %>%
     renege_in(1) %>%
     seize("dummy", 1) %>%
@@ -73,6 +73,31 @@ test_that("an arrival being served reneges", {
 
   env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 1) %>%
+    add_generator("arrival", t, at(0)) %>%
+    run()
+
+  arr_res <- get_mon_arrivals(env, per_resource = TRUE)
+  arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
+  res <- get_mon_resources(env)
+
+  expect_equal(arr_res$end_time, 1)
+  expect_equal(arr_res$activity_time, 1)
+  expect_equal(arr_glb$end_time, 1)
+  expect_equal(arr_glb$activity_time, 1)
+  expect_false(arr_glb$finished)
+  expect_equal(res$time, c(0, 1))
+  expect_equal(res$server, c(1, 0))
+})
+
+test_that("an arrival being served reneges (2)", {
+  t <- create_trajectory() %>%
+    renege_in(1) %>%
+    seize("dummy", 1) %>%
+    timeout(2) %>%
+    release("dummy", 1)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy", 1, preemptive = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -117,7 +142,7 @@ test_that("an enqueued arrival reneges", {
   expect_equal(res$queue, c(0, 1, 0, 0))
 })
 
-test_that("a preempted arrival reneges", {
+test_that("a preempted arrival reneges (1)", {
   t1 <- create_trajectory() %>%
     seize("dummy", 1) %>%
     timeout(4) %>%
@@ -129,6 +154,38 @@ test_that("a preempted arrival reneges", {
 
   env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 1, preemptive = TRUE) %>%
+    add_generator("arrival0", t0, at(0), priority = 0) %>%
+    add_generator("arrival1", t1, at(1), priority = 1) %>%
+    run()
+
+  arr_res <- get_mon_arrivals(env, per_resource = TRUE)
+  arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
+  res <- get_mon_resources(env)
+
+  expect_equal(arr_res$start_time, 1)
+  expect_equal(arr_res$end_time, 5)
+  expect_equal(arr_res$activity_time, 4)
+  expect_equal(arr_glb$name, c("arrival00", "arrival10"))
+  expect_equal(arr_glb$end_time, c(2, 5))
+  expect_equal(arr_glb$activity_time, c(2, 4))
+  expect_equal(arr_glb$finished, c(FALSE, TRUE))
+  expect_equal(res$time, c(0, 1, 2, 5))
+  expect_equal(res$server, c(1, 1, 1, 0))
+  expect_equal(res$queue, c(0, 1, 0, 0))
+})
+
+test_that("a preempted arrival reneges (2)", {
+  t1 <- create_trajectory() %>%
+    seize("dummy", 1) %>%
+    timeout(4) %>%
+    release("dummy", 1)
+
+  t0 <- create_trajectory() %>%
+    renege_in(2) %>%
+    join(t1)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy", 1, preemptive = TRUE, queue_size_strict = TRUE) %>%
     add_generator("arrival0", t0, at(0), priority = 0) %>%
     add_generator("arrival1", t1, at(1), priority = 1) %>%
     run()

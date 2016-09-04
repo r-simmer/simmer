@@ -26,8 +26,7 @@ public:
 
   Resource* dispatch(Simulator* sim) {
     MethodMap::iterator x = policies.find(name);
-    if (x == policies.end())
-      Rcpp::stop("policy '" + name + "' not supported (typo?)");
+    if (x == policies.end()) Rcpp::stop("policy '" + name + "' not supported (typo?)");
     return ((*this).*(x->second))(sim);
   }
 

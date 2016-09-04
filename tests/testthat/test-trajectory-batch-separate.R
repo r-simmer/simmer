@@ -134,6 +134,41 @@ test_that("a timeout can trigger early batches", {
   expect_equal(arr_res$activity_time, c(1, 1, 1, 1))
 })
 
+test_that("a timeout does not crash if the batch was already triggered", {
+  t <- create_trajectory(verbose = TRUE) %>%
+    batch(1, timeout = 1, permanent = FALSE, rule = NULL) %>%
+    timeout(1)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy", 1) %>%
+    add_generator("arrival", t, at(0)) %>%
+    run()
+
+  arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
+
+  expect_equal(arr_glb$start_time, 0)
+  expect_equal(arr_glb$end_time, 1)
+  expect_equal(arr_glb$activity_time, 1)
+  expect_true(arr_glb$finished)
+})
+
+test_that("a non-triggered batch does not crash if arrivals renege", {
+  t <- create_trajectory(verbose = TRUE) %>%
+    renege_in(1) %>%
+    batch(2, timeout = 0, permanent = FALSE, rule = NULL)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("arrival", t, at(0)) %>%
+    run()
+
+  arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
+
+  expect_equal(arr_glb$start_time, 0)
+  expect_equal(arr_glb$end_time, 1)
+  expect_equal(arr_glb$activity_time, 1)
+  expect_false(arr_glb$finished)
+})
+
 test_that("all arrivals inside a batch store an attribute change", {
   t <- create_trajectory(verbose = TRUE) %>%
     batch(2, timeout = 0, permanent = FALSE, rule = NULL) %>%
@@ -176,6 +211,7 @@ test_that("a shared name in different trajectories collects arrivals in the same
 
   arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
   arr_res <- get_mon_arrivals(env, per_resource = TRUE)
+  env %>% reset()
 
   expect_equal(arr_glb$start_time, c(0, 1, 2, 3))
   expect_equal(arr_glb$end_time, c(2, 2, 5, 5))

@@ -1,5 +1,17 @@
 context("resource-schedule")
 
+test_that("a schedule name conflicts with a generator name", {
+  expect_error(simmer() %>%
+    add_generator("asdf", create_trajectory() %>% timeout(0), at(0)) %>%
+    add_resource("asdf", schedule(c(1 ,2), c(1, 1)))
+  )
+})
+
+test_that("a schedule cannot be created if the corresponding resource doesn't exist", {
+  ptr <- Simulator__new("dummy", FALSE)
+  expect_error(add_resource_manager_(ptr, "name", "capacity", c(0, 1), c(0, 1), -1))
+})
+
 test_that("capacity & queue size change", {
   inf_sch <- schedule(c(8, 16, 24), c(1, 2, 3), Inf)
   fin_sch <- schedule(c(8, 16, 24), c(1, 2, 3), 24)

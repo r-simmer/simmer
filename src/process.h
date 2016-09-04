@@ -47,6 +47,7 @@ class Task : public Process {
 public:
   Task(Simulator* sim, std::string name, Bind task)
     : Process(sim, name, false), task(task) {}
+  ~Task() { reset(); }
 
   void reset() {}
   void run();

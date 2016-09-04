@@ -212,7 +212,7 @@ int Batched::set_attribute(std::string key, double value) {
 }
 
 void Batched::erase(Arrival* arrival) {
-  bool del = true;
+  bool del = activity;
   if (arrivals.size() > 1 || (batch && batch->is_permanent())) {
     del = false;
     if (arrival->is_monitored()) {
@@ -223,7 +223,7 @@ void Batched::erase(Arrival* arrival) {
       }
     }
   } else if (arrivals.size() == 1 && !batch) {
-    bool ret = false;
+    bool ret = !activity;
     while (resources.begin() != resources.end())
       ret |= (*resources.begin())->erase(this);
     if (!ret)

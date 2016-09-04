@@ -24,10 +24,14 @@ test_that("capacity and queue size change", {
 
   env %>%
     set_capacity("dummy", Inf) %>%
-    set_queue_size("dummy", 5)
+    set_queue_size("dummy", Inf) %>%
+    set_queue_size("dummy", 5) %>%
+    add_generator("asdf", create_trajectory() %>% seize("dummy", 1), at(rep(0, 10))) %>%
+    run()
 
   expect_equal(env %>% get_capacity("dummy"), Inf)
   expect_equal(env %>% get_queue_size("dummy"), 5)
+  expect_equal(env %>% get_server_count("dummy"), 10)
 })
 
 test_that("a negative capacity or queue_size is converted to positive", {
