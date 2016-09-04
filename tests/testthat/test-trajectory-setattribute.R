@@ -18,8 +18,9 @@ test_that("an attribute is correctly set and returned to a function that needs i
     simmer() %>%
       add_generator("entity", t0, at(0)) %>%
       run()
-  }, "\\[1\\] 123")
-
+    },
+    "\\[1\\] 123"
+  )
 })
 
 test_that("attributes can be correctly retrieved using get_mon_attributes()", {

@@ -262,7 +262,7 @@ simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 #'
 #' t1 <- create_trajectory("trajectory with a branch") %>%
 #'   seize("server", 1) %>%
-#'   ## 50-50 chance for each branch
+#'   # 50-50 chance for each branch
 #'   branch(function() sample(1:2, 1), continue=c(TRUE, FALSE),
 #'     create_trajectory("branch1") %>%
 #'       timeout(function() 1),
@@ -270,7 +270,7 @@ simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 #'       timeout(function() rexp(1, 3)) %>%
 #'       release("server", 1)
 #'   ) %>%
-#'   ## only the first branch continues here
+#'   # only the first branch continues here
 #'   release("server", 1) %>%
 #'   timeout(function() 2)
 #'
