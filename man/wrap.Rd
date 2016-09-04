@@ -13,9 +13,9 @@ wrap(env)
 Returns a simulation wrapper.
 }
 \description{
-This function extracts the monitored data from a simulation environment 
-making it accessible through the same methods. Only useful if you want 
-to parallelize heavy replicas (see the example below), because the C++ 
+This function extracts the monitored data from a simulation environment
+making it accessible through the same methods. Only useful if you want
+to parallelize heavy replicas (see the example below), because the C++
 simulation backend is destroyed when the threads exit.
 }
 \examples{
@@ -38,7 +38,7 @@ plot_resource_usage(envs, "server")
 }
 \seealso{
 Methods for dealing with a simulation wrapper:
-\code{\link{get_mon_arrivals}}, \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}, 
+\code{\link{get_mon_arrivals}}, \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}},
 \code{\link{get_n_generated}}, \code{\link{get_capacity}}, \code{\link{get_queue_size}},
 \code{\link{get_server_count}}, \code{\link{get_queue_count}}.
 }

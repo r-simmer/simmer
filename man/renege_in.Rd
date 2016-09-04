@@ -12,7 +12,7 @@ renege_abort(traj)
 \arguments{
 \item{traj}{the trajectory object.}
 
-\item{t}{timeout to trigger reneging, accepts either a numeric or a callable object 
+\item{t}{timeout to trigger reneging, accepts either a numeric or a callable object
 (a function) which must return a numeric.}
 
 \item{out}{optional sub-trajectory in case of reneging.}

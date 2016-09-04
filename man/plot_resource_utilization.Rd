@@ -18,7 +18,7 @@ a ggplot2 object.
 Plot the utilization of specified resources in the simulation.
 }
 \seealso{
-\code{\link{plot_resource_usage}}, 
+\code{\link{plot_resource_usage}},
 \code{\link{plot_evolution_arrival_times}}, \code{\link{plot_attributes}}.
 }
 

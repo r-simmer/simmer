@@ -15,20 +15,20 @@ add_generator(env, name_prefix, trajectory, dist, mon = 1, priority = 0,
 \item{trajectory}{the trajectory that the generated arrivals will follow (see
 \code{\link{create_trajectory}}).}
 
-\item{dist}{a function modelling the interarrival times (returning a negative 
+\item{dist}{a function modelling the interarrival times (returning a negative
 value stops the generator).}
 
-\item{mon}{whether the simulator must monitor the generated arrivals or not 
-(0 = no monitoring, 1 = simple arrival monitoring, 2 = level 1 + arrival 
+\item{mon}{whether the simulator must monitor the generated arrivals or not
+(0 = no monitoring, 1 = simple arrival monitoring, 2 = level 1 + arrival
 attribute montoring)}
 
-\item{priority}{the priority of each arrival (a higher integer equals higher 
+\item{priority}{the priority of each arrival (a higher integer equals higher
 priority; defaults to the minimum priority, which is 0).}
 
-\item{preemptible}{if a seize occurs in a preemptive resource, this parameter 
-establishes the minimum incoming priority that can preempt these arrivals (an 
-arrival with a priority greater than \code{preemptible} gains the resource). In 
-any case, \code{preemptible} must be equal or greater than \code{priority}, and 
+\item{preemptible}{if a seize occurs in a preemptive resource, this parameter
+establishes the minimum incoming priority that can preempt these arrivals (an
+arrival with a priority greater than \code{preemptible} gains the resource). In
+any case, \code{preemptible} must be equal or greater than \code{priority}, and
 thus only higher priority arrivals can trigger preemption.}
 
 \item{restart}{whether the activity must be restarted after being preempted.}
@@ -40,7 +40,7 @@ Returns the simulation environment.
 Define a new generator of arrivals in a simulation environment.
 }
 \seealso{
-Convenience functions: \code{\link{at}}, \code{\link{from}}, 
+Convenience functions: \code{\link{at}}, \code{\link{from}},
 \code{\link{to}}, \code{\link{from_to}}.
 }
 

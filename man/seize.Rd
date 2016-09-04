@@ -22,7 +22,7 @@ release_selected(traj, amount = 1, id = 0)
 
 \item{resource}{the name of the resource.}
 
-\item{amount}{the amount to seize/release, accepts either a numeric or a callable object 
+\item{amount}{the amount to seize/release, accepts either a numeric or a callable object
 (a function) which must return a numeric.}
 
 \item{continue}{a boolean (if \code{post.seize} OR \code{reject} is defined) or a pair of booleans

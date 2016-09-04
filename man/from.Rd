@@ -11,10 +11,10 @@ from(start_time, dist, arrive = TRUE)
 
 \item{dist}{a function modelling the interarrival times.}
 
-\item{arrive}{if set to \code{TRUE} (default) the first arrival will be 
-generated at \code{start_time} and will follow \code{dist} from then on. 
-If set to \code{FALSE}, will initiate \code{dist} at \code{start_time} 
-(and the first arrival will most likely start at a time later than 
+\item{arrive}{if set to \code{TRUE} (default) the first arrival will be
+generated at \code{start_time} and will follow \code{dist} from then on.
+If set to \code{FALSE}, will initiate \code{dist} at \code{start_time}
+(and the first arrival will most likely start at a time later than
 \code{start_time}).}
 }
 \value{

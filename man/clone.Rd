@@ -12,10 +12,10 @@ synchronize(traj, wait = TRUE, mon_all = FALSE)
 \arguments{
 \item{traj}{the trajectory object.}
 
-\item{n}{number of clones, accepts either a numeric or a callable object 
+\item{n}{number of clones, accepts either a numeric or a callable object
 (a function) which must return a numeric.}
 
-\item{...}{optional parallel sub-trajectories. Each clone will follow 
+\item{...}{optional parallel sub-trajectories. Each clone will follow
 a different sub-trajectory if available.}
 
 \item{wait}{if \code{FALSE}, all clones but the first to arrive are removed.

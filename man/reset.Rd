@@ -13,7 +13,7 @@ reset(env)
 Returns the simulation environment.
 }
 \description{
-Reset the following components of a simulation environment: 
+Reset the following components of a simulation environment:
 time, event queue, resources, generators and statistics.
 }
 \seealso{

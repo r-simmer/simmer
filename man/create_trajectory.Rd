@@ -15,7 +15,7 @@ create_trajectory(name = "anonymous", verbose = FALSE)
 Returns an environment that represents the trajectory.
 }
 \description{
-This method initialises a trajectory object, which comprises a chain of 
+This method initialises a trajectory object, which comprises a chain of
 activities that can be attached to a generator.
 }
 \examples{
@@ -38,7 +38,7 @@ t0
 t1 <- create_trajectory("trajectory with a branch") \%>\%
   seize("server", 1) \%>\%
   ## 50-50 chance for each branch
-  branch(function() sample(1:2, 1), continue=c(TRUE, FALSE), 
+  branch(function() sample(1:2, 1), continue=c(TRUE, FALSE),
     create_trajectory("branch1") \%>\%
       timeout(function() 1),
     create_trajectory("branch2") \%>\%
@@ -54,10 +54,10 @@ t1
 \seealso{
 Methods for dealing with trajectories:
 \code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{get_n_activities}}, \code{\link{join}},
-\code{\link{seize}}, \code{\link{release}}, \code{\link{seize_selected}}, \code{\link{release_selected}}, 
-\code{\link{select}}, \code{\link{set_prioritization}}, \code{\link{set_attribute}}, 
-\code{\link{timeout}}, \code{\link{branch}}, \code{\link{rollback}}, \code{\link{leave}}, 
-\code{\link{renege_in}}, \code{\link{renege_abort}},\code{\link{clone}}, \code{\link{synchronize}}, 
+\code{\link{seize}}, \code{\link{release}}, \code{\link{seize_selected}}, \code{\link{release_selected}},
+\code{\link{select}}, \code{\link{set_prioritization}}, \code{\link{set_attribute}},
+\code{\link{timeout}}, \code{\link{branch}}, \code{\link{rollback}}, \code{\link{leave}},
+\code{\link{renege_in}}, \code{\link{renege_abort}},\code{\link{clone}}, \code{\link{synchronize}},
 \code{\link{batch}}, \code{\link{separate}}.
 }
 
