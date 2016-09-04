@@ -1,3 +1,9 @@
+# Changes in version 3.4.2.9000
+
+## Minor changes and fixes:
+
+* Remove warnings for unused arguments in `seize` and `seize_selected` (1c8c3bb).
+
 # Changes in version 3.4.2
 
 ## New features:
