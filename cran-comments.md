@@ -1,6 +1,10 @@
-## Release summary
+## Resubmission
 
-One new feature, some refactoring, minor fixes.
+Changes to DESCRIPTION:
+
+* cph roles added.
+* Software names in description single quoted.
+* Web pointers added.
 
 ## Test environments
 
@@ -25,10 +29,7 @@ File 'LICENSE':
   COPYRIGHT HOLDERS: BART SMEETS, IÑAKI UCAR
 
 Possibly mis-spelled words in DESCRIPTION:
-  DES (6:6, 8:5)
-  Rcpp (7:39)
-  SimJulia (7:5)
-  SimPy (6:66)
+  DES (6:6, 8:70)
 
 * checking installed package size ... NOTE
   installed size is  8.9Mb
