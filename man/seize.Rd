@@ -8,10 +8,10 @@
 \title{Add a seize/release activity}
 \usage{
 seize(traj, resource, amount = 1, continue = NULL, post.seize = NULL,
-  reject = NULL, ...)
+  reject = NULL)
 
 seize_selected(traj, amount = 1, id = 0, continue = NULL,
-  post.seize = NULL, reject = NULL, ...)
+  post.seize = NULL, reject = NULL)
 
 release(traj, resource, amount = 1)
 
@@ -32,8 +32,6 @@ should continue to the next activity in the main trajectory.}
 \item{post.seize}{an optional trajectory object which will be followed after a successful seize.}
 
 \item{reject}{an optional trajectory object which will be followed if the arrival is rejected.}
-
-\item{...}{unused arguments}
 
 \item{id}{selection identifier for nested usage.}
 }
