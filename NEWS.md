@@ -3,6 +3,8 @@
 ## Minor changes and fixes:
 
 * Remove warnings for unused arguments in `seize` and `seize_selected` (1c8c3bb).
+* Fix crash on arrival reneging in non-triggered batches (8713d95).
+* Fix crash on batches triggered before the timer expires (8713d95).
 
 # Changes in version 3.4.2
 
