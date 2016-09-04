@@ -6,7 +6,7 @@ test_that("capacity & queue size change", {
   
   expect_output(print(inf_sch))
   
-  limits <- simmer(verbose=TRUE) %>%
+  limits <- simmer(verbose = TRUE) %>%
     add_resource("dummy", inf_sch) %>%
     run(17) %>% reset() %>% run(49) %>%
     get_mon_resources("limits")
@@ -44,7 +44,8 @@ test_that("queue size changes", {
   expect_equal(limits$queue, c(1, 2, 3, 1, 2, 3))
 })
 
-test_that("arrivals 1) are dequeued when resource's capacity increases and 2) remain in server when it decreases", {
+test_that("arrivals 1) are dequeued when resource's capacity increases and
+                    2) remain in server when it decreases", {
   t <- create_trajectory() %>% 
     seize("dummy", 1) %>%
     timeout(2) %>%
@@ -62,7 +63,8 @@ test_that("arrivals 1) are dequeued when resource's capacity increases and 2) re
   expect_equal(arrivals$activity_time, c(2, 2, 2))
 })
 
-test_that("arrivals 1) are dequeued when resource's capacity increases and 2) remain in server when it decreases", {
+test_that("arrivals 1) are dequeued when resource's capacity increases and
+                    2) remain in server when it decreases", {
   t <- create_trajectory() %>% 
     seize("dummy", 1) %>%
     timeout(2) %>%
@@ -89,8 +91,8 @@ test_that("arrivals are preempted when resource's capacity decreases", {
   inf_sch <- schedule(c(0, 1, 2), c(1, 3, 1), Inf)
   
   arrivals <- simmer() %>%
-    add_resource("dummy", inf_sch, preemptive=TRUE) %>%
-    add_generator("asdf", t, at(0, 0, 0), restart=TRUE) %>%
+    add_resource("dummy", inf_sch, preemptive = TRUE) %>%
+    add_generator("asdf", t, at(0, 0, 0), restart = TRUE) %>%
     run() %>%
     get_mon_arrivals()
   
@@ -105,10 +107,10 @@ test_that("resource's capacity decreases before post-release tasks", {
     release("t-rex")
   
   arrivals <- simmer() %>%
-    add_resource("t-rex", capacity = schedule(timetable = c(5,10,15), 
-                                              period=Inf, 
-                                              values = c(1,0,1))) %>%
-    add_generator("piggy", t, at(0,0,0)) %>%
+    add_resource("t-rex", capacity = schedule(timetable = c(5, 10, 15),
+                                              period = Inf, 
+                                              values = c(1, 0, 1))) %>%
+    add_generator("piggy", t, at(0, 0, 0)) %>%
     run() %>%
     get_mon_arrivals()
   

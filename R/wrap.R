@@ -11,12 +11,12 @@ simmer.wrap <- R6Class("simmer.wrap",
       private$peek_val <- env$peek(Inf, TRUE)
       private$res <- env$get_resources()
       private$gen <- env$get_generators()
-      private$arrivals <- env$get_mon_arrivals(ongoing=TRUE)
-      private$arrivals_res <- env$get_mon_arrivals(TRUE, ongoing=TRUE)
+      private$arrivals <- env$get_mon_arrivals(ongoing = TRUE)
+      private$arrivals_res <- env$get_mon_arrivals(TRUE, ongoing = TRUE)
       private$attributes <- env$get_mon_attributes()
-      private$resources_all <- env$get_mon_resources(data=c("counts", "limits"))
-      private$resources_counts <- env$get_mon_resources(data="counts")
-      private$resources_limits <- env$get_mon_resources(data="limits")
+      private$resources_all <- env$get_mon_resources(data = c("counts", "limits"))
+      private$resources_counts <- env$get_mon_resources(data = "counts")
+      private$resources_limits <- env$get_mon_resources(data = "limits")
       for (name in names(private$gen)) {
         private$n_generated[[name]] <- env$get_n_generated(name)
       }
@@ -38,7 +38,7 @@ simmer.wrap <- R6Class("simmer.wrap",
         cat(paste0(
           "{ Resource: ", name, 
           " | monitored: ", private$res[[name]],
-          " | server status: ", self$get_server_count(name), 
+          " | server status: ", self$get_server_count(name),
           "(", self$get_capacity(name), ")",
           " | queue status: ", self$get_queue_count(name),
           "(", self$get_queue_size(name), ") }\n"
@@ -57,7 +57,7 @@ simmer.wrap <- R6Class("simmer.wrap",
       steps <- evaluate_value(steps)
       verbose <- evaluate_value(verbose)
       steps <- min(steps, nrow(private$peek_val))
-      ret <- private$peek_val[0:steps,]
+      ret <- private$peek_val[0:steps, ]
       if (!verbose) ret$time
       else ret # nocov
     },
@@ -70,7 +70,7 @@ simmer.wrap <- R6Class("simmer.wrap",
       } else {
         if (!ongoing)
           na.omit(private$arrivals)
-        else private$arrivals 
+        else private$arrivals
       }
     },
     get_mon_attributes = function() { private$attributes },

@@ -6,17 +6,17 @@ magrittr::`%>%`
   library.dynam.unload("simmer", libpath)
 }
 
-evaluate_value<-function(value){
-  tryCatch(
-    {
-      abs(eval(parse(text=value)))
-    }, 
+evaluate_value <- function(value) {
+  tryCatch({
+      abs(eval(parse(text = value)))
+    },
     error = function(err) value)
 }
 
 #' @importFrom methods formalArgs
-needs_attrs<-function(variable){
-  if(is.function(variable) && length(formalArgs(variable))>0) return(TRUE)
+needs_attrs <- function(variable) {
+  if (is.function(variable) && length(formalArgs(variable)) > 0)
+    return(TRUE)
   else return(FALSE)
 }
 
@@ -25,9 +25,9 @@ envs_apply <- function(envs, method, ...) {
   args <- list(...)
   
   do.call(rbind, lapply(1:length(envs), function(i) {
-    stats <- do.call(eval(parse(text=method), envs[[i]]), args)
+    stats <- do.call(eval(parse(text = method), envs[[i]]), args)
     if (nrow(stats)) stats$replication <- i
-    else cbind(stats, data.frame(replication=character()))
+    else cbind(stats, data.frame(replication = character()))
     stats
   }))
 }
@@ -40,15 +40,15 @@ checkInstall <- function(pkgs) {
     if (class(tested)[1] == "try-error") good[i] <- FALSE
   }
   if (any(!good)) {
-    pkList <- paste(pkgs[!good], collapse = ", ") # nocov start
+    pklist <- paste(pkgs[!good], collapse = ", ") # nocov start
     cat(paste("simmer's plotting capabilities depend on ",
               ifelse(sum(!good) > 1, "missing packages (", "a missing package ("),
-              pkList,
+              pklist,
               ").\nWould you like to try to install",
               ifelse(sum(!good) > 1, " them", " it"),
               " now?",
               sep = ""))
-    if(interactive()) {
+    if (interactive()) {
       if (menu(c("yes", "no")) == 1)
         install.packages(pkgs[!good])
       else stop()

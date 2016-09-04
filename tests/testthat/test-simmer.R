@@ -6,13 +6,13 @@ test_that("an empty environment behaves as expected", {
   expect_output(print(env))
   
   expect_is(env, "simmer")
-  expect_equal(env%>%now(), 0)
-  expect_equal(env%>%peek(), numeric(0))
+  expect_equal(env %>% now(), 0)
+  expect_equal(env %>% peek(), numeric(0))
   
-  env%>%onestep()%>%run()
+  env %>% onestep() %>% run()
   
-  expect_equal(env%>%now(), 0)
-  expect_equal(env%>%peek(), numeric(0))
+  expect_equal(env %>% now(), 0)
+  expect_equal(env %>% peek(), numeric(0))
 })
 
 t0 <- create_trajectory("") %>%
@@ -30,20 +30,20 @@ test_that("the simulator is reset", {
   
   inf_sch <- schedule(c(0.5, 1), c(1, 1), Inf)
   
-  env <- simmer(verbose=TRUE) %>%
-    add_resource("server", inf_sch, queue_size=1, preemptive=TRUE) %>%
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("server", inf_sch, queue_size = 1, preemptive = TRUE) %>%
     add_generator("entity0", t0, function() 0.5) %>%
-    add_generator("entity1", t1, function() 0.5, mon=2, preemptible=10, priority=10) %>%
+    add_generator("entity1", t1, function() 0.5, mon = 2, preemptible = 10, priority = 10) %>%
     run(4) %>%
     reset()
   
-  arrivals <- env%>%get_mon_arrivals()
-  arrivals_res <- env%>%get_mon_arrivals(TRUE)
-  resources <- env%>%get_mon_resources()
-  attributes <- env%>%get_mon_attributes()
+  arrivals <- env %>% get_mon_arrivals()
+  arrivals_res <- env %>% get_mon_arrivals(TRUE)
+  resources <- env %>% get_mon_resources()
+  attributes <- env %>% get_mon_attributes()
   
-  expect_equal(env%>%now(), 0)
-  expect_equal(env%>%peek(), 0.5)
+  expect_equal(env %>% now(), 0)
+  expect_equal(env %>% peek(), 0.5)
   expect_equal(nrow(arrivals), 0)
   expect_equal(nrow(arrivals_res), 0)
   expect_equal(nrow(resources), 0)
@@ -56,7 +56,7 @@ test_that("the simulator stops if there are no more events", {
     add_generator("entity", t0, at(0)) %>%
     run(10)
   
-  expect_equal(env%>%now(), 1)
+  expect_equal(env %>% now(), 1)
 })
 
 test_that("a negative simulation time is converted to positive", {
@@ -65,7 +65,7 @@ test_that("a negative simulation time is converted to positive", {
     add_generator("entity", t0, at(10)) %>%
     run(-10)
   
-  expect_equal(env%>%now(), 10)
+  expect_equal(env %>% now(), 10)
 })
 
 test_that("a stopped simulation can be resumed", {
@@ -74,11 +74,11 @@ test_that("a stopped simulation can be resumed", {
     add_generator("entity", t0, function() 1) %>%
     run(10)
   
-  expect_equal(env%>%now(), 10)
-  env%>%run(20)
-  expect_equal(env%>%now(), 20)
-  env%>%run(30)
-  expect_equal(env%>%now(), 30)
+  expect_equal(env %>% now(), 10)
+  env %>% run(20)
+  expect_equal(env %>% now(), 20)
+  env %>% run(30)
+  expect_equal(env %>% now(), 30)
 })
 
 test_that("there is verbose output", {
@@ -88,7 +88,7 @@ test_that("there is verbose output", {
   ").*")
   
   expect_output(
-    env <- simmer(verbose=TRUE) %>%
+    env <- simmer(verbose = TRUE) %>%
       add_resource("server", 1) %>%
       add_generator("arrival", t0, at(1)) %>%
       run(),
@@ -102,7 +102,7 @@ test_that("we can force some errors (just to complete coverage)", {
   
   env <- simmer() %>% 
     add_resource("dummy") %>% 
-    add_generator("dummy", create_trajectory()%>%timeout(0), function() 1, mon=1000)
+    add_generator("dummy", create_trajectory() %>% timeout(0), function() 1, mon = 1000)
   env$.__enclos_env__$private$sim_obj <- NULL
   
   expect_error(env %>% reset())
@@ -116,7 +116,7 @@ test_that("we can force some errors (just to complete coverage)", {
   expect_error(env %>% get_mon_resources("limits"))
   expect_error(env %>% get_mon_resources(c("counts", "limits")))
   
-  sch <- schedule(c(1,2), c(1,2), Inf)
+  sch <- schedule(c(1, 2), c(1, 2), Inf)
   sch$.__enclos_env__$private$schedule$period <- "asdf"
   expect_error(simmer() %>% add_resource("dummy", sch))
   

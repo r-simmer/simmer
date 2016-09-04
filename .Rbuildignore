@@ -6,6 +6,9 @@
 ^README-.*\.png$
 ^cran-comments\.md$
 ^.*\.gcda$
+^.*\.gcno$
+^.*\.gcov$
 working_dir
 .gitignore
 .git
+.lintr

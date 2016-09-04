@@ -12,7 +12,7 @@ test_that("resources are seized/released as expected", {
     timeout(1) %>%
     seize("dummy", 1)
   
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 3, 0) %>%
     add_generator("arrival", t0, at(0))
   
@@ -58,13 +58,13 @@ test_that("incorrect types fail", {
 
 test_that("arrivals perform a post.seize and then stop", {
   t <- create_trajectory() %>% 
-    seize("dummy", 1, continue=FALSE, 
+    seize("dummy", 1, continue = FALSE, 
           post.seize = create_trajectory() %>% 
             timeout(2) %>%
             release("dummy", 1)) %>%
     timeout(1)
   
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
@@ -76,14 +76,14 @@ test_that("arrivals perform a post.seize and then stop", {
 
 test_that("arrivals can retry a seize", {
   t <- create_trajectory() %>% 
-    seize("dummy", 1, continue=FALSE, 
+    seize("dummy", 1, continue = FALSE, 
           reject = create_trajectory() %>% 
             timeout(1) %>%
             rollback(2, Inf)) %>%
     timeout(2) %>%
     release("dummy", 1)
   
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0, 1)) %>%
     run()
@@ -96,7 +96,7 @@ test_that("arrivals can retry a seize", {
 
 test_that("arrivals go through post.seize or reject and then continue", {
   t <- create_trajectory() %>% 
-    seize("dummy", 1, continue=c(TRUE, TRUE), 
+    seize("dummy", 1, continue = c(TRUE, TRUE), 
           post.seize = create_trajectory() %>% 
             timeout(2) %>%
             release("dummy"),
@@ -104,7 +104,7 @@ test_that("arrivals go through post.seize or reject and then continue", {
             timeout(3)) %>%
     timeout(3)
   
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0, 1)) %>%
     run()

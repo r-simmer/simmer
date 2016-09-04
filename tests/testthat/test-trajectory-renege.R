@@ -5,11 +5,11 @@ test_that("an arrival in a timeout reneges", {
     renege_in(1) %>%
     timeout(4)
   
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
   
-  arr <- get_mon_arrivals(env, per_resource=FALSE)
+  arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 1)
   expect_equal(arr$activity_time, 1)
   expect_false(arr$finished)
@@ -17,14 +17,14 @@ test_that("an arrival in a timeout reneges", {
 
 test_that("a reneging arrival can follow a secondary sub-trajectory", {
   t <- create_trajectory() %>%
-    renege_in(1, out=create_trajectory() %>% timeout(1)) %>%
+    renege_in(1, out = create_trajectory() %>% timeout(1)) %>%
     timeout(4)
   
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
   
-  arr <- get_mon_arrivals(env, per_resource=FALSE)
+  arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 2)
   expect_equal(arr$activity_time, 2)
   expect_true(arr$finished)
@@ -37,11 +37,11 @@ test_that("a second renege_in resets the timeout", {
     renege_in(4) %>%
     timeout(9)
   
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
   
-  arr <- get_mon_arrivals(env, per_resource=FALSE)
+  arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 5)
   expect_equal(arr$activity_time, 5)
   expect_false(arr$finished)
@@ -54,11 +54,11 @@ test_that("reneging can be aborted", {
     renege_abort() %>%
     timeout(9)
   
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
   
-  arr <- get_mon_arrivals(env, per_resource=FALSE)
+  arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 10)
   expect_equal(arr$activity_time, 10)
   expect_true(arr$finished)
@@ -71,13 +71,13 @@ test_that("an arrival being served reneges", {
     timeout(2) %>%
     release("dummy", 1)
   
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 1) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
   
-  arr_res <- get_mon_arrivals(env, per_resource=TRUE)
-  arr_glb <- get_mon_arrivals(env, per_resource=FALSE)
+  arr_res <- get_mon_arrivals(env, per_resource = TRUE)
+  arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
   res <- get_mon_resources(env)
   
   expect_equal(arr_res$end_time, 1)
@@ -97,13 +97,13 @@ test_that("an enqueued arrival reneges", {
     timeout(2) %>%
     release("dummy", 1)
   
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 1) %>%
     add_generator("arrival", t, at(0, 0)) %>%
     run()
   
-  arr_res <- get_mon_arrivals(env, per_resource=TRUE)
-  arr_glb <- get_mon_arrivals(env, per_resource=FALSE)
+  arr_res <- get_mon_arrivals(env, per_resource = TRUE)
+  arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
   res <- get_mon_resources(env)
   
   expect_equal(arr_res$end_time, 2)
@@ -127,14 +127,14 @@ test_that("a preempted arrival reneges", {
     renege_in(2) %>%
     join(t1)
   
-  env <- simmer(verbose=TRUE) %>%
-    add_resource("dummy", 1, preemptive=TRUE) %>%
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy", 1, preemptive = TRUE) %>%
     add_generator("arrival0", t0, at(0), priority = 0) %>%
     add_generator("arrival1", t1, at(1), priority = 1) %>%
     run()
   
-  arr_res <- get_mon_arrivals(env, per_resource=TRUE)
-  arr_glb <- get_mon_arrivals(env, per_resource=FALSE)
+  arr_res <- get_mon_arrivals(env, per_resource = TRUE)
+  arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
   res <- get_mon_resources(env)
   
   expect_equal(arr_res$start_time, 1)
@@ -151,7 +151,7 @@ test_that("a preempted arrival reneges", {
 
 test_that("an arrival inside a batch reneges, but the batch continues", {
   t0 <- create_trajectory() %>%
-    batch(2, name="shared") %>%
+    batch(2, name = "shared") %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
@@ -166,8 +166,8 @@ test_that("an arrival inside a batch reneges, but the batch continues", {
     add_generator("arrival1", t1, at(0)) %>%
     run()
   
-  arr_res <- get_mon_arrivals(env, per_resource=TRUE)
-  arr_glb <- get_mon_arrivals(env, per_resource=FALSE)
+  arr_res <- get_mon_arrivals(env, per_resource = TRUE)
+  arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
   res <- get_mon_resources(env)
   
   expect_equal(arr_res$end_time, c(5, 10))
@@ -198,8 +198,8 @@ test_that("the only arrival inside a batch reneges, and the batch stops", {
     add_generator("arrival1", t1, at(0)) %>%
     run()
   
-  arr_res <- get_mon_arrivals(env, per_resource=TRUE)
-  arr_glb <- get_mon_arrivals(env, per_resource=FALSE)
+  arr_res <- get_mon_arrivals(env, per_resource = TRUE)
+  arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
   res <- get_mon_resources(env)
   
   expect_equal(arr_res$end_time, 5)
@@ -214,7 +214,7 @@ test_that("the only arrival inside a batch reneges, and the batch stops", {
 
 test_that("a permanent batch prevents reneging", {
   t0 <- create_trajectory() %>%
-    batch(1, name="shared", permanent=TRUE) %>%
+    batch(1, name = "shared", permanent = TRUE) %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
@@ -228,8 +228,8 @@ test_that("a permanent batch prevents reneging", {
     add_generator("arrival1", t1, at(0)) %>%
     run()
   
-  arr_res <- get_mon_arrivals(env, per_resource=TRUE)
-  arr_glb <- get_mon_arrivals(env, per_resource=FALSE)
+  arr_res <- get_mon_arrivals(env, per_resource = TRUE)
+  arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
   res <- get_mon_resources(env)
   
   expect_equal(arr_res$end_time, 10)
@@ -259,7 +259,7 @@ test_that("a batch inside a batch reneges", {
     batch(2) %>%
     join(t)
   
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival0", t0, at(0, 0)) %>%
     add_generator("arrival1", t1, at(0, 0)) %>%
@@ -269,8 +269,8 @@ test_that("a batch inside a batch reneges", {
   get_mon_arrivals(env, per_resource = TRUE)
   get_mon_resources(env)
   
-  arr_res <- get_mon_arrivals(env, per_resource=TRUE)
-  arr_glb <- get_mon_arrivals(env, per_resource=FALSE)
+  arr_res <- get_mon_arrivals(env, per_resource = TRUE)
+  arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
   res <- get_mon_resources(env)
   
   expect_equal(arr_res$end_time, c(1, 1, 2, 2))

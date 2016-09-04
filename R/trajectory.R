@@ -4,14 +4,14 @@ simmer.trajectory <- R6Class("simmer.trajectory",
   public = list(
     name = NA,
     
-    initialize = function(name="anonymous", verbose=FALSE) { 
+    initialize = function(name="anonymous", verbose=FALSE) {
       self$name <- evaluate_value(name)
       private$verbose <- evaluate_value(verbose)
       self
     },
     
     print = function(indent=0) {
-      margin <- paste(rep(" ", indent), collapse="")
+      margin <- paste(rep(" ", indent), collapse = "")
       cat(paste0(margin, "simmer trajectory: ", self$name, ", ",
                  private$n_activities, " activities\n"))
       ptr <- self$get_head()
@@ -76,7 +76,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       }
     },
     
-    select = function(resources, policy=c("shortest-queue", "round-robin", 
+    select = function(resources, policy=c("shortest-queue", "round-robin",
                                           "first-available", "random"), id=0) {
       resources <- evaluate_value(resources)
       policy <- match.arg(policy)
@@ -100,7 +100,6 @@ simmer.trajectory <- R6Class("simmer.trajectory",
         private$add_activity(SetAttribute__new_func(private$verbose, key, value, needs_attrs(value)))
       else private$add_activity(SetAttribute__new(private$verbose, key, value))
     },
-    
     
     set_prioritization = function(values) {
       if (is.function(values))
@@ -169,7 +168,8 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       permanent <- evaluate_value(permanent)
       name <- evaluate_value(name)
       if (is.function(rule))
-        private$add_activity(Batch__new_func(private$verbose, n, timeout, permanent, name, rule, needs_attrs(rule)))
+        private$add_activity(Batch__new_func(private$verbose, n, timeout, permanent, name, 
+                                             rule, needs_attrs(rule)))
       else private$add_activity(Batch__new(private$verbose, n, timeout, permanent, name))
     },
     
@@ -178,13 +178,13 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     join = function(traj) {
       if (!inherits(traj, "simmer.trajectory"))
         stop("not a trajectory")
-      new <- self$clone(deep=TRUE)
-      traj <- traj$clone(deep=TRUE)
+      new <- self$clone(deep = TRUE)
+      traj <- traj$clone(deep = TRUE)
       if (!is.null(traj$get_head()) && !is.null(new$get_tail()))
           activity_chain_(new$get_tail(), traj$get_head())
-      new$.__enclos_env__$private$ptrs <- 
+      new$.__enclos_env__$private$ptrs <-
         c(new$.__enclos_env__$private$ptrs, traj$.__enclos_env__$private$ptrs)
-      new$.__enclos_env__$private$n_activities <- 
+      new$.__enclos_env__$private$n_activities <-
         new$.__enclos_env__$private$n_activities + traj$get_n_activities()
       new
     }
@@ -390,7 +390,7 @@ release_selected <- function(traj, amount=1, id=0) traj$release(NA, amount, id)
 #' @return The trajectory object.
 #' @seealso \code{\link{seize_selected}}, \code{\link{release_selected}}.
 #' @export
-select <- function(traj, resources, policy=c("shortest-queue", "round-robin", 
+select <- function(traj, resources, policy=c("shortest-queue", "round-robin",
                                              "first-available", "random"), id=0)
   traj$select(resources, policy, id)
 

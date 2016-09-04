@@ -1,0 +1,5 @@
+linters: with_defaults(line_length_linter(110),
+                       open_curly_linter(TRUE), 
+                       closed_curly_linter(TRUE),
+                       trailing_whitespace_linter = NULL)
+exclusions: list("R/RcppExports.R")

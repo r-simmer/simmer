@@ -126,7 +126,7 @@ from_to <- function(start_time, stop_time, dist, arrive=TRUE){
 #' @importFrom R6 R6Class
 simmer.schedule <- R6Class("simmer.schedule",
   public = list(
-    initialize = function(timetable, values, period=Inf) { 
+    initialize = function(timetable, values, period=Inf) {
       if (!is.numeric(c(timetable, period, values)))
         stop("all arguments must be numeric")
       if (is.unsorted(timetable) || !all(period >= timetable) ||
@@ -139,8 +139,8 @@ simmer.schedule <- R6Class("simmer.schedule",
       if (!all(values >= 0))
         stop("invalid values")
       private$timetable <- timetable
-      private$values <- replace(values, values==Inf, -1)
-      private$period <- replace(period, period==Inf, -1)
+      private$values <- replace(values, values == Inf, -1)
+      private$period <- replace(period, period == Inf, -1)
       private$n <- length(private$timetable)
       
       if (private$period < 0) private$compose_non_periodic()
@@ -150,9 +150,9 @@ simmer.schedule <- R6Class("simmer.schedule",
     
     print = function() {
       cat(paste0("simmer schedule\n",
-                 "{ timetable: ", paste(private$timetable, collapse=" "), 
-                 " | period: ", ifelse(private$period>0, private$period, Inf), " }\n",
-                 "{ values: ", paste(private$values, collapse=" "), " }\n"))
+                 "{ timetable: ", paste(private$timetable, collapse = " "),
+                 " | period: ", ifelse(private$period > 0, private$period, Inf), " }\n",
+                 "{ values: ", paste(private$values, collapse = " "), " }\n"))
     },
     
     get_schedule = function() { private$schedule }
@@ -166,7 +166,7 @@ simmer.schedule <- R6Class("simmer.schedule",
     schedule = NA,
     
     compose_periodic = function() {
-      intervals <- c(private$timetable[1], diff(private$timetable), 
+      intervals <- c(private$timetable[1], diff(private$timetable),
                      private$timetable[1] + private$period - private$timetable[private$n])
       values <- c(private$values, private$values[1])
       if (private$timetable[1] == 0) init <- private$values[1]

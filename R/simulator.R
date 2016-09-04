@@ -18,9 +18,9 @@ Simmer <- R6Class("simmer",
       ))
       for (name in names(private$res))
         cat(paste0(
-          "{ Resource: ", name, 
+          "{ Resource: ", name,
           " | monitored: ", private$res[[name]],
-          " | server status: ", self$get_server_count(name), 
+          " | server status: ", self$get_server_count(name),
           "(", self$get_capacity(name), ")",
           " | queue status: ", self$get_queue_count(name),
           "(", self$get_queue_size(name), ") }\n"
@@ -33,8 +33,8 @@ Simmer <- R6Class("simmer",
         ))
     },
     
-    reset = function() { 
-      reset_(private$sim_obj) 
+    reset = function() {
+      reset_(private$sim_obj)
       self
     },
     
@@ -43,7 +43,7 @@ Simmer <- R6Class("simmer",
     peek = function(steps=1, verbose=FALSE) {
       steps <- evaluate_value(steps)
       verbose <- evaluate_value(verbose)
-      steps <- replace(steps, steps==Inf, -1)
+      steps <- replace(steps, steps == Inf, -1)
       ret <- as.data.frame(peek_(private$sim_obj, steps))
       if (!verbose) ret$time
       else ret # nocov
@@ -56,12 +56,12 @@ Simmer <- R6Class("simmer",
     
     run = function(until=1000) {
       until <- evaluate_value(until)
-      until <- replace(until, until==Inf, -1)
+      until <- replace(until, until == Inf, -1)
       run_(private$sim_obj, until)
       self
     },
     
-    add_resource = function(name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE, 
+    add_resource = function(name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE,
                             preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE) {
       preempt_order <- match.arg(preempt_order)
       name <- evaluate_value(name)
@@ -104,7 +104,7 @@ Simmer <- R6Class("simmer",
       self
     },
     
-    add_generator = function(name_prefix, trajectory, dist, mon=1, 
+    add_generator = function(name_prefix, trajectory, dist, mon=1,
                              priority=0, preemptible=priority, restart=FALSE) {
       if (!inherits(trajectory, "simmer.trajectory"))
         stop("not a trajectory")
@@ -120,7 +120,7 @@ Simmer <- R6Class("simmer",
       environment(dist)$.reset$reset <- function() {
         lst <- parent.env(environment())$init
         cls <- parent.env(parent.env(environment()))
-        for(i in ls(lst, all.names=TRUE)) assign(i, get(i, lst), cls)
+        for (i in ls(lst, all.names = TRUE)) assign(i, get(i, lst), cls)
       }
       environment(environment(dist)$.reset$reset) <- environment(dist)$.reset
 
@@ -134,13 +134,13 @@ Simmer <- R6Class("simmer",
       per_resource <- evaluate_value(per_resource)
       ongoing <- evaluate_value(ongoing)
       as.data.frame(
-        get_mon_arrivals_(private$sim_obj, per_resource, ongoing), 
-        stringsAsFactors=FALSE
+        get_mon_arrivals_(private$sim_obj, per_resource, ongoing),
+        stringsAsFactors = FALSE
       )
     },
     
-    get_mon_attributes = function() 
-      as.data.frame(get_mon_attributes_(private$sim_obj), stringsAsFactors=FALSE),
+    get_mon_attributes = function()
+      as.data.frame(get_mon_attributes_(private$sim_obj), stringsAsFactors = FALSE),
     
     get_mon_resources = function(data=c("counts", "limits")) {
       data <- match.arg(data, several.ok = TRUE)
@@ -151,32 +151,32 @@ Simmer <- R6Class("simmer",
           get_mon_resource_limits_(private$sim_obj)
         else
           get_mon_resource_(private$sim_obj)
-        , stringsAsFactors=FALSE)
+        , stringsAsFactors = FALSE)
       if (identical(data, "limits")) {
-        monitor_data$server <- 
-          replace(monitor_data$server, monitor_data$server==-1, Inf)
-        monitor_data$queue <- 
-          replace(monitor_data$queue, monitor_data$queue==-1, Inf)
+        monitor_data$server <-
+          replace(monitor_data$server, monitor_data$server == -1, Inf)
+        monitor_data$queue <-
+          replace(monitor_data$queue, monitor_data$queue == -1, Inf)
         monitor_data$system <- monitor_data$server + monitor_data$queue
       } else if (all(c("counts", "limits") %in% data)) {
-        monitor_data$capacity <- 
-          replace(monitor_data$capacity, monitor_data$capacity==-1, Inf)
-        monitor_data$queue_size <- 
-          replace(monitor_data$queue_size, monitor_data$queue_size==-1, Inf)
+        monitor_data$capacity <-
+          replace(monitor_data$capacity, monitor_data$capacity == -1, Inf)
+        monitor_data$queue_size <-
+          replace(monitor_data$queue_size, monitor_data$queue_size == -1, Inf)
         monitor_data$system <- monitor_data$server + monitor_data$queue
         monitor_data$limit <- monitor_data$capacity + monitor_data$queue_size
       } else monitor_data$system <- monitor_data$server + monitor_data$queue
       monitor_data
     },
     
-    get_n_generated = function(name) { 
+    get_n_generated = function(name) {
       get_n_generated_(private$sim_obj, evaluate_value(name))
     },
     
-    set_capacity = function(name, value) { 
+    set_capacity = function(name, value) {
       name <- evaluate_value(name)
       value <- evaluate_value(value)
-      value <- replace(value, value==Inf, -1)
+      value <- replace(value, value == Inf, -1)
       set_capacity_(private$sim_obj, name, value)
       self
     },
@@ -187,10 +187,10 @@ Simmer <- R6Class("simmer",
       ret
     },
     
-    set_queue_size = function(name, value) { 
+    set_queue_size = function(name, value) {
       name <- evaluate_value(name)
       value <- evaluate_value(value)
-      value <- replace(value, value==Inf, -1)
+      value <- replace(value, value == Inf, -1)
       set_queue_size_(private$sim_obj, name, value)
       self
     },
@@ -201,7 +201,7 @@ Simmer <- R6Class("simmer",
       ret
     },
     
-    get_server_count = function(name) { 
+    get_server_count = function(name) {
       get_server_count_(private$sim_obj, evaluate_value(name))
     },
     
@@ -340,7 +340,7 @@ peek <- function(env, steps=1, verbose=FALSE) env$peek(steps, verbose)
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \code{\link{schedule}}.
 #' @export
-add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE, 
+add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE,
                          preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE)
   env$add_resource(name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict)
 

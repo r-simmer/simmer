@@ -15,12 +15,12 @@ test_that("an arrival leaves", {
     timeout(1) %>%
     release("dummy", 1)
   
-  arrivals0 <- simmer(verbose=T) %>%
+  arrivals0 <- simmer(verbose = T) %>%
     add_resource("dummy") %>%
     add_generator("arrival", t0, at(0)) %>%
     run() %>% get_mon_arrivals()
   
-  arrivals1 <- simmer(verbose=T) %>%
+  arrivals1 <- simmer(verbose = T) %>%
     add_resource("dummy") %>%
     add_generator("arrival", t1, at(0)) %>%
     run() %>% get_mon_arrivals()
@@ -46,12 +46,12 @@ test_that("an arrival continues", {
     timeout(1) %>%
     release("dummy", 1)
   
-  arrivals0 <- simmer(verbose=T) %>%
+  arrivals0 <- simmer(verbose = T) %>%
     add_resource("dummy") %>%
     add_generator("arrival", t0, at(0)) %>%
     run() %>% get_mon_arrivals()
   
-  arrivals1 <- simmer(verbose=T) %>%
+  arrivals1 <- simmer(verbose = T) %>%
     add_resource("dummy") %>%
     add_generator("arrival", t1, at(0)) %>%
     run() %>% get_mon_arrivals()

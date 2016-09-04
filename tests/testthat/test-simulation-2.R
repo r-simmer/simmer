@@ -12,7 +12,7 @@ test_that("a release is executed before a seize in the same instant", {
     add_generator("dummy0", t0, at(c(0, 2, 4, 6, 8))) %>%
     run() 
   
-  arrivals <- env%>%get_mon_arrivals()
+  arrivals <- env %>% get_mon_arrivals()
   
   expect_equal(sum(arrivals$finished), nrow(arrivals))
 })
