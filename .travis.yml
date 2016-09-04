@@ -16,4 +16,4 @@ r_github_packages:
   - Enchufa2/covr
 
 after_success:
-  - Rscript -e 'covr::coveralls()'
+  - Rscript -e 'covr::codecov()'
