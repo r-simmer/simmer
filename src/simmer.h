@@ -44,7 +44,7 @@
 
 #define CLONEABLE(Type) \
   virtual Type* clone() const { return new Type(*this); }
-  
+
 #define CLONEABLE_COUNT(Type) \
   virtual Type* clone() const { (*clones)++; return new Type(*this); } \
   int* clones;

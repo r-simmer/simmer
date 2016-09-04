@@ -23,7 +23,7 @@ needs_attrs <- function(variable) {
 envs_apply <- function(envs, method, ...) {
   if (!is.list(envs)) envs <- list(envs)
   args <- list(...)
-  
+
   do.call(rbind, lapply(1:length(envs), function(i) {
     stats <- do.call(eval(parse(text = method), envs[[i]]), args)
     if (nrow(stats)) stats$replication <- i

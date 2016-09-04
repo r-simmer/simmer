@@ -2,41 +2,41 @@ context("wrap")
 
 test_that("the wrapper behaves as expected", {
   expect_error("asdf" %>% wrap())
-  
+
   t0 <- create_trajectory() %>%
     seize("server", 1) %>%
     set_attribute("attr", 1) %>%
     release("server", 1)
-  
+
   t1 <- create_trajectory() %>%
     seize("server", 1) %>%
     timeout(1) %>%
     rollback(1, times = Inf)
-  
+
   env <- simmer() %>%
     add_resource("server", 1, 0) %>%
     add_generator("dummy", t0, at(1:10), mon = 2) %>%
     add_generator("rollback", t1, at(11)) %>%
     run(11.5) %>%
     wrap()
-  
+
   expect_output(print(env))
-  
+
   expect_equal(env %>% now(), 11.5)
   expect_equal(env %>% peek(), 12)
-  
+
   arrivals <- env %>% get_mon_arrivals(ongoing = TRUE)
   arrivals_res <- env %>% get_mon_arrivals(TRUE, ongoing = TRUE)
   expect_equal(nrow(arrivals), 11)
   expect_equal(nrow(arrivals_res), 11)
-  
+
   arrivals <- env %>% get_mon_arrivals(ongoing = FALSE)
   arrivals_res <- env %>% get_mon_arrivals(TRUE, ongoing = FALSE)
   attributes <- env %>% get_mon_attributes()
   resources <- env %>% get_mon_resources("counts")
   resources <- env %>% get_mon_resources("limits")
   resources <- env %>% get_mon_resources()
-  
+
   expect_equal(nrow(arrivals), 10)
   expect_equal(nrow(arrivals_res), 10)
   expect_equal(nrow(attributes), 10)

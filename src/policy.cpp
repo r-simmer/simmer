@@ -16,7 +16,7 @@ Resource* Policy::policy_shortest_queue(Simulator* sim) {
   int n = resources.size();
   for (int i = 1; i < n; i++) {
     Resource* res = sim->get_resource(resources[i]);
-    if (res->get_server_count() + res->get_queue_count() < 
+    if (res->get_server_count() + res->get_queue_count() <
       selected->get_server_count() + selected->get_queue_count())
       selected = res;
   }
@@ -28,7 +28,7 @@ Resource* Policy::policy_round_robin(Simulator* sim) {
   if (++i == (int)resources.size())
     i = 0;
   return sim->get_resource(resources[i]);
-} 
+}
 
 Resource* Policy::policy_first_available(Simulator* sim) {
   int i, n = resources.size();

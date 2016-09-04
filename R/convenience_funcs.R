@@ -1,5 +1,5 @@
 #' Arrivals at specific times
-#' 
+#'
 #' Generator convenience function to generate arrivals at specific times.
 #'
 #' @param ... a vector or multiple parameters of times at which to initiate an arrival.
@@ -20,17 +20,17 @@ at <- function(...) {
 }
 
 #' Generate arrivals starting at a specified time
-#' 
+#'
 #' Generator convenience function to generate inter-arrivals with a specified start time.
 #'
 #' @param start_time the time at which to launch the initial arrival.
 #' @param dist a function modelling the interarrival times.
-#' @param arrive if set to \code{TRUE} (default) the first arrival will be 
-#' generated at \code{start_time} and will follow \code{dist} from then on. 
-#' If set to \code{FALSE}, will initiate \code{dist} at \code{start_time} 
-#' (and the first arrival will most likely start at a time later than 
+#' @param arrive if set to \code{TRUE} (default) the first arrival will be
+#' generated at \code{start_time} and will follow \code{dist} from then on.
+#' If set to \code{FALSE}, will initiate \code{dist} at \code{start_time}
+#' (and the first arrival will most likely start at a time later than
 #' \code{start_time}).
-#' 
+#'
 #' @return Returns a generator function.
 #' @seealso \code{\link{add_generator}}.
 #' @export
@@ -57,7 +57,7 @@ from <- function(start_time, dist, arrive=TRUE) {
 }
 
 #' Generate arrivals stopping at a specified time
-#' 
+#'
 #' Generator convenience function to generate inter-arrivals with a specified stop time.
 #'
 #' @param stop_time the time at which to stop the generator.
@@ -85,12 +85,12 @@ to <- function(stop_time, dist) {
 }
 
 #' Generate arrivals starting and stopping at specified times
-#' 
+#'
 #' Generator convenience function to generate inter-arrivals with specified start and stop times.
 #'
 #' @inheritParams from
 #' @inheritParams to
-#' 
+#'
 #' @return Returns a generator function.
 #' @seealso \code{\link{add_generator}}.
 #' @export
@@ -142,29 +142,29 @@ simmer.schedule <- R6Class("simmer.schedule",
       private$values <- replace(values, values == Inf, -1)
       private$period <- replace(period, period == Inf, -1)
       private$n <- length(private$timetable)
-      
+
       if (private$period < 0) private$compose_non_periodic()
       else private$compose_periodic()
       self
     },
-    
+
     print = function() {
       cat(paste0("simmer schedule\n",
                  "{ timetable: ", paste(private$timetable, collapse = " "),
                  " | period: ", ifelse(private$period > 0, private$period, Inf), " }\n",
                  "{ values: ", paste(private$values, collapse = " "), " }\n"))
     },
-    
+
     get_schedule = function() { private$schedule }
   ),
-  
+
   private = list(
     timetable = NA,
     period = NA,
     values = NA,
     n = NA,
     schedule = NA,
-    
+
     compose_periodic = function() {
       intervals <- c(private$timetable[1], diff(private$timetable),
                      private$timetable[1] + private$period - private$timetable[private$n])
@@ -177,7 +177,7 @@ simmer.schedule <- R6Class("simmer.schedule",
         values = values,
         period = private$period)
     },
-    
+
     compose_non_periodic = function() {
       private$schedule <- list(
         init = 0,
@@ -189,23 +189,23 @@ simmer.schedule <- R6Class("simmer.schedule",
 )
 
 #' Generate a scheduling object
-#' 
+#'
 #' Resource convenience function to generate a scheduling object from a timetable specification.
 #'
 #' @param timetable absolute points in time in which the desired value changes.
 #' @param values one value for each point in time.
 #' @param period period of repetition.
-#' 
+#'
 #' @return Returns a Schedule object.
 #' @seealso \code{\link{add_resource}}.
 #' @export
-#' 
+#'
 #' @examples
 #' # Schedule 3 units from 8 to 16 h
 #' #          2 units from 16 to 24 h
 #' #          1 units from 24 to 8 h
 #' capacity_schedule <- schedule(c(8, 16, 24), c(3, 2, 1), period=24)
-#' 
+#'
 #' env <- simmer() %>%
 #'   add_resource("dummy", capacity_schedule)
 schedule <- function(timetable, values, period=Inf) simmer.schedule$new(timetable, values, period)

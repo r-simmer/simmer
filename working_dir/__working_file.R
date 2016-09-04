@@ -40,7 +40,7 @@ mm1 <- create_trajectory() %>%
 
 env <- simmer(verbose=T) %>%
   add_resource("server", 1) %>%
-  add_generator("customer", mm1, function() rexp(1, 1), mon=F) %>% 
+  add_generator("customer", mm1, function() rexp(1, 1), mon=F) %>%
   run(1000)
 
 plot_resource_usage(env, "server")
@@ -67,11 +67,11 @@ plot_resource_usage(env, "server")
 t0 <- create_trajectory("my trajectory") %>%
   seize("server", 1) %>%
   timeout(function() rexp(1, 1)) %>%
-  branch(function() sample(1:2, 1), c(F, T), 
+  branch(function() sample(1:2, 1), c(F, T),
     create_trajectory("branch1") %>%
       seize("server", 2) %>%
       timeout(function() 1) %>%
-      release("server", 2), 
+      release("server", 2),
     create_trajectory("branch2") %>%
       seize("server", 4) %>%
       timeout(function() rexp(1, 3)) %>%
@@ -91,20 +91,20 @@ a %>% print_activity(); a <- a %>% get_next_activity()
 
 t0 <- create_trajectory() %>%
   set_attribute("health", function() sample(40:80,1)) %>%
-  set_attribute("nurses_to_seize", 
+  set_attribute("nurses_to_seize",
                 function(attrs){
                   if(attrs[["health"]]<50) 2
                   else 1
                 }) %>%
-  seize("nurse", 
+  seize("nurse",
         function(attrs){attrs[["nurses_to_seize"]]}) %>%
   timeout(function(attrs){(100 - attrs[["health"]])}) %>%
-  set_attribute("health", 
+  set_attribute("health",
                 function(attrs){
                   min(attrs[["health"]] + sample(attrs[["health"]]:100, 1), 100)}) %>%
-   release("nurse", 
+   release("nurse",
         function(attrs){attrs[["nurses_to_seize"]]}) %>%
-  
+
   ## some other functionality
   ## simply print the attrs using a 0 timeout
   timeout(function(attrs){print(attrs); 0})
@@ -126,8 +126,8 @@ plot_attributes(env, "health")
 #  - from 8 to 16 h -> 10 units
 #  - from 16 to 24 h -> 5 units
 #  - from 24 to 8 h -> 1 unit
-my_schedule <- schedule(timetable = c(8, 16, 24), 
-                        period = 24, 
+my_schedule <- schedule(timetable = c(8, 16, 24),
+                        period = 24,
                         values = c(10, 5, 1))
 my_schedule$get_schedule()
 
@@ -191,7 +191,7 @@ t0 <- create_trajectory() %>%
   join(t3)
 
 t1 <- create_trajectory() %>%
-  branch(function() 1, T, 
+  branch(function() 1, T,
          create_trajectory() %>% timeout(1))
 
 ####################################################################

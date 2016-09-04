@@ -4,4 +4,3 @@
  - start/stop a generator from inside a trajectory
  - add_container (see simpy.resources.container)
  - add_store (see simpy.resources.store)
- 

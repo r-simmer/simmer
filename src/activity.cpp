@@ -5,7 +5,7 @@ void SetPrior<VEC<int> >::print(int indent, bool brief) {
   if (values.size() != 3)
     Rcpp::stop("%s: 3 values needed", name);
   Activity::print(indent, brief);
-  if (!brief) Rcpp::Rcout << 
+  if (!brief) Rcpp::Rcout <<
     "values: " << values[0] << " " << values[1] << " " << values[2] << " }" << std::endl;
   else Rcpp::Rcout << values[0] << " " << values[1] << " " << values[2] << std::endl;
 }
@@ -13,7 +13,7 @@ void SetPrior<VEC<int> >::print(int indent, bool brief) {
 template <>
 void SetPrior<Rcpp::Function>::print(int indent, bool brief) {
   Activity::print(indent, brief);
-  if (!brief) Rcpp::Rcout << 
+  if (!brief) Rcpp::Rcout <<
     "values: " << values << " }" << std::endl;
   else Rcpp::Rcout << values << std::endl;
 }
@@ -21,8 +21,8 @@ void SetPrior<Rcpp::Function>::print(int indent, bool brief) {
 template <>
 void Select<VEC<std::string> >::print(int indent, bool brief) {
   Activity::print(indent, brief);
-  if (!brief) Rcpp::Rcout << 
-    "resources: " << resources[0] << (resources.size()>1 ? ", ..." : "") << " | " << 
+  if (!brief) Rcpp::Rcout <<
+    "resources: " << resources[0] << (resources.size()>1 ? ", ..." : "") << " | " <<
     "policy: " << policy << " }" << std::endl;
   else {
     if (resources.size() > 1)
@@ -34,7 +34,7 @@ void Select<VEC<std::string> >::print(int indent, bool brief) {
 template <>
 void Select<Rcpp::Function>::print(int indent, bool brief) {
   Activity::print(indent, brief);
-  if (!brief) Rcpp::Rcout << 
+  if (!brief) Rcpp::Rcout <<
     "resources: " << resources << " }" << std::endl;
   else Rcpp::Rcout << resources << std::endl;
 }

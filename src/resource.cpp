@@ -8,11 +8,11 @@ void Resource::set_capacity(int value) {
   capacity = value;
   if (capacity > last || capacity < 0) {
     // serve another
-    while (queue_count) 
-      if (!try_serve_from_queue(sim->verbose, sim->now())) 
+    while (queue_count)
+      if (!try_serve_from_queue(sim->verbose, sim->now()))
         break;
   } else if (capacity < last) {
-    while (server_count > capacity) 
+    while (server_count > capacity)
       if (!try_free_server(sim->verbose, sim->now()))
         break;
   }
@@ -24,7 +24,7 @@ void Resource::set_queue_size(int value) {
   if (queue_size == value)
     return;
   queue_size = value;
-  if (is_monitored()) 
+  if (is_monitored())
     sim->record_resource(name, server_count, queue_count, capacity, queue_size);
 }
 
@@ -53,9 +53,9 @@ int Resource::seize(Arrival* arrival, int amount) {
     if (sim->verbose) verbose_print(sim->now(), arrival->name, "REJECT");
     return REJECTED;
   }
-  
+
   arrival->register_entity(this);
-  if (is_monitored()) 
+  if (is_monitored())
     sim->record_resource(name, server_count, queue_count, capacity, queue_size);
   return status;
 }
@@ -69,20 +69,20 @@ int Resource::release(Arrival* arrival, int amount) {
   }
   remove_from_server(sim->verbose, sim->now(), arrival, amount);
   arrival->unregister_entity(this);
-  
+
   // serve another
   Task* task = new Task(sim, "Post-Release", boost::bind(&Resource::post_release, this));
   sim->schedule(0, task, PRIORITY_RELEASE_POST);
-  
+
   return SUCCESS;
 }
 
 int Resource::post_release() {
   // serve another
-  while (queue_count) 
+  while (queue_count)
     if (!try_serve_from_queue(sim->verbose, sim->now()))
       break;
-    
+
   if (is_monitored())
     sim->record_resource(name, server_count, queue_count, capacity, queue_size);
   return SUCCESS;
@@ -94,12 +94,12 @@ bool Resource::erase(Arrival* arrival, bool stay) {
     server_count += amount;
     return false;
   }
-  
+
   if (!remove_from_queue(sim->verbose, sim->now(), arrival)) {
     release(arrival, -1);
     return false;
   }
-  
+
   if (is_monitored())
     sim->record_resource(name, server_count, queue_count, capacity, queue_size);
   return true;

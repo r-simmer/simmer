@@ -19,28 +19,28 @@ class Simulator {
     double time;
     Process* process;
     int priority;
-    
+
     Event(double time, Process* process, int priority):
       time(time), process(process), priority(priority) {}
-    
+
     bool operator<(const Event& other) const {
       if (time == other.time)
         return priority < other.priority;
       return time < other.time;
     }
   };
-  
+
   typedef MSET<Event> PQueue;
   typedef UMAP<Process*, PQueue::iterator> EvMap;
   typedef UMAP<std::string, Entity*> EntMap;
   typedef USET<Arrival*> ArrSet;
   typedef UMAP<std::string, Batched*> NamBMap;
   typedef UMAP<Activity*, Batched*> UnnBMap;
-  
+
 public:
   std::string name;
   bool verbose;
-  
+
   /**
    * Constructor.
    * @param name    simulator name
@@ -48,7 +48,7 @@ public:
    */
   Simulator(std::string name, bool verbose)
     : name(name), verbose(verbose), now_(0), b_count(0) {}
-  
+
   ~Simulator() {
     foreach_ (PQueue::value_type& itr, event_queue)
       if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
@@ -61,7 +61,7 @@ public:
     foreach_ (UnnBMap::value_type& itr, unnamedb_map)
       if (itr.second) delete itr.second;
   }
-  
+
   /**
    * Reset the simulation: time, event queue, resources, processes and statistics.
    */
@@ -90,9 +90,9 @@ public:
     attr_stats.clear();
     res_stats.clear();
   }
-  
+
   double now() { return now_; }
-  
+
   /**
    * Schedule a future event.
    * @param   delay     delay from now()
@@ -102,12 +102,12 @@ public:
   void schedule(double delay, Process* process, int priority=0) {
     event_map[process] = event_queue.emplace(now_ + delay, process, priority);
   }
-  
+
   void unschedule(Process* process) {
     event_queue.erase(event_map[process]);
     event_map.erase(process);
   }
-  
+
   /**
    * Look for future events.
    */
@@ -123,7 +123,7 @@ public:
     }
     return std::make_pair(time, process);
   }
-  
+
   /**
    * Process the next event. Only one step, a giant leap for mankind.
    */
@@ -142,7 +142,7 @@ public:
     event_queue.erase(ev);
     return true;
   }
-  
+
   /**
    * Executes steps until the given criterion is met.
    * @param   until   time of ending
@@ -153,7 +153,7 @@ public:
       if (++nsteps % 100000 == 0)
         Rcpp::checkUserInterrupt();
   }
-  
+
   /**
    * Add a generator of arrivals to the simulator.
    * @param   name_prefix     prefix for the arrival names
@@ -164,7 +164,7 @@ public:
    * @param   preemptible     maximum priority that cannot cause preemption (>=priority)
    * @param   restart         whether activity must be restarted after preemption
    */
-  bool add_generator(std::string name_prefix, Activity* first_activity, Rcpp::Function dist, 
+  bool add_generator(std::string name_prefix, Activity* first_activity, Rcpp::Function dist,
                      int mon, int priority, int preemptible, bool restart)
   {
     if (process_map.find(name_prefix) != process_map.end()) {
@@ -177,7 +177,7 @@ public:
     gen->run();
     return true;
   }
-  
+
   /**
    * Add a resource to the simulator.
    * @param   name          the name
@@ -201,13 +201,13 @@ public:
     } else {
       if (preempt_order.compare("fifo") == 0)
         res = new PreemptiveRes<FIFO>(this, name, mon, capacity, queue_size, keep_queue);
-      else 
+      else
         res = new PreemptiveRes<LIFO>(this, name, mon, capacity, queue_size, keep_queue);
     }
     resource_map[name] = res;
     return true;
   }
-  
+
   /**
    * Add a process that manages the capacity or the queue_size of a resource
    * given a scheduling.
@@ -216,7 +216,7 @@ public:
    * @param   duration  vector of durations until the next value change
    * @param   value     vector of values
    */
-  bool add_resource_manager(std::string name, std::string param, 
+  bool add_resource_manager(std::string name, std::string param,
                             VEC<double> duration, VEC<int> value, int period)
   {
     if (process_map.find(name) != process_map.end()) {
@@ -231,14 +231,14 @@ public:
     if (param.compare("capacity") == 0)
       manager = new Manager(this, name, param, duration, value, period,
                             boost::bind(&Resource::set_capacity, res, _1));
-    else 
+    else
       manager = new Manager(this, name, param, duration, value, period,
                             boost::bind(&Resource::set_queue_size, res, _1));
     process_map[name + "_" + param] = manager;
     manager->run();
     return true;
   }
-  
+
   /**
    * Get a generator by name.
    */
@@ -248,7 +248,7 @@ public:
       Rcpp::stop("generator '" + name + "' not found (typo?)");
     return (Generator*)search->second;
   }
-  
+
   /**
    * Get a resource by name.
    */
@@ -258,7 +258,7 @@ public:
       Rcpp::stop("resource '" + name + "' not found (typo?)");
     return (Resource*)search->second;
   }
-  
+
   Batched** get_batch(Activity* ptr, std::string id) {
     if (id.size()) {
       if (namedb_map.find(id) == namedb_map.end())
@@ -270,12 +270,12 @@ public:
       return &unnamedb_map[ptr];
     }
   }
-  
+
   unsigned int get_batch_count() { return b_count++; }
-  
+
   void register_arrival(Arrival* arrival) { arrival_set.emplace(arrival); }
   void unregister_arrival(Arrival* arrival) { arrival_set.erase(arrival); }
-  
+
   /**
    * Record monitoring data.
    */
@@ -299,7 +299,7 @@ public:
     attr_stats.insert("key",                key);
     attr_stats.insert("value",              value);
   }
-  void record_resource(std::string name, int server_count, int queue_count, 
+  void record_resource(std::string name, int server_count, int queue_count,
                        int capacity, int queue_size) {
     res_stats.insert("resource",            name);
     res_stats.insert("time",                now_);
@@ -308,7 +308,7 @@ public:
     res_stats.insert("capacity",            capacity);
     res_stats.insert("queue_size",          queue_size);
   }
-  
+
   /**
    * Get monitoring data.
    */
@@ -402,7 +402,7 @@ public:
       Rcpp::Named("queue")            = res_stats.get<int>("queue_size")
     );
   }
-  
+
 private:
   double now_;              /**< simulation time */
   PQueue event_queue;       /**< the event queue */
