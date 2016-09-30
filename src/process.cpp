@@ -68,6 +68,8 @@ void Task::run() {
 
 void Arrival::reset() {
   cancel_timeout();
+  foreach_ (ResMSet::value_type& itr, resources)
+    Rcpp::warning("`%s`: leaving without releasing `%s`", name, itr->name);
   if (!--(*clones))
     delete clones;
   sim->unregister_arrival(this);

@@ -140,5 +140,5 @@ test_that("capacity decrease on a non-released preemptive resource does not cras
     add_resource("dummy", sched, preemptive = TRUE) %>%
     add_generator("arrival", t, at(0))
 
-  expect_output(run(env))
+  expect_warning(run(env))
 })

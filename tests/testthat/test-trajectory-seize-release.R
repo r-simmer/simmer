@@ -114,3 +114,14 @@ test_that("arrivals go through post.seize or reject and then continue", {
   expect_equal(arrs$finished, c(TRUE, TRUE))
   expect_equal(arrs$activity_time, c(5, 6))
 })
+
+test_that("leaving without releasing throws a warning", {
+  t <- create_trajectory() %>%
+    seize("dummy", 1)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy") %>%
+    add_generator("arrival", t, at(0))
+
+  expect_warning(run(env))
+})

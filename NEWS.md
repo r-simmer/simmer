@@ -6,6 +6,7 @@
 * Fix crash on arrival reneging in non-triggered batches (8713d95).
 * Fix crash on batches triggered before the timer expires (8713d95).
 * Fix crash on non-released preemptive resources when capacity decreases (#75).
+* Leaving without releasing a resource throws a warning (#76).
 
 # Changes in version 3.4.2
 
