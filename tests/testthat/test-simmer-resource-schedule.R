@@ -129,3 +129,16 @@ test_that("resource's capacity decreases before post-release tasks", {
   expect_equal(arrivals$end_time, c(10, 20, 25))
   expect_equal(arrivals$activity_time, c(5, 5, 5))
 })
+
+test_that("capacity decrease on a non-released preemptive resource does not crash", {
+  t <- create_trajectory() %>%
+    seize("dummy", 1)
+
+  sched <- schedule(c(0, 1), c(1, 0), period = Inf)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy", sched, preemptive = TRUE) %>%
+    add_generator("arrival", t, at(0))
+
+  expect_output(run(env))
+})

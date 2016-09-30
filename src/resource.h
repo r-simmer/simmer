@@ -297,6 +297,8 @@ protected:
 
   bool try_free_server(bool verbose, double time) {
     typename T::iterator first = this->server.begin();
+    if (first == this->server.end())
+      return false;
     first->arrival->deactivate();
     if (verbose) this->verbose_print(time, first->arrival->name, "PREEMPT");
     if (first->arrival->is_monitored()) {
