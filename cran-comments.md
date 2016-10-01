@@ -1,10 +1,6 @@
-## Resubmission
+## New release
 
-Changes to DESCRIPTION:
-
-* cph roles added.
-* Software names in description single quoted.
-* Web pointers added.
+Minor release. Several bug fixes.
 
 ## Test environments
 

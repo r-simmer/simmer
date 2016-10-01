@@ -1,4 +1,4 @@
-# Changes in version 3.4.2.9000
+# Changes in version 3.4.3
 
 ## Minor changes and fixes:
 
