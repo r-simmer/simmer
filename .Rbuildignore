@@ -9,6 +9,7 @@
 ^.*\.gcno$
 ^.*\.gcov$
 working_dir
+.gitmodules
 .gitignore
 .git
 .lintr

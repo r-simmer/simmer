@@ -3,6 +3,62 @@ title: simmer | Discrete-Event Simulation for R
 template:
   bootswatch: yeti
 
+reference:
+  - title: "Build trajectories"
+    desc: "Methods for building trajectory objects"
+    contents:
+      - create_trajectory
+      - batch
+      - branch
+      - clone
+      - join
+      - leave
+      - renege_in
+      - rollback
+      - seize
+      - select
+      - set_attribute
+      - set_prioritization
+      - timeout
+  - title: "Manage trajectories"
+    desc: "Methods for getting information about trajectory objects"
+    contents:
+      - get_head
+      - get_n_activities
+      - get_next_activity
+      - print_activity
+  - title: "Build and run simulation environments"
+    desc: "Methods for building and running simulation objects"
+    contents:
+      - simmer
+      - starts_with("add_")
+      - reset
+      - run
+      - wrap
+  - title: "Manage simulation environments"
+    desc: "Methods for getting information about simulation components"
+    contents:
+      - get_n_generated
+      - resource
+      - now
+      - peek
+  - title: "Statistics"
+    desc: "Methods for getting monitored statistics"
+    contents:
+      - starts_with("get_mon")
+  - title: "Convenience functions"
+    desc: "Helper methods for generators and resources"
+    contents:
+      - at
+      - from
+      - from_to
+      - schedule
+      - to
+  - title: "Plotting"
+    desc: "Basic plotting functions"
+    contents:
+      - starts_with("plot_")
+
 navbar:
   title: simmer
   type: default
@@ -15,7 +71,19 @@ navbar:
     href: reference/index.html
   - text: Articles
     icon: fa-graduation-cap
-    href: articles/index.html
+    menu:
+      - text: "Introduction to simmer"
+        href: articles/A-introduction.html
+      - text: "Terminology"
+        href: articles/B-terminology.html
+      - text: "Advanced trajectory usage"
+        href: articles/C-trajectories.html
+      - text: "The Bank Tutorial: Part I"
+        href: articles/D-bank-1.html
+      - text: "Queueing systems"
+        href: articles/E-queueing-systems.html
+      - text: "Continuous-Time Markov Chains"
+        href: articles/F-ctmc.html
   - text: News
     icon: fa-newspaper-o
     href: news/index.html

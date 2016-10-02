@@ -10,7 +10,7 @@
 
 ## Documentation
 
-Documentation is available at [r-simmer.org/docs](http://r-simmer.org/docs).
+Documentation is available at [r-simmer.org/reference](http://r-simmer.org/reference).
 
 ## Mailing list
 
@@ -42,9 +42,9 @@ vignette(package = "simmer")
 
 These are currently available:
 
-* [Introduction to simmer](https://cran.r-project.org/web/packages/simmer/vignettes/A-introduction.html)
-* [Terminology](https://cran.r-project.org/web/packages/simmer/vignettes/B-terminology.html)
-* [Advanced trajectory usage](https://cran.r-project.org/web/packages/simmer/vignettes/C-trajectories.html)
-* [The Bank Tutorial: Part I](https://cran.r-project.org/web/packages/simmer/vignettes/D-bank-1.html)
-* [Queueing systems](https://cran.r-project.org/web/packages/simmer/vignettes/E-queueing-systems.html)
-* [Continuous-Time Markov Chains](https://cran.r-project.org/web/packages/simmer/vignettes/F-ctmc.html)
+* [Introduction to simmer](http://r-simmer.org/articles/A-introduction.html)
+* [Terminology](http://r-simmer.org/articles/B-terminology.html)
+* [Advanced trajectory usage](http://r-simmer.org/articles/C-trajectories.html)
+* [The Bank Tutorial: Part I](http://r-simmer.org/articles/D-bank-1.html)
+* [Queueing systems](http://r-simmer.org/articles/E-queueing-systems.html)
+* [Continuous-Time Markov Chains](http://r-simmer.org/articles/F-ctmc.html)
