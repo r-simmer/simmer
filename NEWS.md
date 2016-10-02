@@ -1,4 +1,4 @@
-# Changes in version 3.4.3
+# simmer 3.4.3
 
 ## Minor changes and fixes:
 
@@ -8,7 +8,7 @@
 * Fix crash on non-released preemptive resources when capacity decreases (#75).
 * Leaving without releasing a resource throws a warning (#76).
 
-# Changes in version 3.4.2
+# simmer 3.4.2
 
 ## New features:
 
@@ -22,14 +22,14 @@
 * Fix batch cloning (c20bc1d).
 * Coverage improved.
 
-# Changes in version 3.4.1
+# simmer 3.4.1
 
 ## Minor changes and fixes:
 
 * Fix memtest notes on CRAN (heap-use-after-free).
 * Fix memory leaks.
 
-# Changes in version 3.4.0
+# simmer 3.4.0
 
 ## New features:
 
@@ -47,7 +47,7 @@
 * New "The Bank Tutorial: Part I" vignette, by Duncan Garmonsway @nacnudus (#68).
 * Update "Advanced Trajectory Usage" vignette.
 
-# Changes in version 3.3.0
+# simmer 3.3.0
 
 ## New features:
 
@@ -75,7 +75,7 @@
 * The convenience function `every` is deprecated due to #65.
 * Update and extend previous vignettes.
 
-# Changes in version 3.2.1
+# simmer 3.2.1
 
 ## New features:
 
@@ -94,7 +94,7 @@
 * New vignette on Continuous-Time Markov Chains.
 * Update and extend previous vignettes.
 
-# Changes in version 3.2.0
+# simmer 3.2.0
 
 ## Major fix:
 
@@ -116,7 +116,7 @@
 * The `branch` activity now provides attributes to its `option` function, as the other activities (#42).
 * Implement error handling in `plot_*` functions (#44).
 
-# Changes in version 3.1.2
+# simmer 3.1.2
 
 ## New features:
 
@@ -128,7 +128,7 @@
 * `get_mon_*` functions accept a single simulation environment as well as a list of environments representing several replications (5ee2725). A new column (`replication`) in the resulting data frame indicates the corresponding replication number.
 * Monitoring subsystem refactored (as a consequence of #38).
 
-# Changes in version 3.1.1
+# simmer 3.1.1
 
 ## New features:
 
@@ -146,7 +146,7 @@
 * Some work on vignettes (#29).
 * Fix ggplot2 2.0.0 compatibility issues (#37).
 
-# Changes in version 3.0.1
+# simmer 3.0.1
 
 ## Minor changes and fixes:
 
@@ -155,7 +155,7 @@
 * Set finalizer in the simulator object (#14).
 * Fix test errors under Windows r-oldrelease (#15).
 
-# Changes in version 3.0.0
+# simmer 3.0.0
 
 ## New features:
 
