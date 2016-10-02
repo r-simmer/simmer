@@ -6,6 +6,9 @@ r:
   - release
   - devel
 
+git:
+  submodules: false
+
 warnings_are_errors: true
 env:
   global:
