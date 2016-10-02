@@ -1,0 +1,24 @@
+title: simmer | Discrete-Event Simulation for R
+
+template:
+  bootswatch: yeti
+
+navbar:
+  title: simmer
+  type: default
+  right:
+  - text: Home
+    icon: fa-home
+    href: index.html
+  - text: Reference
+    icon: fa-gears
+    href: reference/index.html
+  - text: Articles
+    icon: fa-graduation-cap
+    href: articles/index.html
+  - text: News
+    icon: fa-newspaper-o
+    href: news/index.html
+  - text: GitHub
+    icon: fa-github fa-lg
+    href: https://github.com/r-simmer/simmer

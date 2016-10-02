@@ -12,3 +12,5 @@ working_dir
 .gitignore
 .git
 .lintr
+^docs$
+^_staticdocs\.yml$
