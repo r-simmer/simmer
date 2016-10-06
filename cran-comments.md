@@ -1,11 +1,13 @@
-## New release
+## Patch release
 
-Minor release. Several bug fixes.
+Solve CRAN errors. There was a race condition in the environment destruction that happened randomly under some platforms.
 
 ## Test environments
 
-* Fedora 24 + clang (local), R 3.3.1
+* Fedora 24 + GCC + clang (local), R 3.3.1
 * Rocker image, GCC + SAN + R devel
+* Rocker image, clang + UBSAN + R devel
+* Docker image, clang + R patched
 * Ubuntu 12.04 + GCC (on travis-ci), R 3.2.5, 3.3.1, devel
 * win-builder, R devel
 

@@ -1,3 +1,9 @@
+# simmer 3.4.4
+
+## Minor changes and fixes:
+
+* Fix non-defined behaviour caused by a race condition in object destruction under some platforms.
+
 # simmer 3.4.3
 
 ## Minor changes and fixes:
