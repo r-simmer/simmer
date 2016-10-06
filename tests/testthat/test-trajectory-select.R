@@ -44,8 +44,9 @@ test_that("core selection algorithms work: shortest-queue", {
     add_resource("r3", 1) %>%
     add_generator("dummy0", t0, at(0)) %>%
     add_generator("dummy1", t1, at(0, 0)) %>%
-    add_generator("dummy2", t2, at(seq(1, 6))) %>%
-    run()
+    add_generator("dummy2", t2, at(seq(1, 6)))
+
+  expect_warning(env %>% run)
 
   res <- get_mon_resources(env)
   res_ordered <- res[order(res$time), ]
@@ -70,8 +71,9 @@ test_that("core selection algorithms work: round-robin", {
     add_resource("r3", 1) %>%
     add_generator("dummy0", t0, at(0)) %>%
     add_generator("dummy1", t1, at(0, 0)) %>%
-    add_generator("dummy2", t2, at(seq(1, 6))) %>%
-    run()
+    add_generator("dummy2", t2, at(seq(1, 6)))
+
+  expect_warning(env %>% run)
 
   res <- get_mon_resources(env)
   res_ordered <- res[order(res$time), ]
@@ -96,8 +98,9 @@ test_that("core selection algorithms work: first-available", {
     add_resource("r3", 1, 1) %>%
     add_generator("dummy0", t0, at(0)) %>%
     add_generator("dummy1", t1, at(0, 0)) %>%
-    add_generator("dummy2", t2, at(seq(1, 7))) %>%
-    run()
+    add_generator("dummy2", t2, at(seq(1, 7)))
+
+  expect_warning(env %>% run)
 
   res <- get_mon_resources(env)
   res_ordered <- res[order(res$time), ]
@@ -124,9 +127,9 @@ test_that("core selection algorithms work: random", {
     add_generator("dummy1", t1, at(0, 0)) %>%
     add_generator("dummy2", t2, at(seq(1, 6)))
 
-  res1 <- get_mon_resources(env %>% reset %>% run)
-  res2 <- get_mon_resources(env %>% reset %>% run)
-  res3 <- get_mon_resources(env %>% reset %>% run)
+  expect_warning(res1 <- get_mon_resources(env %>% reset %>% run))
+  expect_warning(res2 <- get_mon_resources(env %>% reset %>% run))
+  expect_warning(res3 <- get_mon_resources(env %>% reset %>% run))
   expect_true(!all(res1 == res2) || !all(res1 == res3))
 })
 
@@ -154,8 +157,9 @@ test_that("custom selection algorithms work", {
     add_resource("r3", 1) %>%
     add_generator("dummy0", t0, at(0)) %>%
     add_generator("dummy1", t1, at(0, 0)) %>%
-    add_generator("dummy2", t2, at(seq(1, 6))) %>%
-    run()
+    add_generator("dummy2", t2, at(seq(1, 6)))
+
+  expect_warning(env %>% run)
 
   res <- get_mon_resources(env)
   res_ordered <- res[order(res$time), ]

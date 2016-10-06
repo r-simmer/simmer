@@ -115,8 +115,23 @@ test_that("arrivals go through post.seize or reject and then continue", {
   expect_equal(arrs$activity_time, c(5, 6))
 })
 
-test_that("leaving without releasing throws a warning", {
+test_that("leaving without releasing throws a warning (arrivals)", {
   t <- create_trajectory() %>%
+    seize("dummy0", 2) %>%
+    seize("dummy1", 1) %>%
+    release("dummy0", 1)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy0", 2) %>%
+    add_resource("dummy1", 1) %>%
+    add_generator("arrival", t, at(0))
+
+  expect_warning(run(env))
+})
+
+test_that("leaving without releasing throws a warning (batches)", {
+  t <- create_trajectory() %>%
+    batch(1) %>%
     seize("dummy0", 2) %>%
     seize("dummy1", 1) %>%
     release("dummy0", 1)
