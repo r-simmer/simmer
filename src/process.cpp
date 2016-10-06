@@ -68,8 +68,6 @@ void Task::run() {
 
 void Arrival::reset() {
   cancel_timeout();
-  foreach_ (ResMSet::value_type& itr, resources)
-    Rcpp::warning("`%s`: leaving without releasing `%s`", name, itr->name);
   if (!--(*clones))
     delete clones;
   sim->unregister_arrival(this);
@@ -135,8 +133,10 @@ void Arrival::leave(std::string resource, double start, double activity) {
 }
 
 void Arrival::terminate(bool finished) {
-  foreach_ (ResMSet::value_type& itr, resources)
+  foreach_ (ResMSet::value_type& itr, resources) {
+    Rcpp::warning("`%s`: leaving without releasing `%s`", name, itr->name);
     itr->erase(this, true);
+  }
   lifetime.activity -= lifetime.remaining;
   if (is_monitored() >= 1)
     sim->record_end(name, lifetime.start, lifetime.activity, finished);
@@ -187,6 +187,10 @@ void Arrival::set_timeout(double timeout, Activity* next) {
 }
 
 void Batched::terminate(bool finished) {
+  foreach_ (ResMSet::value_type& itr, resources) {
+    Rcpp::warning("`%s`: leaving without releasing `%s`", name, itr->name);
+    itr->erase(this, true);
+  }
   lifetime.activity -= lifetime.remaining;
   foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
     itr->set_activity(itr->get_activity() + lifetime.activity);
