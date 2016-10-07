@@ -108,6 +108,7 @@ Simmer <- R6Class("simmer",
                              priority=0, preemptible=priority, restart=FALSE) {
       if (!inherits(trajectory, "simmer.trajectory"))
         stop("not a trajectory")
+      private$traj <- c(private$traj, trajectory)
       name_prefix <- evaluate_value(name_prefix)
       mon <- evaluate_value(mon)
       priority <- evaluate_value(priority)
@@ -217,7 +218,8 @@ Simmer <- R6Class("simmer",
   private = list(
     sim_obj = NULL,
     res = NULL,
-    gen = NULL
+    gen = NULL,
+    traj = NULL
   )
 )
 
