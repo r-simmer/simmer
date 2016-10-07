@@ -15,7 +15,7 @@ test_that("an attribute is correctly set and returned to a function that needs i
 
 
   expect_output({
-    simmer() %>%
+    simmer(verbose = TRUE) %>%
       add_generator("entity", t0, at(0)) %>%
       run()
     },
@@ -44,7 +44,7 @@ test_that("the attribute dataframe is returned with the expected columns", {
     set_attribute("test", 123)
 
   env <-
-    simmer() %>%
+    simmer(verbose = TRUE) %>%
     add_generator("entity", t0, at(0), mon = 1) %>%
     run()
 
@@ -60,7 +60,7 @@ test_that("attributes are returned empty when mon level is <2", {
     set_attribute("test", 123)
 
   env <-
-    simmer() %>%
+    simmer(verbose = TRUE) %>%
     add_generator("entity", t0, at(0), mon = 1) %>%
     run()
 

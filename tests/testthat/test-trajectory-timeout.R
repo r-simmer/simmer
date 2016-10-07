@@ -4,7 +4,7 @@ test_that("a task function that returns a non-numeric value fails", {
   t0 <- create_trajectory() %>%
     timeout(function() {})
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("entity", t0, function() 1)
 
   expect_error(env %>% run(100))

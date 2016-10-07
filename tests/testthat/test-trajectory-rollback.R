@@ -71,7 +71,7 @@ test_that("a check function that returns a non-boolean value fails", {
   t0 <- create_trajectory() %>%
     rollback(1, check = function() "dummy")
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("entity", t0, function() 1)
 
   expect_error(env %>% run(100))

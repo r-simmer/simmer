@@ -16,7 +16,7 @@ test_that("simmer's method chaining works", {
   t0 <- create_trajectory() %>%
     timeout(function() 1)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("server") %>%
     add_generator("customer", t0, function() 1) %>%
     onestep() %>%

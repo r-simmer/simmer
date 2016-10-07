@@ -8,7 +8,7 @@ test_that("a simple deterministic simulation with rejections behaves as expected
     timeout(function() 1.5) %>%
     release("server", 1)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("server", 1, queue_size = 0) %>%
     add_generator("entity", t0, at(1:n))
 

@@ -1,7 +1,7 @@
 context("basic simmer functionality")
 
 test_that("an empty environment behaves as expected", {
-  env <- simmer()
+  env <- simmer(verbose = TRUE)
 
   expect_output(print(env))
 
@@ -51,7 +51,7 @@ test_that("the simulator is reset", {
 })
 
 test_that("the simulator stops if there are no more events", {
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("server", 1) %>%
     add_generator("entity", t0, at(0)) %>%
     run(10)
@@ -60,7 +60,7 @@ test_that("the simulator stops if there are no more events", {
 })
 
 test_that("a negative simulation time is converted to positive", {
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("server", 1) %>%
     add_generator("entity", t0, at(10)) %>%
     run(-10)
@@ -69,7 +69,7 @@ test_that("a negative simulation time is converted to positive", {
 })
 
 test_that("a stopped simulation can be resumed", {
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("server", 1) %>%
     add_generator("entity", t0, function() 1) %>%
     run(10)
@@ -98,9 +98,9 @@ test_that("there is verbose output", {
 
 test_that("we can force some errors (just to complete coverage)", {
   expect_error(simmer(0))
-  expect_error(simmer() %>% add_resource(0))
+  expect_error(simmer(verbose = TRUE) %>% add_resource(0))
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("dummy") %>%
     add_generator("dummy", create_trajectory() %>% timeout(0), function() 1, mon = 1000)
   env$.__enclos_env__$private$sim_obj <- NULL
@@ -118,9 +118,9 @@ test_that("we can force some errors (just to complete coverage)", {
 
   sch <- schedule(c(1, 2), c(1, 2), Inf)
   sch$.__enclos_env__$private$schedule$period <- "asdf"
-  expect_error(simmer() %>% add_resource("dummy", sch))
+  expect_error(simmer(verbose = TRUE) %>% add_resource("dummy", sch))
 
-  env <- simmer()
+  env <- simmer(verbose = TRUE)
   expect_equal(env %>% get_mon_resources() %>% nrow(), 0)
   expect_equal(env %>% get_mon_resources(c("counts", "limits")) %>% nrow(), 0)
 })

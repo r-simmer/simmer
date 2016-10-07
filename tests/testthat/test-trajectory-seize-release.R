@@ -30,7 +30,7 @@ test_that("a release without a previous seize fails", {
   t <- create_trajectory() %>%
     release("dummy", 1)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 1) %>%
     add_generator("asdf", t, at(0))
 
@@ -42,7 +42,7 @@ test_that("a release greater than seize fails", {
     seize("dummy", 1) %>%
     release("dummy", 2)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 1) %>%
     add_generator("asdf", t, at(0))
 

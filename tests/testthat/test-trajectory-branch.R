@@ -36,11 +36,11 @@ test_that("an index out of range fails", {
       create_trajectory() %>% timeout(1)
     )
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("entity", t2, at(0))
   expect_error(env %>% run())
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("entity", t1, at(0)) %>%
     run()
   expect_equal(env %>% now(), 1)

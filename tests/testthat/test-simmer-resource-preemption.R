@@ -6,7 +6,7 @@ test_that("a lower priority arrival gets rejected before accessing the server", 
     timeout(10) %>%
     release("dummy", 1)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("p0a", t, at(0, 0)) %>%
     add_generator("p1a", t, at(2, 3), priority = 1) %>%
     add_resource("dummy", 1, 2, preemptive = TRUE) %>%
@@ -29,7 +29,7 @@ test_that("tasks are NOT restarted", {
     timeout(10) %>%
     release("dummy", 2)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("p0a", t0, at(0, 0), restart = FALSE) %>%
     add_generator("p1a", t1, at(2, 15), priority = 1) %>%
     add_resource("dummy", 2, preemptive = TRUE) %>%
@@ -53,7 +53,7 @@ test_that("tasks are restarted", {
     timeout(10) %>%
     release("dummy", 2)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("p0a", t0, at(0, 0), restart = TRUE) %>%
     add_generator("p1a", t1, at(2, 15), priority = 1) %>%
     add_resource("dummy", 2, preemptive = TRUE) %>%
@@ -72,7 +72,7 @@ test_that("tasks are preempted in a FIFO basis", {
     timeout(10) %>%
     release("dummy", 1)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("p0a", t, at(0, 1), restart = TRUE) %>%
     add_generator("p1a", t, at(2, 3), priority = 1) %>%
     add_resource("dummy", 2, preemptive = TRUE, preempt_order = "fifo") %>%
@@ -91,7 +91,7 @@ test_that("tasks are preempted in a LIFO basis", {
     timeout(10) %>%
     release("dummy", 1)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("p0a", t, at(0, 1), restart = TRUE) %>%
     add_generator("p1a", t, at(2, 3), priority = 1) %>%
     add_resource("dummy", 2, preemptive = TRUE, preempt_order = "lifo") %>%
@@ -110,7 +110,7 @@ test_that("queue can exceed queue_size by default", {
     timeout(10) %>%
     release("dummy", 1)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("p0a", t, at(0, 0)) %>%
     add_generator("p1a", t, at(1), priority = 1) %>%
     add_resource("dummy", 1, 1, preemptive = TRUE) %>%
@@ -134,7 +134,7 @@ test_that("queue cannot exceed queue_size with hard limit (preempted rejected)",
     timeout(10) %>%
     release("dummy", 1)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("p0a", t, at(0, 0)) %>%
     add_generator("p1a", t, at(1), priority = 1) %>%
     add_resource("dummy", 1, 1, preemptive = TRUE, queue_size_strict = TRUE) %>%
@@ -158,7 +158,7 @@ test_that("queue cannot exceed queue_size with hard limit (preempted to queue)",
     timeout(10) %>%
     release("dummy")
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("p0a", t, at(0), priority = 0) %>%
     add_generator("p1a", t, at(0), priority = 1) %>%
     add_generator("p2a", t, at(1), priority = 2) %>%

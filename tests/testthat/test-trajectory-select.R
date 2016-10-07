@@ -38,7 +38,7 @@ test_that("core selection algorithms work: shortest-queue", {
     select(c("r1", "r2", "r3"), policy = "shortest-queue") %>%
     seize_selected(1)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("r1", 2) %>%
     add_resource("r2", 3) %>%
     add_resource("r3", 1) %>%
@@ -65,7 +65,7 @@ test_that("core selection algorithms work: round-robin", {
     select(c("r1", "r2", "r3"), policy = "round-robin") %>%
     seize_selected(1)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("r1", 2) %>%
     add_resource("r2", 3) %>%
     add_resource("r3", 1) %>%
@@ -119,7 +119,7 @@ test_that("core selection algorithms work: random", {
     select(c("r1", "r2", "r3"), policy = "random") %>%
     seize_selected(1)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("r1", 2) %>%
     add_resource("r2", 3) %>%
     add_resource("r3", 1) %>%
@@ -151,7 +151,7 @@ test_that("custom selection algorithms work", {
     select(reverse_rr()) %>%
     seize_selected(1)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("r1", 2) %>%
     add_resource("r2", 3) %>%
     add_resource("r3", 1) %>%

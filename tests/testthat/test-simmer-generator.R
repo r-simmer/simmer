@@ -1,31 +1,31 @@
 context("generator")
 
 test_that("a generator without a trajectory fails", {
-  expect_error(simmer() %>% add_generator("customer", 4, 1))
+  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", 4, 1))
 })
 
 test_that("a non-function dist fails", {
   t0 <- create_trajectory()
 
-  expect_error(simmer() %>% add_generator("customer", t0, 1))
+  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", t0, 1))
 })
 
 test_that("an empty trajectory fails", {
   t0 <- create_trajectory()
 
-  expect_error(simmer() %>% add_generator("customer", t0, function() {}))
+  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", t0, function() {}))
 })
 
 test_that("a dist that returns a non-numeric value fails", {
   t0 <- create_trajectory() %>% timeout(1)
 
-  expect_error(simmer() %>% add_generator("customer", t0, function() {}))
+  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", t0, function() {}))
 })
 
 test_that("generates the expected amount", {
   t0 <- create_trajectory() %>% timeout(1)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_generator("customer", t0, at(c(0, 1, 2))) %>%
     run(10)
 
@@ -36,7 +36,7 @@ test_that("generates the expected amount", {
 test_that("generators are reset", {
   t <- create_trajectory() %>% timeout(1)
 
-  expect_equal(3, simmer() %>%
+  expect_equal(3, simmer(verbose = TRUE) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run() %>% reset() %>% run() %>%
     get_mon_arrivals() %>% nrow()
@@ -45,7 +45,7 @@ test_that("generators are reset", {
 
 test_that("preemptible < priority shows a warning", {
   t <- create_trajectory() %>% timeout(0)
-  expect_warning(simmer() %>% add_generator("dummy", t, at(0), priority = 3, preemptible = 1))
+  expect_warning(simmer(verbose = TRUE) %>% add_generator("dummy", t, at(0), priority = 3, preemptible = 1))
 })
 
 test_that("arrivals are correctly monitored", {

@@ -12,7 +12,7 @@ t0 <- create_trajectory("my trajectory") %>%
   release("administration", 1)
 
 test_that("single replication plots", {
-  reps <- simmer() %>%
+  reps <- simmer(verbose = TRUE) %>%
     add_resource("nurse", 1) %>%
     add_resource("doctor", 2) %>%
     add_resource("administration", 1) %>%
@@ -31,7 +31,7 @@ test_that("single replication plots", {
 
 test_that("multiple replication plots", {
   reps <- lapply(1:100, function(i) {
-    simmer() %>%
+    simmer(verbose = TRUE) %>%
       add_resource("nurse", 1) %>%
       add_resource("doctor", 2) %>%
       add_resource("administration", 1) %>%
@@ -57,7 +57,7 @@ test_that("attributes are plottable", {
     set_attribute("my_attr2", function() runif(1))
 
   reps <- lapply(1:100, function(i) {
-    simmer() %>%
+    simmer(verbose = TRUE) %>%
       add_generator("frog", t0, function() rnorm(1, 10, 2), mon = 2) %>%
       run(80)
   })

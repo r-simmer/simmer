@@ -13,7 +13,7 @@ test_that("the wrapper behaves as expected", {
     timeout(1) %>%
     rollback(1, times = Inf)
 
-  env <- simmer() %>%
+  env <- simmer(verbose = TRUE) %>%
     add_resource("server", 1, 0) %>%
     add_generator("dummy", t0, at(1:10), mon = 2) %>%
     add_generator("rollback", t1, at(11)) %>%
