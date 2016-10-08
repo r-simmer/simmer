@@ -1,5 +1,9 @@
 # simmer 3.4.4.9000
 
+## New features:
+
+* `set_capacity()` and `set_queue_size()` become activities (#77). Just like `seize()` and `release()`, they have the associated `set_capacity_selected()` and `set_queue_size_selected()` for a joint use together with `select()`.
+
 ## Minor changes and fixes:
 
 * Store inline trajectory objects inside the simulation environment to prevent them to be garbage-collected.
