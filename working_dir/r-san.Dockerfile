@@ -1,6 +1,5 @@
 ## Build: docker build -t r-san -f simmer/working_dir/r-san.Dockerfile .
 ##        R CMD build simmer
-## Usage: docker run --rm -ti -v $(pwd):/mnt r-san R CMD check --use-valgrind /mnt/simmer_x.x.x.tar.gz
 ## Usage: docker run --rm -ti -v $(pwd):/mnt r-san RD CMD check --as-cran /mnt/simmer_x.x.x.tar.gz
 
 ## Start with the base image

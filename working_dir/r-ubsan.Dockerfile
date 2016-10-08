@@ -1,6 +1,5 @@
 ## Build: docker build -t r-ubsan -f simmer/working_dir/r-ubsan.Dockerfile .
 ##        R CMD build simmer
-## Usage: docker run --rm -ti -v $(pwd):/mnt r-ubsan R CMD check --use-valgrind /mnt/simmer_x.x.x.tar.gz
 ## Usage: docker run --rm -ti -v $(pwd):/mnt r-ubsan RD CMD check --as-cran /mnt/simmer_x.x.x.tar.gz
 
 ## Start with the base image
