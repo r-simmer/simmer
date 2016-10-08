@@ -15,25 +15,6 @@ test_that("resources are correctly created", {
   expect_equal(env %>% get_queue_count("dummy"), 0)
 })
 
-test_that("capacity and queue size change", {
-  env <- simmer(verbose = TRUE) %>%
-    add_resource("dummy", 5, Inf)
-
-  expect_equal(env %>% get_capacity("dummy"), 5)
-  expect_equal(env %>% get_queue_size("dummy"), Inf)
-
-  env %>%
-    set_capacity("dummy", Inf) %>%
-    set_queue_size("dummy", Inf) %>%
-    set_queue_size("dummy", 5) %>%
-    add_generator("asdf", create_trajectory() %>% seize("dummy", 1), at(rep(0, 10))) %>%
-    run()
-
-  expect_equal(env %>% get_capacity("dummy"), Inf)
-  expect_equal(env %>% get_queue_size("dummy"), 5)
-  expect_equal(env %>% get_server_count("dummy"), 10)
-})
-
 test_that("a negative capacity or queue_size is converted to positive", {
   env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", -4, -1)

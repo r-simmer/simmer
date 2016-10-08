@@ -1,35 +1,5 @@
 context("select")
 
-test_that("resources are seized/released as expected", {
-  t0 <- create_trajectory() %>%
-    select("dummy0", id = 0) %>%
-    select(function() "dummy1", id = 1) %>%
-    seize_selected(-1, id = 0) %>%
-    timeout(1) %>%
-    seize_selected(function() 2, id = 1) %>%
-    timeout(1) %>%
-    release_selected(-1, id = 0) %>%
-    timeout(1) %>%
-    release_selected(function() 2, id = 1) %>%
-    timeout(1)
-
-  expect_output(print(t0))
-
-  env <- simmer(verbose = TRUE) %>%
-    add_resource("dummy0", 3, 0) %>%
-    add_resource("dummy1", 3, 0) %>%
-    add_generator("arrival", t0, at(0))
-
-  env %>% onestep() %>% onestep() %>% onestep()
-  expect_equal(env %>% get_server_count("dummy0"), 1)
-  env %>% onestep() %>% onestep()
-  expect_equal(env %>% get_server_count("dummy1"), 2)
-  env %>% onestep() %>% onestep() %>% onestep()
-  expect_equal(env %>% get_server_count("dummy0"), 0)
-  env %>% onestep() %>% onestep()
-  expect_equal(env %>% get_server_count("dummy1"), 0)
-})
-
 test_that("core selection algorithms work: shortest-queue", {
   t0 <- create_trajectory() %>% seize("r1", 1)
   t1 <- create_trajectory() %>% seize("r2", 1)
