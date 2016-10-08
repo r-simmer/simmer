@@ -76,6 +76,36 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       }
     },
 
+    set_capacity = function(resource, value, id=0) {
+      resource <- evaluate_value(resource)
+      value <- evaluate_value(value)
+      id <- evaluate_value(id)
+      if (is.na(resource)) {
+        if (is.function(value))
+          private$add_activity(SetCapacitySelected__new_func(private$verbose, id, value, needs_attrs(value)))
+        else private$add_activity(SetCapacitySelected__new(private$verbose, id, value))
+      } else {
+        if (is.function(value))
+          private$add_activity(SetCapacity__new_func(private$verbose, resource, value, needs_attrs(value)))
+        else private$add_activity(SetCapacity__new(private$verbose, resource, value))
+      }
+    },
+
+    set_queue_size = function(resource, value, id=0) {
+      resource <- evaluate_value(resource)
+      value <- evaluate_value(value)
+      id <- evaluate_value(id)
+      if (is.na(resource)) {
+        if (is.function(value))
+          private$add_activity(SetQueueSelected__new_func(private$verbose, id, value, needs_attrs(value)))
+        else private$add_activity(SetQueueSelected__new(private$verbose, id, value))
+      } else {
+        if (is.function(value))
+          private$add_activity(SetQueue__new_func(private$verbose, resource, value, needs_attrs(value)))
+        else private$add_activity(SetQueue__new(private$verbose, resource, value))
+      }
+    },
+
     select = function(resources, policy=c("shortest-queue", "round-robin",
                                           "first-available", "random"), id=0) {
       resources <- evaluate_value(resources)
@@ -237,10 +267,11 @@ simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 #' @seealso Methods for dealing with trajectories:
 #' \code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{get_n_activities}}, \code{\link{join}},
 #' \code{\link{seize}}, \code{\link{release}}, \code{\link{seize_selected}}, \code{\link{release_selected}},
-#' \code{\link{select}}, \code{\link{set_prioritization}}, \code{\link{set_attribute}},
-#' \code{\link{timeout}}, \code{\link{branch}}, \code{\link{rollback}}, \code{\link{leave}},
-#' \code{\link{renege_in}}, \code{\link{renege_abort}},\code{\link{clone}}, \code{\link{synchronize}},
-#' \code{\link{batch}}, \code{\link{separate}}.
+#' \code{\link{select}}, \code{\link{set_capacity}}, \code{\link{set_queue_size}},
+#' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}, \code{\link{set_prioritization}},
+#' \code{\link{set_attribute}}, \code{\link{timeout}}, \code{\link{branch}},
+#' \code{\link{rollback}}, \code{\link{leave}}, \code{\link{renege_in}}, \code{\link{renege_abort}},
+#' \code{\link{clone}}, \code{\link{synchronize}}, \code{\link{batch}}, \code{\link{separate}}.
 #' @export
 #'
 #' @examples
@@ -346,7 +377,8 @@ join <- function(...) {
 #' @param reject an optional trajectory object which will be followed if the arrival is rejected.
 #'
 #' @return The trajectory object.
-#' @seealso \code{\link{select}}.
+#' @seealso \code{\link{select}}, \code{\link{set_capacity}}, \code{\link{set_queue_size}},
+#' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
 #' @export
 seize <- function(traj, resource, amount=1, continue=NULL, post.seize=NULL, reject=NULL)
   traj$seize(resource, amount, 0, continue, post.seize, reject)
@@ -364,6 +396,33 @@ release <- function(traj, resource, amount=1) traj$release(resource, amount)
 #' @export
 release_selected <- function(traj, amount=1, id=0) traj$release(NA, amount, id)
 
+#' Add a set capacity/queue size activity
+#'
+#' Modify a resource's server capacity or queue size, by name or a previously selected one.
+#'
+#' @inheritParams get_head
+#' @inheritParams select
+#' @param resource the name of the resource.
+#' @param value new value to set.
+#'
+#' @return Returns the trajectory object.
+#' @seealso \code{\link{select}}, \code{\link{seize}}, \code{\link{release}},
+#' \code{\link{seize_selected}}, \code{\link{release_selected}}.
+#' @export
+set_capacity <- function(traj, resource, value) traj$set_capacity(resource, value)
+
+#' @rdname set_capacity
+#' @export
+set_capacity_selected <- function(traj, value, id=0) traj$set_capacity(NA, value, id)
+
+#' @rdname set_capacity
+#' @export
+set_queue_size <- function(traj, resource, value) traj$set_queue_size(resource, value)
+
+#' @rdname set_capacity
+#' @export
+set_queue_size_selected <- function(traj, value, id=0) traj$set_queue_size(NA, value, id)
+
 #' Select a resource
 #'
 #' Resource selector for a subsequent seize/release.
@@ -377,7 +436,8 @@ release_selected <- function(traj, amount=1, id=0) traj$release(NA, amount, id)
 #' @param id selection identifier for nested usage.
 #'
 #' @return The trajectory object.
-#' @seealso \code{\link{seize_selected}}, \code{\link{release_selected}}.
+#' @seealso \code{\link{seize_selected}}, \code{\link{release_selected}},
+#' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
 #' @export
 select <- function(traj, resources, policy=c("shortest-queue", "round-robin",
                                              "first-available", "random"), id=0)

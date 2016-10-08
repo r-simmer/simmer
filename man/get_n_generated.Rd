@@ -4,12 +4,12 @@
 \alias{get_n_generated}
 \title{Get the number of arrivals generated}
 \usage{
-get_n_generated(env, name)
+get_n_generated(env, generator)
 }
 \arguments{
 \item{env}{the simulation environment.}
 
-\item{name}{the name of the generator.}
+\item{generator}{the name of the generator.}
 }
 \value{
 Returns a numeric value.

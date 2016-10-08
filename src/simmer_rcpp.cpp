@@ -110,22 +110,9 @@ int get_n_generated_(SEXP sim_, std::string name) {
 }
 
 //[[Rcpp::export]]
-void set_capacity_(SEXP sim_, std::string name, int value) {
-  XPtr<Simulator> sim(sim_);
-  sim->get_resource(name)->set_capacity(value);
-}
-
-
-//[[Rcpp::export]]
 int get_capacity_(SEXP sim_, std::string name) {
   XPtr<Simulator> sim(sim_);
   return sim->get_resource(name)->get_capacity();
-}
-
-//[[Rcpp::export]]
-void set_queue_size_(SEXP sim_, std::string name, int value) {
-  XPtr<Simulator> sim(sim_);
-  sim->get_resource(name)->set_queue_size(value);
 }
 
 //[[Rcpp::export]]
@@ -196,6 +183,50 @@ SEXP ReleaseSelected__new(bool verbose, int id, int amount) {
 SEXP ReleaseSelected__new_func(bool verbose, int id, Function amount, bool provide_attrs) {
   return XPtr<ReleaseSelected<Function> >(
       new ReleaseSelected<Function>(verbose, id, amount, provide_attrs));
+}
+
+//[[Rcpp::export]]
+SEXP SetCapacity__new(bool verbose, std::string resource, double value) {
+  return XPtr<SetCapacity<double> >(new SetCapacity<double>(verbose, resource, value, 0));
+}
+
+//[[Rcpp::export]]
+SEXP SetCapacity__new_func(bool verbose, std::string resource, Function value, bool provide_attrs) {
+  return XPtr<SetCapacity<Function> >(
+      new SetCapacity<Function>(verbose, resource, value, provide_attrs));
+}
+
+//[[Rcpp::export]]
+SEXP SetCapacitySelected__new(bool verbose, int id, double value) {
+  return XPtr<SetCapacitySelected<double> >(new SetCapacitySelected<double>(verbose, id, value, 0));
+}
+
+//[[Rcpp::export]]
+SEXP SetCapacitySelected__new_func(bool verbose, int id, Function value, bool provide_attrs) {
+  return XPtr<SetCapacitySelected<Function> >(
+      new SetCapacitySelected<Function>(verbose, id, value, provide_attrs));
+}
+
+//[[Rcpp::export]]
+SEXP SetQueue__new(bool verbose, std::string resource, double value) {
+  return XPtr<SetQueue<double> >(new SetQueue<double>(verbose, resource, value, 0));
+}
+
+//[[Rcpp::export]]
+SEXP SetQueue__new_func(bool verbose, std::string resource, Function value, bool provide_attrs) {
+  return XPtr<SetQueue<Function> >(
+      new SetQueue<Function>(verbose, resource, value, provide_attrs));
+}
+
+//[[Rcpp::export]]
+SEXP SetQueueSelected__new(bool verbose, int id, double value) {
+  return XPtr<SetQueueSelected<double> >(new SetQueueSelected<double>(verbose, id, value, 0));
+}
+
+//[[Rcpp::export]]
+SEXP SetQueueSelected__new_func(bool verbose, int id, Function value, bool provide_attrs) {
+  return XPtr<SetQueueSelected<Function> >(
+      new SetQueueSelected<Function>(verbose, id, value, provide_attrs));
 }
 
 //[[Rcpp::export]]

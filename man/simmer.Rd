@@ -47,7 +47,7 @@ Methods for dealing with a simulation environment:
 \code{\link{reset}}, \code{\link{now}}, \code{\link{peek}}, \code{\link{onestep}}, \code{\link{run}},
 \code{\link{add_resource}}, \code{\link{add_generator}}, \code{\link{get_mon_arrivals}},
 \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}, \code{\link{get_n_generated}},
-\code{\link{get_capacity}}, \code{\link{get_queue_size}}, \code{\link{set_capacity}},
-\code{\link{set_queue_size}}, \code{\link{get_server_count}}, \code{\link{get_queue_count}}.
+\code{\link{get_capacity}}, \code{\link{get_queue_size}},
+\code{\link{get_server_count}}, \code{\link{get_queue_count}}.
 }
 

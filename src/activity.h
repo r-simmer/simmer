@@ -154,18 +154,33 @@ protected:
   VEC<Activity*> tails;
 };
 
+// abstract class for resource retrieval
+class ResGetter {
+public:
+  BASE_CLONEABLE(ResGetter)
+
+  ResGetter(std::string resource) : resource(resource) {}
+
+protected:
+  std::string resource;
+
+  virtual Resource* get_resource(Arrival* arrival) {
+    return arrival->sim->get_resource(resource);
+  }
+};
+
 /**
  * Seize a resource.
  */
 template <typename T>
-class Seize : public Fork {
+class Seize : public Fork, public ResGetter {
 public:
   CLONEABLE(Seize<T>)
 
   Seize(bool verbose, std::string resource, T amount, bool provide_attrs,
         VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask)
-    : Fork("Seize", verbose, cont, trj, provide_attrs),
-      resource(resource), amount(amount), mask(mask) {}
+    : Fork("Seize", verbose, cont, trj, provide_attrs), ResGetter(resource),
+      amount(amount), mask(mask) {}
 
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
@@ -181,13 +196,8 @@ public:
   }
 
 protected:
-  std::string resource;
   T amount;
   unsigned short mask;
-
-  virtual Resource* get_resource(Arrival* arrival) {
-    return arrival->sim->get_resource(resource);
-  }
 
   int select_path(Arrival* arrival, int ret) {
     switch (ret) {
@@ -233,13 +243,13 @@ protected:
  * Release a resource.
  */
 template <typename T>
-class Release : public Activity {
+class Release : public Activity, public ResGetter {
 public:
   CLONEABLE(Release<T>)
 
   Release(bool verbose, std::string resource, T amount, bool provide_attrs)
     : Activity("Release", verbose, provide_attrs, PRIORITY_RELEASE),
-      resource(resource), amount(amount) {}
+      ResGetter(resource), amount(amount) {}
 
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
@@ -254,12 +264,7 @@ public:
   }
 
 protected:
-  std::string resource;
   T amount;
-
-  virtual Resource* get_resource(Arrival* arrival) {
-    return arrival->sim->get_resource(resource);
-  }
 };
 
 /**
@@ -272,6 +277,104 @@ public:
 
   ReleaseSelected(bool verbose, int id, T amount, bool provide_attrs)
     : Release<T>(verbose, "[]", amount, provide_attrs), id(id) {}
+
+protected:
+  int id;
+
+  Resource* get_resource(Arrival* arrival) {
+    return arrival->get_selected(id);
+  }
+};
+
+/**
+ * Set a resource's capacity.
+ */
+template <typename T>
+class SetCapacity : public Activity, public ResGetter {
+public:
+  CLONEABLE(SetCapacity<T>)
+
+  SetCapacity(bool verbose, std::string resource, T value, bool provide_attrs)
+    : Activity("SetCapacity", verbose, provide_attrs),
+      ResGetter(resource), value(value) {}
+
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout <<
+      "resource: " << resource << ", value: " << value << " }" << std::endl;
+    else Rcpp::Rcout << resource << ": " << value << std::endl;
+  }
+
+  double run(Arrival* arrival) {
+    double ret = std::abs(get<double>(value, arrival));
+    if (ret == R_PosInf) ret = -1;
+    get_resource(arrival)->set_capacity((int)ret);
+    return 0;
+  }
+
+protected:
+  T value;
+};
+
+/**
+* Set a selected resource's capacity.
+*/
+template <typename T>
+class SetCapacitySelected : public SetCapacity<T> {
+public:
+  CLONEABLE(SetCapacitySelected<T>)
+
+  SetCapacitySelected(bool verbose, int id, T value, bool provide_attrs)
+    : SetCapacity<T>(verbose, "[]", value, provide_attrs), id(id) {}
+
+protected:
+  int id;
+
+  Resource* get_resource(Arrival* arrival) {
+    return arrival->get_selected(id);
+  }
+};
+
+/**
+* Set a resource's queue size.
+*/
+template <typename T>
+class SetQueue : public Activity, public ResGetter {
+public:
+  CLONEABLE(SetQueue<T>)
+
+  SetQueue(bool verbose, std::string resource, T value, bool provide_attrs)
+    : Activity("SetQueue", verbose, provide_attrs),
+      ResGetter(resource), value(value) {}
+
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout <<
+      "resource: " << resource << ", value: " << value << " }" << std::endl;
+    else Rcpp::Rcout << resource << ": " << value << std::endl;
+  }
+
+  double run(Arrival* arrival) {
+    double ret = std::abs(get<double>(value, arrival));
+    if (ret == R_PosInf) ret = -1;
+    get_resource(arrival)->set_queue_size((int)ret);
+    return 0;
+  }
+
+protected:
+  T value;
+};
+
+/**
+* Set a selected resource's queue size.
+*/
+template <typename T>
+class SetQueueSelected : public SetQueue<T> {
+public:
+  CLONEABLE(SetQueueSelected<T>)
+
+  SetQueueSelected(bool verbose, int id, T value, bool provide_attrs)
+    : SetQueue<T>(verbose, "[]", value, provide_attrs), id(id) {}
 
 protected:
   int id;

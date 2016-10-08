@@ -42,6 +42,7 @@ The trajectory object.
 Activities for seizing/releasing a resource, by name or a previously selected one.
 }
 \seealso{
-\code{\link{select}}.
+\code{\link{select}}, \code{\link{set_capacity}}, \code{\link{set_queue_size}},
+\code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
 }
 

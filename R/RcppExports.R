@@ -61,16 +61,8 @@ get_n_generated_ <- function(sim_, name) {
     .Call('simmer_get_n_generated_', PACKAGE = 'simmer', sim_, name)
 }
 
-set_capacity_ <- function(sim_, name, value) {
-    invisible(.Call('simmer_set_capacity_', PACKAGE = 'simmer', sim_, name, value))
-}
-
 get_capacity_ <- function(sim_, name) {
     .Call('simmer_get_capacity_', PACKAGE = 'simmer', sim_, name)
-}
-
-set_queue_size_ <- function(sim_, name, value) {
-    invisible(.Call('simmer_set_queue_size_', PACKAGE = 'simmer', sim_, name, value))
 }
 
 get_queue_size_ <- function(sim_, name) {
@@ -115,6 +107,38 @@ ReleaseSelected__new <- function(verbose, id, amount) {
 
 ReleaseSelected__new_func <- function(verbose, id, amount, provide_attrs) {
     .Call('simmer_ReleaseSelected__new_func', PACKAGE = 'simmer', verbose, id, amount, provide_attrs)
+}
+
+SetCapacity__new <- function(verbose, resource, value) {
+    .Call('simmer_SetCapacity__new', PACKAGE = 'simmer', verbose, resource, value)
+}
+
+SetCapacity__new_func <- function(verbose, resource, value, provide_attrs) {
+    .Call('simmer_SetCapacity__new_func', PACKAGE = 'simmer', verbose, resource, value, provide_attrs)
+}
+
+SetCapacitySelected__new <- function(verbose, id, value) {
+    .Call('simmer_SetCapacitySelected__new', PACKAGE = 'simmer', verbose, id, value)
+}
+
+SetCapacitySelected__new_func <- function(verbose, id, value, provide_attrs) {
+    .Call('simmer_SetCapacitySelected__new_func', PACKAGE = 'simmer', verbose, id, value, provide_attrs)
+}
+
+SetQueue__new <- function(verbose, resource, value) {
+    .Call('simmer_SetQueue__new', PACKAGE = 'simmer', verbose, resource, value)
+}
+
+SetQueue__new_func <- function(verbose, resource, value, provide_attrs) {
+    .Call('simmer_SetQueue__new_func', PACKAGE = 'simmer', verbose, resource, value, provide_attrs)
+}
+
+SetQueueSelected__new <- function(verbose, id, value) {
+    .Call('simmer_SetQueueSelected__new', PACKAGE = 'simmer', verbose, id, value)
+}
+
+SetQueueSelected__new_func <- function(verbose, id, value, provide_attrs) {
+    .Call('simmer_SetQueueSelected__new_func', PACKAGE = 'simmer', verbose, id, value, provide_attrs)
 }
 
 Select__new <- function(verbose, resources, policy, id) {

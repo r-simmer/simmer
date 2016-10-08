@@ -19,6 +19,7 @@ reference:
       - select
       - set_attribute
       - set_prioritization
+      - set_capacity
       - timeout
   - title: "Manage trajectories"
     desc: "Methods for getting information about trajectory objects"
@@ -39,7 +40,7 @@ reference:
     desc: "Methods for getting information about simulation components"
     contents:
       - get_n_generated
-      - resource
+      - get_capacity
       - now
       - peek
   - title: "Statistics"
