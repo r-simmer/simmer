@@ -1,6 +1,6 @@
 ---
 title: "Advanced Trajectory Usage"
-author: "Bart Smeets, Iñaki Ucar"
+author: "Iñaki Ucar, Bart Smeets"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
@@ -38,9 +38,9 @@ Here we create a trajectory where a patient _seizes_ a doctor for 3 minutes and 
 
 This is a very straightforward example, however, most of the trajectory-related functions allow for more advanced usage. The different functions are introduced below.
 
-### `set_attribute`
+### `set_attribute()`
 
-The `set_attribute(., key, value)` function set the `value` of an arrival's attribute `key`. Be aware that `value` can only be numeric.
+The `set_attribute(., key, value)` method sets the `value` of an arrival's attribute `key`. Be aware that `value` can only be numeric.
 
 ```{r}
 patient_traj <- create_trajectory(name = "patient_trajectory") %>%
@@ -55,7 +55,7 @@ env <- simmer() %>%
 get_mon_attributes(env)
 ```
 
-Above, a trajectory which _only_ sets attribute `my_key` to value `123` is launched once by an arrival generated at time 0 (check `?at`). The `mon=2` of `add_generator` makes the simulation environment monitor the attributes' evolution (disabled by default). Using `get_mon_attributes`, we can look at the evolution of the value of `my_key`.
+Above, a trajectory which _only_ sets attribute `my_key` to value `123` is launched once by an arrival generated at time 0 (check `?at`). The `mon=2` of `add_generator()` makes the simulation environment monitor the attributes' evolution (disabled by default). Using `get_mon_attributes()`, we can look at the evolution of the value of `my_key`.
 
 If you want to set an attribute that depends on another attribute, or on the current value of the attribute to be set, this is also possible. In fact, if, instead of a numeric value, you supply a function with one parameter, the current set of attributes is passed as a list to that function. Whatever (numeric value) your function returns is set as the value of the specified attribute key. If the supplied function has no parameters, it is evaluated in the same way, but the attribute list is not accesible in the function body. This means that, if you supply a function to the `value` parameter, it has to be in the form of either `function(attrs){}` (first case) or `function(){}` (second case). Below, you can see an example of this in practice.
 
@@ -78,9 +78,9 @@ get_mon_attributes(env)
 
 In general, whenever an activity accepts a function as a parameter, the rule above applies, and you can obtain the current set of attributes as the first argument of that function.
 
-### `timeout`
+### `timeout()`
 
-At its simplest, the `timeout(., task)` function delays the arrival's advance through the trajectory for a specified amount of time. Consider the following minimal example where we simply supply a static value to the timeout's `task` parameter.
+At its simplest, the `timeout(., task)` method delays the arrival's advance through the trajectory for a specified amount of time. Consider the following minimal example where we simply supply a static value to the timeout's `task` parameter.
 
 ```{r}
 patient_traj <- create_trajectory(name = "patient_trajectory") %>%
@@ -111,13 +111,13 @@ get_mon_arrivals(env)
 get_mon_attributes(env)
 ```
 
-Be aware that if you want the `timeout`'s `task` parameter to be evaluated dynamically, you should supply a callable function. For example in `timeout(function() rexp(1, 10))`, `rexp(1, 10)` will be evaluated every time the timeout activity is executed. However, if you supply it in the form of `timeout(rexp(1, 10))`, it will only be evaluated at the initalization and will remain static after that.
+Be aware that if you want the `timeout()`'s `task` parameter to be evaluated dynamically, you should supply a callable function. For example in `timeout(function() rexp(1, 10))`, `rexp(1, 10)` will be evaluated every time the timeout activity is executed. However, if you supply it in the form of `timeout(rexp(1, 10))`, it will only be evaluated at the initalization and will remain static after that.
 
 Of course, this `task`, supplied as a function, may be as complex as you need and, for instance, it may check a resource's status, interact with other entities in your simulation model... The same applies to all the activities when they accept a function as a parameter.
 
-### `seize` & `release`
+### `seize()` & `release()`
 
-The `seize(., resource, amount)` function seizes a specified `amount` of resources of type `resource`. Conversely, the `release(., resource, amount)` function releases a specified `amount` of resource of type `resource`. Be aware that, in order to use these functions in relation to a specific resource type, you have to create that resource type in your definition of the simulation environment (check `?add_resource`). 
+The `seize(., resource, amount)` method seizes a specified `amount` of the resource named `resource`. Conversely, the `release(., resource, amount)` method releases a specified `amount` of the resource named `resource`. Be aware that, in order to use these functions in relation to a specific resource, you have to create it in your definition of the simulation environment (check `?add_resource`). 
 
 Consider the following example:
 
@@ -135,7 +135,7 @@ env <- simmer() %>%
 get_mon_resources(env)
 ```
 
-Here the `mon=1` argument (=default) of `add_resource` makes the simulation environment monitor the resource usage. Using the `get_mon_resources(env)` function you can get access to the log of the usage evolution of resources.
+Here the `mon=1` argument (=default) of `add_resource()` makes the simulation environment monitor the resource usage. Using the `get_mon_resources(env)` method you can get access to the log of the usage evolution of resources.
 
 There are situations where you want to let the amount of resources seized/released be dependent on a specific function or on a previously set attribute. To achieve this, you can pass a function in the form of either `function(){}` or `function(attrs){}` to the `amount` parameter instead of a numeric value. If going for the latter, the current state of the arrival's attributes will be passed to `attrs` as a list which you can inspect. This allows for the following:
 
@@ -156,7 +156,7 @@ get_mon_resources(env)
 get_mon_attributes(env)
 ```
 
-By default, an unsuccessful `seize` results in the rejection of the arrival. In the following example, the second patient tries to seize the only doctor while the first patient is being attended. There is no waiting room available, therefore it is rejected:
+By default, an unsuccessful `seize()` results in the rejection of the arrival. In the following example, the second patient tries to seize the only doctor while the first patient is being attended. There is no waiting room available, therefore it is rejected:
 
 ```{r}
 patient_traj <- create_trajectory(name = "patient_trajectory") %>%
@@ -174,7 +174,7 @@ get_mon_arrivals(env)
 get_mon_resources(env)
 ```
 
-Sometimes, you don't want to reject an unsuccessful `seize`, but to follow another path. Let's modify the example above to enable the second patient to visit a nurse instead:
+Sometimes, you don't want to reject an unsuccessful `seize()`, but to follow another path. Let's modify the example above to enable the second patient to visit a nurse instead:
 
 ```{r}
 patient_traj <- create_trajectory(name = "patient_trajectory") %>%
@@ -221,7 +221,7 @@ get_mon_arrivals(env)
 get_mon_resources(env)
 ```
 
-There is another optional sub-trajectory called `post.seize` and, as its name suggests, it is executed after a successful `seize`. Thus, you can do the following:
+There is another optional sub-trajectory called `post.seize` and, as its name suggests, it is executed after a successful `seize()`. Thus, you can do the following:
 
 ```{r}
 patient_traj <- create_trajectory(name = "patient_trajectory") %>%
@@ -246,21 +246,68 @@ get_mon_arrivals(env)
 get_mon_resources(env)
 ```
 
-### `select`, `seize_selected` & `release_selected`
+### `set_capacity()` & `set_queue_size()`
 
-`seize` and `release` work well when you know the resources implied beforehand. But sometimes the resource to choose may depend on a certain policy. For these situations, the `select(., resources, policy, id)` method offers the possibility of selecting a resource at any point, and this choice will be observed by `seize_selected` and `release_selected`:
+The `set_capacity(., resource, value)` method modifies the capacity of the specified resource by name, and the `set_queue_size(., resource, value)` method modifies its queue size. Be aware that, in order to use these functions in relation to a specific resource, you have to create it in your definition of the simulation environment (check `?add_resource`). You can supply the `value` parameter either as a numeric value or as a function, in the form of either `function(){}` or `function(attrs){}`, which must return a numeric value.
+
+These activities are interesting to introduce dynamical changes in the resources. For instance, consider the following example in which two trajectories fight for the capacity of their resource:
+
+```{r}
+set.seed(12345)
+env <- simmer()
+
+increment <- function(res) {
+  function() get_capacity(env, res) + 1
+}
+decrement <- function(res) {
+  function() {
+    n <- get_capacity(env, res) - 1
+    if (n < 0) 0
+    else n
+  }
+}
+
+t1 <- create_trajectory() %>%
+  seize("res1", 1) %>%
+  set_capacity(resource = "res1", value = increment("res1")) %>%
+  set_capacity(resource = "res2", value = decrement("res2")) %>%
+  timeout(function() rexp(1, 1)) %>%
+  release("res1", 1)
+
+t2 <- create_trajectory() %>%
+  seize("res2", 1) %>%
+  set_capacity(resource = "res2", value = increment("res2")) %>%
+  set_capacity(resource = "res1", value = decrement("res1")) %>%
+  timeout(function() rexp(1, 1)) %>%
+  release("res2", 1)
+
+env <- env %>%
+  add_resource("res1", capacity = 20, queue_size = Inf) %>%
+  add_resource("res2", capacity = 20, queue_size = Inf) %>%
+  add_generator("t1_", t1, function() rexp(1, 1)) %>%
+  add_generator("t2_", t2, function() rexp(1, 1)) %>%
+  run(100)
+
+plot_resource_usage(env, "res1", steps = TRUE)
+plot_resource_usage(env, "res2", steps = TRUE)
+```
+
+### `select()`
+
+`seize()`, `release()`, `set_capacity()` and `set_queue_size()` work well when you know the resources implied beforehand. But sometimes the resource to choose may depend on a certain policy. For these situations, the `select(., resources, policy, id)` method offers the possibility of selecting a resource at any point, and this choice will be observed by `seize_selected()`, `release_selected()`, `set_capacity_selected()` and `set_queue_size_selected()`:
 
 ```{r}
 patient_traj <- create_trajectory(name = "patient_trajectory") %>%
   select(resources = c("doctor1", "doctor2", "doctor3"), policy = "round-robin") %>%
+  set_capacity_selected(1) %>%
   seize_selected(amount = 1) %>%
   timeout(5) %>%
   release_selected(amount = 1)
 
 env <- simmer() %>%
-  add_resource("doctor1", capacity = 1) %>%
-  add_resource("doctor2", capacity = 1) %>%
-  add_resource("doctor3", capacity = 1) %>%
+  add_resource("doctor1", capacity = 0) %>%
+  add_resource("doctor2", capacity = 0) %>%
+  add_resource("doctor3", capacity = 0) %>%
   add_generator("patient", patient_traj, at(0, 1, 2)) %>%
   run()
 
@@ -268,7 +315,7 @@ get_mon_arrivals(env)
 get_mon_resources(env)
 ```
 
-If you provide `select` with `resources` as a vector of names, you can use one of the predefined policies (see `?select`). If you need some custom policy, you can define it and supply it as a function. For instance, let's pick a resource based on a previously set attribute:
+If you provide `select()` with `resources` as a vector of names, you can use one of the predefined policies (see `?select`). If you need some custom policy, you can define it and supply it as a function. For instance, let's pick a resource based on a previously set attribute:
 
 ```{r}
 patient_traj <- create_trajectory(name = "patient_trajectory") %>%
@@ -290,11 +337,11 @@ get_mon_arrivals(env)
 get_mon_resources(env)
 ```
 
-And, of course, everything learned for `seize` and `release` applies to `seize_selected` and `release_selected`.
+And, of course, everything learned for `seize()`, `release()`, `set_capacity()` and `set_queue_size()` applies to all their `_selected` versions.
 
-### `set_prioritization`
+### `set_prioritization()`
 
-The `add_generator` method assigns a set of prioritization values to each generated arrival: by default, `priority=0`, `preemptible=priority`, `restart=FALSE` (see `?add_generator` for more details). The `set_prioritization(., values)` method can change those values with more granularity at any point in the trajectory:
+The `add_generator()` method assigns a set of prioritization values to each generated arrival: by default, `priority=0`, `preemptible=priority`, `restart=FALSE` (see `?add_generator` for more details). The `set_prioritization(., values)` method can change those values with more granularity at any point in the trajectory:
 
 ```{r}
 patient_traj <- create_trajectory(name = "patient_trajectory") %>%
@@ -307,7 +354,7 @@ patient_traj <- create_trajectory(name = "patient_trajectory") %>%
 
 More details on prioritization in the _Advanced Resource Usage_ vignette (pending).
 
-### `branch`
+### `branch()`
 
 The `branch(., option, continue, ...)` method offers the possibility of adding alternative paths in the trajectory. The following example shows how a trajectory can be built with a 50-50 chance for an arrival to pass through each path of a two-path branch.
 
@@ -324,7 +371,7 @@ t1 <- create_trajectory("trajectory with a branch") %>%
   release("server", 1)
 ```
 
-When an arrival gets to the branch, the first argument is evaluated to select a specific path to follow, so it must be callable and must return a numeric value between 1 and ```n```, where ```n``` is the number of paths defined. The second argument, ```continue```, indicates whether the arrival must continue executing the activities after the selected path or not. In the example above, only the first path continues to the last *release*.
+When an arrival gets to the branch, the first argument is evaluated to select a specific path to follow, so it must be callable and must return a numeric value between 1 and `n`, where `n` is the number of paths defined. The second argument, `continue`, indicates whether the arrival must continue executing the activities after the selected path or not. In the example above, only the first path continues to the last `release()`.
 
 Sometimes you may need to count how many times a certain trajectory in a certain branch is entered, or how much time arrivals spend inside that trajectory. For these situations, it is handy to use resources with infinite capacity just for _accounting_ purposes, like in the example below.
 
@@ -359,9 +406,9 @@ table(arrivals$resource)
 ggplot(arrivals) + geom_histogram(aes(x=activity_time)) + facet_wrap(~resource)
 ```
 
-### `rollback`
+### `rollback()`
 
-The `rollback(., amount, times, check)` function allows an arrival to rollback the trajectory an `amount` number of steps.
+The `rollback(., amount, times, check)` method allows an arrival to rollback the trajectory an `amount` number of steps.
 
 Consider the following where a string is printed in the timeout function. After the first run, the trajectory is rolled back 3 times.
 
@@ -375,7 +422,7 @@ simmer() %>%
   run()
 ```
 
-The `rollback` function also accepts an optional `check` parameter which overrides the default amount-based behaviour. This parameter must be a function that returns a logical value. Each time an arrival reaches the activity, this `check` is evaluated to determine whether the `rollback` with `amount` steps must be performed or not. Consider the following example:
+The `rollback()` method also accepts an optional `check` parameter which overrides the default amount-based behaviour. This parameter must be a function that returns a logical value. Each time an arrival reaches the activity, this `check` is evaluated to determine whether the `rollback()` with `amount` steps must be performed or not. Consider the following example:
 
 ```{r}
 t0 <- create_trajectory() %>%
@@ -399,7 +446,7 @@ simmer() %>%
   run()
 ```
 
-### `leave`
+### `leave()`
 
 The `leave(., prob)` method allows an arrival to leave the trajectory with some probability:
 
@@ -448,7 +495,7 @@ get_mon_arrivals(env)
 get_mon_resources(env)
 ```
 
-### `renege_in` & `renege_abort`
+### `renege_in()` & `renege_abort()`
 
 The `renege_in(., t, out)` method offers the possibility of setting a timeout after which the arrival will abandon the trajectory. After reneging, the arrival can follow an optional sub-trajectory `out`. The `renege_abort(.)` method cancels a previously established timeout. Together, they allows us, for instance, to model arrivals with limited patience. In the example below, `customer1` arrives at the bank, where there is only one busy clerk. He/she waits in the queue for 5 minutes and then leaves. 
 
@@ -473,9 +520,9 @@ env <- simmer(verbose = TRUE) %>%
   run()
 ```
 
-### `clone` & `synchronize`
+### `clone()` & `synchronize()`
 
-The `clone(., n, ...)` method offers the possibility of replicating an arrival `n-1` times to be processed through up to `n` sub-trajectories in parallel. Then, the `synchronize(., wait, mon_all)` method synchronizes and removes replicas. By default, `synchronize` waits for all of the replicas to arrive and allows the last one to continue:
+The `clone(., n, ...)` method offers the possibility of replicating an arrival `n-1` times to be processed through up to `n` sub-trajectories in parallel. Then, the `synchronize(., wait, mon_all)` method synchronizes and removes replicas. By default, `synchronize()` waits for all of the replicas to arrive and allows the last one to continue:
 
 ```{r}
 t <- create_trajectory() %>%
@@ -515,7 +562,7 @@ env <- simmer(verbose = TRUE) %>%
 get_mon_arrivals(env)
 ```
 
-The behaviour of `synchronize` can be modified in order to let the first clone pass and remove the others by setting `wait=FALSE`:
+The behaviour of `synchronize()` can be modified in order to let the first clone pass and remove the others by setting `wait=FALSE`:
 
 ```{r}
 t <- create_trajectory() %>%
@@ -536,7 +583,7 @@ env <- simmer(verbose = TRUE) %>%
 get_mon_arrivals(env)
 ```
 
-By default, `synchronize` does not record information about the clones removed (`mon_all=FALSE`). However, if it is required, you can get it by setting `mon_all=TRUE`:
+By default, `synchronize()` does not record information about the clones removed (`mon_all=FALSE`). However, if it is required, you can get it by setting `mon_all=TRUE`:
 
 ```{r}
 t <- create_trajectory() %>%
@@ -557,7 +604,7 @@ env <- simmer(verbose = TRUE) %>%
 get_mon_arrivals(env)
 ```
 
-### `batch` & `separate`
+### `batch()` & `separate()`
 
 The `batch(., n, timeout, permanent, name, rule)` method offers the possibility of collecting a number of arrivals before they can continue processing as a block. Then, the `separate(.)` method splits a previously established non-permanent batch. This allows us to implement a rollercoaster process, for instance.
 
@@ -582,7 +629,7 @@ env <- simmer() %>%
 get_mon_arrivals(env, per_resource = TRUE)
 ```
 
-We can see above that 3 batches have been created. The first 10 people arrive within 3.8 minutes and goes into the rollercoaster. When the ride ends, at 8.8, there are only 6 people waiting, but the `batch` timer (`timeout=5`) has run out, and another ride starts with them. These batches are non-permanent (`permanent=FALSE`), so that `separate` can split them and people can go their separate ways.
+We can see above that 3 batches have been created. The first 10 people arrive within 3.8 minutes and goes into the rollercoaster. When the ride ends, at 8.8, there are only 6 people waiting, but the `batch()` timer (`timeout=5`) has run out, and another ride starts with them. These batches are non-permanent (`permanent=FALSE`), so that `separate()` can split them and people can go their separate ways.
 
 The optional argument `rule` accepts a function to perform a fine-grained selection of which arrivals should be batched. For each particular arrival, it is batched if the function returns `TRUE`, or it simply continues otherwise. For instance, in the example above, we can prevent batching by returning always `FALSE`:
 
@@ -654,7 +701,7 @@ t1 <- create_trajectory() %>%
   separate()
 ```
 
-Thus, arrivals following a different trajectory will end up in a different batch in general. Nonetheless, there is one way to share a common batch across `batch` activities. This can be done by using a common name:
+Thus, arrivals following a different trajectory will end up in a different batch in general. Nonetheless, there is one way to share a common batch across `batch()` activities. This can be done by using a common name:
 
 ```{r}
 t0 <- create_trajectory() %>%
@@ -721,7 +768,7 @@ t0
 
 ## Interacting with the environment from within a trajectory
 
-It is possible to interact with the simulation environment in order to extract parameters of interest such as the current simulation time (`now()`), status of resources (`get_capacity`, `get_queue_size`, `get_server_count`, `get_queue_count`), status of generators (`get_n_generated`) or directly to gather the history of monitored values (`get_mon_*`). You may also want (or in other words, your model may need) to check and use all this information to take decisions inside a given trajectory.
+It is possible to interact with the simulation environment in order to extract parameters of interest such as the current simulation time (`now()`), status of resources (`get_capacity()`, `get_queue_size()`, `get_server_count()`, `get_queue_count`()), status of generators (`get_n_generated()`) or directly to gather the history of monitored values (`get_mon_*()`). You may also want (or in other words, your model may need) to check and use all this information to take decisions inside a given trajectory.
 
 For instance, let's suppose we just want to print the simulation time at a given point in a trajectory. The only requirement is that you must define the simulation environment __before__ running the simulation. This won't work:
 

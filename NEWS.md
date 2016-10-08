@@ -7,6 +7,7 @@
 ## Minor changes and fixes:
 
 * Store inline trajectory objects inside the simulation environment to prevent them to be garbage-collected.
+* Update "Advanced Trajectory Usage" vignette.
 
 # simmer 3.4.4
 
