@@ -9,8 +9,8 @@ Description: A process-oriented and trajectory-based Discrete-Event Simulation
     common path in the simulation model for entities of the same type.
 Encoding: UTF-8
 Authors@R: c(
-    person("Bart", "Smeets", email="bartsmeets86@gmail.com", role=c("aut", "cph")),
-    person("Iñaki", "Ucar", email="i.ucar86@gmail.com", role=c("aut", "cph", "cre")))
+    person("Iñaki", "Ucar", email="i.ucar86@gmail.com", role=c("aut", "cph", "cre")),
+    person("Bart", "Smeets", email="bartsmeets86@gmail.com", role=c("aut", "cph")))
 URL: http://r-simmer.org
 BugReports: https://github.com/r-simmer/simmer/issues
 Depends:
