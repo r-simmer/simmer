@@ -13,7 +13,7 @@ get_prev_activity(activity)
 \item{activity}{an external pointer to the activity.}
 }
 \value{
-An external pointer to an activity object.
+Returns an external pointer to an activity object.
 }
 \description{
 It takes an external pointer to an activity an returns the next/prev activity.

@@ -36,7 +36,7 @@ should continue to the next activity in the main trajectory.}
 \item{id}{selection identifier for nested usage.}
 }
 \value{
-The trajectory object.
+Returns the trajectory object.
 }
 \description{
 Activities for seizing/releasing a resource, by name or a previously selected one.

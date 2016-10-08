@@ -18,7 +18,7 @@ present, the \code{times} parameter is ignored, and the activity uses this
 function to check whether the rollback must be done or not.}
 }
 \value{
-The trajectory object.
+Returns the trajectory object.
 }
 \description{
 Go backwards to a previous point in the trajectory. Useful to implement loops.

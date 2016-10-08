@@ -24,7 +24,7 @@ get_mon_resources(envs, data = c("counts", "limits"))
 \item{data}{whether to retrieve the "counts", the "limits" or both.}
 }
 \value{
-Return a data frame.
+Returns a data frame.
 }
 \description{
 Simulator getters for obtaining monitored data (if any) about arrivals, attributes and resources.

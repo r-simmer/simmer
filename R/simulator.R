@@ -369,7 +369,7 @@ add_generator <- function(env, name_prefix, trajectory, dist, mon=1,
 #' @param ongoing if \code{TRUE}, ongoing arrivals will be reported. The columns
 #' \code{end_time} and \code{finished} of these arrivals are reported as \code{NA}s.
 #'
-#' @return Return a data frame.
+#' @return Returns a data frame.
 #' @name get_mon
 #' @export
 get_mon_arrivals <- function(envs, per_resource=FALSE, ongoing=FALSE)

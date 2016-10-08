@@ -20,7 +20,7 @@ continue to the main trajectory after each sub-trajectory or not.}
 \item{...}{\code{N} trajectory objects describing each sub-trajectory.}
 }
 \value{
-The trajectory object.
+Returns the trajectory object.
 }
 \description{
 Define a fork with \code{N} alternative sub-trajectories.

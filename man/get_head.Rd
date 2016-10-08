@@ -13,7 +13,7 @@ get_tail(traj)
 \item{traj}{the trajectory object.}
 }
 \value{
-An external pointer to an activity object.
+Returns an external pointer to an activity object.
 }
 \description{
 Trajectory getters for obtaining the pointer to its first/last activity.

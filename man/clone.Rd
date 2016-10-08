@@ -25,7 +25,7 @@ if \code{TRUE} (default), all clones but the last to arrive are removed.}
 line per clone.}
 }
 \value{
-The trajectory object.
+Returns the trajectory object.
 }
 \description{
 A \code{clone} activity replicates an arrival \code{n} times (the original

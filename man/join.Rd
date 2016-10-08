@@ -10,7 +10,7 @@ join(...)
 \item{...}{trajectory objects.}
 }
 \value{
-A new trajectory object.
+Returns a new trajectory object.
 }
 \description{
 Concatenate any number of trajectories in the specified order.

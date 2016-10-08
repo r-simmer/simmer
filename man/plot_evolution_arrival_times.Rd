@@ -13,7 +13,7 @@ plot_evolution_arrival_times(envs, type = c("activity_time", "waiting_time",
 \item{type}{one of \code{c("activity_time", "waiting_time", "flow_time")}.}
 }
 \value{
-a ggplot2 object.
+Returns a ggplot2 object.
 }
 \description{
 Plot the evolution of arrival related times (flow, activity and waiting time).

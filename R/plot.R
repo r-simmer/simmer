@@ -7,7 +7,7 @@
 #' @param items the components of the resource to be plotted.
 #' @param steps adds the changes in the resource usage.
 #'
-#' @return a ggplot2 object.
+#' @return Returns a ggplot2 object.
 #' @seealso \code{\link{plot_resource_utilization}},
 #' \code{\link{plot_evolution_arrival_times}}, \code{\link{plot_attributes}}.
 #' @export
@@ -61,7 +61,7 @@ plot_resource_usage <- function(envs, resource_name, items=c("system", "queue", 
 #' @inheritParams plot_resource_usage
 #' @param resources a character vector with at least one resource specified - e.g. "c('res1','res2')".
 #'
-#' @return a ggplot2 object.
+#' @return Returns a ggplot2 object.
 #' @seealso \code{\link{plot_resource_usage}},
 #' \code{\link{plot_evolution_arrival_times}}, \code{\link{plot_attributes}}.
 #' @export
@@ -110,7 +110,7 @@ plot_resource_utilization <- function(envs, resources) {
 #' @inheritParams plot_resource_usage
 #' @param type one of \code{c("activity_time", "waiting_time", "flow_time")}.
 #'
-#' @return a ggplot2 object.
+#' @return Returns a ggplot2 object.
 #' @seealso \code{\link{plot_resource_usage}}, \code{\link{plot_resource_utilization}},
 #' \code{\link{plot_attributes}}.
 #' @export
@@ -163,7 +163,7 @@ plot_evolution_arrival_times <- function(envs, type=c("activity_time", "waiting_
 #' @inheritParams plot_resource_usage
 #' @param keys the keys of attributes you want to plot (if left empty, all attributes are shown).
 #'
-#' @return a ggplot2 object.
+#' @return Returns a ggplot2 object.
 #' @seealso \code{\link{plot_resource_usage}}, \code{\link{plot_resource_utilization}},
 #' \code{\link{plot_evolution_arrival_times}}.
 #' @export

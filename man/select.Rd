@@ -20,7 +20,7 @@ it is ignored.}
 \item{id}{selection identifier for nested usage.}
 }
 \value{
-The trajectory object.
+Returns the trajectory object.
 }
 \description{
 Resource selector for a subsequent seize/release.

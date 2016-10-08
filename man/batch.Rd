@@ -27,7 +27,7 @@ same batch, you need to specify a common name across all your \code{batch} activ
 every arrival to determine whether it should be included into the batch, thus}
 }
 \value{
-The trajectory object.
+Returns the trajectory object.
 }
 \description{
 Collect a number of arrivals before they can continue processing

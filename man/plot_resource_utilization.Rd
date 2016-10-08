@@ -12,7 +12,7 @@ plot_resource_utilization(envs, resources)
 \item{resources}{a character vector with at least one resource specified - e.g. "c('res1','res2')".}
 }
 \value{
-a ggplot2 object.
+Returns a ggplot2 object.
 }
 \description{
 Plot the utilization of specified resources in the simulation.

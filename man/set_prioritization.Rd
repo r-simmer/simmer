@@ -15,7 +15,7 @@ A negative value leaves the corresponding parameter unchanged.
 See \code{\link{add_generator}} for more information about these parameters.}
 }
 \value{
-The trajectory object.
+Returns the trajectory object.
 }
 \description{
 Modify the arrival's prioritization values.

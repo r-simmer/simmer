@@ -15,7 +15,7 @@ set_attribute(traj, key, value)
 (a function) which must return a numeric.}
 }
 \value{
-The trajectory object.
+Returns the trajectory object.
 }
 \description{
 Modify an attribute in the form of a key/value pair.

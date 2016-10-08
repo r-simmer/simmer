@@ -10,7 +10,7 @@ get_n_activities(traj)
 \item{traj}{the trajectory object.}
 }
 \value{
-The number of activities in the trajectory.
+Returns the number of activities in the trajectory.
 }
 \description{
 Trajectory getter for obtaining the total number of activities defined inside it.

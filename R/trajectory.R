@@ -314,7 +314,7 @@ create_trajectory <- function(name="anonymous", verbose=FALSE) simmer.trajectory
 #'
 #' @param traj the trajectory object.
 #'
-#' @return An external pointer to an activity object.
+#' @return Returns an external pointer to an activity object.
 #' @seealso \code{\link{get_n_activities}}, \code{\link{join}}.
 #' @export
 get_head <- function(traj) traj$get_head()
@@ -329,7 +329,7 @@ get_tail <- function(traj) traj$get_tail()
 #'
 #' @inheritParams get_head
 #'
-#' @return The number of activities in the trajectory.
+#' @return Returns the number of activities in the trajectory.
 #' @seealso \code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{join}}.
 #' @export
 get_n_activities <- function(traj) traj$get_n_activities()
@@ -340,7 +340,7 @@ get_n_activities <- function(traj) traj$get_n_activities()
 #'
 #' @param ... trajectory objects.
 #'
-#' @return A new trajectory object.
+#' @return Returns a new trajectory object.
 #' @seealso \code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{get_n_activities}}.
 #' @export
 #'
@@ -376,7 +376,7 @@ join <- function(...) {
 #' @param post.seize an optional trajectory object which will be followed after a successful seize.
 #' @param reject an optional trajectory object which will be followed if the arrival is rejected.
 #'
-#' @return The trajectory object.
+#' @return Returns the trajectory object.
 #' @seealso \code{\link{select}}, \code{\link{set_capacity}}, \code{\link{set_queue_size}},
 #' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
 #' @export
@@ -435,7 +435,7 @@ set_queue_size_selected <- function(traj, value, id=0) traj$set_queue_size(NA, v
 #' it is ignored.
 #' @param id selection identifier for nested usage.
 #'
-#' @return The trajectory object.
+#' @return Returns the trajectory object.
 #' @seealso \code{\link{seize_selected}}, \code{\link{release_selected}},
 #' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
 #' @export
@@ -452,7 +452,7 @@ select <- function(traj, resources, policy=c("shortest-queue", "round-robin",
 #' callable object (a function) which must return a numeric (negative values are
 #' automatically coerced to positive).
 #'
-#' @return The trajectory object.
+#' @return Returns the trajectory object.
 #' @export
 timeout <- function(traj, task) traj$timeout(task)
 
@@ -465,7 +465,7 @@ timeout <- function(traj, task) traj$timeout(task)
 #' @param value the value to set, accepts either a numeric or a callable object
 #' (a function) which must return a numeric.
 #'
-#' @return The trajectory object.
+#' @return Returns the trajectory object.
 #' @export
 set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
 
@@ -479,7 +479,7 @@ set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
 #' A negative value leaves the corresponding parameter unchanged.
 #' See \code{\link{add_generator}} for more information about these parameters.
 #'
-#' @return The trajectory object.
+#' @return Returns the trajectory object.
 #' @export
 set_prioritization <- function(traj, values) traj$set_prioritization(values)
 
@@ -496,7 +496,7 @@ set_prioritization <- function(traj, values) traj$set_prioritization(values)
 #' continue to the main trajectory after each sub-trajectory or not.
 #' @param ... \code{N} trajectory objects describing each sub-trajectory.
 #'
-#' @return The trajectory object.
+#' @return Returns the trajectory object.
 #' @export
 branch <- function(traj, option, continue, ...) traj$branch(option, continue, ...)
 
@@ -511,7 +511,7 @@ branch <- function(traj, option, continue, ...) traj$branch(option, continue, ..
 #' present, the \code{times} parameter is ignored, and the activity uses this
 #' function to check whether the rollback must be done or not.
 #'
-#' @return The trajectory object.
+#' @return Returns the trajectory object.
 #' @export
 rollback <- function(traj, amount, times=1, check) traj$rollback(amount, times, check)
 
@@ -522,7 +522,7 @@ rollback <- function(traj, amount, times=1, check) traj$rollback(amount, times, 
 #' @inheritParams get_head
 #' @param prob a probability or a function returning a probability.
 #'
-#' @return The trajectory object.
+#' @return Returns the trajectory object.
 #' @export
 leave <- function(traj, prob) traj$leave(prob)
 
@@ -535,7 +535,7 @@ leave <- function(traj, prob) traj$leave(prob)
 #' (a function) which must return a numeric.
 #' @param out optional sub-trajectory in case of reneging.
 #'
-#' @return The trajectory object.
+#' @return Returns the trajectory object.
 #' @export
 renege_in <- function(traj, t, out=NULL) traj$renege_in(t, out)
 
@@ -556,7 +556,7 @@ renege_abort <- function(traj) traj$renege_abort()
 #' @param ... optional parallel sub-trajectories. Each clone will follow
 #' a different sub-trajectory if available.
 #'
-#' @return The trajectory object.
+#' @return Returns the trajectory object.
 #' @export
 clone <- function(traj, n, ...) traj$replicate(n, ...)
 
@@ -587,7 +587,7 @@ synchronize <- function(traj, wait=TRUE, mon_all=FALSE) traj$synchronize(wait, m
 #' every arrival to determine whether it should be included into the batch, thus
 #  it must return a boolean.
 #'
-#' @return The trajectory object.
+#' @return Returns the trajectory object.
 #' @export
 batch <- function(traj, n, timeout=0, permanent=FALSE, name="", rule=NULL)
   traj$batch(n, timeout, permanent, name, rule)

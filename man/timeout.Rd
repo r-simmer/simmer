@@ -14,7 +14,7 @@ callable object (a function) which must return a numeric (negative values are
 automatically coerced to positive).}
 }
 \value{
-The trajectory object.
+Returns the trajectory object.
 }
 \description{
 Insert delays and execute user-defined tasks.

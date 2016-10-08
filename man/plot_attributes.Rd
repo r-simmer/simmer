@@ -12,7 +12,7 @@ plot_attributes(envs, keys = c())
 \item{keys}{the keys of attributes you want to plot (if left empty, all attributes are shown).}
 }
 \value{
-a ggplot2 object.
+Returns a ggplot2 object.
 }
 \description{
 Plot the evolution of user-supplied attribute data.

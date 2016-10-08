@@ -17,7 +17,7 @@ plot_resource_usage(envs, resource_name, items = c("system", "queue",
 \item{steps}{adds the changes in the resource usage.}
 }
 \value{
-a ggplot2 object.
+Returns a ggplot2 object.
 }
 \description{
 Plot the usage of a resource over the simulation time frame.

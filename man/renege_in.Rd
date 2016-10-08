@@ -18,7 +18,7 @@ renege_abort(traj)
 \item{out}{optional sub-trajectory in case of reneging.}
 }
 \value{
-The trajectory object.
+Returns the trajectory object.
 }
 \description{
 Set or unset a timer after which the arrival will abandon.

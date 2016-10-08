@@ -12,7 +12,7 @@ leave(traj, prob)
 \item{prob}{a probability or a function returning a probability.}
 }
 \value{
-The trajectory object.
+Returns the trajectory object.
 }
 \description{
 Leave the trajectory with some probability.
