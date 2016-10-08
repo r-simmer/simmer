@@ -1,6 +1,6 @@
 ---
 title: "Terminology"
-author: "Iñaki Ucar, Bart Smeetss"
+author: "Iñaki Ucar, Bart Smeets"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
