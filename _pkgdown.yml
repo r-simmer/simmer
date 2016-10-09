@@ -61,16 +61,16 @@ reference:
       - starts_with("plot_")
 
 navbar:
-  title: simmer
+  title: "simmer"
   type: default
   right:
-  - text: Home
+  - text: "Home"
     icon: fa-home
     href: index.html
-  - text: Reference
+  - text: "Reference"
     icon: fa-gears
     href: reference/index.html
-  - text: Articles
+  - text: "Articles"
     icon: fa-graduation-cap
     menu:
       - text: "Introduction to simmer"
@@ -85,9 +85,9 @@ navbar:
         href: articles/E-queueing-systems.html
       - text: "Continuous-Time Markov Chains"
         href: articles/F-ctmc.html
-  - text: News
+  - text: "News"
     icon: fa-newspaper-o
     href: news/index.html
-  - text: GitHub
+  - text: "GitHub"
     icon: fa-github fa-lg
     href: https://github.com/r-simmer/simmer
