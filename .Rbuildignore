@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.travis\.yml$
+^_pkgdown\.yml$
 ^README\.Rmd$
 ^README\.md$
 ^README-.*\.png$
@@ -14,4 +15,3 @@ working_dir
 .git
 .lintr
 ^docs$
-^_staticdocs\.yml$
