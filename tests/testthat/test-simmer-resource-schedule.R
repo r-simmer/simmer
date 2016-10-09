@@ -3,7 +3,7 @@ context("resource-schedule")
 test_that("a schedule name conflicts with a generator name", {
   expect_error(simmer(verbose = TRUE) %>%
     add_generator("asdf", create_trajectory() %>% timeout(0), at(0)) %>%
-    add_resource("asdf", schedule(c(1 ,2), c(1, 1)))
+    add_resource("asdf", schedule(c(1, 2), c(1, 1)))
   )
 })
 
