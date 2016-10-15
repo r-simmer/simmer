@@ -16,13 +16,13 @@ test_that("resources are seized/released as expected (1)", {
     add_resource("dummy", 3, 0) %>%
     add_generator("arrival", t0, at(0))
 
-  env %>% onestep() %>% onestep()
+  env %>% run(1)
   expect_equal(env %>% get_server_count("dummy"), 1)
-  env %>% onestep() %>% onestep()
+  env %>% run(2)
   expect_equal(env %>% get_server_count("dummy"), 3)
-  env %>% onestep() %>% onestep() %>% onestep()
+  env %>% run(3)
   expect_equal(env %>% get_server_count("dummy"), 2)
-  env %>% onestep() %>% onestep()
+  env %>% run(4)
   expect_equal(env %>% get_server_count("dummy"), 0)
 })
 
@@ -46,13 +46,13 @@ test_that("resources are seized/released as expected (2)", {
     add_resource("dummy1", 3, 0) %>%
     add_generator("arrival", t0, at(0))
 
-  env %>% onestep() %>% onestep() %>% onestep()
+  env %>% run(1)
   expect_equal(env %>% get_server_count("dummy0"), 1)
-  env %>% onestep() %>% onestep()
+  env %>% run(2)
   expect_equal(env %>% get_server_count("dummy1"), 2)
-  env %>% onestep() %>% onestep() %>% onestep()
+  env %>% run(3)
   expect_equal(env %>% get_server_count("dummy0"), 0)
-  env %>% onestep() %>% onestep()
+  env %>% run(4)
   expect_equal(env %>% get_server_count("dummy1"), 0)
 })
 

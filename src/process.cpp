@@ -2,11 +2,16 @@
 #include "simulator.h"
 #include "activity.h"
 
-void Process::activate() { sim->schedule(0, this); }
+void Process::deactivate() {
+  if (!active) return;
+  sim->unschedule(this);
+  active = false;
+}
 
-void Process::deactivate() { sim->unschedule(this); }
-
-void Generator::activate() { sim->schedule(0, this, PRIORITY_GENERATOR); }
+void Generator::activate() {
+  Process::activate();
+  sim->schedule(0, this, PRIORITY_GENERATOR);
+}
 
 void Generator::set_first_activity() {
   Rcpp::Function get_head(trj["get_head"]);
@@ -20,8 +25,10 @@ void Generator::run() {
   double delay = 0;
 
   for(int i = 0; i < n; ++i) {
-    if (delays[i] < 0)
+    if (delays[i] < 0) {
+      active = false;
       return;
+    }
     delay += delays[i];
 
     // format the name and create the next arrival
@@ -36,15 +43,19 @@ void Generator::run() {
 
     // schedule the arrival
     sim->register_arrival(arrival);
-    sim->schedule(delay, arrival, count);
+    sim->schedule(delay, arrival,
+                  first_activity->priority < 0 ? first_activity->priority : count);
   }
   // schedule the generator
   sim->schedule(delay, this, PRIORITY_GENERATOR);
 }
 
+void Manager::activate() {
+  Process::activate();
+  sim->schedule(duration[index], this, PRIORITY_MANAGER);
+}
+
 void Manager::run() {
-  if (!sim->now() && duration[index])
-    goto finish;
   if (sim->verbose) Rcpp::Rcout <<
     FMT(10, right) << sim->now() << " |" <<
     FMT(12, right) << "manager: " << FMT(15, left) << name << "|" <<
@@ -59,8 +70,7 @@ void Manager::run() {
     index = 1;
   }
 
-finish:
-  sim->schedule(duration[index], this, PRIORITY_MANAGER);
+  activate();
 end:
   return;
 }
@@ -117,6 +127,7 @@ end:
 }
 
 void Arrival::activate() {
+  Process::activate();
   lifetime.busy_until = sim->now() + lifetime.remaining;
   sim->schedule(lifetime.remaining, this, 1);
   lifetime.remaining = 0;

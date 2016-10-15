@@ -43,7 +43,7 @@ test_that("the simulator is reset", {
   attributes <- env %>% get_mon_attributes()
 
   expect_equal(env %>% now(), 0)
-  expect_equal(env %>% peek(), 0.5)
+  expect_equal(env %>% peek(), 0)
   expect_equal(nrow(arrivals), 0)
   expect_equal(nrow(arrivals_res), 0)
   expect_equal(nrow(resources), 0)

@@ -75,7 +75,7 @@ public:
       ((Resource*)itr.second)->reset();
     foreach_ (EntMap::value_type& itr, process_map) {
       ((Process*)itr.second)->reset();
-      ((Process*)itr.second)->run();
+      ((Process*)itr.second)->activate();
     }
     foreach_ (NamBMap::value_type& itr, namedb_map)
       if (itr.second) delete itr.second;
@@ -173,7 +173,7 @@ public:
     Generator* gen = new Generator(this, name_prefix, mon, trj, dist,
                                    Order(priority, preemptible, restart));
     process_map[name_prefix] = gen;
-    gen->run();
+    gen->activate();
     return true;
   }
 
@@ -232,7 +232,7 @@ public:
       manager = new Manager(this, name, param, duration, value, period,
                             boost::bind(&Resource::set_queue_size, res, _1));
     process_map[name + "_" + param] = manager;
-    manager->run();
+    manager->activate();
     return true;
   }
 

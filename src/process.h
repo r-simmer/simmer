@@ -14,10 +14,14 @@ class Resource;
  */
 class Process : public Entity {
 public:
-  Process(Simulator* sim, std::string name, int mon) : Entity(sim, name, mon) {}
+  Process(Simulator* sim, std::string name, int mon)
+    : Entity(sim, name, mon), active(true) {}
   virtual void run() = 0;
-  virtual void activate();
+  virtual void activate() { active = true; }
   virtual void deactivate();
+
+protected:
+  bool active;
 };
 
 class Manager : public Process {
@@ -31,6 +35,7 @@ public:
 
   void reset() { index = 0; }
   void run();
+  void activate();
 
 private:
   std::string param;

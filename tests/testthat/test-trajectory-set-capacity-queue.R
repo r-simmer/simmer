@@ -15,7 +15,7 @@ test_that("capacity and queue size change as expected (1)", {
 
   expect_equal(env %>% get_capacity("dummy"), 5)
   expect_equal(env %>% get_queue_size("dummy"), 0)
-  env %>% onestep()
+  env %>% onestep() %>% onestep()
   expect_equal(env %>% get_capacity("dummy"), 0)
   env %>% onestep()
   expect_equal(env %>% get_capacity("dummy"), Inf)
@@ -47,7 +47,7 @@ test_that("capacity and queue size change as expected (2)", {
   expect_equal(env %>% get_capacity("dummy1"), 3)
   expect_equal(env %>% get_queue_size("dummy0"), 0)
   expect_equal(env %>% get_queue_size("dummy1"), 0)
-  env %>% onestep() %>% onestep() %>% onestep()
+  env %>% onestep() %>% onestep() %>% onestep() %>% onestep()
   expect_equal(env %>% get_capacity("dummy0"), 0)
   env %>% onestep()
   expect_equal(env %>% get_capacity("dummy1"), Inf)

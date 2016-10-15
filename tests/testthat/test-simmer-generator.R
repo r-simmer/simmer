@@ -19,7 +19,7 @@ test_that("an empty trajectory fails", {
 test_that("a dist that returns a non-numeric value fails", {
   t0 <- create_trajectory() %>% timeout(1)
 
-  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", t0, function() {}))
+  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", t0, function() {}) %>% step())
 })
 
 test_that("generates the expected amount", {

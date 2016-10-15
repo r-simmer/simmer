@@ -14,11 +14,11 @@ test_that("a simple deterministic simulation with rejections behaves as expected
 
   expect_warning(env %>% add_generator("entity", t0, function() 2))
   expect_equal(env %>% now(), 0)
-  expect_equal(env %>% peek(), 1)
+  expect_equal(env %>% peek(), 0)
 
-  env %>% onestep() %>% onestep()
+  env %>% run(1.5)
 
-  expect_equal(env %>% now(), 1)
+  expect_equal(env %>% now(), 1.5)
   expect_equal(env %>% peek(), 2)
 
   env %>% run()

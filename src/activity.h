@@ -480,7 +480,8 @@ public:
   CLONEABLE(Deactivate<T>)
 
   Deactivate(bool verbose, T generator, bool provide_attrs)
-    : Activity("Deactivate", verbose, provide_attrs), generator(generator) {}
+    : Activity("Deactivate", verbose, provide_attrs, PRIORITY_MAX),
+      generator(generator) {}
 
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
