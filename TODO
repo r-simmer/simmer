@@ -1,6 +1,5 @@
  - change default behavior of `seize` and `release` (release 4.0.0?, see issues #25, #27)
  - split resource into queue and server (release 4.0.0?)
  - split the package into core and graphics (release 4.0.0?)
- - start/stop a generator from inside a trajectory
  - add_container (see simpy.resources.container)
  - add_store (see simpy.resources.store)
