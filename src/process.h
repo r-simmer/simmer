@@ -16,7 +16,7 @@ class Process : public Entity {
 public:
   Process(Simulator* sim, std::string name, int mon) : Entity(sim, name, mon) {}
   virtual void run() = 0;
-  virtual void activate() {}
+  virtual void activate();
   virtual void deactivate();
 };
 
@@ -101,14 +101,14 @@ public:
    * @param sim             a pointer to the simulator
    * @param name            the name
    * @param mon             int that indicates whether this entity must be monitored
-   * @param first_activity  the first activity of a user-defined R trajectory
-   * @param dist            an user-defined R function that provides random numbers
+   * @param trj             a user-defined R trajectory
+   * @param dist            a user-defined R function that provides random numbers
    * @param order           priority, preemptible, restart
    */
   Generator(Simulator* sim, std::string name_prefix, int mon,
-            Activity* first_activity, Rcpp::Function dist, Order order)
-    : Process(sim, name_prefix, mon), count(0), first_activity(first_activity),
-      dist(dist), order(order) {}
+            Rcpp::Environment trj, Rcpp::Function dist, Order order)
+    : Process(sim, name_prefix, mon), count(0), trj(trj), dist(dist),
+      order(order), first_activity(NULL) { set_first_activity(); }
 
   /**
    * Reset the generator: counter, trajectory
@@ -122,14 +122,23 @@ public:
   }
 
   void run();
+  void activate();
 
   int get_n_generated() { return count; }
+  void set_trajectory(Rcpp::Environment new_trj) {
+    trj = new_trj;
+    set_first_activity();
+  }
+  void set_distribution(Rcpp::Function new_dist) { dist = new_dist; }
 
 private:
   int count;                /**< number of arrivals generated */
-  Activity* first_activity;
+  Rcpp::Environment trj;
   Rcpp::Function dist;
   Order order;
+  Activity* first_activity;
+
+  void set_first_activity();
 };
 
 /**

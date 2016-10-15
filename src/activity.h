@@ -444,6 +444,122 @@ protected:
 };
 
 /**
+ * Activate a generator.
+ */
+template <typename T>
+class Activate : public Activity {
+public:
+  CLONEABLE(Activate<T>)
+
+  Activate(bool verbose, T generator, bool provide_attrs)
+    : Activity("Activate", verbose, provide_attrs), generator(generator) {}
+
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout <<
+      "generator: " << generator << " }" << std::endl;
+    else Rcpp::Rcout << generator << std::endl;
+  }
+
+  double run(Arrival* arrival) {
+    std::string ret = get<std::string>(generator, arrival);
+    arrival->sim->get_generator(ret)->activate();
+    return 0;
+  }
+
+protected:
+  T generator;
+};
+
+/**
+ * Deactivate a generator.
+ */
+template <typename T>
+class Deactivate : public Activity {
+public:
+  CLONEABLE(Deactivate<T>)
+
+  Deactivate(bool verbose, T generator, bool provide_attrs)
+    : Activity("Deactivate", verbose, provide_attrs), generator(generator) {}
+
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout <<
+      "generator: " << generator << " }" << std::endl;
+    else Rcpp::Rcout << generator << std::endl;
+  }
+
+  double run(Arrival* arrival) {
+    std::string ret = get<std::string>(generator, arrival);
+    arrival->sim->get_generator(ret)->deactivate();
+    return 0;
+  }
+
+protected:
+  T generator;
+};
+
+/**
+ * Set a generator's trajectory.
+ */
+template <typename T>
+class SetTraj : public Activity {
+public:
+  CLONEABLE(SetTraj<T>)
+
+  SetTraj(bool verbose, T generator, bool provide_attrs, Rcpp::Environment trj)
+    : Activity("SetTraj", verbose, provide_attrs),
+      generator(generator), trj(trj) {}
+
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout <<
+      "generator: " << generator << ", trajectory: " << trj << " }" << std::endl;
+    else Rcpp::Rcout << generator << ": " << trj << std::endl;
+  }
+
+  double run(Arrival* arrival) {
+    std::string ret = get<std::string>(generator, arrival);
+    arrival->sim->get_generator(ret)->set_trajectory(trj);
+    return 0;
+  }
+
+protected:
+  T generator;
+  Rcpp::Environment trj;
+};
+
+/**
+ * Set a generator's distribution.
+ */
+template <typename T>
+class SetDist : public Activity {
+public:
+  CLONEABLE(SetDist<T>)
+
+  SetDist(bool verbose, T generator, bool provide_attrs, Rcpp::Function dist)
+    : Activity("SetDist", verbose, provide_attrs),
+      generator(generator), dist(dist) {}
+
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout <<
+      "generator: " << generator << ", distribution: " << dist << " }" << std::endl;
+    else Rcpp::Rcout << generator << ": " << dist << std::endl;
+  }
+
+  double run(Arrival* arrival) {
+    std::string ret = get<std::string>(generator, arrival);
+    arrival->sim->get_generator(ret)->set_distribution(dist);
+    return 0;
+  }
+
+protected:
+  T generator;
+  Rcpp::Function dist;
+};
+
+/**
  * Set prioritization.
  */
 template <typename T>

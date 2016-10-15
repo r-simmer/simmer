@@ -5,7 +5,7 @@
 \alias{deactivate}
 \title{Add a activate/deactivate activity}
 \usage{
-activate(.trj, generator, reset = FALSE)
+activate(.trj, generator)
 
 deactivate(.trj, generator)
 }
@@ -13,8 +13,6 @@ deactivate(.trj, generator)
 \item{.trj}{the trajectory object.}
 
 \item{generator}{the name of the generator or a function returning a name.}
-
-\item{reset}{whether to restart the distribution.}
 }
 \value{
 Returns the trajectory object.

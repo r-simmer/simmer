@@ -2,7 +2,16 @@
 #include "simulator.h"
 #include "activity.h"
 
+void Process::activate() { sim->schedule(0, this); }
+
 void Process::deactivate() { sim->unschedule(this); }
+
+void Generator::activate() { sim->schedule(0, this, PRIORITY_GENERATOR); }
+
+void Generator::set_first_activity() {
+  Rcpp::Function get_head(trj["get_head"]);
+  first_activity = Rcpp::as<Rcpp::XPtr<Activity> >(get_head());
+}
 
 void Generator::run() {
   // get the delay for the next (n) arrival(s)
@@ -108,7 +117,6 @@ end:
 }
 
 void Arrival::activate() {
-  Process::activate();
   lifetime.busy_until = sim->now() + lifetime.remaining;
   sim->schedule(lifetime.remaining, this, 1);
   lifetime.remaining = 0;

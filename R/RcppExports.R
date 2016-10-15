@@ -25,8 +25,8 @@ run_ <- function(sim_, until) {
     invisible(.Call('simmer_run_', PACKAGE = 'simmer', sim_, until))
 }
 
-add_generator_ <- function(sim_, name_prefix, first_activity_, dist, mon, priority, preemptible, restart) {
-    .Call('simmer_add_generator_', PACKAGE = 'simmer', sim_, name_prefix, first_activity_, dist, mon, priority, preemptible, restart)
+add_generator_ <- function(sim_, name_prefix, trj, dist, mon, priority, preemptible, restart) {
+    .Call('simmer_add_generator_', PACKAGE = 'simmer', sim_, name_prefix, trj, dist, mon, priority, preemptible, restart)
 }
 
 add_resource_ <- function(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, keep_queue) {
@@ -155,6 +155,38 @@ SetAttribute__new <- function(verbose, key, value) {
 
 SetAttribute__new_func <- function(verbose, key, value, provide_attrs) {
     .Call('simmer_SetAttribute__new_func', PACKAGE = 'simmer', verbose, key, value, provide_attrs)
+}
+
+Activate__new <- function(verbose, generator) {
+    .Call('simmer_Activate__new', PACKAGE = 'simmer', verbose, generator)
+}
+
+Activate__new_func <- function(verbose, generator, provide_attrs) {
+    .Call('simmer_Activate__new_func', PACKAGE = 'simmer', verbose, generator, provide_attrs)
+}
+
+Deactivate__new <- function(verbose, generator) {
+    .Call('simmer_Deactivate__new', PACKAGE = 'simmer', verbose, generator)
+}
+
+Deactivate__new_func <- function(verbose, generator, provide_attrs) {
+    .Call('simmer_Deactivate__new_func', PACKAGE = 'simmer', verbose, generator, provide_attrs)
+}
+
+SetTraj__new <- function(verbose, generator, trj) {
+    .Call('simmer_SetTraj__new', PACKAGE = 'simmer', verbose, generator, trj)
+}
+
+SetTraj__new_func <- function(verbose, generator, provide_attrs, trj) {
+    .Call('simmer_SetTraj__new_func', PACKAGE = 'simmer', verbose, generator, provide_attrs, trj)
+}
+
+SetDist__new <- function(verbose, generator, dist) {
+    .Call('simmer_SetDist__new', PACKAGE = 'simmer', verbose, generator, dist)
+}
+
+SetDist__new_func <- function(verbose, generator, provide_attrs, dist) {
+    .Call('simmer_SetDist__new_func', PACKAGE = 'simmer', verbose, generator, provide_attrs, dist)
 }
 
 SetPrior__new <- function(verbose, values) {

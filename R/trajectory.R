@@ -131,12 +131,11 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       else private$add_activity(SetAttribute__new(private$verbose, key, value))
     },
 
-    activate = function(generator, reset = FALSE) {
+    activate = function(generator) {
       generator <- evaluate_value(generator)
-      reset <- evaluate_value(reset)
       if (is.function(generator))
-        private$add_activity(Activate__new_func(private$verbose, generator, needs_attrs(generator), reset))
-      else private$add_activity(Activate__new(private$verbose, generator, reset))
+        private$add_activity(Activate__new_func(private$verbose, generator, needs_attrs(generator)))
+      else private$add_activity(Activate__new(private$verbose, generator))
     },
 
     deactivate = function(generator) {
@@ -508,12 +507,11 @@ set_attribute <- function(.trj, key, value) .trj$set_attribute(key, value)
 #'
 #' @inheritParams get_head
 #' @param generator the name of the generator or a function returning a name.
-#' @param reset whether to restart the distribution.
 #'
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{set_trajectory}}, \code{\link{set_distribution}}.
 #' @export
-activate <- function(.trj, generator, reset = FALSE) .trj$activate(generator, reset)
+activate <- function(.trj, generator) .trj$activate(generator)
 
 #' @rdname activate
 #' @export

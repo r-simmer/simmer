@@ -49,12 +49,11 @@ void run_(SEXP sim_, double until) {
 }
 
 //[[Rcpp::export]]
-bool add_generator_(SEXP sim_, std::string name_prefix, SEXP first_activity_,
+bool add_generator_(SEXP sim_, std::string name_prefix, Environment trj,
                     Function dist, int mon, int priority, int preemptible, bool restart)
 {
   XPtr<Simulator> sim(sim_);
-  XPtr<Activity> first_activity(first_activity_);
-  return sim->add_generator(name_prefix, first_activity, dist, mon, priority, preemptible, restart);
+  return sim->add_generator(name_prefix, trj, dist, mon, priority, preemptible, restart);
 }
 
 //[[Rcpp::export]]
@@ -250,6 +249,50 @@ SEXP SetAttribute__new(bool verbose, std::string key, double value) {
 SEXP SetAttribute__new_func(bool verbose, std::string key, Function value, bool provide_attrs) {
   return XPtr<SetAttribute<Function> >(
       new SetAttribute<Function>(verbose, key, value, provide_attrs));
+}
+
+//[[Rcpp::export]]
+SEXP Activate__new(bool verbose, std::string generator) {
+  return XPtr<Activate<std::string> >(new Activate<std::string>(verbose, generator, 0));
+}
+
+//[[Rcpp::export]]
+SEXP Activate__new_func(bool verbose, Function generator, bool provide_attrs) {
+  return XPtr<Activate<Function> >(
+      new Activate<Function>(verbose, generator, provide_attrs));
+}
+
+//[[Rcpp::export]]
+SEXP Deactivate__new(bool verbose, std::string generator) {
+  return XPtr<Deactivate<std::string> >(new Deactivate<std::string>(verbose, generator, 0));
+}
+
+//[[Rcpp::export]]
+SEXP Deactivate__new_func(bool verbose, Function generator, bool provide_attrs) {
+  return XPtr<Deactivate<Function> >(
+      new Deactivate<Function>(verbose, generator, provide_attrs));
+}
+
+//[[Rcpp::export]]
+SEXP SetTraj__new(bool verbose, std::string generator, Environment trj) {
+  return XPtr<SetTraj<std::string> >(new SetTraj<std::string>(verbose, generator, 0, trj));
+}
+
+//[[Rcpp::export]]
+SEXP SetTraj__new_func(bool verbose, Function generator, bool provide_attrs, Environment trj) {
+  return XPtr<SetTraj<Function> >(
+      new SetTraj<Function>(verbose, generator, provide_attrs, trj));
+}
+
+//[[Rcpp::export]]
+SEXP SetDist__new(bool verbose, std::string generator, Function dist) {
+  return XPtr<SetDist<std::string> >(new SetDist<std::string>(verbose, generator, 0, dist));
+}
+
+//[[Rcpp::export]]
+SEXP SetDist__new_func(bool verbose, Function generator, bool provide_attrs, Function dist) {
+  return XPtr<SetDist<Function> >(
+      new SetDist<Function>(verbose, generator, provide_attrs, dist));
 }
 
 //[[Rcpp::export]]

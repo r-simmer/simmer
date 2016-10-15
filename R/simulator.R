@@ -108,14 +108,13 @@ Simmer <- R6Class("simmer",
                              priority=0, preemptible=priority, restart=FALSE) {
       if (!inherits(trajectory, "simmer.trajectory"))
         stop("not a trajectory")
-      private$traj <- c(private$traj, trajectory)
       name_prefix <- evaluate_value(name_prefix)
       mon <- evaluate_value(mon)
       priority <- evaluate_value(priority)
       preemptible <- evaluate_value(preemptible)
       restart <- evaluate_value(restart)
       distribution <- make_resetable(distribution)
-      ret <- add_generator_(private$sim_obj, name_prefix, trajectory$get_head(), distribution, mon,
+      ret <- add_generator_(private$sim_obj, name_prefix, trajectory, distribution, mon,
                             priority, preemptible, restart)
       if (ret) private$gen[[name_prefix]] <- mon
       self
@@ -192,8 +191,7 @@ Simmer <- R6Class("simmer",
   private = list(
     sim_obj = NULL,
     res = NULL,
-    gen = NULL,
-    traj = NULL
+    gen = NULL
   )
 )
 
