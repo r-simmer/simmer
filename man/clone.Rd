@@ -5,12 +5,12 @@
 \alias{synchronize}
 \title{Add a clone/synchronize activity}
 \usage{
-clone(trajectory, n, ...)
+clone(.trj, n, ...)
 
-synchronize(trajectory, wait = TRUE, mon_all = FALSE)
+synchronize(.trj, wait = TRUE, mon_all = FALSE)
 }
 \arguments{
-\item{trajectory}{the trajectory object.}
+\item{.trj}{the trajectory object.}
 
 \item{n}{number of clones, accepts either a numeric or a callable object
 (a function) which must return a numeric.}

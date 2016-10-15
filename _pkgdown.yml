@@ -21,6 +21,8 @@ reference:
       - set_prioritization
       - set_capacity
       - timeout
+      - activate
+      - set_trajectory
   - title: "Manage trajectories"
     desc: "Methods for getting information about trajectory objects"
     contents:

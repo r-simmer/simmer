@@ -4,10 +4,10 @@
 \alias{now}
 \title{Get current time}
 \usage{
-now(env)
+now(.env)
 }
 \arguments{
-\item{env}{the simulation environment.}
+\item{.env}{the simulation environment.}
 }
 \value{
 Returns a numeric value.

@@ -4,10 +4,10 @@
 \alias{set_attribute}
 \title{Add a set attribute activity}
 \usage{
-set_attribute(trajectory, key, value)
+set_attribute(.trj, key, value)
 }
 \arguments{
-\item{trajectory}{the trajectory object.}
+\item{.trj}{the trajectory object.}
 
 \item{key}{the attribute key (coerced to a string).}
 

@@ -4,10 +4,10 @@
 \alias{reset}
 \title{Reset a simulator}
 \usage{
-reset(env)
+reset(.env)
 }
 \arguments{
-\item{env}{the simulation environment.}
+\item{.env}{the simulation environment.}
 }
 \value{
 Returns the simulation environment.

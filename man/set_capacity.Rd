@@ -7,16 +7,16 @@
 \alias{set_queue_size_selected}
 \title{Add a set capacity/queue size activity}
 \usage{
-set_capacity(trajectory, resource, value)
+set_capacity(.trj, resource, value)
 
-set_capacity_selected(trajectory, value, id = 0)
+set_capacity_selected(.trj, value, id = 0)
 
-set_queue_size(trajectory, resource, value)
+set_queue_size(.trj, resource, value)
 
-set_queue_size_selected(trajectory, value, id = 0)
+set_queue_size_selected(.trj, value, id = 0)
 }
 \arguments{
-\item{trajectory}{the trajectory object.}
+\item{.trj}{the trajectory object.}
 
 \item{resource}{the name of the resource.}
 

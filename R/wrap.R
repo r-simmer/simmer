@@ -161,4 +161,4 @@ simmer.wrap <- R6Class("simmer.wrap",
 #' })
 #'
 #' plot_resource_usage(envs, "server")
-wrap <- function(env) simmer.wrap$new(env)
+wrap <- function(.env) simmer.wrap$new(.env)

@@ -4,10 +4,10 @@
 \alias{wrap}
 \title{Wrap a simulation environment}
 \usage{
-wrap(env)
+wrap(.env)
 }
 \arguments{
-\item{env}{the simulation environment.}
+\item{.env}{the simulation environment.}
 }
 \value{
 Returns a simulation wrapper.

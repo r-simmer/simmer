@@ -7,16 +7,16 @@
 \alias{get_server_count}
 \title{Get a resource's parameter}
 \usage{
-get_capacity(env, resource)
+get_capacity(.env, resource)
 
-get_queue_size(env, resource)
+get_queue_size(.env, resource)
 
-get_server_count(env, resource)
+get_server_count(.env, resource)
 
-get_queue_count(env, resource)
+get_queue_count(.env, resource)
 }
 \arguments{
-\item{env}{the simulation environment.}
+\item{.env}{the simulation environment.}
 
 \item{resource}{the name of the resource.}
 }

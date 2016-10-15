@@ -57,7 +57,8 @@ Methods for dealing with trajectories:
 \code{\link{seize}}, \code{\link{release}}, \code{\link{seize_selected}}, \code{\link{release_selected}},
 \code{\link{select}}, \code{\link{set_capacity}}, \code{\link{set_queue_size}},
 \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}, \code{\link{set_prioritization}},
-\code{\link{set_attribute}}, \code{\link{timeout}}, \code{\link{branch}},
+\code{\link{activate}}, \code{\link{deactivate}}, \code{\link{set_trajectory}},
+\code{\link{set_distribution}}, \code{\link{set_attribute}}, \code{\link{timeout}}, \code{\link{branch}},
 \code{\link{rollback}}, \code{\link{leave}}, \code{\link{renege_in}}, \code{\link{renege_abort}},
 \code{\link{clone}}, \code{\link{synchronize}}, \code{\link{batch}}, \code{\link{separate}}.
 }

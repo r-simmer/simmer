@@ -5,12 +5,12 @@
 \alias{renege_in}
 \title{Add a renege activity}
 \usage{
-renege_in(trajectory, t, out = NULL)
+renege_in(.trj, t, out = NULL)
 
-renege_abort(trajectory)
+renege_abort(.trj)
 }
 \arguments{
-\item{trajectory}{the trajectory object.}
+\item{.trj}{the trajectory object.}
 
 \item{t}{timeout to trigger reneging, accepts either a numeric or a callable object
 (a function) which must return a numeric.}

@@ -4,11 +4,11 @@
 \alias{add_generator}
 \title{Add a generator}
 \usage{
-add_generator(env, name_prefix, trajectory, distribution, mon = 1,
+add_generator(.env, name_prefix, trajectory, distribution, mon = 1,
   priority = 0, preemptible = priority, restart = FALSE)
 }
 \arguments{
-\item{env}{the simulation environment.}
+\item{.env}{the simulation environment.}
 
 \item{name_prefix}{the name prefix of the generated arrivals.}
 

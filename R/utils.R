@@ -55,3 +55,16 @@ checkInstall <- function(pkgs) {
     } else stop() # nocov end
   }
 }
+
+make_resetable <- function(distribution) {
+  init <- as.list(environment(distribution))
+  environment(distribution)$.reset <- new.env(parent = environment(distribution))
+  environment(distribution)$.reset$init <- init
+  environment(distribution)$.reset$reset <- function() {
+    lst <- parent.env(environment())$init
+    cls <- parent.env(parent.env(environment()))
+    for (i in ls(lst, all.names = TRUE)) assign(i, get(i, lst), cls)
+  }
+  environment(environment(distribution)$.reset$reset) <- environment(distribution)$.reset
+  return(distribution)
+}

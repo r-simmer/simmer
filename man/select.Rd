@@ -4,11 +4,11 @@
 \alias{select}
 \title{Select a resource}
 \usage{
-select(trajectory, resources, policy = c("shortest-queue", "round-robin",
+select(.trj, resources, policy = c("shortest-queue", "round-robin",
   "first-available", "random"), id = 0)
 }
 \arguments{
-\item{trajectory}{the trajectory object.}
+\item{.trj}{the trajectory object.}
 
 \item{resources}{one or more resource names, or a callable object (a function) which
 must return a resource name to select.}

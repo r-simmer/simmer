@@ -4,10 +4,10 @@
 \alias{peek}
 \title{Peek next events}
 \usage{
-peek(env, steps = 1, verbose = FALSE)
+peek(.env, steps = 1, verbose = FALSE)
 }
 \arguments{
-\item{env}{the simulation environment.}
+\item{.env}{the simulation environment.}
 
 \item{steps}{number of steps to peek.}
 

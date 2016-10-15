@@ -114,17 +114,7 @@ Simmer <- R6Class("simmer",
       priority <- evaluate_value(priority)
       preemptible <- evaluate_value(preemptible)
       restart <- evaluate_value(restart)
-
-      init <- as.list(environment(distribution))
-      environment(distribution)$.reset <- new.env(parent = environment(distribution))
-      environment(distribution)$.reset$init <- init
-      environment(distribution)$.reset$reset <- function() {
-        lst <- parent.env(environment())$init
-        cls <- parent.env(parent.env(environment()))
-        for (i in ls(lst, all.names = TRUE)) assign(i, get(i, lst), cls)
-      }
-      environment(environment(distribution)$.reset$reset) <- environment(distribution)$.reset
-
+      distribution <- make_resetable(distribution)
       ret <- add_generator_(private$sim_obj, name_prefix, trajectory$get_head(), distribution, mon,
                             priority, preemptible, restart)
       if (ret) private$gen[[name_prefix]] <- mon
@@ -254,12 +244,12 @@ simmer <- function(name="anonymous", verbose=FALSE) Simmer$new(name, verbose)
 #' Reset the following components of a simulation environment:
 #' time, event queue, resources, generators and statistics.
 #'
-#' @param env the simulation environment.
+#' @param .env the simulation environment.
 #'
 #' @return Returns the simulation environment.
 #' @seealso \code{\link{onestep}}, \code{\link{run}}.
 #' @export
-reset <- function(env) env$reset()
+reset <- function(.env) .env$reset()
 
 #' Run the simulation
 #'
@@ -271,11 +261,11 @@ reset <- function(env) env$reset()
 #' @return Returns the simulation environment.
 #' @seealso \code{\link{reset}}.
 #' @export
-run <- function(env, until=1000) env$run(until)
+run <- function(.env, until=1000) .env$run(until)
 
 #' @rdname run
 #' @export
-onestep <- function(env) env$step()
+onestep <- function(.env) .env$step()
 
 #' Get current time
 #'
@@ -286,7 +276,7 @@ onestep <- function(env) env$step()
 #' @return Returns a numeric value.
 #' @seealso \code{\link{peek}}.
 #' @export
-now <- function(env) env$now()
+now <- function(.env) .env$now()
 
 #' Peek next events
 #'
@@ -299,7 +289,7 @@ now <- function(env) env$now()
 #' @return Returns numeric values if \code{verbose=F} and a data frame otherwise.
 #' @seealso \code{\link{now}}.
 #' @export
-peek <- function(env, steps=1, verbose=FALSE) env$peek(steps, verbose)
+peek <- function(.env, steps=1, verbose=FALSE) .env$peek(steps, verbose)
 
 #' Add a resource
 #'
@@ -326,9 +316,9 @@ peek <- function(env, steps=1, verbose=FALSE) env$peek(steps, verbose)
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \code{\link{schedule}}.
 #' @export
-add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE,
+add_resource <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE,
                          preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE)
-  env$add_resource(name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict)
+  .env$add_resource(name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict)
 
 #' Add a generator
 #'
@@ -356,15 +346,15 @@ add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE, preemp
 #' @seealso Convenience functions: \code{\link{at}}, \code{\link{from}},
 #' \code{\link{to}}, \code{\link{from_to}}.
 #' @export
-add_generator <- function(env, name_prefix, trajectory, distribution, mon=1,
+add_generator <- function(.env, name_prefix, trajectory, distribution, mon=1,
                           priority=0, preemptible=priority, restart=FALSE)
-  env$add_generator(name_prefix, trajectory, distribution, mon, priority, preemptible, restart)
+  .env$add_generator(name_prefix, trajectory, distribution, mon, priority, preemptible, restart)
 
 #' Get statistics
 #'
 #' Simulator getters for obtaining monitored data (if any) about arrivals, attributes and resources.
 #'
-#' @param envs the simulation environment (or a list of environments).
+#' @param .envs the simulation environment (or a list of environments).
 #' @param per_resource if \code{TRUE}, statistics will be reported on a per-resource basis.
 #' @param ongoing if \code{TRUE}, ongoing arrivals will be reported. The columns
 #' \code{end_time} and \code{finished} of these arrivals are reported as \code{NA}s.
@@ -372,17 +362,17 @@ add_generator <- function(env, name_prefix, trajectory, distribution, mon=1,
 #' @return Returns a data frame.
 #' @name get_mon
 #' @export
-get_mon_arrivals <- function(envs, per_resource=FALSE, ongoing=FALSE)
-  envs_apply(envs, "get_mon_arrivals", per_resource, ongoing)
+get_mon_arrivals <- function(.envs, per_resource=FALSE, ongoing=FALSE)
+  envs_apply(.envs, "get_mon_arrivals", per_resource, ongoing)
 
 #' @rdname get_mon
 #' @export
-get_mon_attributes <- function(envs) envs_apply(envs, "get_mon_attributes")
+get_mon_attributes <- function(.envs) envs_apply(.envs, "get_mon_attributes")
 
 #' @param data whether to retrieve the "counts", the "limits" or both.
 #' @rdname get_mon
 #' @export
-get_mon_resources <- function(envs, data=c("counts", "limits")) envs_apply(envs, "get_mon_resources", data)
+get_mon_resources <- function(.envs, data=c("counts", "limits")) envs_apply(.envs, "get_mon_resources", data)
 
 #' Get the number of arrivals generated
 #'
@@ -393,7 +383,7 @@ get_mon_resources <- function(envs, data=c("counts", "limits")) envs_apply(envs,
 #'
 #' @return Returns a numeric value.
 #' @export
-get_n_generated <- function(env, generator) env$get_n_generated(generator)
+get_n_generated <- function(.env, generator) .env$get_n_generated(generator)
 
 #' Get a resource's parameter
 #'
@@ -404,16 +394,16 @@ get_n_generated <- function(env, generator) env$get_n_generated(generator)
 #'
 #' @return Returns a numeric value.
 #' @export
-get_capacity <- function(env, resource) env$get_capacity(resource)
+get_capacity <- function(.env, resource) .env$get_capacity(resource)
 
 #' @rdname get_capacity
 #' @export
-get_queue_size <- function(env, resource) env$get_queue_size(resource)
+get_queue_size <- function(.env, resource) .env$get_queue_size(resource)
 
 #' @rdname get_capacity
 #' @export
-get_server_count <- function(env, resource) env$get_server_count(resource)
+get_server_count <- function(.env, resource) .env$get_server_count(resource)
 
 #' @rdname get_capacity
 #' @export
-get_queue_count <- function(env, resource) env$get_queue_count(resource)
+get_queue_count <- function(.env, resource) .env$get_queue_count(resource)

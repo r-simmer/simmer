@@ -5,12 +5,12 @@
 \alias{run}
 \title{Run the simulation}
 \usage{
-run(env, until = 1000)
+run(.env, until = 1000)
 
-onestep(env)
+onestep(.env)
 }
 \arguments{
-\item{env}{the simulation environment.}
+\item{.env}{the simulation environment.}
 
 \item{until}{stop time.}
 }

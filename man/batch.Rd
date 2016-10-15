@@ -5,13 +5,12 @@
 \alias{separate}
 \title{Add a batch/separate activity}
 \usage{
-batch(trajectory, n, timeout = 0, permanent = FALSE, name = "",
-  rule = NULL)
+batch(.trj, n, timeout = 0, permanent = FALSE, name = "", rule = NULL)
 
-separate(trajectory)
+separate(.trj)
 }
 \arguments{
-\item{trajectory}{the trajectory object.}
+\item{.trj}{the trajectory object.}
 
 \item{n}{batch size, accepts a numeric.}
 

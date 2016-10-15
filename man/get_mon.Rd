@@ -7,14 +7,14 @@
 \alias{get_mon_resources}
 \title{Get statistics}
 \usage{
-get_mon_arrivals(envs, per_resource = FALSE, ongoing = FALSE)
+get_mon_arrivals(.envs, per_resource = FALSE, ongoing = FALSE)
 
-get_mon_attributes(envs)
+get_mon_attributes(.envs)
 
-get_mon_resources(envs, data = c("counts", "limits"))
+get_mon_resources(.envs, data = c("counts", "limits"))
 }
 \arguments{
-\item{envs}{the simulation environment (or a list of environments).}
+\item{.envs}{the simulation environment (or a list of environments).}
 
 \item{per_resource}{if \code{TRUE}, statistics will be reported on a per-resource basis.}
 

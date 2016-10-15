@@ -4,12 +4,12 @@
 \alias{add_resource}
 \title{Add a resource}
 \usage{
-add_resource(env, name, capacity = 1, queue_size = Inf, mon = TRUE,
+add_resource(.env, name, capacity = 1, queue_size = Inf, mon = TRUE,
   preemptive = FALSE, preempt_order = c("fifo", "lifo"),
   queue_size_strict = FALSE)
 }
 \arguments{
-\item{env}{the simulation environment.}
+\item{.env}{the simulation environment.}
 
 \item{name}{the name of the resource.}
 
