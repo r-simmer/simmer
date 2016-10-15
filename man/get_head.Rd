@@ -5,12 +5,12 @@
 \alias{get_tail}
 \title{Get the first/last activity}
 \usage{
-get_head(traj)
+get_head(trajectory)
 
-get_tail(traj)
+get_tail(trajectory)
 }
 \arguments{
-\item{traj}{the trajectory object.}
+\item{trajectory}{the trajectory object.}
 }
 \value{
 Returns an external pointer to an activity object.

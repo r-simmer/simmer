@@ -7,18 +7,18 @@
 \alias{seize_selected}
 \title{Add a seize/release activity}
 \usage{
-seize(traj, resource, amount = 1, continue = NULL, post.seize = NULL,
-  reject = NULL)
-
-seize_selected(traj, amount = 1, id = 0, continue = NULL,
+seize(trajectory, resource, amount = 1, continue = NULL,
   post.seize = NULL, reject = NULL)
 
-release(traj, resource, amount = 1)
+seize_selected(trajectory, amount = 1, id = 0, continue = NULL,
+  post.seize = NULL, reject = NULL)
 
-release_selected(traj, amount = 1, id = 0)
+release(trajectory, resource, amount = 1)
+
+release_selected(trajectory, amount = 1, id = 0)
 }
 \arguments{
-\item{traj}{the trajectory object.}
+\item{trajectory}{the trajectory object.}
 
 \item{resource}{the name of the resource.}
 

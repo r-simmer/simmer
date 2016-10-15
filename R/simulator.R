@@ -104,7 +104,7 @@ Simmer <- R6Class("simmer",
       self
     },
 
-    add_generator = function(name_prefix, trajectory, dist, mon=1,
+    add_generator = function(name_prefix, trajectory, distribution, mon=1,
                              priority=0, preemptible=priority, restart=FALSE) {
       if (!inherits(trajectory, "simmer.trajectory"))
         stop("not a trajectory")
@@ -115,17 +115,17 @@ Simmer <- R6Class("simmer",
       preemptible <- evaluate_value(preemptible)
       restart <- evaluate_value(restart)
 
-      init <- as.list(environment(dist))
-      environment(dist)$.reset <- new.env(parent = environment(dist))
-      environment(dist)$.reset$init <- init
-      environment(dist)$.reset$reset <- function() {
+      init <- as.list(environment(distribution))
+      environment(distribution)$.reset <- new.env(parent = environment(distribution))
+      environment(distribution)$.reset$init <- init
+      environment(distribution)$.reset$reset <- function() {
         lst <- parent.env(environment())$init
         cls <- parent.env(parent.env(environment()))
         for (i in ls(lst, all.names = TRUE)) assign(i, get(i, lst), cls)
       }
-      environment(environment(dist)$.reset$reset) <- environment(dist)$.reset
+      environment(environment(distribution)$.reset$reset) <- environment(distribution)$.reset
 
-      ret <- add_generator_(private$sim_obj, name_prefix, trajectory$get_head(), dist, mon,
+      ret <- add_generator_(private$sim_obj, name_prefix, trajectory$get_head(), distribution, mon,
                             priority, preemptible, restart)
       if (ret) private$gen[[name_prefix]] <- mon
       self
@@ -338,8 +338,8 @@ add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE, preemp
 #' @param name_prefix the name prefix of the generated arrivals.
 #' @param trajectory the trajectory that the generated arrivals will follow (see
 #' \code{\link{create_trajectory}}).
-#' @param dist a function modelling the interarrival times (returning a negative
-#' value stops the generator).
+#' @param distribution a function modelling the interarrival times (returning a
+#' negative value stops the generator).
 #' @param mon whether the simulator must monitor the generated arrivals or not
 #' (0 = no monitoring, 1 = simple arrival monitoring, 2 = level 1 + arrival
 #' attribute montoring)
@@ -356,9 +356,9 @@ add_resource <- function(env, name, capacity=1, queue_size=Inf, mon=TRUE, preemp
 #' @seealso Convenience functions: \code{\link{at}}, \code{\link{from}},
 #' \code{\link{to}}, \code{\link{from_to}}.
 #' @export
-add_generator <- function(env, name_prefix, trajectory, dist, mon=1,
+add_generator <- function(env, name_prefix, trajectory, distribution, mon=1,
                           priority=0, preemptible=priority, restart=FALSE)
-  env$add_generator(name_prefix, trajectory, dist, mon, priority, preemptible, restart)
+  env$add_generator(name_prefix, trajectory, distribution, mon, priority, preemptible, restart)
 
 #' Get statistics
 #'

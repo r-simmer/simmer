@@ -4,8 +4,8 @@
 \alias{add_generator}
 \title{Add a generator}
 \usage{
-add_generator(env, name_prefix, trajectory, dist, mon = 1, priority = 0,
-  preemptible = priority, restart = FALSE)
+add_generator(env, name_prefix, trajectory, distribution, mon = 1,
+  priority = 0, preemptible = priority, restart = FALSE)
 }
 \arguments{
 \item{env}{the simulation environment.}
@@ -15,8 +15,8 @@ add_generator(env, name_prefix, trajectory, dist, mon = 1, priority = 0,
 \item{trajectory}{the trajectory that the generated arrivals will follow (see
 \code{\link{create_trajectory}}).}
 
-\item{dist}{a function modelling the interarrival times (returning a negative
-value stops the generator).}
+\item{distribution}{a function modelling the interarrival times (returning a
+negative value stops the generator).}
 
 \item{mon}{whether the simulator must monitor the generated arrivals or not
 (0 = no monitoring, 1 = simple arrival monitoring, 2 = level 1 + arrival

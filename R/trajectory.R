@@ -131,6 +131,14 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       else private$add_activity(SetAttribute__new(private$verbose, key, value))
     },
 
+    start = function(generator, reset = FALSE) {
+      generator <- evaluate_value(generator)
+      reset <- evaluate_value(reset)
+      if (is.function(generator))
+        private$add_activity(Start__new_func(private$verbose, generator, needs_attrs(generator), reset))
+      else private$add_activity(Start__new(private$verbose, generator, reset))
+    },
+
     set_prioritization = function(values) {
       if (is.function(values))
         private$add_activity(SetPrior__new_func(private$verbose, values, needs_attrs(values)))
@@ -205,17 +213,17 @@ simmer.trajectory <- R6Class("simmer.trajectory",
 
     separate = function() { private$add_activity(Separate__new(private$verbose)) },
 
-    join = function(traj) {
-      if (!inherits(traj, "simmer.trajectory"))
+    join = function(trajectory) {
+      if (!inherits(trajectory, "simmer.trajectory"))
         stop("not a trajectory")
       new <- self$clone(deep = TRUE)
-      traj <- traj$clone(deep = TRUE)
-      if (!is.null(traj$get_head()) && !is.null(new$get_tail()))
-          activity_chain_(new$get_tail(), traj$get_head())
+      trajectory <- trajectory$clone(deep = TRUE)
+      if (!is.null(trajectory$get_head()) && !is.null(new$get_tail()))
+          activity_chain_(new$get_tail(), trajectory$get_head())
       new$.__enclos_env__$private$ptrs <-
-        c(new$.__enclos_env__$private$ptrs, traj$.__enclos_env__$private$ptrs)
+        c(new$.__enclos_env__$private$ptrs, trajectory$.__enclos_env__$private$ptrs)
       new$.__enclos_env__$private$n_activities <-
-        new$.__enclos_env__$private$n_activities + traj$get_n_activities()
+        new$.__enclos_env__$private$n_activities + trajectory$get_n_activities()
       new
     }
   ),
@@ -312,16 +320,16 @@ create_trajectory <- function(name="anonymous", verbose=FALSE) simmer.trajectory
 #'
 #' Trajectory getters for obtaining the pointer to its first/last activity.
 #'
-#' @param traj the trajectory object.
+#' @param trajectory the trajectory object.
 #'
 #' @return Returns an external pointer to an activity object.
 #' @seealso \code{\link{get_n_activities}}, \code{\link{join}}.
 #' @export
-get_head <- function(traj) traj$get_head()
+get_head <- function(trajectory) trajectory$get_head()
 
 #' @rdname get_head
 #' @export
-get_tail <- function(traj) traj$get_tail()
+get_tail <- function(trajectory) trajectory$get_tail()
 
 #' Get the number of activities
 #'
@@ -332,7 +340,7 @@ get_tail <- function(traj) traj$get_tail()
 #' @return Returns the number of activities in the trajectory.
 #' @seealso \code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{join}}.
 #' @export
-get_n_activities <- function(traj) traj$get_n_activities()
+get_n_activities <- function(trajectory) trajectory$get_n_activities()
 
 #' Join trajectories
 #'
@@ -380,21 +388,21 @@ join <- function(...) {
 #' @seealso \code{\link{select}}, \code{\link{set_capacity}}, \code{\link{set_queue_size}},
 #' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
 #' @export
-seize <- function(traj, resource, amount=1, continue=NULL, post.seize=NULL, reject=NULL)
-  traj$seize(resource, amount, 0, continue, post.seize, reject)
+seize <- function(trajectory, resource, amount=1, continue=NULL, post.seize=NULL, reject=NULL)
+  trajectory$seize(resource, amount, 0, continue, post.seize, reject)
 
 #' @rdname seize
 #' @export
-seize_selected <- function(traj, amount=1, id=0, continue=NULL, post.seize=NULL, reject=NULL)
-  traj$seize(NA, amount, id, continue, post.seize, reject)
+seize_selected <- function(trajectory, amount=1, id=0, continue=NULL, post.seize=NULL, reject=NULL)
+  trajectory$seize(NA, amount, id, continue, post.seize, reject)
 
 #' @rdname seize
 #' @export
-release <- function(traj, resource, amount=1) traj$release(resource, amount)
+release <- function(trajectory, resource, amount=1) trajectory$release(resource, amount)
 
 #' @rdname seize
 #' @export
-release_selected <- function(traj, amount=1, id=0) traj$release(NA, amount, id)
+release_selected <- function(trajectory, amount=1, id=0) trajectory$release(NA, amount, id)
 
 #' Add a set capacity/queue size activity
 #'
@@ -409,19 +417,19 @@ release_selected <- function(traj, amount=1, id=0) traj$release(NA, amount, id)
 #' @seealso \code{\link{select}}, \code{\link{seize}}, \code{\link{release}},
 #' \code{\link{seize_selected}}, \code{\link{release_selected}}.
 #' @export
-set_capacity <- function(traj, resource, value) traj$set_capacity(resource, value)
+set_capacity <- function(trajectory, resource, value) trajectory$set_capacity(resource, value)
 
 #' @rdname set_capacity
 #' @export
-set_capacity_selected <- function(traj, value, id=0) traj$set_capacity(NA, value, id)
+set_capacity_selected <- function(trajectory, value, id=0) trajectory$set_capacity(NA, value, id)
 
 #' @rdname set_capacity
 #' @export
-set_queue_size <- function(traj, resource, value) traj$set_queue_size(resource, value)
+set_queue_size <- function(trajectory, resource, value) trajectory$set_queue_size(resource, value)
 
 #' @rdname set_capacity
 #' @export
-set_queue_size_selected <- function(traj, value, id=0) traj$set_queue_size(NA, value, id)
+set_queue_size_selected <- function(trajectory, value, id=0) trajectory$set_queue_size(NA, value, id)
 
 #' Select a resource
 #'
@@ -439,9 +447,9 @@ set_queue_size_selected <- function(traj, value, id=0) traj$set_queue_size(NA, v
 #' @seealso \code{\link{seize_selected}}, \code{\link{release_selected}},
 #' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
 #' @export
-select <- function(traj, resources, policy=c("shortest-queue", "round-robin",
+select <- function(trajectory, resources, policy=c("shortest-queue", "round-robin",
                                              "first-available", "random"), id=0)
-  traj$select(resources, policy, id)
+  trajectory$select(resources, policy, id)
 
 #' Add a timeout activity
 #'
@@ -454,7 +462,7 @@ select <- function(traj, resources, policy=c("shortest-queue", "round-robin",
 #'
 #' @return Returns the trajectory object.
 #' @export
-timeout <- function(traj, task) traj$timeout(task)
+timeout <- function(trajectory, task) trajectory$timeout(task)
 
 #' Add a set attribute activity
 #'
@@ -467,7 +475,7 @@ timeout <- function(traj, task) traj$timeout(task)
 #'
 #' @return Returns the trajectory object.
 #' @export
-set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
+set_attribute <- function(trajectory, key, value) trajectory$set_attribute(key, value)
 
 #' Add a set prioritization activity
 #'
@@ -481,7 +489,7 @@ set_attribute <- function(traj, key, value) traj$set_attribute(key, value)
 #'
 #' @return Returns the trajectory object.
 #' @export
-set_prioritization <- function(traj, values) traj$set_prioritization(values)
+set_prioritization <- function(trajectory, values) trajectory$set_prioritization(values)
 
 #' Add a branch activity
 #'
@@ -498,7 +506,7 @@ set_prioritization <- function(traj, values) traj$set_prioritization(values)
 #'
 #' @return Returns the trajectory object.
 #' @export
-branch <- function(traj, option, continue, ...) traj$branch(option, continue, ...)
+branch <- function(trajectory, option, continue, ...) trajectory$branch(option, continue, ...)
 
 #' Add a rollback activity
 #'
@@ -513,7 +521,7 @@ branch <- function(traj, option, continue, ...) traj$branch(option, continue, ..
 #'
 #' @return Returns the trajectory object.
 #' @export
-rollback <- function(traj, amount, times=1, check) traj$rollback(amount, times, check)
+rollback <- function(trajectory, amount, times=1, check) trajectory$rollback(amount, times, check)
 
 #' Add a leave activity
 #'
@@ -524,7 +532,7 @@ rollback <- function(traj, amount, times=1, check) traj$rollback(amount, times, 
 #'
 #' @return Returns the trajectory object.
 #' @export
-leave <- function(traj, prob) traj$leave(prob)
+leave <- function(trajectory, prob) trajectory$leave(prob)
 
 #' Add a renege activity
 #'
@@ -537,13 +545,13 @@ leave <- function(traj, prob) traj$leave(prob)
 #'
 #' @return Returns the trajectory object.
 #' @export
-renege_in <- function(traj, t, out=NULL) traj$renege_in(t, out)
+renege_in <- function(trajectory, t, out=NULL) trajectory$renege_in(t, out)
 
 #' @inheritParams get_head
 #'
 #' @rdname renege_in
 #' @export
-renege_abort <- function(traj) traj$renege_abort()
+renege_abort <- function(trajectory) trajectory$renege_abort()
 
 #' Add a clone/synchronize activity
 #'
@@ -558,7 +566,7 @@ renege_abort <- function(traj) traj$renege_abort()
 #'
 #' @return Returns the trajectory object.
 #' @export
-clone <- function(traj, n, ...) traj$replicate(n, ...)
+clone <- function(trajectory, n, ...) trajectory$replicate(n, ...)
 
 #' @inheritParams get_head
 #' @param wait if \code{FALSE}, all clones but the first to arrive are removed.
@@ -568,7 +576,7 @@ clone <- function(traj, n, ...) traj$replicate(n, ...)
 #'
 #' @rdname clone
 #' @export
-synchronize <- function(traj, wait=TRUE, mon_all=FALSE) traj$synchronize(wait, mon_all)
+synchronize <- function(trajectory, wait=TRUE, mon_all=FALSE) trajectory$synchronize(wait, mon_all)
 
 #' Add a batch/separate activity
 #'
@@ -589,11 +597,11 @@ synchronize <- function(traj, wait=TRUE, mon_all=FALSE) traj$synchronize(wait, m
 #'
 #' @return Returns the trajectory object.
 #' @export
-batch <- function(traj, n, timeout=0, permanent=FALSE, name="", rule=NULL)
-  traj$batch(n, timeout, permanent, name, rule)
+batch <- function(trajectory, n, timeout=0, permanent=FALSE, name="", rule=NULL)
+  trajectory$batch(n, timeout, permanent, name, rule)
 
 #' @inheritParams get_head
 #'
 #' @rdname batch
 #' @export
-separate <- function(traj) traj$separate()
+separate <- function(trajectory) trajectory$separate()

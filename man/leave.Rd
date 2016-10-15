@@ -4,10 +4,10 @@
 \alias{leave}
 \title{Add a leave activity}
 \usage{
-leave(traj, prob)
+leave(trajectory, prob)
 }
 \arguments{
-\item{traj}{the trajectory object.}
+\item{trajectory}{the trajectory object.}
 
 \item{prob}{a probability or a function returning a probability.}
 }

@@ -4,10 +4,10 @@
 \alias{branch}
 \title{Add a branch activity}
 \usage{
-branch(traj, option, continue, ...)
+branch(trajectory, option, continue, ...)
 }
 \arguments{
-\item{traj}{the trajectory object.}
+\item{trajectory}{the trajectory object.}
 
 \item{option}{a callable object (a function) which must return an integer between
 \code{0} and \code{N}. A return value equal to \code{0} skips the branch and

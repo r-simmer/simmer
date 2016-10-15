@@ -4,10 +4,10 @@
 \alias{rollback}
 \title{Add a rollback activity}
 \usage{
-rollback(traj, amount, times = 1, check)
+rollback(trajectory, amount, times = 1, check)
 }
 \arguments{
-\item{traj}{the trajectory object.}
+\item{trajectory}{the trajectory object.}
 
 \item{amount}{the amount of activities (of the same or parent trajectories) to roll back.}
 

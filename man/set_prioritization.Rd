@@ -4,10 +4,10 @@
 \alias{set_prioritization}
 \title{Add a set prioritization activity}
 \usage{
-set_prioritization(traj, values)
+set_prioritization(trajectory, values)
 }
 \arguments{
-\item{traj}{the trajectory object.}
+\item{trajectory}{the trajectory object.}
 
 \item{values}{expects either a vector/list or a callable object (a function)
 returning a vector/list of three values \code{c(priority, preemptible, restart)}.
