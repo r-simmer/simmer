@@ -3,6 +3,8 @@
 ## New features:
 
 * `set_capacity()` and `set_queue_size()` become activities (#77). Just like `seize()` and `release()`, they have the associated `set_capacity_selected()` and `set_queue_size_selected()` for a joint use together with `select()`.
+* New `activate()` and `deactivate()` activities allow an arrival to start or stop a generator, respectively, from inside a trajectory (#80).
+* New `set_trajectory()` and `set_distribution()` activities allow an arrival to install a new trajectory or distribution, respectively, in a generator from inside a trajectory (#80).
 
 ## Minor changes and fixes:
 
