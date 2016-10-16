@@ -452,7 +452,8 @@ public:
   CLONEABLE(Activate<T>)
 
   Activate(bool verbose, T generator, bool provide_attrs)
-    : Activity("Activate", verbose, provide_attrs), generator(generator) {}
+    : Activity("Activate", verbose, provide_attrs, PRIORITY_MAX),
+      generator(generator) {}
 
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
@@ -509,7 +510,7 @@ public:
   CLONEABLE(SetTraj<T>)
 
   SetTraj(bool verbose, T generator, bool provide_attrs, Rcpp::Environment trj)
-    : Activity("SetTraj", verbose, provide_attrs),
+    : Activity("SetTraj", verbose, provide_attrs, PRIORITY_MAX),
       generator(generator), trj(trj) {}
 
   void print(int indent = 0, bool brief = false) {
@@ -539,7 +540,7 @@ public:
   CLONEABLE(SetDist<T>)
 
   SetDist(bool verbose, T generator, bool provide_attrs, Rcpp::Function dist)
-    : Activity("SetDist", verbose, provide_attrs),
+    : Activity("SetDist", verbose, provide_attrs, PRIORITY_MAX),
       generator(generator), dist(dist) {}
 
   void print(int indent = 0, bool brief = false) {

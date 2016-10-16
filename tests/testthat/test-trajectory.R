@@ -13,6 +13,10 @@ t0 <- create_trajectory(verbose = TRUE) %>%
   set_capacity_selected(function() 1) %>%
   set_queue_size("nurse", function() 1) %>%
   set_queue_size_selected(function() 1) %>%
+  activate(function() "dummy") %>%
+  deactivate(function() "dummy") %>%
+  set_trajectory(function() "dummy", create_trajectory(verbose = TRUE) %>% timeout(1)) %>%
+  set_distribution(function() "dummy", at(0)) %>%
   rollback(1) %>%
   clone(function() 2, create_trajectory(verbose = TRUE) %>% timeout(1)) %>%
   synchronize() %>%
@@ -37,6 +41,11 @@ trajs <- c(create_trajectory(verbose = TRUE) %>% seize("nurse", 1),
            create_trajectory(verbose = TRUE) %>% set_capacity_selected(function() 1),
            create_trajectory(verbose = TRUE) %>% set_queue_size("nurse", function() 1),
            create_trajectory(verbose = TRUE) %>% set_queue_size_selected(function() 1),
+           create_trajectory(verbose = TRUE) %>% activate(function() "dummy"),
+           create_trajectory(verbose = TRUE) %>% deactivate(function() "dummy"),
+           create_trajectory(verbose = TRUE) %>% set_trajectory(function() "dummy",
+                                                                create_trajectory(verbose = TRUE) %>% timeout(1)),
+           create_trajectory(verbose = TRUE) %>% set_distribution(function() "dummy", at(0)),
            create_trajectory(verbose = TRUE) %>% rollback(1),
            create_trajectory(verbose = TRUE) %>% clone(function() 2,
                                                        create_trajectory(verbose = TRUE) %>% timeout(1)),
@@ -49,7 +58,7 @@ trajs <- c(create_trajectory(verbose = TRUE) %>% seize("nurse", 1),
            create_trajectory(verbose = TRUE) %>% release_selected(1),
            create_trajectory(verbose = TRUE) %>% release("nurse", 1))
 
-N <- 20
+N <- 24
 
 test_that("the activity chain grows as expected", {
   head <- t0 %>% get_head()
