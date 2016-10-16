@@ -39,6 +39,8 @@
 #define PRIORITY_GENERATOR      -1
 #define PRIORITY_MIN            std::numeric_limits<int>::max()
 
+#define COMMA ,
+
 #define BASE_CLONEABLE(Type) \
   virtual Type* clone() const = 0;
 
