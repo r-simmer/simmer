@@ -302,7 +302,7 @@ public:
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout <<
       "resource: " << resource << ", value: " << value << " }" << std::endl;
-    else Rcpp::Rcout << resource << ": " << value << std::endl;
+    else Rcpp::Rcout << resource << ", " << value << std::endl;
   }
 
   double run(Arrival* arrival) {
@@ -351,7 +351,7 @@ public:
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout <<
       "resource: " << resource << ", value: " << value << " }" << std::endl;
-    else Rcpp::Rcout << resource << ": " << value << std::endl;
+    else Rcpp::Rcout << resource << ", " << value << std::endl;
   }
 
   double run(Arrival* arrival) {
@@ -430,7 +430,7 @@ public:
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout <<
       "key: " << key << ", value: " << value << " }" << std::endl;
-    else Rcpp::Rcout << key << ": " << value << std::endl;
+    else Rcpp::Rcout << key << ", " << value << std::endl;
   }
 
   double run(Arrival* arrival) {
@@ -517,7 +517,7 @@ public:
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout <<
       "generator: " << generator << ", trajectory: " << trj << " }" << std::endl;
-    else Rcpp::Rcout << generator << ": " << trj << std::endl;
+    else Rcpp::Rcout << generator << ", " << trj << std::endl;
   }
 
   double run(Arrival* arrival) {
@@ -547,7 +547,7 @@ public:
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout <<
       "generator: " << generator << ", distribution: " << dist << " }" << std::endl;
-    else Rcpp::Rcout << generator << ": " << dist << std::endl;
+    else Rcpp::Rcout << generator << ", " << dist << std::endl;
   }
 
   double run(Arrival* arrival) {
@@ -984,6 +984,122 @@ public:
   double run(Arrival* arrival) {
     arrival->cancel_timeout();
     return 0;
+  }
+};
+
+/**
+ * Send signals.
+ */
+template <typename T>
+class Send : public Activity {
+public:
+  CLONEABLE(Send<T>)
+
+  Send(bool verbose, VEC<std::string> signals, T delay, bool provide_attrs)
+    : Activity("Send", verbose, provide_attrs), signals(signals), delay(delay) {}
+
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout <<
+      "signals: " << signals[0] << "..., delay: " << delay << " }" << std::endl;
+    else Rcpp::Rcout << signals[0] << "...: " << delay << std::endl;
+  }
+
+  double run(Arrival* arrival) {
+    double ret = std::abs(get<double>(delay, arrival));
+    arrival->sim->broadcast(signals);
+    return 0;
+  }
+
+protected:
+  VEC<std::string> signals;
+  T delay;
+};
+
+/**
+ * Subscribe to signals and assign a handler.
+ */
+class Trap : public Activity {
+public:
+  CLONEABLE(Trap)
+
+  Trap(bool verbose, VEC<std::string> signals, OPT<Rcpp::Environment> handler = NONE)
+    : Activity("Trap", verbose), signals(signals), handler(handler) {}
+
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout <<
+      "signals: " << signals[0] << "..., handler: " << *handler << " }" << std::endl;
+    else Rcpp::Rcout << signals[0] << "...: " << *handler << std::endl;
+  }
+
+  double run(Arrival* arrival) {
+    arrival->sim->subscribe(signals, arrival,
+                            boost::bind(&Trap::launch_handler, this, arrival));
+    return 0;
+  }
+
+protected:
+  VEC<std::string> signals;
+  OPT<Rcpp::Environment> handler;
+
+  void launch_handler(Arrival* arrival) {
+    arrival->deactivate();
+    Activity* next = arrival->get_current()->get_next();
+    if (handler) {
+      Rcpp::Function get_head((*handler)["get_head"]);
+      Rcpp::Function get_tail((*handler)["get_tail"]);
+      Activity* tail = Rcpp::as<Rcpp::XPtr<Activity> >(get_tail());
+      tail->set_next(next);
+      next = Rcpp::as<Rcpp::XPtr<Activity> >(get_head());
+    }
+    arrival->set_activity(next);
+    arrival->activate();
+  }
+};
+
+/**
+ * Unsubscribe to signals.
+ */
+class UnTrap : public Activity {
+public:
+  CLONEABLE(UnTrap)
+
+  UnTrap(bool verbose, VEC<std::string> signals)
+    : Activity("UnTrap", verbose), signals(signals) {}
+
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout <<
+      "signals: " << signals[0] << "... }" << std::endl;
+    else Rcpp::Rcout << signals[0] << "..." << std::endl;
+  }
+
+  double run(Arrival* arrival) {
+    arrival->sim->unsubscribe(signals, arrival);
+    return 0;
+  }
+
+protected:
+  VEC<std::string> signals;
+};
+
+/**
+ * Block until a signal is received.
+ */
+class Wait : public Activity {
+public:
+  CLONEABLE(Wait)
+
+  Wait(bool verbose) : Activity("Wait", verbose) {}
+
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << " }" << std::endl;
+  }
+
+  double run(Arrival* arrival) {
+    return REJECTED;
   }
 };
 

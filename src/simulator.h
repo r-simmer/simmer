@@ -36,6 +36,9 @@ class Simulator {
   typedef USET<Arrival*> ArrSet;
   typedef UMAP<std::string, Batched*> NamBMap;
   typedef UMAP<Activity*, Batched*> UnnBMap;
+  typedef boost::function<void ()> Bind;
+  typedef UMAP<Arrival*, Bind> HandlerMap;
+  typedef UMAP<std::string, HandlerMap> SigMap;
 
 public:
   std::string name;
@@ -85,6 +88,7 @@ public:
     namedb_map.clear();
     unnamedb_map.clear();
     b_count = 0;
+    signal_map.clear();
     arr_traj_stats.clear();
     arr_res_stats.clear();
     attr_stats.clear();
@@ -273,6 +277,21 @@ public:
   void register_arrival(Arrival* arrival) { arrival_set.emplace(arrival); }
   void unregister_arrival(Arrival* arrival) { arrival_set.erase(arrival); }
 
+  void broadcast(VEC<std::string> signals) {
+    foreach_ (std::string signal, signals) {
+      foreach_ (HandlerMap::value_type& itr, signal_map[signal])
+        itr.second();
+    }
+  }
+  void subscribe(VEC<std::string> signals, Arrival* arrival, Bind handler) {
+    foreach_ (std::string signal, signals)
+      signal_map[signal][arrival] = handler;
+  }
+  void unsubscribe(VEC<std::string> signals, Arrival* arrival) {
+    foreach_ (std::string signal, signals)
+      signal_map[signal].erase(arrival);
+  }
+
   /**
    * Record monitoring data.
    */
@@ -410,6 +429,7 @@ private:
   NamBMap namedb_map;       /**< map of named batches */
   UnnBMap unnamedb_map;     /**< map of unnamed batches */
   unsigned int b_count;     /**< unnamed batch counter */
+  SigMap signal_map;        /**< map of arrivals subscribed to signals */
   StatsMap arr_traj_stats;  /**< arrival statistics per trajectory */
   StatsMap arr_res_stats;   /**< arrival statistics per resource */
   StatsMap attr_stats;      /**< attribute statistics */

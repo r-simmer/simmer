@@ -201,6 +201,7 @@ public:
   void set_activity(double value) { lifetime.activity = value; }
   void set_activity(std::string name, double value) { restime[name].activity = value; }
   double get_start() { return lifetime.start; }
+  Activity* get_current() { return activity; }
   double get_activity() { return lifetime.activity - lifetime.remaining; }
   double get_activity(std::string name) { return restime[name].activity; }
 
