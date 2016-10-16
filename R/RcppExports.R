@@ -225,18 +225,6 @@ Leave__new_func <- function(verbose, prob, provide_attrs) {
     .Call('simmer_Leave__new_func', PACKAGE = 'simmer', verbose, prob, provide_attrs)
 }
 
-RenegeIn__new <- function(verbose, t, trj) {
-    .Call('simmer_RenegeIn__new', PACKAGE = 'simmer', verbose, t, trj)
-}
-
-RenegeIn__new_func <- function(verbose, t, provide_attrs, trj) {
-    .Call('simmer_RenegeIn__new_func', PACKAGE = 'simmer', verbose, t, provide_attrs, trj)
-}
-
-RenegeAbort__new <- function(verbose) {
-    .Call('simmer_RenegeAbort__new', PACKAGE = 'simmer', verbose)
-}
-
 Clone__new <- function(verbose, n, trj) {
     .Call('simmer_Clone__new', PACKAGE = 'simmer', verbose, n, trj)
 }
@@ -259,6 +247,62 @@ Batch__new_func <- function(verbose, n, timeout, permanent, name, rule, provide_
 
 Separate__new <- function(verbose) {
     .Call('simmer_Separate__new', PACKAGE = 'simmer', verbose)
+}
+
+RenegeIn__new <- function(verbose, t, trj) {
+    .Call('simmer_RenegeIn__new', PACKAGE = 'simmer', verbose, t, trj)
+}
+
+RenegeIn__new_func <- function(verbose, t, provide_attrs, trj) {
+    .Call('simmer_RenegeIn__new_func', PACKAGE = 'simmer', verbose, t, provide_attrs, trj)
+}
+
+RenegeAbort__new <- function(verbose) {
+    .Call('simmer_RenegeAbort__new', PACKAGE = 'simmer', verbose)
+}
+
+Send__new <- function(verbose, signals, delay) {
+    .Call('simmer_Send__new', PACKAGE = 'simmer', verbose, signals, delay)
+}
+
+Send__new_func1 <- function(verbose, signals, delay, provide_attrs) {
+    .Call('simmer_Send__new_func1', PACKAGE = 'simmer', verbose, signals, delay, provide_attrs)
+}
+
+Send__new_func2 <- function(verbose, signals, delay, provide_attrs) {
+    .Call('simmer_Send__new_func2', PACKAGE = 'simmer', verbose, signals, delay, provide_attrs)
+}
+
+Send__new_func4 <- function(verbose, signals, delay, provide_attrs) {
+    .Call('simmer_Send__new_func4', PACKAGE = 'simmer', verbose, signals, delay, provide_attrs)
+}
+
+Trap__new <- function(verbose, signals, handler) {
+    .Call('simmer_Trap__new', PACKAGE = 'simmer', verbose, signals, handler)
+}
+
+Trap__new_no <- function(verbose, signals) {
+    .Call('simmer_Trap__new_no', PACKAGE = 'simmer', verbose, signals)
+}
+
+Trap__new_func <- function(verbose, signals, provide_attrs, handler) {
+    .Call('simmer_Trap__new_func', PACKAGE = 'simmer', verbose, signals, provide_attrs, handler)
+}
+
+Trap__new_func_no <- function(verbose, signals, provide_attrs) {
+    .Call('simmer_Trap__new_func_no', PACKAGE = 'simmer', verbose, signals, provide_attrs)
+}
+
+UnTrap__new <- function(verbose, signals) {
+    .Call('simmer_UnTrap__new', PACKAGE = 'simmer', verbose, signals)
+}
+
+UnTrap__new_func <- function(verbose, signals, provide_attrs) {
+    .Call('simmer_UnTrap__new_func', PACKAGE = 'simmer', verbose, signals, provide_attrs)
+}
+
+Wait__new <- function(verbose) {
+    .Call('simmer_Wait__new', PACKAGE = 'simmer', verbose)
 }
 
 activity_get_n_ <- function(activity_) {
