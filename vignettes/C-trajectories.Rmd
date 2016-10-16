@@ -339,6 +339,43 @@ get_mon_resources(env)
 
 And, of course, everything learned for `seize()`, `release()`, `set_capacity()` and `set_queue_size()` applies to all their `_selected` versions.
 
+### `activate()` & `deactivate()`
+
+The `activate(., generator)` and `deactivate(., generator)` methods are able to start or stop, respectively, a generator by name. This name can be supplied as either a string or a function returning a string. In the following simple example, the use of these methods spreads the interarrival times which otherwise would be of 1 unit of time, as defined in the generator:
+
+```{r}
+t <- create_trajectory() %>%
+  deactivate(generator = "dummy") %>%
+  timeout(1) %>%
+  activate(generator = "dummy")
+
+simmer() %>%
+  add_generator("dummy", t, function() 1) %>%
+  run(10) %>%
+  get_mon_arrivals()
+```
+
+### `set_trajectory()` & `set_distribution()`
+
+The `set_trajectory(., generator, trajectory)` and `set_distribution(., generator, distribution)` methods are able to install a new trajectory or distribution, respectively, in a generator by name. This name can be supplied as either a string or a function returning a string.
+
+In the following distribution, `t2` changes the distribution and then switches to `t1`, so that only the first arrival takes `t2`:
+
+```{r}
+t1 <- create_trajectory() %>%
+  timeout(1)
+
+t2 <- create_trajectory() %>%
+  set_distribution("dummy", function() 1) %>%
+  set_trajectory("dummy", t1) %>%
+  timeout(2)
+
+simmer() %>%
+  add_generator("dummy", trajectory = t2, distribution = function() 2) %>%
+  run(10) %>%
+  get_mon_arrivals()
+```
+
 ### `set_prioritization()`
 
 The `add_generator()` method assigns a set of prioritization values to each generated arrival: by default, `priority=0`, `preemptible=priority`, `restart=FALSE` (see `?add_generator` for more details). The `set_prioritization(., values)` method can change those values with more granularity at any point in the trajectory:
