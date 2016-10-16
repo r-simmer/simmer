@@ -2,8 +2,7 @@ context("set_prioritization")
 
 test_that("the wrong number of parameters fails", {
   expect_output(create_trajectory() %>% set_prioritization(c(0, 0, 0)) %>% print,
-                ".*SetPrior.*values: 0 0 0.*")
-  expect_error(create_trajectory() %>% set_prioritization(c(0, 0)) %>% print)
+                ".*SetPrior.*values:.*0, 0, 0.*")
 
   t <- create_trajectory() %>%
     set_prioritization(function() c(0, 0))

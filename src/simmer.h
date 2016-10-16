@@ -9,6 +9,16 @@
 #include <boost/unordered_map.hpp>
 
 #define VEC std::vector
+
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
+  out << "[";
+  if (!v.empty())
+    std::copy(v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
+  out << "\b\b]";
+  return out;
+}
+
 #define MSET boost::container::multiset
 #define USET boost::unordered_set
 #define UMAP boost::unordered_map

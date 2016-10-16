@@ -397,7 +397,12 @@ public:
     : Activity("Select", verbose, VEC<bool>(1, provide_attrs)), resources(resources),
       policy(policy), id(id), dispatcher(Policy(resources, policy)) {}
 
-  void print(int indent = 0, bool brief = false);
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout <<
+      "resources: " << resources << ", policy: " << policy << " }" << std::endl;
+    else Rcpp::Rcout << resources << ", " << policy << std::endl;
+  }
 
   double run(Arrival* arrival) {
     Resource* selected;
@@ -574,7 +579,12 @@ public:
   SetPrior(bool verbose, T values, bool provide_attrs)
     : Activity("SetPrior", verbose, VEC<bool>(1, provide_attrs)), values(values) {}
 
-  void print(int indent = 0, bool brief = false);
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout <<
+      "values: " << values << " }" << std::endl;
+    else Rcpp::Rcout << values << std::endl;
+  }
 
   double run(Arrival* arrival) {
     VEC<int> ret = get<VEC<int> >(values, 0, arrival);
