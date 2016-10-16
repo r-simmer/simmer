@@ -23,6 +23,7 @@ reference:
       - timeout
       - activate
       - set_trajectory
+      - send
   - title: "Manage trajectories"
     desc: "Methods for getting information about trajectory objects"
     contents:

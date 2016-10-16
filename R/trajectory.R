@@ -236,6 +236,41 @@ simmer.trajectory <- R6Class("simmer.trajectory",
 
     separate = function() { private$add_activity(Separate__new(private$verbose)) },
 
+    send = function(signals, delay=0) {
+      signals <- evaluate_value(signals)
+      delay <- evaluate_value(delay)
+      if (is.function(signals) && is.function(delay))
+        private$add_activity(Send__new_func4(private$verbose, signals, delay,
+                                             c(needs_attrs(signals), needs_attrs(delay))))
+      else if (is.function(delay))
+        private$add_activity(Send__new_func2(private$verbose, signals, delay, needs_attrs(delay)))
+      else if (is.function(signals))
+        private$add_activity(Send__new_func1(private$verbose, signals, delay, needs_attrs(signals)))
+      else private$add_activity(Send__new(private$verbose, signals, delay))
+    },
+
+    trap = function(signals, handler=NULL) {
+      signals <- evaluate_value(signals)
+      if (!is.null(handler)) if (!inherits(handler, "simmer.trajectory"))
+        stop("not a trajectory")
+      if (is.function(signals) && !is.null(handler))
+        private$add_activity(Trap__new_func(private$verbose, signals, needs_attrs(signals), handler))
+      else if (is.null(handler))
+        private$add_activity(Trap__new_func_no(private$verbose, signals, needs_attrs(signals)))
+      else if (!is.null(handler))
+        private$add_activity(Trap__new(private$verbose, signals, handler))
+      else private$add_activity(Trap__new_no(private$verbose, signals))
+    },
+
+    untrap = function(signals) {
+      signals <- evaluate_value(signals)
+      if (is.function(signals))
+        private$add_activity(UnTrap__new_func(private$verbose, signals, needs_attrs(signals)))
+      else private$add_activity(UnTrap__new(private$verbose, signals))
+    },
+
+    wait = function() { private$add_activity(Wait__new(private$verbose)) },
+
     join = function(trajectory) {
       if (!inherits(trajectory, "simmer.trajectory"))
         stop("not a trajectory")
@@ -303,7 +338,8 @@ simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 #' \code{\link{activate}}, \code{\link{deactivate}}, \code{\link{set_trajectory}},
 #' \code{\link{set_distribution}}, \code{\link{set_attribute}}, \code{\link{timeout}}, \code{\link{branch}},
 #' \code{\link{rollback}}, \code{\link{leave}}, \code{\link{renege_in}}, \code{\link{renege_abort}},
-#' \code{\link{clone}}, \code{\link{synchronize}}, \code{\link{batch}}, \code{\link{separate}}.
+#' \code{\link{clone}}, \code{\link{synchronize}}, \code{\link{batch}}, \code{\link{separate}},
+#' \code{\link{send}}, \code{\link{trap}}, \code{\link{untrap}}, \code{\link{wait}}.
 #' @export
 #'
 #' @examples
@@ -664,3 +700,35 @@ batch <- function(.trj, n, timeout=0, permanent=FALSE, name="", rule=NULL)
 #' @rdname batch
 #' @export
 separate <- function(.trj) .trj$separate()
+
+#' Add an inter-arrival communication activity
+#'
+#' \code{send()} broadcasts a signal or a list of signals. Arrivals can subscribe to signals and
+#' (optionally) assign a handler with \code{trap()}. When a signal is received, the arrival stops
+#' the current activity and executes the handler (if provided). Then, the execution returns
+#' to the activity following the point of the interruption. \code{untrap()} can be used to
+#' unsubscribe from signals. \code{wait()} blocks until a signal is received.
+#'
+#' @inheritParams get_head
+#' @param signals signal or list of signals, accepts either a string, a list of strings or a
+#' callable object (a function) which must return a string or a list of strings.
+#' @param delay optional timeout to trigger the signals, accepts either a numeric or a callable
+#' object (a function) which must return a numeric.
+#'
+#' @return Returns the trajectory object.
+#' @export
+send <- function(.trj, signals, delay=0) .trj$send(signals, delay)
+
+#' @param handler optional trajectory object to handle a signal received.
+#'
+#' @rdname send
+#' @export
+trap <- function(.trj, signals, handler=NULL) .trj$trap(signals, handler)
+
+#' @rdname send
+#' @export
+untrap <- function(.trj, signals) .trj$untrap(signals)
+
+#' @rdname send
+#' @export
+wait <- function(.trj) .trj$wait()
