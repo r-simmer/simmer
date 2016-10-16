@@ -115,7 +115,7 @@ Be aware that if you want the `timeout()`'s `task` parameter to be evaluated dyn
 
 Of course, this `task`, supplied as a function, may be as complex as you need and, for instance, it may check a resource's status, interact with other entities in your simulation model... The same applies to all the activities when they accept a function as a parameter.
 
-### `seize()` & `release()`
+### `seize()`, `release()`
 
 The `seize(., resource, amount)` method seizes a specified `amount` of the resource named `resource`. Conversely, the `release(., resource, amount)` method releases a specified `amount` of the resource named `resource`. Be aware that, in order to use these functions in relation to a specific resource, you have to create it in your definition of the simulation environment (check `?add_resource`). 
 
@@ -246,7 +246,7 @@ get_mon_arrivals(env)
 get_mon_resources(env)
 ```
 
-### `set_capacity()` & `set_queue_size()`
+### `set_capacity()`, `set_queue_size()`
 
 The `set_capacity(., resource, value)` method modifies the capacity of the specified resource by name, and the `set_queue_size(., resource, value)` method modifies its queue size. Be aware that, in order to use these functions in relation to a specific resource, you have to create it in your definition of the simulation environment (check `?add_resource`). You can supply the `value` parameter either as a numeric value or as a function, in the form of either `function(){}` or `function(attrs){}`, which must return a numeric value.
 
@@ -339,7 +339,7 @@ get_mon_resources(env)
 
 And, of course, everything learned for `seize()`, `release()`, `set_capacity()` and `set_queue_size()` applies to all their `_selected` versions.
 
-### `activate()` & `deactivate()`
+### `activate()`, `deactivate()`
 
 The `activate(., generator)` and `deactivate(., generator)` methods are able to start or stop, respectively, a generator by name. This name can be supplied as either a string or a function returning a string. In the following simple example, the use of these methods spreads the interarrival times which otherwise would be of 1 unit of time, as defined in the generator:
 
@@ -355,7 +355,7 @@ simmer() %>%
   get_mon_arrivals()
 ```
 
-### `set_trajectory()` & `set_distribution()`
+### `set_trajectory()`, `set_distribution()`
 
 The `set_trajectory(., generator, trajectory)` and `set_distribution(., generator, distribution)` methods are able to install a new trajectory or distribution, respectively, in a generator by name. This name can be supplied as either a string or a function returning a string.
 
@@ -532,7 +532,7 @@ get_mon_arrivals(env)
 get_mon_resources(env)
 ```
 
-### `renege_in()` & `renege_abort()`
+### `renege_in()`, `renege_abort()`
 
 The `renege_in(., t, out)` method offers the possibility of setting a timeout after which the arrival will abandon the trajectory. After reneging, the arrival can follow an optional sub-trajectory `out`. The `renege_abort(.)` method cancels a previously established timeout. Together, they allows us, for instance, to model arrivals with limited patience. In the example below, `customer1` arrives at the bank, where there is only one busy clerk. He/she waits in the queue for 5 minutes and then leaves. 
 
@@ -557,7 +557,7 @@ env <- simmer(verbose = TRUE) %>%
   run()
 ```
 
-### `clone()` & `synchronize()`
+### `clone()`, `synchronize()`
 
 The `clone(., n, ...)` method offers the possibility of replicating an arrival `n-1` times to be processed through up to `n` sub-trajectories in parallel. Then, the `synchronize(., wait, mon_all)` method synchronizes and removes replicas. By default, `synchronize()` waits for all of the replicas to arrive and allows the last one to continue:
 
@@ -641,7 +641,7 @@ env <- simmer(verbose = TRUE) %>%
 get_mon_arrivals(env)
 ```
 
-### `batch()` & `separate()`
+### `batch()`, `separate()`
 
 The `batch(., n, timeout, permanent, name, rule)` method offers the possibility of collecting a number of arrivals before they can continue processing as a block. Then, the `separate(.)` method splits a previously established non-permanent batch. This allows us to implement a rollercoaster process, for instance.
 
