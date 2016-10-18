@@ -1049,9 +1049,11 @@ public:
 
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
-    if (!brief) Rcpp::Rcout <<
-      "signals: " << signals << ", handler: " << *handler << " }" << std::endl;
-    else Rcpp::Rcout << signals << ", " << *handler << std::endl;
+    if (!brief) {
+      Rcpp::Rcout << "signals: " << signals;
+      if (handler) Rcpp::Rcout << ", handler: " << *handler;
+      Rcpp::Rcout << " }" << std::endl;
+    } else Rcpp::Rcout << signals << std::endl;
   }
 
   double run(Arrival* arrival) {
@@ -1067,16 +1069,16 @@ protected:
 
   void launch_handler(Arrival* arrival) {
     arrival->deactivate();
-    Activity* next = arrival->get_current()->get_next();
     if (handler) {
       Rcpp::Function get_head((*handler)["get_head"]);
       Rcpp::Function get_tail((*handler)["get_tail"]);
       Activity* tail = Rcpp::as<Rcpp::XPtr<Activity> >(get_tail());
+      Activity* next = arrival->get_current();
       tail->set_next(next);
       next = Rcpp::as<Rcpp::XPtr<Activity> >(get_head());
+      arrival->set_activity(next);
     }
-    arrival->set_activity(next);
-    arrival->activate();
+    arrival->sim->schedule(0, arrival);
   }
 };
 
@@ -1120,10 +1122,11 @@ public:
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout << " }" << std::endl;
+    else Rcpp::Rcout << std::endl;
   }
 
   double run(Arrival* arrival) {
-    return REJECTED;
+    return std::numeric_limits<double>::max();
   }
 };
 

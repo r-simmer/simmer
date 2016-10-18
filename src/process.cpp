@@ -115,8 +115,10 @@ void Arrival::run() {
   if (delay == ENQUEUED)
     goto end;
 
-  lifetime.busy_until = sim->now() + delay;
-  lifetime.activity += delay;
+  if (delay < std::numeric_limits<double>::max()) {
+    lifetime.busy_until = sim->now() + delay;
+    lifetime.activity += delay;
+  }
   sim->schedule(delay, this, activity ? activity->priority : 0);
   goto end;
 

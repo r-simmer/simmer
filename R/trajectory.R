@@ -255,10 +255,10 @@ simmer.trajectory <- R6Class("simmer.trajectory",
         stop("not a trajectory")
       if (is.function(signals) && !is.null(handler))
         private$add_activity(Trap__new_func(private$verbose, signals, needs_attrs(signals), handler))
-      else if (is.null(handler))
-        private$add_activity(Trap__new_func_no(private$verbose, signals, needs_attrs(signals)))
       else if (!is.null(handler))
         private$add_activity(Trap__new(private$verbose, signals, handler))
+      else if (is.function(signals))
+        private$add_activity(Trap__new_func_no(private$verbose, signals, needs_attrs(signals)))
       else private$add_activity(Trap__new_no(private$verbose, signals))
     },
 
