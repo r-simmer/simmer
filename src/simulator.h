@@ -33,7 +33,7 @@ class Simulator {
   typedef MSET<Event> PQueue;
   typedef UMAP<Process*, PQueue::iterator> EvMap;
   typedef UMAP<std::string, Entity*> EntMap;
-  typedef USET<Arrival*> ArrSet;
+  typedef UMAP<Arrival*, USET<std::string> > ArrMap;
   typedef UMAP<std::string, Batched*> NamBMap;
   typedef UMAP<Activity*, Batched*> UnnBMap;
   typedef boost::function<void ()> Bind;
@@ -84,7 +84,7 @@ public:
       if (itr.second) delete itr.second;
     foreach_ (UnnBMap::value_type& itr, unnamedb_map)
       if (itr.second) delete itr.second;
-    arrival_set.clear();
+    arrival_map.clear();
     namedb_map.clear();
     unnamedb_map.clear();
     b_count = 0;
@@ -274,9 +274,6 @@ public:
 
   unsigned int get_batch_count() { return b_count++; }
 
-  void register_arrival(Arrival* arrival) { arrival_set.emplace(arrival); }
-  void unregister_arrival(Arrival* arrival) { arrival_set.erase(arrival); }
-
   void broadcast(VEC<std::string> signals) {
     foreach_ (std::string signal, signals) {
       foreach_ (HandlerMap::value_type& itr, signal_map[signal])
@@ -284,12 +281,23 @@ public:
     }
   }
   void subscribe(VEC<std::string> signals, Arrival* arrival, Bind handler) {
-    foreach_ (std::string signal, signals)
+    foreach_ (std::string signal, signals) {
       signal_map[signal][arrival] = handler;
+      arrival_map[arrival].emplace(signal);
+    }
   }
   void unsubscribe(VEC<std::string> signals, Arrival* arrival) {
-    foreach_ (std::string signal, signals)
+    foreach_ (std::string signal, signals) {
       signal_map[signal].erase(arrival);
+      arrival_map[arrival].erase(signal);
+    }
+  }
+
+  void register_arrival(Arrival* arrival) { arrival_map[arrival]; }
+  void unregister_arrival(Arrival* arrival) {
+    foreach_ (std::string signal, arrival_map[arrival])
+      signal_map[signal].erase(arrival);
+    arrival_map.erase(arrival);
   }
 
   /**
@@ -336,11 +344,11 @@ public:
       VEC<double> activity_time         = arr_traj_stats.get<double>("activity_time");
       Rcpp::LogicalVector finished      = Rcpp::wrap(arr_traj_stats.get<bool>("finished"));
       if (ongoing) {
-        foreach_ (Arrival* arrival, arrival_set) {
-          if (!arrival->is_monitored())
+        foreach_ (ArrMap::value_type& itr, arrival_map) {
+          if (!itr.first->is_monitored())
             continue;
-          name.push_back(arrival->name);
-          start_time.push_back(arrival->get_start());
+          name.push_back(itr.first->name);
+          start_time.push_back(itr.first->get_start());
           end_time.push_back(R_NaReal);
           activity_time.push_back(R_NaReal);
           finished.push_back(R_NaInt);
@@ -360,18 +368,18 @@ public:
       VEC<double> activity_time         = arr_res_stats.get<double>("activity_time");
       VEC<std::string> resource         = arr_res_stats.get<std::string>("resource");
       if (ongoing) {
-        foreach_ (Arrival* arrival, arrival_set) {
-          if (!arrival->is_monitored())
+        foreach_ (ArrMap::value_type& itr1, arrival_map) {
+          if (!itr1.first->is_monitored())
             continue;
-          foreach_ (EntMap::value_type& itr, resource_map) {
-            double start = arrival->get_start(itr.second->name);
+          foreach_ (EntMap::value_type& itr2, resource_map) {
+            double start = itr1.first->get_start(itr2.second->name);
             if (start < 0)
               continue;
-            name.push_back(arrival->name);
+            name.push_back(itr1.first->name);
             start_time.push_back(start);
             end_time.push_back(R_NaReal);
             activity_time.push_back(R_NaReal);
-            resource.push_back(itr.second->name);
+            resource.push_back(itr2.second->name);
           }
         }
       }
@@ -425,7 +433,7 @@ private:
   EntMap resource_map;      /**< map of resources */
   EntMap process_map;       /**< map of processes */
   EvMap event_map;          /**< map of pending events */
-  ArrSet arrival_set;       /**< set of ongoing arrivals */
+  ArrMap arrival_map;       /**< map of ongoing arrivals */
   NamBMap namedb_map;       /**< map of named batches */
   UnnBMap unnamedb_map;     /**< map of unnamed batches */
   unsigned int b_count;     /**< unnamed batch counter */

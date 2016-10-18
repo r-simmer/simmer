@@ -1020,12 +1020,10 @@ public:
   double run(Arrival* arrival) {
     VEC<std::string> sigs = get<VEC<std::string> >(signals, 0, arrival);
     double t = std::abs(get<double>(delay, 1, arrival));
-    if (t) {
-      Task* task =
-        new Task(arrival->sim, "Broadcast",
-                 boost::bind(&Simulator::broadcast, arrival->sim, sigs));
-      arrival->sim->schedule(t, task, PRIORITY_MAX);
-    } else arrival->sim->broadcast(sigs);
+    Task* task =
+      new Task(arrival->sim, "Broadcast",
+               boost::bind(&Simulator::broadcast, arrival->sim, sigs));
+    arrival->sim->schedule(t, task, PRIORITY_MIN);
     return 0;
   }
 

@@ -7,7 +7,7 @@ t <- create_trajectory() %>%
   timeout(1)
 
 simmer(verbose = TRUE) %>%
-  add_generator("dummy", t, at(0)) %>%
+  add_generator("dummy", t, at(0, 1, 2)) %>%
   run() %>%
   get_mon_arrivals()
 
@@ -18,6 +18,6 @@ t <- create_trajectory() %>%
   timeout(1)
 
 simmer(verbose = TRUE) %>%
-  add_generator("dummy", t, at(0)) %>%
+  add_generator("dummy", t, at(0, 1, 2)) %>%
   run() %>%
   get_mon_arrivals()
