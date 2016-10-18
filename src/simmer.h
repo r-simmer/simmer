@@ -49,6 +49,11 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #define PRIORITY_GENERATOR      -1
 #define PRIORITY_MIN            std::numeric_limits<int>::max()
 
+#define SUCCESS    0
+#define ENQUEUE   -1
+#define REJECT    -2
+#define BLOCK     std::numeric_limits<int>::max()
+
 #define COMMA ,
 
 #define BASE_CLONEABLE(Type) \

@@ -46,12 +46,12 @@ int Resource::seize(Arrival* arrival, int amount) {
       arrival->set_activity(this->name, 0);
     }
     insert_in_queue(sim->verbose, sim->now(), arrival, amount);
-    status = ENQUEUED;
+    status = ENQUEUE;
   }
   // reject
   else {
     if (sim->verbose) verbose_print(sim->now(), arrival->name, "REJECT");
-    return REJECTED;
+    return REJECT;
   }
 
   arrival->register_entity(this);
@@ -71,8 +71,10 @@ int Resource::release(Arrival* arrival, int amount) {
   arrival->unregister_entity(this);
 
   // serve another
-  Task* task = new Task(sim, "Post-Release", boost::bind(&Resource::post_release, this));
-  sim->schedule(0, task, PRIORITY_RELEASE_POST);
+  Task* task = new Task(sim, "Post-Release",
+                        boost::bind(&Resource::post_release, this),
+                        PRIORITY_RELEASE_POST);
+  task->activate();
 
   return SUCCESS;
 }

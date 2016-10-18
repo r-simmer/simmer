@@ -14,14 +14,15 @@ class Resource;
  */
 class Process : public Entity {
 public:
-  Process(Simulator* sim, std::string name, int mon)
-    : Entity(sim, name, mon), active(true) {}
+  Process(Simulator* sim, std::string name, int mon, int priority = 0)
+    : Entity(sim, name, mon), active(true), priority(priority) {}
   virtual void run() = 0;
-  virtual void activate() { active = true; }
-  virtual void deactivate();
+  virtual bool activate(double delay = 0);
+  virtual bool deactivate();
 
 protected:
   bool active;
+  int priority;
 };
 
 class Manager : public Process {
@@ -30,12 +31,12 @@ class Manager : public Process {
 public:
   Manager(Simulator* sim, std::string name, std::string param,
           VEC<double> duration, VEC<int> value, int period, Setter set)
-    : Process(sim, name, false), param(param), duration(duration),
-      value(value), period(period), set(set), index(0) {}
+    : Process(sim, name, false, PRIORITY_MANAGER), param(param),
+      duration(duration), value(value), period(period), set(set), index(0) {}
 
   void reset() { index = 0; }
   void run();
-  void activate();
+  bool activate(double delay = 0) { return Process::activate(duration[index]); }
 
 private:
   std::string param;
@@ -50,8 +51,8 @@ class Task : public Process {
   typedef boost::function<void ()> Bind;
 
 public:
-  Task(Simulator* sim, std::string name, Bind task)
-    : Process(sim, name, false), task(task) {}
+  Task(Simulator* sim, std::string name, Bind task, int priority = 0)
+    : Process(sim, name, false, priority), task(task) {}
   ~Task() { reset(); }
 
   void reset() {}
@@ -112,8 +113,8 @@ public:
    */
   Generator(Simulator* sim, std::string name_prefix, int mon,
             Rcpp::Environment trj, Rcpp::Function dist, Order order)
-    : Process(sim, name_prefix, mon), count(0), trj(trj), dist(dist),
-      order(order), first_activity(NULL) { set_first_activity(); }
+    : Process(sim, name_prefix, mon, PRIORITY_GENERATOR), count(0), trj(trj),
+      dist(dist), order(order), first_activity(NULL) { set_first_activity(); }
 
   /**
    * Reset the generator: counter, trajectory
@@ -127,7 +128,6 @@ public:
   }
 
   void run();
-  void activate();
 
   int get_n_generated() { return count; }
   void set_trajectory(Rcpp::Environment new_trj) {
@@ -174,8 +174,9 @@ public:
   * @param order           priority, preemptible, restart
   * @param first_activity  the first activity of a user-defined R trajectory
   */
-  Arrival(Simulator* sim, std::string name, int mon, Order order, Activity* first_activity)
-    : Process(sim, name, mon), clones(new int(1)), order(order),
+  Arrival(Simulator* sim, std::string name, int mon, Order order,
+          Activity* first_activity, int priority = 0)
+    : Process(sim, name, mon, priority), clones(new int(1)), order(order),
       activity(first_activity), timer(NULL), batch(NULL) {}
 
   Arrival(const Arrival& o)
@@ -185,8 +186,8 @@ public:
 
   void reset();
   void run();
-  void activate();
-  void deactivate();
+  void restart();
+  void interrupt();
   virtual void leave(std::string resource);
   virtual void leave(std::string resource, double start, double activity);
   virtual void terminate(bool finished);
@@ -211,7 +212,15 @@ public:
   void register_entity(Batched* ptr) { batch = ptr; }
   void unregister_entity(Resource* ptr) { resources.erase(resources.find(ptr)); }
   void unregister_entity(Batched* ptr) { batch = NULL; }
-  void set_timeout(double timeout, Activity* next);
+
+  void set_timeout(double timeout, Activity* next) {
+    cancel_timeout();
+    timer = new Task(sim, "Renege-Timer",
+                     boost::bind(&Arrival::renege, this, next),
+                     PRIORITY_MIN);
+    timer->activate(timeout);
+  }
+
   void cancel_timeout() {
     if (!timer)
       return;
@@ -238,8 +247,8 @@ class Batched : public Arrival {
 public:
   CLONEABLE_COUNT_DERIVED(Batched)
 
-  Batched(Simulator* sim, std::string name, bool permanent)
-    : Arrival(sim, name, true, Order(), NULL), permanent(permanent) {}
+  Batched(Simulator* sim, std::string name, bool permanent, int priority = 0)
+    : Arrival(sim, name, true, Order(), NULL, priority), permanent(permanent) {}
 
   Batched(const Batched& o) : Arrival(o), arrivals(o.arrivals), permanent(o.permanent) {
     for (unsigned int i=0; i<arrivals.size(); i++) {
@@ -271,7 +280,17 @@ public:
   }
 
   void terminate(bool finished);
-  void pop_all(Activity* next);
+
+  void pop_all(Activity* next) {
+    foreach_ (Arrival* arrival, arrivals) {
+      arrival->set_activity(arrival->get_activity() + lifetime.activity);
+      arrival->set_activity(next);
+      arrival->unregister_entity(this);
+      arrival->activate();
+    }
+    arrivals.clear();
+  }
+
   int set_attribute(std::string key, double value);
 
   bool is_permanent() { return permanent; }

@@ -33,7 +33,7 @@ public:
   * @param   arrival  a pointer to the arrival trying to seize resources
   * @param   amount   the amount of resources needed
   *
-  * @return  SUCCESS, ENQUEUED, REJECTED
+  * @return  SUCCESS, ENQUEUE, REJECT
   */
   int seize(Arrival* arrival, int amount);
 
@@ -186,7 +186,7 @@ protected:
       double last = next->arrival->get_activity(this->name);
       next->arrival->set_activity(this->name, time - last);
     }
-    next->arrival->activate();
+    next->arrival->restart();
     insert_in_server(verbose, time, next->arrival, next->amount);
     queue_count -= next->amount;
     queue_map.erase(next->arrival);
@@ -299,7 +299,7 @@ protected:
     typename T::iterator first = this->server.begin();
     if (first == this->server.end())
       return false;
-    first->arrival->deactivate();
+    first->arrival->interrupt();
     if (verbose) this->verbose_print(time, first->arrival->name, "PREEMPT");
     if (first->arrival->is_monitored()) {
       double last = first->arrival->get_activity(this->name);
@@ -331,7 +331,7 @@ protected:
       double last = next->arrival->get_activity(this->name);
       next->arrival->set_activity(this->name, time - last);
     }
-    next->arrival->activate();
+    next->arrival->restart();
     this->insert_in_server(verbose, time, next->arrival, next->amount);
     this->queue_count -= next->amount;
     preempted_map.erase(next->arrival);

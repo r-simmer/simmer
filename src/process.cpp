@@ -2,15 +2,17 @@
 #include "simulator.h"
 #include "activity.h"
 
-void Process::deactivate() {
-  if (!active) return;
-  sim->unschedule(this);
-  active = false;
+bool Process::activate(double delay) {
+  sim->schedule(delay, this, priority);
+  active = true;
+  return true;
 }
 
-void Generator::activate() {
-  Process::activate();
-  sim->schedule(0, this, PRIORITY_GENERATOR);
+bool Process::deactivate() {
+  if (!active) return false;
+  sim->unschedule(this);
+  active = false;
+  return true;
 }
 
 void Generator::set_first_activity() {
@@ -33,7 +35,8 @@ void Generator::run() {
 
     // format the name and create the next arrival
     std::string arr_name = name + boost::lexical_cast<std::string>(count++);
-    Arrival* arrival = new Arrival(sim, arr_name, is_monitored(), order, first_activity);
+    Arrival* arrival = new Arrival(sim, arr_name, is_monitored(),
+                                   order, first_activity, count);
 
     if (sim->verbose)Rcpp::Rcout <<
       FMT(10, right) << sim->now() << " |" <<
@@ -44,15 +47,10 @@ void Generator::run() {
     // schedule the arrival
     sim->register_arrival(arrival);
     sim->schedule(delay, arrival,
-                  first_activity->priority < 0 ? first_activity->priority : count);
+                  first_activity->priority ? first_activity->priority : count);
   }
   // schedule the generator
-  sim->schedule(delay, this, PRIORITY_GENERATOR);
-}
-
-void Manager::activate() {
-  Process::activate();
-  sim->schedule(duration[index], this, PRIORITY_MANAGER);
+  activate(delay);
 }
 
 void Manager::run() {
@@ -109,17 +107,17 @@ void Arrival::run() {
   }
 
   delay = activity->run(this);
-  if (delay == REJECTED)
+  if (delay == REJECT)
     goto end;
   activity = activity->get_next();
-  if (delay == ENQUEUED)
+  if (delay == ENQUEUE)
     goto end;
 
-  if (delay < std::numeric_limits<double>::max()) {
+  if (delay != BLOCK) {
     lifetime.busy_until = sim->now() + delay;
     lifetime.activity += delay;
   }
-  sim->schedule(delay, this, activity ? activity->priority : 0);
+  sim->schedule(delay, this, activity ? activity->priority : priority);
   goto end;
 
 finish:
@@ -128,15 +126,14 @@ end:
   return;
 }
 
-void Arrival::activate() {
-  Process::activate();
+void Arrival::restart() {
   lifetime.busy_until = sim->now() + lifetime.remaining;
-  sim->schedule(lifetime.remaining, this, 1);
+  activate(lifetime.remaining);
   lifetime.remaining = 0;
 }
 
-void Arrival::deactivate() {
-  Process::deactivate();
+void Arrival::interrupt() {
+  deactivate();
   lifetime.remaining = lifetime.busy_until - sim->now();
   if (lifetime.remaining && order.get_restart()) {
     lifetime.activity -= lifetime.remaining;
@@ -176,11 +173,11 @@ void Arrival::renege(Activity* next) {
   while (resources.begin() != resources.end())
     ret |= (*resources.begin())->erase(this);
   if (!ret)
-    Process::deactivate();
+    deactivate();
   lifetime.remaining = lifetime.busy_until - sim->now();
   if (next) {
     activity = next;
-    sim->schedule(0, this);
+    activate();
   } else terminate(false);
 }
 
@@ -201,12 +198,6 @@ double Arrival::get_start(std::string name) {
   return start;
 }
 
-void Arrival::set_timeout(double timeout, Activity* next) {
-  cancel_timeout();
-  timer = new Task(sim, "Renege-Timer", boost::bind(&Arrival::renege, this, next));
-  sim->schedule(timeout, timer, PRIORITY_MIN);
-}
-
 void Batched::terminate(bool finished) {
   foreach_ (ResMSet::value_type& itr, resources) {
     Rcpp::warning("`%s`: leaving without releasing `%s`", name, itr->name);
@@ -219,16 +210,6 @@ void Batched::terminate(bool finished) {
   }
   arrivals.clear();
   delete this;
-}
-
-void Batched::pop_all(Activity* next) {
-  foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
-    itr->set_activity(itr->get_activity() + lifetime.activity);
-    itr->set_activity(next);
-    itr->unregister_entity(this);
-    sim->schedule(0, itr);
-  }
-  arrivals.clear();
 }
 
 int Batched::set_attribute(std::string key, double value) {
@@ -254,7 +235,7 @@ void Batched::erase(Arrival* arrival) {
     while (resources.begin() != resources.end())
       ret |= (*resources.begin())->erase(this);
     if (!ret)
-      Process::deactivate();
+      deactivate();
   } else batch->erase(this);
   arrivals.erase(std::remove(arrivals.begin(), arrivals.end(), arrival), arrivals.end());
   arrival->unregister_entity(this);

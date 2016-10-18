@@ -3,10 +3,6 @@
 
 #include "simmer.h"
 
-#define SUCCESS 0
-#define ENQUEUED -1
-#define REJECTED -2
-
 // forward declarations
 class Simulator;
 

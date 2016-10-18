@@ -202,7 +202,7 @@ protected:
 
   int select_path(Arrival* arrival, int ret) {
     switch (ret) {
-    case REJECTED:
+    case REJECT:
       if (mask & 2) {
         ret = SUCCESS;
         if (mask & 1)
@@ -756,7 +756,7 @@ public:
     if (Rcpp::runif(1)[0] > get<double>(prob, 0, arrival))
       return 0;
     arrival->terminate(false);
-    return REJECTED;
+    return REJECT;
   }
 
 protected:
@@ -790,7 +790,7 @@ public:
         selected = heads[i];
       Arrival* new_arrival = arrival->clone();
       new_arrival->set_activity(this->get_next());
-      arrival->sim->schedule(0, new_arrival);
+      new_arrival->activate();
     }
     if (heads.size())
       selected = heads[0];
@@ -843,7 +843,7 @@ public:
       delete arrival;
     else
       arrival->terminate(true);
-    return REJECTED;
+    return REJECT;
   }
 
 protected:
@@ -881,7 +881,7 @@ public:
     (*ptr)->insert(arrival);
     if ((int)(*ptr)->size() == n)
       trigger(arrival->sim, *ptr);
-    return REJECTED;
+    return REJECT;
   }
 
 protected:
@@ -893,14 +893,20 @@ protected:
 
   Batched* init(Simulator* sim) {
     std::string str;
-    if (id.size())
+    Batched* ptr = NULL;
+    if (id.size()) {
       str = "batch_" + id;
-    else
-      str= "batch" + boost::lexical_cast<std::string>(sim->get_batch_count());
-    Batched* ptr = new Batched(sim, str, permanent);
+      ptr = new Batched(sim, str, permanent);
+    } else {
+      int count = sim->get_batch_count();
+      str= "batch" + boost::lexical_cast<std::string>(count);
+      ptr = new Batched(sim, str, permanent, count);
+    }
     if (timeout) {
-      Task* task = new Task(sim, "Batch-Timer", boost::bind(&Batch::trigger, this, sim, ptr));
-      sim->schedule(timeout, task, PRIORITY_MIN);
+      Task* task = new Task(sim, "Batch-Timer",
+                            boost::bind(&Batch::trigger, this, sim, ptr),
+                            PRIORITY_MIN);
+      task->activate(timeout);
     }
     return ptr;
   }
@@ -911,7 +917,7 @@ protected:
       return;
     if ((*ptr)->size()) {
       (*ptr)->set_activity(this->get_next());
-      (*ptr)->sim->schedule(0, (*ptr));
+      (*ptr)->activate();
       *ptr = init((*ptr)->sim);
     } else {
       delete *ptr;
@@ -941,7 +947,7 @@ public:
       return 0;
     batched->pop_all(this->get_next());
     delete batched;
-    return REJECTED;
+    return REJECT;
   }
 };
 
@@ -1022,8 +1028,9 @@ public:
     double t = std::abs(get<double>(delay, 1, arrival));
     Task* task =
       new Task(arrival->sim, "Broadcast",
-               boost::bind(&Simulator::broadcast, arrival->sim, sigs));
-    arrival->sim->schedule(t, task, PRIORITY_MIN);
+               boost::bind(&Simulator::broadcast, arrival->sim, sigs),
+               PRIORITY_MIN);
+    task->activate(t);
     return 0;
   }
 
@@ -1066,7 +1073,7 @@ protected:
   OPT<Rcpp::Environment> handler;
 
   void launch_handler(Arrival* arrival) {
-    arrival->deactivate();
+    arrival->interrupt();
     if (handler) {
       Rcpp::Function get_head((*handler)["get_head"]);
       Rcpp::Function get_tail((*handler)["get_tail"]);
@@ -1076,7 +1083,7 @@ protected:
       next = Rcpp::as<Rcpp::XPtr<Activity> >(get_head());
       arrival->set_activity(next);
     }
-    arrival->sim->schedule(0, arrival);
+    arrival->activate();
   }
 };
 
@@ -1123,9 +1130,7 @@ public:
     else Rcpp::Rcout << std::endl;
   }
 
-  double run(Arrival* arrival) {
-    return std::numeric_limits<double>::max();
-  }
+  double run(Arrival* arrival) { return BLOCK; }
 };
 
 #endif
