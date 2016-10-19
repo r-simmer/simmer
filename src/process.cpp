@@ -136,6 +136,8 @@ void Arrival::restart() {
 
 void Arrival::interrupt() {
   deactivate();
+  if (lifetime.busy_until < sim->now())
+    return;
   lifetime.remaining = lifetime.busy_until - sim->now();
   if (lifetime.remaining && order.get_restart()) {
     lifetime.activity -= lifetime.remaining;
