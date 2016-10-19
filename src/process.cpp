@@ -106,12 +106,14 @@ void Arrival::run() {
     activity->print(0, true);
   }
 
+  active = false;
   delay = activity->run(this);
   if (delay == REJECT)
     goto end;
   activity = activity->get_next();
   if (delay == ENQUEUE)
     goto end;
+  active = true;
 
   if (delay != BLOCK) {
     lifetime.busy_until = sim->now() + delay;

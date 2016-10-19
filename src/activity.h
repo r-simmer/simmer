@@ -1073,6 +1073,8 @@ protected:
   OPT<Rcpp::Environment> handler;
 
   void launch_handler(Arrival* arrival) {
+    if (!arrival->is_active())
+      return;
     arrival->interrupt();
     if (handler) {
       Rcpp::Function get_head((*handler)["get_head"]);

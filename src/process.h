@@ -19,6 +19,7 @@ public:
   virtual void run() = 0;
   virtual bool activate(double delay = 0);
   virtual bool deactivate();
+  bool is_active() { return active; }
 
 protected:
   bool active;
