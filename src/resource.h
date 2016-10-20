@@ -182,10 +182,6 @@ protected:
     RPQueue::iterator next = queue.begin();
     if (!room_in_server(next->amount, next->priority()))
       return false;
-    if (next->arrival->is_monitored()) {
-      double last = next->arrival->get_activity(this->name);
-      next->arrival->set_activity(this->name, time - last);
-    }
     next->arrival->restart();
     insert_in_server(verbose, time, next->arrival, next->amount);
     queue_count -= next->amount;
@@ -301,10 +297,6 @@ protected:
       return false;
     first->arrival->interrupt();
     if (verbose) this->verbose_print(time, first->arrival->name, "PREEMPT");
-    if (first->arrival->is_monitored()) {
-      double last = first->arrival->get_activity(this->name);
-      first->arrival->set_activity(this->name, time - last);
-    }
     this->server_count -= first->amount;
     this->server_map.erase(first->arrival);
     if (keep_queue) {
@@ -327,10 +319,6 @@ protected:
       return PriorityRes<T>::try_serve_from_queue(verbose, time);
     if (!room_in_server(next->amount, next->priority()))
       return false;
-    if (next->arrival->is_monitored()) {
-      double last = next->arrival->get_activity(this->name);
-      next->arrival->set_activity(this->name, time - last);
-    }
     next->arrival->restart();
     this->insert_in_server(verbose, time, next->arrival, next->amount);
     this->queue_count -= next->amount;

@@ -277,20 +277,12 @@ Send__new_func4 <- function(verbose, signals, delay, provide_attrs) {
     .Call('simmer_Send__new_func4', PACKAGE = 'simmer', verbose, signals, delay, provide_attrs)
 }
 
-Trap__new <- function(verbose, signals, handler) {
-    .Call('simmer_Trap__new', PACKAGE = 'simmer', verbose, signals, handler)
+Trap__new <- function(verbose, signals, trj) {
+    .Call('simmer_Trap__new', PACKAGE = 'simmer', verbose, signals, trj)
 }
 
-Trap__new_no <- function(verbose, signals) {
-    .Call('simmer_Trap__new_no', PACKAGE = 'simmer', verbose, signals)
-}
-
-Trap__new_func <- function(verbose, signals, provide_attrs, handler) {
-    .Call('simmer_Trap__new_func', PACKAGE = 'simmer', verbose, signals, provide_attrs, handler)
-}
-
-Trap__new_func_no <- function(verbose, signals, provide_attrs) {
-    .Call('simmer_Trap__new_func_no', PACKAGE = 'simmer', verbose, signals, provide_attrs)
+Trap__new_func <- function(verbose, signals, provide_attrs, trj) {
+    .Call('simmer_Trap__new_func', PACKAGE = 'simmer', verbose, signals, provide_attrs, trj)
 }
 
 UnTrap__new <- function(verbose, signals) {

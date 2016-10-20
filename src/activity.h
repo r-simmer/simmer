@@ -1043,21 +1043,18 @@ protected:
  * Subscribe to signals and assign a handler.
  */
 template <typename T>
-class Trap : public Activity {
+class Trap : public Fork {
 public:
   CLONEABLE(Trap<T>)
 
-  Trap(bool verbose, T signals, bool provide_attrs,
-       OPT<Rcpp::Environment> handler = NONE)
-    : Activity("Trap", verbose, VEC<bool>(1, provide_attrs)),
-      signals(signals), handler(handler) {}
+  Trap(bool verbose, T signals, bool provide_attrs, VEC<Rcpp::Environment> trj)
+    : Fork("Trap", verbose, VEC<bool>(trj.size(), false),
+      trj, VEC<bool>(1, provide_attrs)), signals(signals) {}
 
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) {
-      Rcpp::Rcout << "signals: " << signals;
-      if (handler) Rcpp::Rcout << ", handler: " << *handler;
-      Rcpp::Rcout << " }" << std::endl;
+      Rcpp::Rcout << "signals: " << signals << " }" << std::endl;
     } else Rcpp::Rcout << signals << std::endl;
   }
 
@@ -1070,20 +1067,14 @@ public:
 
 protected:
   T signals;
-  OPT<Rcpp::Environment> handler;
 
   void launch_handler(Arrival* arrival) {
     if (!arrival->is_active())
       return;
     arrival->interrupt();
-    if (handler) {
-      Rcpp::Function get_head((*handler)["get_head"]);
-      Rcpp::Function get_tail((*handler)["get_tail"]);
-      Activity* tail = Rcpp::as<Rcpp::XPtr<Activity> >(get_tail());
-      Activity* next = arrival->get_current();
-      tail->set_next(next);
-      next = Rcpp::as<Rcpp::XPtr<Activity> >(get_head());
-      arrival->set_activity(next);
+    if (heads.size()) {
+      tails[0]->set_next(arrival->get_activity());
+      arrival->set_activity(heads[0]);
     }
     arrival->activate();
   }

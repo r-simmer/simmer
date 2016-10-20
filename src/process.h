@@ -151,6 +151,8 @@ private:
  *  Arrival process.
  */
 class Arrival : public Process {
+  friend class Batched;
+
 public:
   struct ArrTime {
     double start;
@@ -200,18 +202,14 @@ public:
   double get_remaining() { return lifetime.remaining; }
   void set_start(std::string name, double value) { restime[name].start = value; }
   void set_activity(Activity* ptr) { activity = ptr; }
-  void set_activity(double value) { lifetime.activity = value; }
-  void set_activity(std::string name, double value) { restime[name].activity = value; }
   double get_start() { return lifetime.start; }
-  Activity* get_current() { return activity; }
-  double get_activity() { return lifetime.activity - lifetime.remaining; }
-  double get_activity(std::string name) { return restime[name].activity; }
+  Activity* get_activity() { return activity; }
 
   void set_selected(int id, Resource* res) { selected[id] = res; }
   Resource* get_selected(int id) { return selected[id]; }
-  void register_entity(Resource* ptr) { resources.insert(ptr); }
+  void register_entity(Resource* ptr);
   void register_entity(Batched* ptr) { batch = ptr; }
-  void unregister_entity(Resource* ptr) { resources.erase(resources.find(ptr)); }
+  void unregister_entity(Resource* ptr);
   void unregister_entity(Batched* ptr) { batch = NULL; }
 
   void set_timeout(double timeout, Activity* next) {
@@ -239,6 +237,28 @@ protected:
   Task* timer;          /**< timer that triggers reneging */
   Batched* batch;       /**< batch that contains this arrival */
   ResMSet resources;    /**< resources that contain this arrival */
+
+  virtual void update_activity(double value) {
+    lifetime.activity += value;
+    if (is_monitored()) {
+      foreach_ (ResTime::value_type& itr, restime)
+      itr.second.activity += value;
+    }
+  }
+  virtual void set_remaining(double value) {
+    lifetime.remaining = value;
+  }
+  void unset_remaining() {
+    update_activity(-lifetime.remaining);
+    set_remaining(0);
+  }
+  virtual void set_busy(double value) {
+    lifetime.busy_until = value;
+  }
+  void unset_busy(double now) {
+    set_remaining(lifetime.busy_until - now);
+    set_busy(0);
+  }
 };
 
 /**
@@ -261,22 +281,22 @@ public:
   ~Batched() { reset(); }
 
   void reset() {
-    foreach_ (VEC<Arrival*>::value_type& itr, arrivals)
-      delete itr;
+    foreach_ (Arrival* arrival, arrivals)
+      delete arrival;
     arrivals.clear();
   }
 
   void leave(std::string resource) {
-    foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
-      if (itr->is_monitored())
-        itr->leave(resource, restime[resource].start, restime[resource].activity);
+    foreach_ (Arrival* arrival, arrivals) {
+      if (arrival->is_monitored())
+        arrival->leave(resource, restime[resource].start, restime[resource].activity);
     }
   }
 
   void leave(std::string resource, double start, double activity) {
-    foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
-      if (itr->is_monitored())
-        itr->leave(resource, start, activity);
+    foreach_ (Arrival* arrival, arrivals) {
+      if (arrival->is_monitored())
+        arrival->leave(resource, start, activity);
     }
   }
 
@@ -284,7 +304,6 @@ public:
 
   void pop_all(Activity* next) {
     foreach_ (Arrival* arrival, arrivals) {
-      arrival->set_activity(arrival->get_activity() + lifetime.activity);
       arrival->set_activity(next);
       arrival->unregister_entity(this);
       arrival->activate();
@@ -307,6 +326,22 @@ public:
 protected:
   VEC<Arrival*> arrivals;
   bool permanent;
+
+  void update_activity(double value) {
+    Arrival::update_activity(value);
+    foreach_ (Arrival* arrival, arrivals)
+      arrival->update_activity(value);
+  }
+  void set_remaining(double value) {
+    Arrival::set_remaining(value);
+    foreach_ (Arrival* arrival, arrivals)
+      arrival->set_remaining(value);
+  }
+  void set_busy(double value) {
+    Arrival::set_busy(value);
+    foreach_ (Arrival* arrival, arrivals)
+      arrival->set_busy(value);
+  }
 };
 
 #endif

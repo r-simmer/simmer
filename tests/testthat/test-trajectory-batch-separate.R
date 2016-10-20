@@ -165,7 +165,7 @@ test_that("a non-triggered batch does not crash if arrivals renege", {
 
   expect_equal(arr_glb$start_time, 0)
   expect_equal(arr_glb$end_time, 1)
-  expect_equal(arr_glb$activity_time, 1)
+  expect_equal(arr_glb$activity_time, 0)
   expect_false(arr_glb$finished)
 })
 
@@ -308,4 +308,38 @@ test_that("nested batches are separated", {
   expect_equal(arr_res$start_time, c(3, 3, 3, 3))
   expect_equal(arr_res$end_time, c(4, 4, 4, 4))
   expect_equal(arr_res$activity_time, c(1, 1, 1, 1))
+})
+
+test_that("seizes across nested batches are correctly reported", {
+  t <- create_trajectory(verbose = TRUE) %>%
+    seize("dummy0", 1) %>%
+    batch(1, timeout = 0, permanent = FALSE, rule = NULL) %>%
+    seize("dummy1", 1) %>%
+    batch(1, timeout = 0, permanent = FALSE, rule = NULL) %>%
+    seize("dummy2", 1) %>%
+    timeout(1) %>%
+    release("dummy2", 1) %>%
+    separate() %>%
+    timeout(1) %>%
+    release("dummy1", 1) %>%
+    separate() %>%
+    timeout(1) %>%
+    release("dummy0", 1)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy0", 1, 0) %>%
+    add_resource("dummy1", 1, 0) %>%
+    add_resource("dummy2", 1, 0) %>%
+    add_generator("arrival", t, at(0)) %>%
+    run()
+
+  arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
+  arr_res <- get_mon_arrivals(env, per_resource = TRUE)
+
+  expect_equal(arr_glb$start_time, 0)
+  expect_equal(arr_glb$end_time, 3)
+  expect_equal(arr_glb$activity_time, 3)
+  expect_equal(arr_res$start_time, c(0, 0, 0))
+  expect_equal(arr_res$end_time, c(1, 2, 3))
+  expect_equal(arr_res$activity_time, c(1, 2, 3))
 })

@@ -131,11 +131,12 @@ test_that("an enqueued arrival reneges", {
   arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
   res <- get_mon_resources(env)
 
-  expect_equal(arr_res$end_time, 2)
-  expect_equal(arr_res$activity_time, 2)
+  expect_equal(arr_res$name, c("arrival1", "arrival0"))
+  expect_equal(arr_res$end_time, c(1, 2))
+  expect_equal(arr_res$activity_time, c(0, 2))
   expect_equal(arr_glb$name, c("arrival1", "arrival0"))
   expect_equal(arr_glb$end_time, c(1, 2))
-  expect_equal(arr_glb$activity_time, c(1, 2))
+  expect_equal(arr_glb$activity_time, c(0, 2))
   expect_equal(arr_glb$finished, c(FALSE, TRUE))
   expect_equal(res$time, c(0, 0, 1, 2))
   expect_equal(res$server, c(1, 1, 1, 0))
@@ -162,12 +163,12 @@ test_that("a preempted arrival reneges (1)", {
   arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
   res <- get_mon_resources(env)
 
-  expect_equal(arr_res$start_time, 1)
-  expect_equal(arr_res$end_time, 5)
-  expect_equal(arr_res$activity_time, 4)
+  expect_equal(arr_res$name, c("arrival00", "arrival10"))
+  expect_equal(arr_res$end_time, c(2, 5))
+  expect_equal(arr_res$activity_time, c(1, 4))
   expect_equal(arr_glb$name, c("arrival00", "arrival10"))
   expect_equal(arr_glb$end_time, c(2, 5))
-  expect_equal(arr_glb$activity_time, c(2, 4))
+  expect_equal(arr_glb$activity_time, c(1, 4))
   expect_equal(arr_glb$finished, c(FALSE, TRUE))
   expect_equal(res$time, c(0, 1, 2, 5))
   expect_equal(res$server, c(1, 1, 1, 0))
@@ -194,12 +195,12 @@ test_that("a preempted arrival reneges (2)", {
   arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
   res <- get_mon_resources(env)
 
-  expect_equal(arr_res$start_time, 1)
-  expect_equal(arr_res$end_time, 5)
-  expect_equal(arr_res$activity_time, 4)
+  expect_equal(arr_res$name, c("arrival00", "arrival10"))
+  expect_equal(arr_res$end_time, c(2, 5))
+  expect_equal(arr_res$activity_time, c(1, 4))
   expect_equal(arr_glb$name, c("arrival00", "arrival10"))
   expect_equal(arr_glb$end_time, c(2, 5))
-  expect_equal(arr_glb$activity_time, c(2, 4))
+  expect_equal(arr_glb$activity_time, c(1, 4))
   expect_equal(arr_glb$finished, c(FALSE, TRUE))
   expect_equal(res$time, c(0, 1, 2, 5))
   expect_equal(res$server, c(1, 1, 1, 0))
@@ -339,4 +340,37 @@ test_that("a batch inside a batch reneges", {
   expect_equal(res$time, c(0, 2))
   expect_equal(res$server, c(1, 0))
   expect_equal(res$queue, c(0, 0))
+})
+
+test_that("seizes across nested batches are correctly reported", {
+  t <- create_trajectory(verbose = TRUE) %>%
+    renege_in(2) %>%
+    seize("dummy0", 1) %>%
+    batch(1) %>%
+    seize("dummy1", 1) %>%
+    batch(1) %>%
+    seize("dummy2", 1) %>%
+    timeout(10) %>%
+    release("dummy2", 1) %>%
+    separate() %>%
+    release("dummy1", 1) %>%
+    separate() %>%
+    release("dummy0", 1)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy0", 1, 0) %>%
+    add_resource("dummy1", 1, 0) %>%
+    add_resource("dummy2", 1, 0) %>%
+    add_generator("arrival", t, at(0)) %>%
+    run()
+
+  arr_glb <- get_mon_arrivals(env, per_resource = FALSE)
+  arr_res <- get_mon_arrivals(env, per_resource = TRUE)
+
+  expect_equal(arr_glb$start_time, 0)
+  expect_equal(arr_glb$end_time, 2)
+  expect_equal(arr_glb$activity_time, 2)
+  expect_equal(arr_res$start_time, c(0, 0, 0))
+  expect_equal(arr_res$end_time, c(2, 2, 2))
+  expect_equal(arr_res$activity_time, c(2, 2, 2))
 })

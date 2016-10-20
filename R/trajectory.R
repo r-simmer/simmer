@@ -251,15 +251,14 @@ simmer.trajectory <- R6Class("simmer.trajectory",
 
     trap = function(signals, handler=NULL) {
       signals <- evaluate_value(signals)
-      if (!is.null(handler)) if (!inherits(handler, "simmer.trajectory"))
-        stop("not a trajectory")
-      if (is.function(signals) && !is.null(handler))
-        private$add_activity(Trap__new_func(private$verbose, signals, needs_attrs(signals), handler))
-      else if (!is.null(handler))
-        private$add_activity(Trap__new(private$verbose, signals, handler))
-      else if (is.function(signals))
-        private$add_activity(Trap__new_func_no(private$verbose, signals, needs_attrs(signals)))
-      else private$add_activity(Trap__new_no(private$verbose, signals))
+      traj <- list()
+      if (!is.null(handler)) {
+        if (!inherits(handler, "simmer.trajectory")) stop("not a trajectory")
+        traj <- c(traj, out)
+      }
+      if (is.function(signals))
+        private$add_activity(Trap__new_func(private$verbose, signals, needs_attrs(signals), traj))
+      else private$add_activity(Trap__new(private$verbose, signals, traj))
     },
 
     untrap = function(signals) {

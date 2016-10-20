@@ -116,8 +116,8 @@ void Arrival::run() {
   active = true;
 
   if (delay != BLOCK) {
-    lifetime.busy_until = sim->now() + delay;
-    lifetime.activity += delay;
+    set_busy(sim->now() + delay);
+    update_activity(delay);
   }
   sim->schedule(delay, this, activity ? activity->priority : priority);
   goto end;
@@ -129,19 +129,18 @@ end:
 }
 
 void Arrival::restart() {
-  lifetime.busy_until = sim->now() + lifetime.remaining;
+  set_busy(sim->now() + lifetime.remaining);
   activate(lifetime.remaining);
-  lifetime.remaining = 0;
+  set_remaining(0);
 }
 
 void Arrival::interrupt() {
   deactivate();
   if (lifetime.busy_until < sim->now())
     return;
-  lifetime.remaining = lifetime.busy_until - sim->now();
+  unset_busy(sim->now());
   if (lifetime.remaining && order.get_restart()) {
-    lifetime.activity -= lifetime.remaining;
-    lifetime.remaining = 0;
+    unset_remaining();
     activity = activity->get_prev();
   }
 }
@@ -159,8 +158,8 @@ void Arrival::terminate(bool finished) {
     Rcpp::warning("`%s`: leaving without releasing `%s`", name, itr->name);
     itr->erase(this, true);
   }
-  lifetime.activity -= lifetime.remaining;
-  if (is_monitored() >= 1)
+  unset_remaining();
+  if (is_monitored() >= 1 && !dynamic_cast<Batched*>(this))
     sim->record_end(name, lifetime.start, lifetime.activity, finished);
   delete this;
 }
@@ -174,11 +173,13 @@ void Arrival::renege(Activity* next) {
     ret = true;
     batch->erase(this);
   }
+  if (lifetime.busy_until > sim->now())
+    unset_busy(sim->now());
+  unset_remaining();
   while (resources.begin() != resources.end())
     ret |= (*resources.begin())->erase(this);
   if (!ret)
     deactivate();
-  lifetime.remaining = lifetime.busy_until - sim->now();
   if (next) {
     activity = next;
     activate();
@@ -202,24 +203,29 @@ double Arrival::get_start(std::string name) {
   return start;
 }
 
+void Arrival::register_entity(Resource* ptr) {
+  if (is_monitored())
+      restime[ptr->name].start = sim->now();
+  resources.insert(ptr);
+}
+
+void Arrival::unregister_entity(Resource* ptr) {
+  if (is_monitored())
+    leave(ptr->name);
+  resources.erase(resources.find(ptr));
+}
+
 void Batched::terminate(bool finished) {
-  foreach_ (ResMSet::value_type& itr, resources) {
-    Rcpp::warning("`%s`: leaving without releasing `%s`", name, itr->name);
-    itr->erase(this, true);
-  }
-  lifetime.activity -= lifetime.remaining;
-  foreach_ (VEC<Arrival*>::value_type& itr, arrivals) {
-    itr->set_activity(itr->get_activity() + lifetime.activity);
-    itr->terminate(finished);
-  }
+  foreach_ (Arrival* arrival, arrivals)
+    arrival->terminate(finished);
   arrivals.clear();
-  delete this;
+  Arrival::terminate(finished);
 }
 
 int Batched::set_attribute(std::string key, double value) {
   attributes[key] = value;
-  foreach_ (VEC<Arrival*>::value_type& itr, arrivals)
-    itr->set_attribute(key, value);
+  foreach_ (Arrival* arrival, arrivals)
+    arrival->set_attribute(key, value);
   return 0;
 }
 
@@ -236,19 +242,28 @@ void Batched::erase(Arrival* arrival) {
     }
   } else if (arrivals.size() == 1 && !batch) {
     bool ret = !activity;
+    if (lifetime.busy_until > sim->now())
+      unset_busy(sim->now());
+    unset_remaining();
     while (resources.begin() != resources.end())
-      ret |= (*resources.begin())->erase(this);
+      (*resources.begin())->erase(this);
     if (!ret)
       deactivate();
-  } else batch->erase(this);
+  } else {
+    batch->erase(this);
+    if (lifetime.busy_until > sim->now())
+      unset_busy(sim->now());
+    unset_remaining();
+    while (resources.begin() != resources.end())
+      (*resources.begin())->erase(this);
+  }
   arrivals.erase(std::remove(arrivals.begin(), arrivals.end(), arrival), arrivals.end());
   arrival->unregister_entity(this);
   if (del) delete this;
 }
 
 void Batched::report(Arrival* arrival) {
-  foreach_ (ResMSet::value_type& itr, resources) {
-    double last = get_activity(itr->name);
-    arrival->leave(itr->name, restime[itr->name].start, sim->now() - last);
-  }
+  foreach_ (ResTime::value_type& itr, restime)
+    arrival->leave(itr.first, itr.second.start,
+                   itr.second.activity - lifetime.busy_until + sim->now());
 }

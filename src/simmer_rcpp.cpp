@@ -424,25 +424,13 @@ SEXP Send__new_func4(bool verbose, Function signals,
 }
 
 //[[Rcpp::export]]
-SEXP Trap__new(bool verbose, std::vector<std::string> signals, Environment handler) {
-  return XPtr<Trap<VEC<std::string> > >(new Trap<VEC<std::string> >(verbose, signals, 0, handler));
+SEXP Trap__new(bool verbose, std::vector<std::string> signals, std::vector<Environment> trj) {
+  return XPtr<Trap<VEC<std::string> > >(new Trap<VEC<std::string> >(verbose, signals, 0, trj));
 }
 
 //[[Rcpp::export]]
-SEXP Trap__new_no(bool verbose, std::vector<std::string> signals) {
-  return XPtr<Trap<VEC<std::string> > >(new Trap<VEC<std::string> >(verbose, signals, 0));
-}
-
-//[[Rcpp::export]]
-SEXP Trap__new_func(bool verbose, Function signals, bool provide_attrs,
-                    Environment handler)
-{
-  return XPtr<Trap<Function> >(new Trap<Function>(verbose, signals, provide_attrs, handler));
-}
-
-//[[Rcpp::export]]
-SEXP Trap__new_func_no(bool verbose, Function signals, bool provide_attrs) {
-  return XPtr<Trap<Function> >(new Trap<Function>(verbose, signals, provide_attrs));
+SEXP Trap__new_func(bool verbose, Function signals, bool provide_attrs, std::vector<Environment> trj) {
+  return XPtr<Trap<Function> >(new Trap<Function>(verbose, signals, provide_attrs, trj));
 }
 
 //[[Rcpp::export]]

@@ -921,54 +921,29 @@ BEGIN_RCPP
 END_RCPP
 }
 // Trap__new
-SEXP Trap__new(bool verbose, std::vector<std::string> signals, Environment handler);
-RcppExport SEXP simmer_Trap__new(SEXP verboseSEXP, SEXP signalsSEXP, SEXP handlerSEXP) {
+SEXP Trap__new(bool verbose, std::vector<std::string> signals, std::vector<Environment> trj);
+RcppExport SEXP simmer_Trap__new(SEXP verboseSEXP, SEXP signalsSEXP, SEXP trjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type signals(signalsSEXP);
-    Rcpp::traits::input_parameter< Environment >::type handler(handlerSEXP);
-    rcpp_result_gen = Rcpp::wrap(Trap__new(verbose, signals, handler));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Trap__new_no
-SEXP Trap__new_no(bool verbose, std::vector<std::string> signals);
-RcppExport SEXP simmer_Trap__new_no(SEXP verboseSEXP, SEXP signalsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type signals(signalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(Trap__new_no(verbose, signals));
+    Rcpp::traits::input_parameter< std::vector<Environment> >::type trj(trjSEXP);
+    rcpp_result_gen = Rcpp::wrap(Trap__new(verbose, signals, trj));
     return rcpp_result_gen;
 END_RCPP
 }
 // Trap__new_func
-SEXP Trap__new_func(bool verbose, Function signals, bool provide_attrs, Environment handler);
-RcppExport SEXP simmer_Trap__new_func(SEXP verboseSEXP, SEXP signalsSEXP, SEXP provide_attrsSEXP, SEXP handlerSEXP) {
+SEXP Trap__new_func(bool verbose, Function signals, bool provide_attrs, std::vector<Environment> trj);
+RcppExport SEXP simmer_Trap__new_func(SEXP verboseSEXP, SEXP signalsSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< Function >::type signals(signalsSEXP);
     Rcpp::traits::input_parameter< bool >::type provide_attrs(provide_attrsSEXP);
-    Rcpp::traits::input_parameter< Environment >::type handler(handlerSEXP);
-    rcpp_result_gen = Rcpp::wrap(Trap__new_func(verbose, signals, provide_attrs, handler));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Trap__new_func_no
-SEXP Trap__new_func_no(bool verbose, Function signals, bool provide_attrs);
-RcppExport SEXP simmer_Trap__new_func_no(SEXP verboseSEXP, SEXP signalsSEXP, SEXP provide_attrsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    Rcpp::traits::input_parameter< Function >::type signals(signalsSEXP);
-    Rcpp::traits::input_parameter< bool >::type provide_attrs(provide_attrsSEXP);
-    rcpp_result_gen = Rcpp::wrap(Trap__new_func_no(verbose, signals, provide_attrs));
+    Rcpp::traits::input_parameter< std::vector<Environment> >::type trj(trjSEXP);
+    rcpp_result_gen = Rcpp::wrap(Trap__new_func(verbose, signals, provide_attrs, trj));
     return rcpp_result_gen;
 END_RCPP
 }
