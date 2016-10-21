@@ -129,28 +129,20 @@ end:
 }
 
 void Arrival::restart() {
-  set_busy(sim->now() + lifetime.remaining);
-  activate(lifetime.remaining);
+  set_busy(sim->now() + status.remaining);
+  activate(status.remaining);
   set_remaining(0);
 }
 
 void Arrival::interrupt() {
   deactivate();
-  if (lifetime.busy_until < sim->now())
+  if (status.busy_until < sim->now())
     return;
   unset_busy(sim->now());
-  if (lifetime.remaining && order.get_restart()) {
+  if (status.remaining && order.get_restart()) {
     unset_remaining();
     activity = activity->get_prev();
   }
-}
-
-void Arrival::leave(std::string resource) {
-  sim->record_release(name, restime[resource].start, restime[resource].activity, resource);
-}
-
-void Arrival::leave(std::string resource, double start, double activity) {
-  sim->record_release(name, start, activity, resource);
 }
 
 void Arrival::terminate(bool finished) {
@@ -165,20 +157,13 @@ void Arrival::terminate(bool finished) {
 }
 
 void Arrival::renege(Activity* next) {
-  bool ret = false;
   timer = NULL;
   if (batch) {
     if (batch->is_permanent())
       return;
-    ret = true;
     batch->erase(this);
   }
-  if (lifetime.busy_until > sim->now())
-    unset_busy(sim->now());
-  unset_remaining();
-  while (resources.begin() != resources.end())
-    ret |= (*resources.begin())->erase(this);
-  if (!ret)
+  if (!leave_resources() && !batch)
     deactivate();
   if (next) {
     activity = next;
@@ -211,8 +196,25 @@ void Arrival::register_entity(Resource* ptr) {
 
 void Arrival::unregister_entity(Resource* ptr) {
   if (is_monitored())
-    leave(ptr->name);
+    report(ptr->name);
   resources.erase(resources.find(ptr));
+}
+
+void Arrival::report(std::string resource) {
+  sim->record_release(name, restime[resource].start, restime[resource].activity, resource);
+}
+
+void Arrival::report(std::string resource, double start, double activity) {
+  sim->record_release(name, start, activity, resource);
+}
+
+bool Arrival::leave_resources(bool flag) {
+  if (status.busy_until > sim->now())
+    unset_busy(sim->now());
+  unset_remaining();
+  while (resources.begin() != resources.end())
+    flag |= (*resources.begin())->erase(this);
+  return flag;
 }
 
 void Batched::terminate(bool finished) {
@@ -241,21 +243,11 @@ void Batched::erase(Arrival* arrival) {
       }
     }
   } else if (arrivals.size() == 1 && !batch) {
-    bool ret = !activity;
-    if (lifetime.busy_until > sim->now())
-      unset_busy(sim->now());
-    unset_remaining();
-    while (resources.begin() != resources.end())
-      (*resources.begin())->erase(this);
-    if (!ret)
+    if (!leave_resources(!activity))
       deactivate();
   } else {
     batch->erase(this);
-    if (lifetime.busy_until > sim->now())
-      unset_busy(sim->now());
-    unset_remaining();
-    while (resources.begin() != resources.end())
-      (*resources.begin())->erase(this);
+    leave_resources();
   }
   arrivals.erase(std::remove(arrivals.begin(), arrivals.end(), arrival), arrivals.end());
   arrival->unregister_entity(this);
@@ -264,6 +256,6 @@ void Batched::erase(Arrival* arrival) {
 
 void Batched::report(Arrival* arrival) {
   foreach_ (ResTime::value_type& itr, restime)
-    arrival->leave(itr.first, itr.second.start,
-                   itr.second.activity - lifetime.busy_until + sim->now());
+    arrival->report(itr.first, itr.second.start,
+                    itr.second.activity - status.busy_until + sim->now());
 }

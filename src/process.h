@@ -157,9 +157,12 @@ public:
   struct ArrTime {
     double start;
     double activity;
+    ArrTime() : start(-1), activity(0) {}
+  };
+  struct ArrStatus {
     double busy_until;
     double remaining;
-    ArrTime() : start(-1), activity(0), busy_until(-1), remaining(0) {}
+    ArrStatus() : busy_until(-1), remaining(0) {}
   };
   typedef UMAP<std::string, ArrTime> ResTime;
   typedef UMAP<int, Resource*> SelMap;
@@ -191,15 +194,13 @@ public:
   void run();
   void restart();
   void interrupt();
-  virtual void leave(std::string resource);
-  virtual void leave(std::string resource, double start, double activity);
   virtual void terminate(bool finished);
   void renege(Activity* next);
   virtual int set_attribute(std::string key, double value);
   double get_start(std::string name);
 
   Attr* get_attributes() { return &attributes; }
-  double get_remaining() { return lifetime.remaining; }
+  double get_remaining() { return status.remaining; }
   void set_start(std::string name, double value) { restime[name].start = value; }
   void set_activity(Activity* ptr) { activity = ptr; }
   double get_start() { return lifetime.start; }
@@ -229,6 +230,7 @@ public:
   }
 
 protected:
+  ArrStatus status;     /**< arrival timing status */
   ArrTime lifetime;     /**< time spent in the whole trajectory */
   ResTime restime;      /**< time spent in resources */
   Activity* activity;   /**< current activity from an R trajectory */
@@ -238,6 +240,10 @@ protected:
   Batched* batch;       /**< batch that contains this arrival */
   ResMSet resources;    /**< resources that contain this arrival */
 
+  virtual void report(std::string resource);
+  virtual void report(std::string resource, double start, double activity);
+  bool leave_resources(bool flag = false);
+
   virtual void update_activity(double value) {
     lifetime.activity += value;
     if (is_monitored()) {
@@ -245,18 +251,22 @@ protected:
       itr.second.activity += value;
     }
   }
+
   virtual void set_remaining(double value) {
-    lifetime.remaining = value;
+    status.remaining = value;
   }
+
+  virtual void set_busy(double value) {
+    status.busy_until = value;
+  }
+
   void unset_remaining() {
-    update_activity(-lifetime.remaining);
+    update_activity(-status.remaining);
     set_remaining(0);
   }
-  virtual void set_busy(double value) {
-    lifetime.busy_until = value;
-  }
+
   void unset_busy(double now) {
-    set_remaining(lifetime.busy_until - now);
+    set_remaining(status.busy_until - now);
     set_busy(0);
   }
 };
@@ -286,20 +296,6 @@ public:
     arrivals.clear();
   }
 
-  void leave(std::string resource) {
-    foreach_ (Arrival* arrival, arrivals) {
-      if (arrival->is_monitored())
-        arrival->leave(resource, restime[resource].start, restime[resource].activity);
-    }
-  }
-
-  void leave(std::string resource, double start, double activity) {
-    foreach_ (Arrival* arrival, arrivals) {
-      if (arrival->is_monitored())
-        arrival->leave(resource, start, activity);
-    }
-  }
-
   void terminate(bool finished);
 
   void pop_all(Activity* next) {
@@ -317,26 +313,44 @@ public:
   size_t size() { return arrivals.size(); }
 
   void insert(Arrival* arrival) {
+    arrival->set_activity(NULL);
     arrivals.push_back(arrival);
     arrival->register_entity(this);
   }
   void erase(Arrival* arrival);
-  void report(Arrival* arrival);
 
 protected:
   VEC<Arrival*> arrivals;
   bool permanent;
+
+  void report(std::string resource) {
+    foreach_ (Arrival* arrival, arrivals) {
+      if (arrival->is_monitored())
+        arrival->report(resource, restime[resource].start, restime[resource].activity);
+    }
+  }
+
+  void report(std::string resource, double start, double activity) {
+    foreach_ (Arrival* arrival, arrivals) {
+      if (arrival->is_monitored())
+        arrival->report(resource, start, activity);
+    }
+  }
+
+  void report(Arrival* arrival);
 
   void update_activity(double value) {
     Arrival::update_activity(value);
     foreach_ (Arrival* arrival, arrivals)
       arrival->update_activity(value);
   }
+
   void set_remaining(double value) {
     Arrival::set_remaining(value);
     foreach_ (Arrival* arrival, arrivals)
       arrival->set_remaining(value);
   }
+
   void set_busy(double value) {
     Arrival::set_busy(value);
     foreach_ (Arrival* arrival, arrivals)
