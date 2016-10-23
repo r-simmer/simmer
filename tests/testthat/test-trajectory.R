@@ -24,6 +24,10 @@ t0 <- create_trajectory(verbose = TRUE) %>%
   separate() %>%
   renege_in(function() 1, create_trajectory(verbose = TRUE) %>% timeout(1)) %>%
   renege_abort() %>%
+  send(function() "asdf", function() 0) %>%
+  trap(function() "asdf", create_trajectory(verbose = TRUE) %>% timeout(1)) %>%
+  untrap(function() "asdf") %>%
+  wait() %>%
   release_selected(1) %>%
   release("nurse", 1)
 
@@ -55,10 +59,15 @@ trajs <- c(create_trajectory(verbose = TRUE) %>% seize("nurse", 1),
            create_trajectory(verbose = TRUE) %>% renege_in(function() 1,
                                                            create_trajectory(verbose = TRUE) %>% timeout(1)),
            create_trajectory(verbose = TRUE) %>% renege_abort(),
+           create_trajectory(verbose = TRUE) %>% send(function() "asdf", function() 0),
+           create_trajectory(verbose = TRUE) %>% trap(function() "asdf",
+                                                      create_trajectory(verbose = TRUE) %>% timeout(1)),
+           create_trajectory(verbose = TRUE) %>% untrap(function() "asdf"),
+           create_trajectory(verbose = TRUE) %>% wait,
            create_trajectory(verbose = TRUE) %>% release_selected(1),
            create_trajectory(verbose = TRUE) %>% release("nurse", 1))
 
-N <- 24
+N <- 28
 
 test_that("the activity chain grows as expected", {
   head <- t0 %>% get_head()

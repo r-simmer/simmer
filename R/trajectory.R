@@ -254,7 +254,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       traj <- list()
       if (!is.null(handler)) {
         if (!inherits(handler, "simmer.trajectory")) stop("not a trajectory")
-        traj <- c(traj, out)
+        traj <- c(traj, handler)
       }
       if (is.function(signals))
         private$add_activity(Trap__new_func(private$verbose, signals, needs_attrs(signals), traj))
