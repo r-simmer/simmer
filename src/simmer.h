@@ -52,7 +52,7 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #define SUCCESS    0
 #define ENQUEUE   -1
 #define REJECT    -2
-#define BLOCK     std::numeric_limits<int>::max()
+#define BLOCK     std::numeric_limits<double>::infinity()
 
 #define COMMA ,
 
