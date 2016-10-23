@@ -1071,7 +1071,7 @@ protected:
   void launch_handler(Arrival* arrival) {
     if (!arrival->is_active())
       return;
-    arrival->interrupt();
+    arrival->stop();
     if (heads.size()) {
       tails[0]->set_next(arrival->get_activity());
       arrival->set_activity(heads[0]);

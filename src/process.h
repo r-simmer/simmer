@@ -193,7 +193,8 @@ public:
   void reset();
   void run();
   void restart();
-  void interrupt();
+  void pause();
+  void stop();
   virtual void terminate(bool finished);
   void renege(Activity* next);
   virtual int set_attribute(std::string key, double value);

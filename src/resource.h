@@ -295,7 +295,7 @@ protected:
     typename T::iterator first = this->server.begin();
     if (first == this->server.end())
       return false;
-    first->arrival->interrupt();
+    first->arrival->pause();
     if (verbose) this->verbose_print(time, first->arrival->name, "PREEMPT");
     this->server_count -= first->amount;
     this->server_map.erase(first->arrival);

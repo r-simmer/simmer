@@ -134,15 +134,21 @@ void Arrival::restart() {
   set_remaining(0);
 }
 
-void Arrival::interrupt() {
+void Arrival::pause() {
   deactivate();
-  if (status.busy_until < sim->now())
-    return;
   unset_busy(sim->now());
   if (status.remaining && order.get_restart()) {
     unset_remaining();
     activity = activity->get_prev();
   }
+}
+
+void Arrival::stop() {
+  deactivate();
+  if (status.busy_until < sim->now())
+    return;
+  unset_busy(sim->now());
+  unset_remaining();
 }
 
 void Arrival::terminate(bool finished) {
