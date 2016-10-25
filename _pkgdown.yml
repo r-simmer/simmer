@@ -24,6 +24,7 @@ reference:
       - activate
       - set_trajectory
       - send
+      - log_
   - title: "Manage trajectories"
     desc: "Methods for getting information about trajectory objects"
     contents:

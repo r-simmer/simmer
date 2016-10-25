@@ -30,10 +30,12 @@ object (a function) which must return a numeric.}
 Returns the trajectory object.
 }
 \description{
-\code{send()} broadcasts a signal or a list of signals. Arrivals can subscribe to signals and
-(optionally) assign a handler with \code{trap()}. When a signal is received, the arrival stops
-the current activity and executes the handler (if provided). Then, the execution returns
-to the activity following the point of the interruption. \code{untrap()} can be used to
-unsubscribe from signals. \code{wait()} blocks until a signal is received.
+These activities enable asynchronous programming. \code{send()} broadcasts a signal or a list
+of signals. Arrivals can subscribe to signals and (optionally) assign a handler with
+\code{trap()}. Note that, while inside a batch, all the signals subscribed before entering
+the batch are ignored. Upon a signal reception, the arrival stops the current activity and
+executes the handler (if provided). Then, the execution returns to the activity following the
+point of the interruption. \code{untrap()} can be used to unsubscribe from signals.
+\code{wait()} blocks until a signal is received.
 }
 

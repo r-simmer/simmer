@@ -270,6 +270,13 @@ simmer.trajectory <- R6Class("simmer.trajectory",
 
     wait = function() { private$add_activity(Wait__new(private$verbose)) },
 
+    log = function(message) {
+      message <- evaluate_value(message)
+      if (is.function(message))
+        private$add_activity(Log__new_func(private$verbose, message, needs_attrs(message)))
+      else private$add_activity(Log__new(private$verbose, message))
+    },
+
     join = function(trajectory) {
       if (!inherits(trajectory, "simmer.trajectory"))
         stop("not a trajectory")
@@ -338,7 +345,7 @@ simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 #' \code{\link{set_distribution}}, \code{\link{set_attribute}}, \code{\link{timeout}}, \code{\link{branch}},
 #' \code{\link{rollback}}, \code{\link{leave}}, \code{\link{renege_in}}, \code{\link{renege_abort}},
 #' \code{\link{clone}}, \code{\link{synchronize}}, \code{\link{batch}}, \code{\link{separate}},
-#' \code{\link{send}}, \code{\link{trap}}, \code{\link{untrap}}, \code{\link{wait}}.
+#' \code{\link{send}}, \code{\link{trap}}, \code{\link{untrap}}, \code{\link{wait}}, \code{\link{log_}}.
 #' @export
 #'
 #' @examples
@@ -702,11 +709,13 @@ separate <- function(.trj) .trj$separate()
 
 #' Add an inter-arrival communication activity
 #'
-#' \code{send()} broadcasts a signal or a list of signals. Arrivals can subscribe to signals and
-#' (optionally) assign a handler with \code{trap()}. When a signal is received, the arrival stops
-#' the current activity and executes the handler (if provided). Then, the execution returns
-#' to the activity following the point of the interruption. \code{untrap()} can be used to
-#' unsubscribe from signals. \code{wait()} blocks until a signal is received.
+#' These activities enable asynchronous programming. \code{send()} broadcasts a signal or a list
+#' of signals. Arrivals can subscribe to signals and (optionally) assign a handler with
+#' \code{trap()}. Note that, while inside a batch, all the signals subscribed before entering
+#' the batch are ignored. Upon a signal reception, the arrival stops the current activity and
+#' executes the handler (if provided). Then, the execution returns to the activity following the
+#' point of the interruption. \code{untrap()} can be used to unsubscribe from signals.
+#' \code{wait()} blocks until a signal is received.
 #'
 #' @inheritParams get_head
 #' @param signals signal or list of signals, accepts either a string, a list of strings or a
@@ -731,3 +740,15 @@ untrap <- function(.trj, signals) .trj$untrap(signals)
 #' @rdname send
 #' @export
 wait <- function(.trj) .trj$wait()
+
+#' Add a logging activity
+#'
+#' Display a message preceded by the simulation time and the name of the arrival.
+#'
+#' @inheritParams get_head
+#' @param message the message to display, accepts either a string or a callable object
+#' (a function) which must return a string.
+#'
+#' @return Returns the trajectory object.
+#' @export
+log_ <- function(.trj, message) .trj$log(message)

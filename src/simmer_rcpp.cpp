@@ -449,6 +449,17 @@ SEXP Wait__new(bool verbose) {
 }
 
 //[[Rcpp::export]]
+SEXP Log__new(bool verbose, std::string message) {
+  return XPtr<Log<std::string> >(new Log<std::string>(verbose, message, 0));
+}
+
+//[[Rcpp::export]]
+SEXP Log__new_func(bool verbose, Function message, bool provide_attrs) {
+  return XPtr<Log<Function> >(
+      new Log<Function>(verbose, message, provide_attrs));
+}
+
+//[[Rcpp::export]]
 int activity_get_n_(SEXP activity_) {
   XPtr<Activity> activity(activity_);
   return activity->n;

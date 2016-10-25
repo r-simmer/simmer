@@ -61,6 +61,6 @@ Methods for dealing with trajectories:
 \code{\link{set_distribution}}, \code{\link{set_attribute}}, \code{\link{timeout}}, \code{\link{branch}},
 \code{\link{rollback}}, \code{\link{leave}}, \code{\link{renege_in}}, \code{\link{renege_abort}},
 \code{\link{clone}}, \code{\link{synchronize}}, \code{\link{batch}}, \code{\link{separate}},
-\code{\link{send}}, \code{\link{trap}}, \code{\link{untrap}}, \code{\link{wait}}.
+\code{\link{send}}, \code{\link{trap}}, \code{\link{untrap}}, \code{\link{wait}}, \code{\link{log_}}.
 }
 

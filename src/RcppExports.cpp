@@ -983,6 +983,31 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Log__new
+SEXP Log__new(bool verbose, std::string message);
+RcppExport SEXP simmer_Log__new(SEXP verboseSEXP, SEXP messageSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< std::string >::type message(messageSEXP);
+    rcpp_result_gen = Rcpp::wrap(Log__new(verbose, message));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Log__new_func
+SEXP Log__new_func(bool verbose, Function message, bool provide_attrs);
+RcppExport SEXP simmer_Log__new_func(SEXP verboseSEXP, SEXP messageSEXP, SEXP provide_attrsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< Function >::type message(messageSEXP);
+    Rcpp::traits::input_parameter< bool >::type provide_attrs(provide_attrsSEXP);
+    rcpp_result_gen = Rcpp::wrap(Log__new_func(verbose, message, provide_attrs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // activity_get_n_
 int activity_get_n_(SEXP activity_);
 RcppExport SEXP simmer_activity_get_n_(SEXP activity_SEXP) {

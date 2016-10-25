@@ -1126,4 +1126,31 @@ public:
   double run(Arrival* arrival) { return BLOCK; }
 };
 
+/**
+ * Print a message.
+ */
+template <typename T>
+class Log : public Activity {
+public:
+  CLONEABLE(Log<T>)
+
+  Log(bool verbose, T message, bool provide_attrs)
+    : Activity("Log", verbose, VEC<bool>(1, provide_attrs)), message(message) {}
+
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout << "message }" << std::endl;
+    else Rcpp::Rcout << "message" << std::endl;
+  }
+
+  double run(Arrival* arrival) {
+    Rcpp::Rcout << arrival->sim->now() << ": " << arrival->name << ": " <<
+      get<std::string>(message, 0, arrival) << std::endl;
+    return 0;
+  }
+
+protected:
+  T message;
+};
+
 #endif

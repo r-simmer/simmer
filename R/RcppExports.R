@@ -297,6 +297,14 @@ Wait__new <- function(verbose) {
     .Call('simmer_Wait__new', PACKAGE = 'simmer', verbose)
 }
 
+Log__new <- function(verbose, message) {
+    .Call('simmer_Log__new', PACKAGE = 'simmer', verbose, message)
+}
+
+Log__new_func <- function(verbose, message, provide_attrs) {
+    .Call('simmer_Log__new_func', PACKAGE = 'simmer', verbose, message, provide_attrs)
+}
+
 activity_get_n_ <- function(activity_) {
     .Call('simmer_activity_get_n_', PACKAGE = 'simmer', activity_)
 }
