@@ -38,6 +38,21 @@ Here we create a trajectory where a patient _seizes_ a doctor for 3 minutes and 
 
 This is a very straightforward example, however, most of the trajectory-related functions allow for more advanced usage. The different functions are introduced below.
 
+### `log_()`
+
+The `log_(., message`) method just prints a given message preceded by the simulation time and the name of the arrival, for debugging purposes:
+
+```{r}
+set.seed(1234)
+
+t <- create_trajectory() %>%
+  log_("hello world!")
+
+simmer() %>%
+  add_generator("dummy", t, function() rexp(1, 1)) %>%
+  run(5) %>% invisible
+```
+
 ### `set_attribute()`
 
 The `set_attribute(., key, value)` method sets the `value` of an arrival's attribute `key`. Be aware that `value` can only be numeric.
@@ -160,8 +175,10 @@ By default, an unsuccessful `seize()` results in the rejection of the arrival. I
 
 ```{r}
 patient_traj <- create_trajectory(name = "patient_trajectory") %>%
+  log_("arriving...") %>%
   seize("doctor", 1) %>%
   # the second patient won't reach this point
+  log_("doctor seized") %>%
   timeout(5) %>%
   release("doctor", 1)
 
@@ -178,12 +195,16 @@ Sometimes, you don't want to reject an unsuccessful `seize()`, but to follow ano
 
 ```{r}
 patient_traj <- create_trajectory(name = "patient_trajectory") %>%
+  log_("arriving...") %>%
   seize("doctor", 1, continue = FALSE,
         reject = create_trajectory("rejected patient") %>%
+          log_("rejected!") %>%
           seize("nurse", 1) %>%
+          log_("nurse seized") %>%
           timeout(2) %>%
           release("nurse", 1)) %>%
   # the second patient won't reach this point
+  log_("doctor seized") %>%
   timeout(5) %>%
   release("doctor", 1)
 
@@ -203,14 +224,19 @@ Note that the second patient may also keep trying if he/she must see the doctor:
 
 ```{r}
 patient_traj <- create_trajectory(name = "patient_trajectory") %>%
+  log_("arriving...") %>%
   seize("doctor", 1, continue = FALSE,
         reject = create_trajectory("rejected patient") %>%
+          log_("rejected!") %>%
           # go for a walk and try again
           timeout(2) %>%
-          rollback(amount = 2, times = Inf)) %>%
+          log_("retrying...") %>%
+          rollback(amount = 4, times = Inf)) %>%
   # the second patient will reach this point after a couple of walks
+  log_("doctor seized") %>%
   timeout(5) %>%
-  release("doctor", 1)
+  release("doctor", 1) %>%
+  log_("leaving")
 
 env <- simmer() %>%
   add_resource("doctor", capacity = 1, queue_size = 0) %>%
@@ -225,16 +251,20 @@ There is another optional sub-trajectory called `post.seize` and, as its name su
 
 ```{r}
 patient_traj <- create_trajectory(name = "patient_trajectory") %>%
+  log_("arriving...") %>%
   seize("doctor", 1, continue = c(TRUE, TRUE),
         post.seize = create_trajectory("admitted patient") %>%
+          log_("admitted") %>%
           timeout(5) %>%
           release("doctor", 1),
         reject = create_trajectory("rejected patient") %>%
+          log_("rejected!") %>%
           seize("nurse", 1) %>%
           timeout(2) %>%
           release("nurse", 1)) %>%
   # both patients will reach this point, as continue = c(TRUE, TRUE)
-  timeout(10)
+  timeout(10) %>%
+  log_("leaving...")
 
 env <- simmer() %>%
   add_resource("doctor", capacity = 1, queue_size = 0) %>%
@@ -447,16 +477,17 @@ ggplot(arrivals) + geom_histogram(aes(x=activity_time)) + facet_wrap(~resource)
 
 The `rollback(., amount, times, check)` method allows an arrival to rollback the trajectory an `amount` number of steps.
 
-Consider the following where a string is printed in the timeout function. After the first run, the trajectory is rolled back 3 times.
+Consider the following where a string is printed in the timeout function. After the first run, the trajectory is rolled back 3 times (so that it prints "Hello!" _four_ times).
 
 ```{r}
 t0 <- create_trajectory() %>%
-  timeout(function() { print("Hello!"); return(0) }) %>%
-  rollback(amount = 1, times = 3)
+  log_("Hello!") %>%
+  timeout(1) %>%
+  rollback(amount = 2, times = 3)
 
 simmer() %>%
   add_generator("hello_sayer", t0, at(0)) %>% 
-  run()
+  run() %>% invisible
 ```
 
 The `rollback()` method also accepts an optional `check` parameter which overrides the default amount-based behaviour. This parameter must be a function that returns a logical value. Each time an arrival reaches the activity, this `check` is evaluated to determine whether the `rollback()` with `amount` steps must be performed or not. Consider the following example:
@@ -464,23 +495,19 @@ The `rollback()` method also accepts an optional `check` parameter which overrid
 ```{r}
 t0 <- create_trajectory() %>%
   set_attribute("happiness", 0) %>%
-  # the timeout function is used simply to print something and returns 0,
-  # hence it is a dummy timeout
-  timeout(function(attrs){
-    cat(">> Happiness level is at: ", attrs[["happiness"]], " -- ")
-    cat(ifelse(attrs[["happiness"]]<25,"PETE: I'm feeling crappy...",
-               ifelse(attrs[["happiness"]]<50,"PETE: Feelin' a bit moody",
-                      ifelse(attrs[["happiness"]]<75,"PETE: Just had a good espresso",
-                             "PETE: Let's do this! (and stop this loop...)")))
-        , "\n")
-    return(0)
+  log_(function(attrs) {
+    paste0(">> Happiness level is at: ", attrs[["happiness"]], " -- ", 
+           ifelse(attrs[["happiness"]]<25,"PETE: I'm feeling crappy...",
+                  ifelse(attrs[["happiness"]]<50,"PETE: Feelin' a bit moody",
+                         ifelse(attrs[["happiness"]]<75,"PETE: Just had a good espresso",
+                                "PETE: Let's do this! (and stop this loop...)"))))
   }) %>%
   set_attribute("happiness", function(attrs) attrs[["happiness"]] + 25) %>%
   rollback(amount = 2, check = function(attrs) attrs[["happiness"]] < 100)
 
 simmer() %>%
   add_generator("mood_swinger", t0, at(0)) %>% 
-  run()
+  run() %>% invisible
 ```
 
 ### `leave()`
@@ -492,7 +519,9 @@ patient_traj <- create_trajectory(name = "patient_trajectory") %>%
   seize("nurse", 1) %>%
   timeout(3) %>%
   release("nurse", 1) %>%
+  log_("before leave") %>%
   leave(prob = 1) %>%
+  log_("after leave") %>%
   # patients will never seize the doctor
   seize("doctor", 1) %>%
   timeout(3) %>%
@@ -516,7 +545,9 @@ patient_traj <- create_trajectory(name = "patient_trajectory") %>%
   seize("nurse", 1) %>%
   timeout(3) %>%
   release("nurse", 1) %>%
+  log_("before leave") %>%
   leave(prob = function() runif(1) < 0.5) %>%
+  log_("after leave") %>%
   # some patients will seize the doctor
   seize("doctor", 1) %>%
   timeout(3) %>%
@@ -538,23 +569,24 @@ The `renege_in(., t, out)` method offers the possibility of setting a timeout af
 
 ```{r}
 t <- create_trajectory(name = "bank") %>%
-  timeout(function() { print("Here I am"); 0 } ) %>%
+  log_("Here I am") %>%
   # renege in 5 minutes
   renege_in(5, 
             out = create_trajectory() %>%
-              timeout(function() { print("Lost my patience. Reneging..."); 0 } )) %>%
+              log_("Lost my patience. Reneging...")
+            ) %>%
   seize("clerk", 1) %>%
   # stay if I'm being attended within 5 minutes
   renege_abort() %>%
-  timeout(function() { print("I'm being attended"); 0 } ) %>%
+  log_("I'm being attended") %>%
   timeout(10) %>%
   release("clerk", 1) %>%
-  timeout(function() { print("Finished"); 0 } )
+  log_("Finished")
 
-env <- simmer(verbose = TRUE) %>%
+simmer() %>%
   add_resource("clerk", 1) %>%
   add_generator("customer", t, at(0, 1)) %>%
-  run()
+  run() %>% invisible
 ```
 
 ### `clone()`, `synchronize()`
@@ -780,6 +812,118 @@ env <- simmer(verbose = TRUE) %>%
 get_mon_arrivals(env)
 ```
 
+### `send()`, `trap()`, `untrap()`, `wait()`
+
+The `send(., n, timeout, permanent, name, rule)` m
+
+These activities enable asynchronous programming. The `send(., signals, delay)` method broadcasts a signal or a list of signals to all the arrivals subscribed to them. Signals can be triggered immediately:
+
+```{r}
+t <- create_trajectory() %>%
+  send(signals = c("signal1", "signal2"))
+
+simmer(verbose = TRUE) %>%
+  add_generator("signaler", t, at(0)) %>%
+  run() %>% invisible
+```
+
+or after some delay:
+
+```{r}
+t <- create_trajectory() %>%
+  send(signals = c("signal1", "signal2"), delay = 3)
+
+simmer(verbose = TRUE) %>%
+  add_generator("signaler", t, at(0)) %>%
+  run() %>% invisible
+```
+
+Note that both arguments, `signals` and `delay`, can be functions, and therefore they can retrieve the arrival's attributes.
+
+This is not very useful if nobody is listening. Arrivals can subscribe to signals and (optionally) assign a handler with the `trap(., signals, handler)`. In the following example, an arrival subscribes to a signal and blocks until its reception using the `wait(.)` method.
+
+```{r}
+t_blocked <- create_trajectory() %>%
+  trap("you shall pass") %>%
+  log_("waiting...") %>%
+  wait() %>%
+  log_("continuing!")
+
+t_signaler <- create_trajectory() %>%
+  log_("you shall pass") %>%
+  send("you shall pass")
+
+simmer() %>%
+  add_generator("blocked", t_blocked, at(0)) %>%
+  add_generator("signaler", t_signaler, at(5)) %>%
+  run() %>% invisible
+```
+
+Note that, while inside a batch, all the signals subscribed before entering the batch are ignored. Thus, the following batch will block indifinitely:
+
+```{r}
+t_blocked <- create_trajectory() %>%
+  trap("you shall pass") %>%
+  log_("waiting inside a batch...") %>%
+  batch(1) %>%
+  wait() %>%
+  log_("continuing!")
+
+t_signaler <- create_trajectory() %>%
+  log_("you shall pass") %>%
+  send("you shall pass")
+
+simmer() %>%
+  add_generator("blocked", t_blocked, at(0)) %>%
+  add_generator("signaler", t_signaler, at(5)) %>%
+  run() %>% invisible
+```
+
+Upon a signal reception, the arrival stops the current activity and executes the handler if provided. Then, the execution returns to the activity following the point of the interruption:
+
+```{r}
+t_worker <- create_trajectory() %>%
+  trap("you are free to go", 
+       handler = create_trajectory() %>%
+         log_("ok, I'm packing...") %>%
+         timeout(1)) %>%
+  log_("performing a looong task...") %>%
+  timeout(100) %>%
+  log_("and I'm leaving!")
+
+t_signaler <- create_trajectory() %>%
+  log_("you are free to go") %>%
+  send("you are free to go")
+
+simmer() %>%
+  add_generator("worker", t_worker, at(0)) %>%
+  add_generator("signaler", t_signaler, at(5)) %>%
+  run() %>% invisible
+```
+
+Finally, the `untrap(., signals)` method can be used to unsubscribe from signals:
+
+```{r}
+t_worker <- create_trajectory() %>%
+  trap("you are free to go", 
+       handler = create_trajectory() %>%
+         log_("ok, I'm packing...") %>%
+         timeout(1)) %>%
+  log_("performing a looong task...") %>%
+  untrap("you are free to go") %>%
+  timeout(100) %>%
+  log_("and I'm leaving!")
+
+t_signaler <- create_trajectory() %>%
+  log_("you are free to go") %>%
+  send("you are free to go")
+
+simmer() %>%
+  add_generator("worker", t_worker, at(0)) %>%
+  add_generator("signaler", t_signaler, at(5)) %>%
+  run() %>% invisible
+```
+
 ## Concatenating trajectories
 
 It is possible to concatenate together any number of trajectories using the `join(...)` verb. It may be used as a standalone function as follows:
@@ -829,7 +973,7 @@ t <- create_trajectory() %>%
 env <- simmer() %>%
   add_generator("dummy", t, function() 1)
 
-env %>% run(4)
+env %>% run(4) %>% invisible
 ```
 
 And we get the expected output. However, as a general rule of good practice, __it is recommended to instantiate the environment always in the first place__, to avoid possible mistakes and because the code becomes more readable:
@@ -845,5 +989,5 @@ t <- create_trajectory() %>%
 # And finally, run it
 env %>%
   add_generator("dummy", t, function() 1) %>%
-  run(4)
+  run(4) %>% invisible
 ```
