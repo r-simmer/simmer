@@ -252,6 +252,7 @@ void Batched::erase(Arrival* arrival) {
     if (!leave_resources(!activity))
       deactivate();
   } else {
+    del = true;
     batch->erase(this);
     leave_resources();
   }
