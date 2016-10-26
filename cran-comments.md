@@ -1,6 +1,6 @@
-## Patch release
+## New release
 
-Solve CRAN errors. There was a race condition in the environment destruction that happened randomly under some platforms.
+Finally fix (hope so) random errors on CRAN in one of the tests + many new features.
 
 ## Test environments
 
