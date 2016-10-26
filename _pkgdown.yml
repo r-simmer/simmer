@@ -1,7 +1,6 @@
-title: simmer | DES for R
-
-template:
-  bootswatch: yeti
+templates:
+  params:
+    bootswatch: yeti
 
 reference:
   - title: "Build trajectories"
@@ -65,12 +64,8 @@ reference:
       - starts_with("plot_")
 
 navbar:
-  title: "simmer"
-  type: default
-  right:
-  - text: "Home"
-    icon: fa-home
-    href: index.html
+  title: simmer | DES for R
+  left:
   - text: "Reference"
     icon: fa-gears
     href: reference/index.html
@@ -92,6 +87,3 @@ navbar:
   - text: "News"
     icon: fa-newspaper-o
     href: news/index.html
-  - text: "GitHub"
-    icon: fa-github fa-lg
-    href: https://github.com/r-simmer/simmer

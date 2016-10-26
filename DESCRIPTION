@@ -1,6 +1,6 @@
 Package: simmer
 Type: Package
-Version: 3.4.4.9000
+Version: 3.5.0.9000
 Title: Discrete-Event Simulation for R
 Description: A process-oriented and trajectory-based Discrete-Event Simulation
     (DES) package for R. Designed to be a generic framework, it leverages the
@@ -11,7 +11,8 @@ Encoding: UTF-8
 Authors@R: c(
     person("Iñaki", "Ucar", email="i.ucar86@gmail.com", role=c("aut", "cph", "cre")),
     person("Bart", "Smeets", email="bartsmeets86@gmail.com", role=c("aut", "cph")))
-URL: http://r-simmer.org
+URL: http://r-simmer.org,
+     https://github.com/r-simmer/simmer
 BugReports: https://github.com/r-simmer/simmer/issues
 Depends:
     R (>= 3.1.2)
