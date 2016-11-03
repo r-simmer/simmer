@@ -20,14 +20,105 @@ theme_set(theme_bw())
 
 ## Introduction
 
-These examples are adapted from the Python package 'SimPy', [here](https://simpy.readthedocs.io/en/3.0/examples). Users familiar with SimPy may find these examples helpful for transitioning to simmer. Some very basic material is not covered. Beginners should first read the vignettes 'Introduction', 'Terminology', 'Advanced Trajectory Usage' and 'The Bank Tutorial'.
+These examples are adapted from the Python package 'SimPy', [here](https://simpy.readthedocs.io/en/latest/examples). Users familiar with SimPy may find these examples helpful for transitioning to simmer. Some very basic material is not covered. Beginners should first read the vignettes 'Introduction', 'Terminology', 'Advanced Trajectory Usage' and 'The Bank Tutorial'.
 
 ## Movie Renege
 
-From [here](https://simpy.readthedocs.io/en/3.0/examples/movie_renege.html):
+From [here](https://simpy.readthedocs.io/en/latest/examples/movie_renege.html):
 
 > This example models a movie theater with one ticket counter selling tickets for three movies (next show only). People arrive at random times and try to buy a random number (1-6) of tickets for a random movie. When a movie is sold out, all people waiting to buy a ticket for that movie renege (leave the queue).
 
-```{r}
+> Scenario:
+>  A movie theatre has one ticket counter selling tickets for three
+>  movies (next show only). When a movie is sold out, all people waiting
+>  to buy tickets for that movie renege (leave queue).
 
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+library(simmer)
+
+TICKETS <- 50     # Number of tickets per movie
+SIM_TIME <- 120   # Simulate until
+movies <- c("R Unchained", "Kill Process", "Pulp Implementation")
+
+# setup
+set.seed(42)
+env <- simmer()
+
+#  A moviegoer tries to by a number of tickets (*num_tickets*) for
+#  a certain *movie* in a *theater*.
+#
+#  If the movie becomes sold out, she leaves the theater. If she gets
+#  to the counter, she tries to buy a number of tickets. If not enough
+#  tickets are left, she argues with the teller and leaves.
+#
+#  If at most one ticket is left after the moviegoer bought her
+#  tickets, the *sold out* event for this movie is triggered causing
+#  all remaining moviegoers to leave.
+#
+moviegoer <- create_trajectory() %>%
+  # select a movie and set reneging condition
+  set_attribute("movie", function() sample(3, 1)) %>%
+  select(function(attr) movies[attr["movie"]]) %>%
+  renege_if(function(attr) paste0(movies[attr["movie"]], " sold out")) %>%
+  # check if movie is sold out
+  branch(function(attr) get_capacity(env, movies[attr["movie"]]) == 0,
+         continue = FALSE,
+         # sold out, leave
+         create_trajectory() %>% timeout(0)
+  ) %>%
+  # wait for my turn
+  seize("counter", 1) %>%
+  # buy tickets
+  seize_selected(function() sample(6, 1), continue = FALSE,
+                 reject = create_trajectory() %>%
+                   # not enough tickets, leave after some discussion
+                   timeout(0.5) %>%
+                   release("counter", 1)
+  ) %>%
+  renege_abort() %>%
+  branch(function(attr) get_server_count(env, movies[attr["movie"]]) > (TICKETS - 2),
+         continue = TRUE,
+         # trigger the "sold out" event for the movie
+         create_trajectory() %>%
+           set_capacity_selected(0) %>%
+           send(function(attr) paste0(movies[attr["movie"]], " sold out"))
+  ) %>%
+  timeout(1) %>%
+  release("counter", 1) %>%
+  # watch the movie
+  wait()
+
+# add movies as resources with capacity TICKETS and no queue
+lapply(movies, function(i) add_resource(env, i, TICKETS, 0)) %>% invisible
+
+# add ticket counter with capacity 1 and infinite queue
+# add moviegoer generator
+# start simulation
+env %>%
+  add_resource("counter", 1) %>%
+  add_generator("moviegoer", moviegoer, function() rexp(1, 1 / 0.5), mon=2) %>%
+  run(SIM_TIME)
+
+# analysis/results
+sold_time <- env %>% get_mon_resources() %>%
+  filter(resource != "counter" & capacity == 0)
+
+reneges <- left_join(
+    env %>% get_mon_arrivals() %>% filter(finished == FALSE),
+    env %>% get_mon_attributes()
+  ) %>%
+  rename(resource = value) %>%
+  mutate(resource = movies[resource]) %>%
+  group_by(resource) %>%
+  count()
+
+result <- left_join(sold_time, reneges)
+
+# the output
+apply(result, 1, function(i) {
+  cat("Movie '", i["resource"], "' sold out ", i["time"], 
+      " minutes after ticket counter opening.\n",
+      "  Number of people leaving queue when film sold out: ", i["n"], "\n", sep="")
+}) %>% invisible
 ```
