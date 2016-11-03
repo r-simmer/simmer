@@ -563,32 +563,6 @@ get_mon_arrivals(env)
 get_mon_resources(env)
 ```
 
-### `renege_in()`, `renege_abort()`
-
-The `renege_in(., t, out)` method offers the possibility of setting a timeout after which the arrival will abandon the trajectory. After reneging, the arrival can follow an optional sub-trajectory `out`. The `renege_abort(.)` method cancels a previously established timeout. Together, they allows us, for instance, to model arrivals with limited patience. In the example below, `customer1` arrives at the bank, where there is only one busy clerk. He/she waits in the queue for 5 minutes and then leaves. 
-
-```{r}
-t <- create_trajectory(name = "bank") %>%
-  log_("Here I am") %>%
-  # renege in 5 minutes
-  renege_in(5, 
-            out = create_trajectory() %>%
-              log_("Lost my patience. Reneging...")
-            ) %>%
-  seize("clerk", 1) %>%
-  # stay if I'm being attended within 5 minutes
-  renege_abort() %>%
-  log_("I'm being attended") %>%
-  timeout(10) %>%
-  release("clerk", 1) %>%
-  log_("Finished")
-
-simmer() %>%
-  add_resource("clerk", 1) %>%
-  add_generator("customer", t, at(0, 1)) %>%
-  run() %>% invisible
-```
-
 ### `clone()`, `synchronize()`
 
 The `clone(., n, ...)` method offers the possibility of replicating an arrival `n-1` times to be processed through up to `n` sub-trajectories in parallel. Then, the `synchronize(., wait, mon_all)` method synchronizes and removes replicas. By default, `synchronize()` waits for all of the replicas to arrive and allows the last one to continue:
@@ -859,7 +833,7 @@ simmer() %>%
   run() %>% invisible
 ```
 
-Note that, while inside a batch, all the signals subscribed before entering the batch are ignored. Thus, the following batch will block indifinitely:
+Note that signals are ignored when an arrival is waiting in a resource's queue. The same applies inside a batch: all the signals subscribed before entering the batch are ignored. Thus, the following batch will block indifinitely:
 
 ```{r}
 t_blocked <- create_trajectory() %>%
@@ -923,6 +897,61 @@ simmer() %>%
   add_generator("signaler", t_signaler, at(5)) %>%
   run() %>% invisible
 ```
+
+### `renege_in()`, `renege_if()`, `renege_abort()`
+
+The `renege_in(., t, out)` method offers the possibility of setting a timeout after which the arrival will abandon the trajectory. After reneging, the arrival can follow an optional sub-trajectory `out`. The `renege_abort(.)` method cancels the latter. Together, they allows us, for instance, to model arrivals with limited patience. In the example below, `customer1` arrives at the bank, where there is only one busy clerk. He/she waits in the queue for 5 minutes and then leaves. 
+
+```{r}
+t <- create_trajectory(name = "bank") %>%
+  log_("Here I am") %>%
+  # renege in 5 minutes
+  renege_in(5, 
+            out = create_trajectory() %>%
+              log_("Lost my patience. Reneging...")
+            ) %>%
+  seize("clerk", 1) %>%
+  # stay if I'm being attended within 5 minutes
+  renege_abort() %>%
+  log_("I'm being attended") %>%
+  timeout(10) %>%
+  release("clerk", 1) %>%
+  log_("Finished")
+
+simmer() %>%
+  add_resource("clerk", 1) %>%
+  add_generator("customer", t, at(0, 1)) %>%
+  run() %>% invisible
+```
+
+The same can be achieved with `renege_if(., signal, out)` if `customer0` sends a signal to `customer1` at `t=5`:
+
+```{r}
+t <- create_trajectory(name = "bank") %>%
+  log_("Here I am") %>%
+  # renege when "renege now" is received
+  renege_if("renege now", 
+            out = create_trajectory() %>%
+              log_("Ok. Reneging...")
+            ) %>%
+  seize("clerk", 1) %>%
+  # stay if I'm being attended within 5 minutes
+  renege_abort() %>%
+  log_("I'm being attended") %>%
+  timeout(5) %>%
+  log_("I say: renege now") %>%
+  send("renege now") %>%
+  timeout(5) %>%
+  release("clerk", 1) %>%
+  log_("Finished")
+
+simmer() %>%
+  add_resource("clerk", 1) %>%
+  add_generator("customer", t, at(0, 1)) %>%
+  run() %>% invisible
+```
+
+Note that, in contrast to `trap()`, reneging is triggered even if the arrival is in a queue or is part of a non-permanent batch.
 
 ## Concatenating trajectories
 

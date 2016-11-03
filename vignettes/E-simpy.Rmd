@@ -14,6 +14,8 @@ vignette: >
 ```{r, cache = FALSE, include=FALSE}
 knitr::opts_chunk$set(collapse = T, comment = "#>",
                       fig.width = 6, fig.height = 4, fig.align = "center")
+library(simmer)
+detach("package:simmer")
 library(ggplot2)
 theme_set(theme_bw())
 ```
