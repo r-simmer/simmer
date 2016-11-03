@@ -170,7 +170,3 @@ mm23.t_system <- mm23.arrivals$end_time - mm23.arrivals$start_time
 qqplot(mm1.t_system, mm23.t_system)
 abline(0, 1, lty=2, col="red")
 ```
-
-## Queueing networks
-
-in progress...

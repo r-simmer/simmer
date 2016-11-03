@@ -24,7 +24,7 @@ This tutorial is adapted from a tutorial for the Python 2 package 'SimPy',
 [here](https://pythonhosted.org/SimPy/Tutorials/TheBank.html).  Users familiar
 with SimPy may find this tutorial helpful for transitioning to simmer.  Some
 very basic material is not covered.  Beginners should first read the vignettes
-'Introduction', 'Terminology' and 'Trajectories'.
+'Introduction', 'Terminology' and 'Advanced Trajectory Usage'.
 
 ## A single customer
 

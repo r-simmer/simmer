@@ -1,0 +1,33 @@
+---
+title: "Other SimPy Examples"
+author: "Iñaki Ucar"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Other SimPy Examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, cache = FALSE, include=FALSE}
+knitr::opts_chunk$set(collapse = T, comment = "#>",
+                      fig.width = 6, fig.height = 4, fig.align = "center")
+library(ggplot2)
+theme_set(theme_bw())
+```
+
+## Introduction
+
+These examples are adapted from the Python package 'SimPy', [here](https://simpy.readthedocs.io/en/3.0/examples). Users familiar with SimPy may find these examples helpful for transitioning to simmer. Some very basic material is not covered. Beginners should first read the vignettes 'Introduction', 'Terminology', 'Advanced Trajectory Usage' and 'The Bank Tutorial'.
+
+## Movie Renege
+
+From [here](https://simpy.readthedocs.io/en/3.0/examples/movie_renege.html):
+
+> This example models a movie theater with one ticket counter selling tickets for three movies (next show only). People arrive at random times and try to buy a random number (1-6) of tickets for a random movie. When a movie is sold out, all people waiting to buy a ticket for that movie renege (leave the queue).
+
+```{r}
+
+```
