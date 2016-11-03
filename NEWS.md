@@ -6,6 +6,9 @@
 
 ## Minor changes and fixes:
 
+* Update "Advanced Trajectory Usage" vignette.
+* New "Other SimPy Examples" vignette.
+
 # simmer 3.5.0
 
 ## New features:
