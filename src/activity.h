@@ -976,12 +976,45 @@ public:
     Activity* next = NULL;
     if (heads.size())
       next = heads[0];
-    arrival->set_timeout(ret, next);
+    arrival->set_renege(ret, next);
     return 0;
   }
 
 protected:
   T t;
+};
+
+/**
+ * Renege if a signal is received.
+ */
+template <typename T>
+class RenegeIf : public Fork {
+public:
+  CLONEABLE(RenegeIf<T>)
+
+  RenegeIf(bool verbose, T signal, bool provide_attrs, VEC<Rcpp::Environment> trj)
+    : Fork("RenegeIf", verbose, VEC<bool>(trj.size(), false),
+      trj, VEC<bool>(1, provide_attrs)), signal(signal) {}
+
+  void print(int indent = 0, bool brief = false) {
+    Activity::print(indent, brief);
+    if (!brief) Rcpp::Rcout <<
+      "signal: " << signal << " }" << std::endl;
+    else Rcpp::Rcout << signal << ", ";
+    Fork::print(indent, brief);
+  }
+
+  double run(Arrival* arrival) {
+    std::string ret = get<std::string>(signal, 0, arrival);
+    Activity* next = NULL;
+    if (heads.size())
+      next = heads[0];
+    arrival->set_renege(ret, next);
+    return 0;
+  }
+
+protected:
+  T signal;
 };
 
 /**
@@ -1000,7 +1033,7 @@ public:
   }
 
   double run(Arrival* arrival) {
-    arrival->cancel_timeout();
+    arrival->cancel_renege();
     return 0;
   }
 };

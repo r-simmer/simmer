@@ -276,21 +276,27 @@ public:
 
   void broadcast(VEC<std::string> signals) {
     foreach_ (std::string signal, signals) {
-      foreach_ (HandlerMap::value_type& itr, signal_map[signal])
-        itr.second();
+      foreach_ (HandlerMap::value_type& itr, signal_map[signal]) {
+        Task* task = new Task(this, "Handler", itr.second);
+        task->activate();
+      }
     }
   }
-  void subscribe(VEC<std::string> signals, Arrival* arrival, Bind handler) {
-    foreach_ (std::string signal, signals) {
+  void subscribe(std::string signal, Arrival* arrival, Bind handler) {
       signal_map[signal][arrival] = handler;
       arrival_map[arrival].emplace(signal);
-    }
   }
-  void unsubscribe(VEC<std::string> signals, Arrival* arrival) {
-    foreach_ (std::string signal, signals) {
+  void subscribe(VEC<std::string> signals, Arrival* arrival, Bind handler) {
+    foreach_ (std::string signal, signals)
+      subscribe(signal, arrival, handler);
+  }
+  void unsubscribe(std::string signal, Arrival* arrival) {
       signal_map[signal].erase(arrival);
       arrival_map[arrival].erase(signal);
-    }
+  }
+  void unsubscribe(VEC<std::string> signals, Arrival* arrival) {
+    foreach_ (std::string signal, signals)
+      unsubscribe(signal, arrival);
   }
 
   void register_arrival(Arrival* arrival) { arrival_map[arrival]; }

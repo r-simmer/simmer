@@ -385,6 +385,16 @@ SEXP RenegeIn__new_func(bool verbose, Function t, bool provide_attrs, std::vecto
 }
 
 //[[Rcpp::export]]
+SEXP RenegeIf__new(bool verbose, std::string signal, std::vector<Environment> trj) {
+  return XPtr<RenegeIf<std::string> >(new RenegeIf<std::string>(verbose, signal, 0, trj));
+}
+
+//[[Rcpp::export]]
+SEXP RenegeIf__new_func(bool verbose, Function signal, bool provide_attrs, std::vector<Environment> trj) {
+  return XPtr<RenegeIf<Function> >(new RenegeIf<Function>(verbose, signal, provide_attrs, trj));
+}
+
+//[[Rcpp::export]]
 SEXP RenegeAbort__new(bool verbose) {
   return XPtr<RenegeAbort>(new RenegeAbort(verbose));
 }

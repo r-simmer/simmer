@@ -38,4 +38,7 @@ executes the handler (if provided). Then, the execution returns to the activity 
 point of the interruption. \code{untrap()} can be used to unsubscribe from signals.
 \code{wait()} blocks until a signal is received.
 }
+\seealso{
+\code{\link{renege_if}}
+}
 

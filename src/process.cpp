@@ -84,7 +84,7 @@ void Task::run() {
 }
 
 void Arrival::reset() {
-  cancel_timeout();
+  cancel_renege();
   if (!--(*clones))
     delete clones;
   sim->unregister_arrival(this);
@@ -162,21 +162,6 @@ void Arrival::terminate(bool finished) {
   delete this;
 }
 
-void Arrival::renege(Activity* next) {
-  timer = NULL;
-  if (batch) {
-    if (batch->is_permanent())
-      return;
-    batch->erase(this);
-  }
-  if (!leave_resources() && !batch)
-    deactivate();
-  if (next) {
-    activity = next;
-    activate();
-  } else terminate(false);
-}
-
 int Arrival::set_attribute(std::string key, double value) {
   attributes[key] = value;
   if (is_monitored() >= 2)
@@ -204,6 +189,40 @@ void Arrival::unregister_entity(Resource* ptr) {
   if (is_monitored())
     report(ptr->name);
   resources.erase(resources.find(ptr));
+}
+
+void Arrival::set_renege(std::string sig, Activity* next) {
+  cancel_renege();
+  signal = sig;
+  sim->subscribe(signal, this,
+                 boost::bind(&Arrival::renege, this, next));
+}
+
+void Arrival::cancel_renege() {
+  if (timer) {
+    timer->deactivate();
+    delete timer;
+    timer = NULL;
+  } else if (!signal.empty()) {
+    sim->unsubscribe(signal, this);
+    signal.clear();
+  }
+}
+
+void Arrival::renege(Activity* next) {
+  timer = NULL;
+  cancel_renege();
+  if (batch) {
+    if (batch->is_permanent())
+      return;
+    batch->erase(this);
+  }
+  if (!leave_resources() && !batch)
+    deactivate();
+  if (next) {
+    activity = next;
+    activate();
+  } else terminate(false);
 }
 
 void Arrival::report(std::string resource) {

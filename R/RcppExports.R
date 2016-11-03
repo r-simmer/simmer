@@ -257,6 +257,14 @@ RenegeIn__new_func <- function(verbose, t, provide_attrs, trj) {
     .Call('simmer_RenegeIn__new_func', PACKAGE = 'simmer', verbose, t, provide_attrs, trj)
 }
 
+RenegeIf__new <- function(verbose, signal, trj) {
+    .Call('simmer_RenegeIf__new', PACKAGE = 'simmer', verbose, signal, trj)
+}
+
+RenegeIf__new_func <- function(verbose, signal, provide_attrs, trj) {
+    .Call('simmer_RenegeIf__new_func', PACKAGE = 'simmer', verbose, signal, provide_attrs, trj)
+}
+
 RenegeAbort__new <- function(verbose) {
     .Call('simmer_RenegeAbort__new', PACKAGE = 'simmer', verbose)
 }

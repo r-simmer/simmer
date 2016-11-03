@@ -2,10 +2,13 @@
 % Please edit documentation in R/trajectory.R
 \name{renege_in}
 \alias{renege_abort}
+\alias{renege_if}
 \alias{renege_in}
 \title{Add a renege activity}
 \usage{
 renege_in(.trj, t, out = NULL)
+
+renege_if(.trj, signal, out = NULL)
 
 renege_abort(.trj)
 }
@@ -16,11 +19,17 @@ renege_abort(.trj)
 (a function) which must return a numeric.}
 
 \item{out}{optional sub-trajectory in case of reneging.}
+
+\item{signal}{signal to trigger reneging, accepts either a string or a callable object
+(a function) which must return a string.}
 }
 \value{
 Returns the trajectory object.
 }
 \description{
-Set or unset a timer after which the arrival will abandon.
+Set or unset a timer or a signal after which the arrival will abandon.
+}
+\seealso{
+\code{\link{send}}
 }
 

@@ -205,6 +205,18 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       else private$add_activity(RenegeIn__new(private$verbose, t, traj))
     },
 
+    renege_if = function(signal, out=NULL) {
+      signal <- evaluate_value(signal)
+      traj <- list()
+      if (!is.null(out)) {
+        if (!inherits(out, "simmer.trajectory")) stop("not a trajectory")
+        traj <- c(traj, out)
+      }
+      if (is.function(signal))
+        private$add_activity(RenegeIf__new_func(private$verbose, signal, needs_attrs(signal), traj))
+      else private$add_activity(RenegeIf__new(private$verbose, signal, traj))
+    },
+
     renege_abort = function() { private$add_activity(RenegeAbort__new(private$verbose)) },
 
     replicate = function(n, ...) {
@@ -341,9 +353,9 @@ simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
 #' \code{\link{seize}}, \code{\link{release}}, \code{\link{seize_selected}}, \code{\link{release_selected}},
 #' \code{\link{select}}, \code{\link{set_capacity}}, \code{\link{set_queue_size}},
 #' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}, \code{\link{set_prioritization}},
-#' \code{\link{activate}}, \code{\link{deactivate}}, \code{\link{set_trajectory}},
-#' \code{\link{set_distribution}}, \code{\link{set_attribute}}, \code{\link{timeout}}, \code{\link{branch}},
-#' \code{\link{rollback}}, \code{\link{leave}}, \code{\link{renege_in}}, \code{\link{renege_abort}},
+#' \code{\link{activate}}, \code{\link{deactivate}}, \code{\link{set_trajectory}}, \code{\link{set_distribution}},
+#' \code{\link{set_attribute}}, \code{\link{timeout}}, \code{\link{branch}}, \code{\link{rollback}},
+#' \code{\link{leave}}, \code{\link{renege_in}}, \code{\link{renege_if}}, \code{\link{renege_abort}},
 #' \code{\link{clone}}, \code{\link{synchronize}}, \code{\link{batch}}, \code{\link{separate}},
 #' \code{\link{send}}, \code{\link{trap}}, \code{\link{untrap}}, \code{\link{wait}}, \code{\link{log_}}.
 #' @export
@@ -637,7 +649,7 @@ leave <- function(.trj, prob) .trj$leave(prob)
 
 #' Add a renege activity
 #'
-#' Set or unset a timer after which the arrival will abandon.
+#' Set or unset a timer or a signal after which the arrival will abandon.
 #'
 #' @inheritParams get_head
 #' @param t timeout to trigger reneging, accepts either a numeric or a callable object
@@ -648,8 +660,14 @@ leave <- function(.trj, prob) .trj$leave(prob)
 #' @export
 renege_in <- function(.trj, t, out=NULL) .trj$renege_in(t, out)
 
-#' @inheritParams get_head
+#' @param signal signal to trigger reneging, accepts either a string or a callable object
+#' (a function) which must return a string.
 #'
+#' @rdname renege_in
+#' @seealso \code{\link{send}}
+#' @export
+renege_if <- function(.trj, signal, out=NULL) .trj$renege_if(signal, out)
+
 #' @rdname renege_in
 #' @export
 renege_abort <- function(.trj) .trj$renege_abort()
@@ -724,6 +742,7 @@ separate <- function(.trj) .trj$separate()
 #' object (a function) which must return a numeric.
 #'
 #' @return Returns the trajectory object.
+#' @seealso \code{\link{renege_if}}
 #' @export
 send <- function(.trj, signals, delay=0) .trj$send(signals, delay)
 

@@ -1,3 +1,11 @@
+# simmer 3.5.0.9000
+
+## New features:
+
+* New `renege_if()` activity triggers reneging upon reception of a signal broadcasted with `send()` (#84).
+
+## Minor changes and fixes:
+
 # simmer 3.5.0
 
 ## New features:

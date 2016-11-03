@@ -854,6 +854,33 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// RenegeIf__new
+SEXP RenegeIf__new(bool verbose, std::string signal, std::vector<Environment> trj);
+RcppExport SEXP simmer_RenegeIf__new(SEXP verboseSEXP, SEXP signalSEXP, SEXP trjSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< std::string >::type signal(signalSEXP);
+    Rcpp::traits::input_parameter< std::vector<Environment> >::type trj(trjSEXP);
+    rcpp_result_gen = Rcpp::wrap(RenegeIf__new(verbose, signal, trj));
+    return rcpp_result_gen;
+END_RCPP
+}
+// RenegeIf__new_func
+SEXP RenegeIf__new_func(bool verbose, Function signal, bool provide_attrs, std::vector<Environment> trj);
+RcppExport SEXP simmer_RenegeIf__new_func(SEXP verboseSEXP, SEXP signalSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< Function >::type signal(signalSEXP);
+    Rcpp::traits::input_parameter< bool >::type provide_attrs(provide_attrsSEXP);
+    Rcpp::traits::input_parameter< std::vector<Environment> >::type trj(trjSEXP);
+    rcpp_result_gen = Rcpp::wrap(RenegeIf__new_func(verbose, signal, provide_attrs, trj));
+    return rcpp_result_gen;
+END_RCPP
+}
 // RenegeAbort__new
 SEXP RenegeAbort__new(bool verbose);
 RcppExport SEXP simmer_RenegeAbort__new(SEXP verboseSEXP) {
