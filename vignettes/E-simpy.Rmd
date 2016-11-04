@@ -30,10 +30,7 @@ From [here](https://simpy.readthedocs.io/en/latest/examples/movie_renege.html):
 
 > This example models a movie theater with one ticket counter selling tickets for three movies (next show only). People arrive at random times and try to buy a random number (1-6) of tickets for a random movie. When a movie is sold out, all people waiting to buy a ticket for that movie renege (leave the queue).
 
-> Scenario:
->  A movie theatre has one ticket counter selling tickets for three
->  movies (next show only). When a movie is sold out, all people waiting
->  to buy tickets for that movie renege (leave queue).
+First of all, we load the libraries and prepare the environment. We will use `dplyr` later for the data analysis. There is a reason for loading it before `simmer`, and it is to mask `dplyr::select` with `simmer::select` and not the other way round.
 
 ```{r, message=FALSE, warning=FALSE}
 library(dplyr)
@@ -46,29 +43,34 @@ movies <- c("R Unchained", "Kill Process", "Pulp Implementation")
 # setup
 set.seed(42)
 env <- simmer()
+```
 
-#  A moviegoer tries to by a number of tickets (*num_tickets*) for
-#  a certain *movie* in a *theater*.
-#
-#  If the movie becomes sold out, she leaves the theater. If she gets
-#  to the counter, she tries to buy a number of tickets. If not enough
-#  tickets are left, she argues with the teller and leaves.
-#
-#  If at most one ticket is left after the moviegoer bought her
-#  tickets, the *sold out* event for this movie is triggered causing
-#  all remaining moviegoers to leave.
-#
+The main actor of this simulation is the _moviegoer_, a process that will try to buy a number of tickets for a certain movie. The logic is as follows:
+
+1. __Select__ a movie and go to the theater.
+2. At any moment, the _moviegoer_ __reneges if__ the movie becomes sold out (the "sold out" event is received).
+3. In particular, __leave__ immediately if the movie already became sold out.
+4. Reach the ticket counter and stay in the queue. When the turn comes (counter is __seized__),
+    1. Try to buy (__seize__ the resource) tickets (randomly chosen between 1 and 6).
+        * If there are not enough tickets, the _moviegoer_ is __rejected__ after some discussion.
+    2. Provided the _moviegoer_ has tickets, the reneging condition is __aborted__.
+    3. Check the tickets available and, if at most one ticket is left...
+        * __Set__ instant rejection for future customers (at point 3.).
+        * __Send__ the "sold out" event (subscribed at point 2.) for current customers (waiting at point 4.).
+5. __Release__ the ticket counter after the duration of the purchase.
+6. Enjoy the movie!
+
+This recipe is directly translated into a `simmer` trajectory as follows:
+
+```{r, message=FALSE, warning=FALSE}
 moviegoer <- create_trajectory() %>%
-  # select a movie and set reneging condition
+  # select a movie
   set_attribute("movie", function() sample(3, 1)) %>%
   select(function(attr) movies[attr["movie"]]) %>%
+  # set reneging condition
   renege_if(function(attr) paste0(movies[attr["movie"]], " sold out")) %>%
-  # check if movie is sold out
-  branch(function(attr) get_capacity(env, movies[attr["movie"]]) == 0,
-         continue = FALSE,
-         # sold out, leave
-         create_trajectory() %>% timeout(0)
-  ) %>%
+  # leave immediately if the movie was already sold out
+  leave(function(attr) get_capacity(env, movies[attr["movie"]]) == 0) %>%
   # wait for my turn
   seize("counter", 1) %>%
   # buy tickets
@@ -78,7 +80,9 @@ moviegoer <- create_trajectory() %>%
                    timeout(0.5) %>%
                    release("counter", 1)
   ) %>%
+  # abort reneging condition
   renege_abort() %>%
+  # check the tickets available
   branch(function(attr) get_server_count(env, movies[attr["movie"]]) > (TICKETS - 2),
          continue = TRUE,
          # trigger the "sold out" event for the movie
@@ -90,34 +94,56 @@ moviegoer <- create_trajectory() %>%
   release("counter", 1) %>%
   # watch the movie
   wait()
+```
 
+which actually constitutes a quite interesting subset of `simmer`'s capabilities. The next step is to add the required resources to the environment `env`: the three movies and the ticket counter.
+
+```{r, message=FALSE, warning=FALSE}
 # add movies as resources with capacity TICKETS and no queue
 lapply(movies, function(i) add_resource(env, i, TICKETS, 0)) %>% invisible
 
 # add ticket counter with capacity 1 and infinite queue
-# add moviegoer generator
-# start simulation
+env %>% add_resource("counter", 1, Inf)
+```
+
+And finally, we attach an exponential _moviegoer_ generator to the `moviegoer` trajectory and the simulation starts:
+
+```{r, message=FALSE, warning=FALSE}
+# add a moviegoer generator and start simulation
 env %>%
-  add_resource("counter", 1) %>%
   add_generator("moviegoer", moviegoer, function() rexp(1, 1 / 0.5), mon=2) %>%
   run(SIM_TIME)
+```
 
-# analysis/results
-sold_time <- env %>% get_mon_resources() %>%
+`simmer` _automagically_ monitors the system status, and this information can be retrieved with three methods:
+
+```{r, message=FALSE, warning=FALSE}
+arrivals <- get_mon_arrivals(env)
+resources <- get_mon_resources(env)
+attributes <- get_mon_attributes(env)
+```
+
+As we promised, the analysis is performed with the help of `dplyr`:
+
+```{r, message=FALSE, warning=FALSE}
+# get the three rows with the sold out instants
+sold_time <- resources %>%
   filter(resource != "counter" & capacity == 0)
 
-reneges <- left_join(
-    env %>% get_mon_arrivals() %>% filter(finished == FALSE),
-    env %>% get_mon_attributes()
+# get the arrivals that left at the sold out instants
+# count the number of arrivals per movie
+n_reneges <- left_join(
+    arrivals %>% 
+      filter(finished == FALSE & end_time %in% sold_time$time),
+    attributes
   ) %>%
-  rename(resource = value) %>%
-  mutate(resource = movies[resource]) %>%
+  mutate(resource = movies[value]) %>%
   group_by(resource) %>%
   count()
 
-result <- left_join(sold_time, reneges)
-
-# the output
+# merge the info
+result <- left_join(sold_time, n_reneges)
+# and print
 apply(result, 1, function(i) {
   cat("Movie '", i["resource"], "' sold out ", i["time"], 
       " minutes after ticket counter opening.\n",
