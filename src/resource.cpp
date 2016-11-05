@@ -6,12 +6,12 @@ void Resource::set_capacity(int value) {
     return;
   int last = capacity;
   capacity = value;
-  if (capacity > last || capacity < 0) {
+  if (last >= 0  && (capacity > last || capacity < 0)) {
     // serve another
     while (queue_count)
       if (!try_serve_from_queue(sim->verbose, sim->now()))
         break;
-  } else if (capacity < last) {
+  } else if (last < 0 || capacity < last) {
     while (server_count > capacity)
       if (!try_free_server(sim->verbose, sim->now()))
         break;
@@ -23,7 +23,13 @@ void Resource::set_capacity(int value) {
 void Resource::set_queue_size(int value) {
   if (queue_size == value)
     return;
+  int last = queue_size;
   queue_size = value;
+  if (last < 0 || (queue_size < last && queue_size >= 0)) {
+    while (queue_count > queue_size)
+      if (!try_free_queue(sim->verbose, sim->now()))
+        break;
+  }
   if (is_monitored())
     sim->record_resource(name, server_count, queue_count, capacity, queue_size);
 }

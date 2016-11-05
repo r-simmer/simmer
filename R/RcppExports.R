@@ -29,8 +29,8 @@ add_generator_ <- function(sim_, name_prefix, trj, dist, mon, priority, preempti
     .Call('simmer_add_generator_', PACKAGE = 'simmer', sim_, name_prefix, trj, dist, mon, priority, preemptible, restart)
 }
 
-add_resource_ <- function(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, keep_queue) {
-    .Call('simmer_add_resource_', PACKAGE = 'simmer', sim_, name, capacity, queue_size, mon, preemptive, preempt_order, keep_queue)
+add_resource_ <- function(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict) {
+    .Call('simmer_add_resource_', PACKAGE = 'simmer', sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict)
 }
 
 add_resource_manager_ <- function(sim_, name, param, intervals, values, period) {

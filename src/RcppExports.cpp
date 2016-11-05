@@ -90,8 +90,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // add_resource_
-bool add_resource_(SEXP sim_, std::string name, int capacity, int queue_size, bool mon, bool preemptive, std::string preempt_order, bool keep_queue);
-RcppExport SEXP simmer_add_resource_(SEXP sim_SEXP, SEXP nameSEXP, SEXP capacitySEXP, SEXP queue_sizeSEXP, SEXP monSEXP, SEXP preemptiveSEXP, SEXP preempt_orderSEXP, SEXP keep_queueSEXP) {
+bool add_resource_(SEXP sim_, std::string name, int capacity, int queue_size, bool mon, bool preemptive, std::string preempt_order, bool queue_size_strict);
+RcppExport SEXP simmer_add_resource_(SEXP sim_SEXP, SEXP nameSEXP, SEXP capacitySEXP, SEXP queue_sizeSEXP, SEXP monSEXP, SEXP preemptiveSEXP, SEXP preempt_orderSEXP, SEXP queue_size_strictSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -102,8 +102,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type mon(monSEXP);
     Rcpp::traits::input_parameter< bool >::type preemptive(preemptiveSEXP);
     Rcpp::traits::input_parameter< std::string >::type preempt_order(preempt_orderSEXP);
-    Rcpp::traits::input_parameter< bool >::type keep_queue(keep_queueSEXP);
-    rcpp_result_gen = Rcpp::wrap(add_resource_(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, keep_queue));
+    Rcpp::traits::input_parameter< bool >::type queue_size_strict(queue_size_strictSEXP);
+    rcpp_result_gen = Rcpp::wrap(add_resource_(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -183,16 +183,16 @@ public:
 
   /**
    * Add a resource to the simulator.
-   * @param   name          the name
-   * @param   capacity      server capacity (-1 means infinity)
-   * @param   queue_size    room in the queue (-1 means infinity)
-   * @param   mon           whether this entity must be monitored
-   * @param   preemptive    whether the resource is preemptive
-   * @param   preempt_order fifo or lifo
-   * @param   keep_queue    whether the queue size is a hard limit
+   * @param   name              the name
+   * @param   capacity          server capacity (-1 means infinity)
+   * @param   queue_size        room in the queue (-1 means infinity)
+   * @param   mon               whether this entity must be monitored
+   * @param   preemptive        whether the resource is preemptive
+   * @param   preempt_order     fifo or lifo
+   * @param   queue_size_strict whether the queue size is a hard limit
    */
   bool add_resource(std::string name, int capacity, int queue_size, bool mon,
-                    bool preemptive, std::string preempt_order, bool keep_queue)
+                    bool preemptive, std::string preempt_order, bool queue_size_strict)
   {
     if (resource_map.find(name) != resource_map.end()) {
       Rcpp::warning("resource " + name + " already defined");
@@ -200,12 +200,15 @@ public:
     }
     Resource* res;
     if (!preemptive) {
-      res = new PriorityRes<FIFO>(this, name, mon, capacity, queue_size);
+      res = new PriorityRes<FIFO>(this, name, mon, capacity,
+                                  queue_size, queue_size_strict);
     } else {
       if (preempt_order.compare("fifo") == 0)
-        res = new PreemptiveRes<FIFO>(this, name, mon, capacity, queue_size, keep_queue);
+        res = new PreemptiveRes<FIFO>(this, name, mon, capacity,
+                                      queue_size, queue_size_strict);
       else
-        res = new PreemptiveRes<LIFO>(this, name, mon, capacity, queue_size, keep_queue);
+        res = new PreemptiveRes<LIFO>(this, name, mon, capacity,
+                                      queue_size, queue_size_strict);
     }
     resource_map[name] = res;
     return true;

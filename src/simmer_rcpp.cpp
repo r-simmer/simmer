@@ -58,10 +58,10 @@ bool add_generator_(SEXP sim_, std::string name_prefix, Environment trj,
 
 //[[Rcpp::export]]
 bool add_resource_(SEXP sim_, std::string name, int capacity, int queue_size, bool mon,
-                   bool preemptive, std::string preempt_order, bool keep_queue)
+                   bool preemptive, std::string preempt_order, bool queue_size_strict)
 {
   XPtr<Simulator> sim(sim_);
-  return sim->add_resource(name, capacity, queue_size, mon, preemptive, preempt_order, keep_queue);
+  return sim->add_resource(name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict);
 }
 
 //[[Rcpp::export]]

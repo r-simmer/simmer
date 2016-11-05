@@ -56,3 +56,60 @@ test_that("capacity and queue size change as expected (2)", {
   env %>% onestep()
   expect_equal(env %>% get_queue_size("dummy0"), 5)
 })
+
+preempt <- create_trajectory() %>% set_capacity("res", 0)
+drop <- create_trajectory() %>% set_queue_size("res", 0)
+t <- create_trajectory() %>%
+  seize("res", 1) %>%
+  timeout(10)
+
+test_that("arrivals are preempted also when the last capacity was infinite", {
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("res", Inf, preemptive = TRUE) %>%
+    add_generator("dummy", t, at(0)) %>%
+    add_generator("drop", preempt, at(1))
+
+  expect_equal(run(env, 1) %>% get_server_count("res"), 1)
+  expect_equal(run(env, 2) %>% get_server_count("res"), 0)
+  expect_equal(get_queue_count(env, "res"), 1)
+})
+
+test_that("queue is not dropped without queue_size_strict (1)", {
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("res", 0, preemptive = FALSE, queue_size_strict = FALSE) %>%
+    add_generator("dummy", t, at(rep(0, 3))) %>%
+    add_generator("drop", drop, at(1))
+
+  expect_equal(run(env, 1) %>% get_queue_count("res"), 3)
+  expect_equal(run(env, 2) %>% get_queue_count("res"), 3)
+})
+
+test_that("queue is not dropped without queue_size_strict (2)", {
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("res", 0, preemptive = TRUE, queue_size_strict = FALSE) %>%
+    add_generator("dummy", t, at(rep(0, 3))) %>%
+    add_generator("drop", drop, at(1))
+
+  expect_equal(run(env, 1) %>% get_queue_count("res"), 3)
+  expect_equal(run(env, 2) %>% get_queue_count("res"), 3)
+})
+
+test_that("queue is dropped with queue_size_strict (1)", {
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("res", 0, preemptive = FALSE, queue_size_strict = TRUE) %>%
+    add_generator("dummy", t, at(rep(0, 3))) %>%
+    add_generator("drop", drop, at(1))
+
+  expect_equal(run(env, 1) %>% get_queue_count("res"), 3)
+  expect_equal(run(env, 2) %>% get_queue_count("res"), 0)
+})
+
+test_that("queue is dropped with queue_size_strict (2)", {
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("res", 0, preemptive = TRUE, queue_size_strict = TRUE) %>%
+    add_generator("dummy", t, at(rep(0, 3))) %>%
+    add_generator("drop", drop, at(1))
+
+  expect_equal(run(env, 1) %>% get_queue_count("res"), 3)
+  expect_equal(run(env, 2) %>% get_queue_count("res"), 0)
+})

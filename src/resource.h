@@ -16,9 +16,10 @@ public:
   * @param capacity    server capacity (-1 means infinity)
   * @param queue_size  room in the queue (-1 means infinity)
   */
-  Resource(Simulator* sim, std::string name, int mon, int capacity, int queue_size)
+  Resource(Simulator* sim, std::string name, int mon, int capacity,
+           int queue_size, bool queue_size_strict)
     : Entity(sim, name, mon), capacity(capacity), queue_size(queue_size),
-      server_count(0), queue_count(0) {}
+      server_count(0), queue_count(0), queue_size_strict(queue_size_strict) {}
 
   /**
   * Reset the resource: server, queue
@@ -57,8 +58,9 @@ public:
 protected:
   int capacity;
   int queue_size;
-  int server_count;     /**< number of arrivals being served */
-  int queue_count;      /**< number of arrivals waiting */
+  int server_count;       /**< number of arrivals being served */
+  int queue_count;        /**< number of arrivals waiting */
+  bool queue_size_strict;
 
   int post_release();
 
@@ -73,6 +75,7 @@ protected:
   virtual bool room_in_server(int amount, int priority) = 0;
   virtual bool room_in_queue(int amount, int priority) = 0;
   virtual bool try_free_server(bool verbose, double time) = 0;
+  virtual bool try_free_queue(bool verbose, double time) = 0;
   virtual bool try_serve_from_queue(bool verbose, double time) = 0;
   virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount) = 0;
   virtual void insert_in_queue(bool verbose, double time, Arrival* arrival, int amount) = 0;
@@ -134,8 +137,9 @@ class PriorityRes : public Resource {
   typedef UMAP<Arrival*, typename T::iterator> ServerMap;
 
 public:
-  PriorityRes(Simulator* sim, std::string name, int mon, int capacity, int queue_size)
-    : Resource(sim, name, mon, capacity, queue_size) {}
+  PriorityRes(Simulator* sim, std::string name, int mon, int capacity,
+              int queue_size, bool queue_size_strict)
+    : Resource(sim, name, mon, capacity, queue_size, queue_size_strict) {}
 
   ~PriorityRes() { reset(); }
 
@@ -177,6 +181,19 @@ protected:
   }
 
   bool try_free_server(bool verbose, double time) { return false; }
+
+  bool try_free_queue(bool verbose, double time) {
+    if (!queue_size_strict)
+      return false;
+    RPQueue::iterator last = --queue.end();
+    if (verbose) verbose_print(time, last->arrival->name, "REJECT");
+    queue_count -= last->amount;
+    queue_map.erase(last->arrival);
+    last->arrival->unregister_entity(this);
+    last->arrival->terminate(false);
+    queue.erase(last);
+    return true;
+  }
 
   bool try_serve_from_queue(bool verbose, double time) {
     RPQueue::iterator next = queue.begin();
@@ -258,8 +275,9 @@ protected:
 template <typename T>
 class PreemptiveRes : public PriorityRes<T> {
 public:
-  PreemptiveRes(Simulator* sim, std::string name, int mon, int capacity, int queue_size, bool keep_queue)
-    : PriorityRes<T>(sim, name, mon, capacity, queue_size), keep_queue(keep_queue) {}
+  PreemptiveRes(Simulator* sim, std::string name, int mon, int capacity,
+                int queue_size, bool queue_size_strict)
+    : PriorityRes<T>(sim, name, mon, capacity, queue_size, queue_size_strict) {}
 
   ~PreemptiveRes() { reset(); }
 
@@ -272,7 +290,6 @@ public:
   }
 
 protected:
-  bool keep_queue;
   RPQueue preempted;
   QueueMap preempted_map;
 
@@ -299,7 +316,7 @@ protected:
     if (verbose) this->verbose_print(time, first->arrival->name, "PREEMPT");
     this->server_count -= first->amount;
     this->server_map.erase(first->arrival);
-    if (keep_queue) {
+    if (this->queue_size_strict) {
       if (!this->room_in_queue(first->amount, first->priority())) {
         if (verbose) this->verbose_print(time, first->arrival->name, "REJECT");
         first->arrival->unregister_entity(this);
