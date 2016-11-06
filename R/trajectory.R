@@ -261,16 +261,18 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       else private$add_activity(Send__new(private$verbose, signals, delay))
     },
 
-    trap = function(signals, handler=NULL) {
+    trap = function(signals, handler=NULL, interruptible=TRUE) {
       signals <- evaluate_value(signals)
+      interruptible <- evaluate_value(interruptible)
       traj <- list()
       if (!is.null(handler)) {
         if (!inherits(handler, "simmer.trajectory")) stop("not a trajectory")
         traj <- c(traj, handler)
       }
       if (is.function(signals))
-        private$add_activity(Trap__new_func(private$verbose, signals, needs_attrs(signals), traj))
-      else private$add_activity(Trap__new(private$verbose, signals, traj))
+        private$add_activity(Trap__new_func(private$verbose, signals, needs_attrs(signals),
+                                            traj, interruptible))
+      else private$add_activity(Trap__new(private$verbose, signals, traj, interruptible))
     },
 
     untrap = function(signals) {
@@ -747,10 +749,12 @@ separate <- function(.trj) .trj$separate()
 send <- function(.trj, signals, delay=0) .trj$send(signals, delay)
 
 #' @param handler optional trajectory object to handle a signal received.
+#' @param interruptible whether the handler can be interrupted by signals.
 #'
 #' @rdname send
 #' @export
-trap <- function(.trj, signals, handler=NULL) .trj$trap(signals, handler)
+trap <- function(.trj, signals, handler=NULL, interruptible=TRUE)
+  .trj$trap(signals, handler, interruptible)
 
 #' @rdname send
 #' @export

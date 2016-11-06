@@ -197,6 +197,25 @@ test_that("launch handler while blocked", {
   expect_equal(arr$activity_time, c(6, 6, 6))
 })
 
+test_that("launch handler while blocked (not interruptible)", {
+  t <- create_trajectory() %>%
+    send("signal", 3) %>%
+    trap("signal",
+         create_trajectory() %>% timeout(3),
+         interruptible = FALSE) %>%
+    wait() %>%
+    timeout(1)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("dummy", t, at(0, 1, 2)) %>%
+    run()
+  arr <- get_mon_arrivals(env)
+
+  expect_equal(arr$start_time, c(0, 1, 2))
+  expect_equal(arr$end_time, c(7, 7, 7))
+  expect_equal(arr$activity_time, c(4, 4, 4))
+})
+
 test_that("launch handler while in a timeout", {
   t <- create_trajectory() %>%
     send(function() "signal", 3) %>%
@@ -212,6 +231,25 @@ test_that("launch handler while in a timeout", {
   expect_equal(arr$start_time, c(0, 1, 2))
   expect_equal(arr$end_time, c(9, 9, 9))
   expect_equal(arr$activity_time, c(9, 8, 7))
+})
+
+test_that("launch handler while in a timeout (not interruptible)", {
+  t <- create_trajectory() %>%
+    send(function() "signal", 3) %>%
+    trap(function() "signal",
+         create_trajectory() %>% timeout(3),
+         interruptible = FALSE) %>%
+    timeout(10) %>%
+    timeout(1)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("dummy", t, at(0, 1, 2)) %>%
+    run()
+  arr <- get_mon_arrivals(env)
+
+  expect_equal(arr$start_time, c(0, 1, 2))
+  expect_equal(arr$end_time, c(7, 7, 7))
+  expect_equal(arr$activity_time, c(7, 6, 5))
 })
 
 test_that("launch handler while blocked inside a resource", {

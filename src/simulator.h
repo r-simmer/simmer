@@ -37,7 +37,8 @@ class Simulator {
   typedef UMAP<std::string, Batched*> NamBMap;
   typedef UMAP<Activity*, Batched*> UnnBMap;
   typedef boost::function<void ()> Bind;
-  typedef UMAP<Arrival*, Bind> HandlerMap;
+  typedef std::pair<bool, Bind> Handler;
+  typedef UMAP<Arrival*, Handler> HandlerMap;
   typedef UMAP<std::string, HandlerMap> SigMap;
 
 public:
@@ -280,26 +281,36 @@ public:
   void broadcast(VEC<std::string> signals) {
     foreach_ (std::string signal, signals) {
       foreach_ (HandlerMap::value_type& itr, signal_map[signal]) {
-        Task* task = new Task(this, "Handler", itr.second);
+        if (!itr.second.first)
+          continue;
+        Task* task = new Task(this, "Handler", itr.second.second);
         task->activate();
       }
     }
   }
   void subscribe(std::string signal, Arrival* arrival, Bind handler) {
-      signal_map[signal][arrival] = handler;
-      arrival_map[arrival].emplace(signal);
+    signal_map[signal][arrival] = std::make_pair(true, handler);
+    arrival_map[arrival].emplace(signal);
   }
   void subscribe(VEC<std::string> signals, Arrival* arrival, Bind handler) {
     foreach_ (std::string signal, signals)
       subscribe(signal, arrival, handler);
   }
+  void subscribe(Arrival* arrival) {
+    foreach_ (std::string signal, arrival_map[arrival])
+      signal_map[signal][arrival].first = true;
+  }
   void unsubscribe(std::string signal, Arrival* arrival) {
-      signal_map[signal].erase(arrival);
-      arrival_map[arrival].erase(signal);
+    signal_map[signal].erase(arrival);
+    arrival_map[arrival].erase(signal);
   }
   void unsubscribe(VEC<std::string> signals, Arrival* arrival) {
     foreach_ (std::string signal, signals)
       unsubscribe(signal, arrival);
+  }
+  void unsubscribe(Arrival* arrival) {
+    foreach_ (std::string signal, arrival_map[arrival])
+      signal_map[signal][arrival].first = false;
   }
 
   void register_arrival(Arrival* arrival) { arrival_map[arrival]; }

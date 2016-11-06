@@ -121,14 +121,15 @@ public:
 
   void print(int indent = 0, bool brief = false) {
     indent += 2;
-    if (!brief)
+    if (!brief) {
+      if (indent > 10) return; // max 6 levels
       for (unsigned int i = 0; i < trj.size(); i++) {
         for (int j = 0; j < indent; ++j) Rcpp::Rcout << " ";
         Rcpp::Rcout << "Fork " << i+1 << (cont[i] ? ", continue," : ", stop,");
         Rcpp::Function print(trj[i]["print"]);
         print(indent);
       }
-    else Rcpp::Rcout << trj.size() << " paths" << std::endl;
+    } else Rcpp::Rcout << trj.size() << " paths" << std::endl;
   }
 
   void set_next(Activity* activity) {
@@ -1080,18 +1081,35 @@ class Trap : public Fork {
 public:
   CLONEABLE(Trap<T>)
 
-  Trap(bool verbose, T signals, bool provide_attrs, VEC<Rcpp::Environment> trj)
+  Trap(bool verbose, T signals, bool provide_attrs,
+       VEC<Rcpp::Environment> trj, bool interruptible)
     : Fork("Trap", verbose, VEC<bool>(trj.size(), false),
-      trj, VEC<bool>(1, provide_attrs)), signals(signals) {}
+      trj, VEC<bool>(1, provide_attrs)),
+      signals(signals), interruptible(interruptible) {}
+
+  Trap(const Trap& o)
+    : Fork(o.name, o.verbose, o.cont, o.trj, o.provide_attrs),
+      signals(o.signals), interruptible(o.interruptible)
+  {
+    pending.clear();
+  }
 
   void print(int indent = 0, bool brief = false) {
     Activity::print(indent, brief);
     if (!brief) {
       Rcpp::Rcout << "signals: " << signals << " }" << std::endl;
-    } else Rcpp::Rcout << signals << std::endl;
+    } else Rcpp::Rcout << signals << ", ";
+    Fork::print(indent, brief);
   }
 
   double run(Arrival* arrival) {
+    if (!interruptible && pending.find(arrival) != pending.end()) {
+      arrival->sim->subscribe(arrival);
+      arrival->set_activity(pending[arrival]);
+      pending.erase(arrival);
+      arrival->activate();
+      return REJECT;
+    }
     VEC<std::string> sigs = get<VEC<std::string> >(signals, 0, arrival);
     arrival->sim->subscribe(sigs, arrival,
                             boost::bind(&Trap::launch_handler, this, arrival));
@@ -1100,13 +1118,21 @@ public:
 
 protected:
   T signals;
+  bool interruptible;
+  UMAP<Arrival*, Activity*> pending;
 
   void launch_handler(Arrival* arrival) {
     if (!arrival->is_active())
       return;
     arrival->stop();
     if (heads.size()) {
-      tails[0]->set_next(arrival->get_activity());
+      if (!interruptible) {
+        arrival->sim->unsubscribe(arrival);
+        pending[arrival] = arrival->get_activity();
+        tails[0]->set_next(this);
+      } else {
+        tails[0]->set_next(arrival->get_activity());
+      }
       arrival->set_activity(heads[0]);
     }
     arrival->activate();

@@ -948,21 +948,22 @@ BEGIN_RCPP
 END_RCPP
 }
 // Trap__new
-SEXP Trap__new(bool verbose, std::vector<std::string> signals, std::vector<Environment> trj);
-RcppExport SEXP simmer_Trap__new(SEXP verboseSEXP, SEXP signalsSEXP, SEXP trjSEXP) {
+SEXP Trap__new(bool verbose, std::vector<std::string> signals, std::vector<Environment> trj, bool interruptible);
+RcppExport SEXP simmer_Trap__new(SEXP verboseSEXP, SEXP signalsSEXP, SEXP trjSEXP, SEXP interruptibleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type signals(signalsSEXP);
     Rcpp::traits::input_parameter< std::vector<Environment> >::type trj(trjSEXP);
-    rcpp_result_gen = Rcpp::wrap(Trap__new(verbose, signals, trj));
+    Rcpp::traits::input_parameter< bool >::type interruptible(interruptibleSEXP);
+    rcpp_result_gen = Rcpp::wrap(Trap__new(verbose, signals, trj, interruptible));
     return rcpp_result_gen;
 END_RCPP
 }
 // Trap__new_func
-SEXP Trap__new_func(bool verbose, Function signals, bool provide_attrs, std::vector<Environment> trj);
-RcppExport SEXP simmer_Trap__new_func(SEXP verboseSEXP, SEXP signalsSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP) {
+SEXP Trap__new_func(bool verbose, Function signals, bool provide_attrs, std::vector<Environment> trj, bool interruptible);
+RcppExport SEXP simmer_Trap__new_func(SEXP verboseSEXP, SEXP signalsSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP, SEXP interruptibleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -970,7 +971,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Function >::type signals(signalsSEXP);
     Rcpp::traits::input_parameter< bool >::type provide_attrs(provide_attrsSEXP);
     Rcpp::traits::input_parameter< std::vector<Environment> >::type trj(trjSEXP);
-    rcpp_result_gen = Rcpp::wrap(Trap__new_func(verbose, signals, provide_attrs, trj));
+    Rcpp::traits::input_parameter< bool >::type interruptible(interruptibleSEXP);
+    rcpp_result_gen = Rcpp::wrap(Trap__new_func(verbose, signals, provide_attrs, trj, interruptible));
     return rcpp_result_gen;
 END_RCPP
 }

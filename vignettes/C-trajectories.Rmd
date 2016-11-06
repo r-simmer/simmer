@@ -788,8 +788,6 @@ get_mon_arrivals(env)
 
 ### `send()`, `trap()`, `untrap()`, `wait()`
 
-The `send(., n, timeout, permanent, name, rule)` m
-
 These activities enable asynchronous programming. The `send(., signals, delay)` method broadcasts a signal or a list of signals to all the arrivals subscribed to them. Signals can be triggered immediately:
 
 ```{r}
@@ -814,7 +812,7 @@ simmer(verbose = TRUE) %>%
 
 Note that both arguments, `signals` and `delay`, can be functions, and therefore they can retrieve the arrival's attributes.
 
-This is not very useful if nobody is listening. Arrivals can subscribe to signals and (optionally) assign a handler with the `trap(., signals, handler)`. In the following example, an arrival subscribes to a signal and blocks until its reception using the `wait(.)` method.
+This is not very useful if nobody is listening. Arrivals can subscribe to signals and (optionally) assign a handler with the `trap(., signals, handler, interruptible)`. In the following example, an arrival subscribes to a signal and blocks until its reception using the `wait(.)` method.
 
 ```{r}
 t_blocked <- create_trajectory() %>%
@@ -860,7 +858,8 @@ t_worker <- create_trajectory() %>%
   trap("you are free to go", 
        handler = create_trajectory() %>%
          log_("ok, I'm packing...") %>%
-         timeout(1)) %>%
+         timeout(1)
+  ) %>%
   log_("performing a looong task...") %>%
   timeout(100) %>%
   log_("and I'm leaving!")
@@ -882,7 +881,8 @@ t_worker <- create_trajectory() %>%
   trap("you are free to go", 
        handler = create_trajectory() %>%
          log_("ok, I'm packing...") %>%
-         timeout(1)) %>%
+         timeout(1)
+  ) %>%
   log_("performing a looong task...") %>%
   untrap("you are free to go") %>%
   timeout(100) %>%
@@ -898,6 +898,53 @@ simmer() %>%
   run() %>% invisible
 ```
 
+Signal handlers can be interrupted as well by default, meaning that a handler may keep restarting if there are frequent enough signals:
+
+```{r}
+t_worker <- create_trajectory() %>%
+  trap("you are free to go", 
+       handler = create_trajectory() %>%
+         log_("ok, I'm packing...") %>%
+         timeout(1)
+  ) %>%
+  log_("performing a looong task...") %>%
+  timeout(100) %>%
+  log_("and I'm leaving!")
+
+t_signaler <- create_trajectory() %>%
+  log_("you are free to go") %>%
+  send("you are free to go")
+
+simmer() %>%
+  add_generator("worker", t_worker, at(0)) %>%
+  add_generator("signaler", t_signaler, from(5, function() 0.5)) %>%
+  run(10) %>% invisible
+```
+
+If an uninterruptible handler is needed, this can be achieved by setting the proper flag:
+
+```{r}
+t_worker <- create_trajectory() %>%
+  trap("you are free to go", 
+       handler = create_trajectory() %>%
+         log_("ok, I'm packing...") %>%
+         timeout(1),
+       interruptible = FALSE            # make it uninterruptible
+  ) %>%
+  log_("performing a looong task...") %>%
+  timeout(100) %>%
+  log_("and I'm leaving!")
+
+t_signaler <- create_trajectory() %>%
+  log_("you are free to go") %>%
+  send("you are free to go")
+
+simmer() %>%
+  add_generator("worker", t_worker, at(0)) %>%
+  add_generator("signaler", t_signaler, from(5, function() 0.5)) %>%
+  run(10) %>% invisible
+```
+
 ### `renege_in()`, `renege_if()`, `renege_abort()`
 
 The `renege_in(., t, out)` method offers the possibility of setting a timeout after which the arrival will abandon the trajectory. After reneging, the arrival can follow an optional sub-trajectory `out`. The `renege_abort(.)` method cancels the latter. Together, they allows us, for instance, to model arrivals with limited patience. In the example below, `customer1` arrives at the bank, where there is only one busy clerk. He/she waits in the queue for 5 minutes and then leaves. 
@@ -909,7 +956,7 @@ t <- create_trajectory(name = "bank") %>%
   renege_in(5, 
             out = create_trajectory() %>%
               log_("Lost my patience. Reneging...")
-            ) %>%
+  ) %>%
   seize("clerk", 1) %>%
   # stay if I'm being attended within 5 minutes
   renege_abort() %>%
@@ -933,7 +980,7 @@ t <- create_trajectory(name = "bank") %>%
   renege_if("renege now", 
             out = create_trajectory() %>%
               log_("Ok. Reneging...")
-            ) %>%
+  ) %>%
   seize("clerk", 1) %>%
   # stay if I'm being attended within 5 minutes
   renege_abort() %>%
