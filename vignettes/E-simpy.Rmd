@@ -340,7 +340,11 @@ From [here](https://simpy.readthedocs.io/en/latest/examples/gas_station_refuel.h
 > 
 > The fuel level is reqularly monitored by a controller. When the level drops below a certain threshold, a tank truck is called for refilling the tank.
 
+Parameters and setup:
+
 ```{r, message=FALSE, warning=FALSE}
+library(simmer)
+
 GAS_STATION_SIZE <- 200     # liters
 THRESHOLD <- 10             # Threshold for calling the tank truck (in %)
 FUEL_TANK_SIZE <- 50        # liters
@@ -353,53 +357,81 @@ SIM_TIME <- 1000            # Simulation time in seconds
 # setup
 set.seed(42)
 env <- simmer()
+```
 
-TANK <- GAS_STATION_SIZE
-signal <- "tank refilled"
+SimPy solves this problem using a special kind of resource called _container_, which is not present in `simmer` so far. However, a container is nothing more than an embellished counter. Therefore, we can implement this in `simmer` with a global counter (`GAS_STATION_LEVEL` here), some signaling and some care checking the counter bounds.
+
+Let us consider just the refuelling process in the first place. A car needs to check whether there is enough fuel available to fill its tank. If not, it needs to block until the gas station is refilled.
+
+```{r, message=FALSE, warning=FALSE}
+GAS_STATION_LEVEL <- GAS_STATION_SIZE
+signal <- "gas station refilled"
 
 refuelling <- create_trajectory() %>%
-  branch(function(attr) FUEL_TANK_SIZE - attr["level"] > TANK, continue = TRUE,
+  # check if there is enough fuel available
+  branch(function(attr) FUEL_TANK_SIZE - attr["level"] > GAS_STATION_LEVEL, 
+         continue = TRUE,
+         # if not, block until the signal "gas station refilled" is received
          create_trajectory() %>%
            trap(signal) %>%
            wait() %>%
            untrap(signal)
   ) %>%
+  # refuel
   timeout(function(attr) {
     liters_required <- FUEL_TANK_SIZE - attr["level"]
-    TANK <<- TANK - liters_required
+    GAS_STATION_LEVEL <<- GAS_STATION_LEVEL - liters_required
     return(liters_required / REFUELING_SPEED)
   })
+```
 
+Now a car's trajectory is straightforward. First, the starting time is saved as well as the tank level. Then, the car seizes a pump, refuels and leaves.
+
+```{r, message=FALSE, warning=FALSE}
 car <- create_trajectory() %>%
   set_attribute("start", function() now(env)) %>%
   set_attribute("level", function() 
     sample(FUEL_TANK_LEVEL[1]:FUEL_TANK_LEVEL[2], 1)) %>%
   log_("arriving at gas station") %>%
   seize("pump", 1) %>%
+  # 'join()' concatenates the refuelling trajectory here
   join(refuelling) %>%
   release("pump", 1) %>%
   log_(function(attr) 
     paste0("finished refuelling in ", now(env) - attr["start"], " seconds"))
+```
 
+The tank truck takes some time to arrive. Then, the gas station is completely refilled and the signal "gas station refilled" is sent to the blocked cars.
+
+```{r, message=FALSE, warning=FALSE}
 tank_truck <- create_trajectory() %>%
   timeout(TANK_TRUCK_TIME) %>%
   log_("tank truck arriving at gas station") %>%
   log_(function() {
-    refill <- GAS_STATION_SIZE - TANK
-    TANK <<- GAS_STATION_SIZE
+    refill <- GAS_STATION_SIZE - GAS_STATION_LEVEL
+    GAS_STATION_LEVEL <<- GAS_STATION_SIZE
     paste0("tank truck refilling ", refill, " liters")
   }) %>%
   send(signal)
+```
 
+The controller periodically checks the `GAS_STATION_LEVEL` and calls the tank truck when needed.
+
+```{r, message=FALSE, warning=FALSE}
 controller <- create_trajectory() %>%
-  branch(function() TANK / GAS_STATION_SIZE * 100 < THRESHOLD, continue = TRUE,
+  branch(function() GAS_STATION_LEVEL / GAS_STATION_SIZE * 100 < THRESHOLD, 
+         continue = TRUE,
          create_trajectory() %>%
            log_("calling the tank truck") %>%
            join(tank_truck)
   ) %>%
   timeout(10) %>%
   rollback(2, Inf)
+```
 
+Finally, we need to add a couple of pumps, a controller worker and a car generator.
+
+```{r, message=FALSE, warning=FALSE}
 env %>%
   add_resource("pump", 2) %>%
   add_generator("controller", controller, at(0)) %>%
