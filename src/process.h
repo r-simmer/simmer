@@ -63,8 +63,6 @@ private:
   Bind task;
 };
 
-typedef UMAP<std::string, double> Attr;
-
 struct Order {
 public:
   Order(int priority=0, int preemptible=0, bool restart=false)
@@ -196,7 +194,7 @@ public:
   void pause();
   void stop();
   virtual void terminate(bool finished);
-  virtual int set_attribute(std::string key, double value);
+  virtual void set_attribute(std::string key, double value);
   double get_start(std::string name);
 
   Attr* get_attributes() { return &attributes; }
@@ -303,7 +301,7 @@ public:
     arrivals.clear();
   }
 
-  int set_attribute(std::string key, double value);
+  void set_attribute(std::string key, double value);
 
   bool is_permanent() { return permanent; }
   size_t size() { return arrivals.size(); }

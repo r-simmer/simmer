@@ -69,4 +69,6 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #define CLONEABLE_COUNT_DERIVED(Type) \
   virtual Type* clone() const { (*clones)++; return new Type(*this); }
 
+typedef UMAP<std::string, double> Attr;
+
 #endif

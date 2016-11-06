@@ -123,12 +123,13 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       else private$add_activity(Timeout__new(private$verbose, task))
     },
 
-    set_attribute = function(key, value) {
+    set_attribute = function(key, value, global=FALSE) {
       key <- as.character(key)
       value <- evaluate_value(value)
+      global <- evaluate_value(global)
       if (is.function(value))
-        private$add_activity(SetAttribute__new_func(private$verbose, key, value, needs_attrs(value)))
-      else private$add_activity(SetAttribute__new(private$verbose, key, value))
+        private$add_activity(SetAttribute__new_func(private$verbose, key, value, needs_attrs(value), global))
+      else private$add_activity(SetAttribute__new(private$verbose, key, value, global))
     },
 
     activate = function(generator) {
@@ -552,10 +553,11 @@ timeout <- function(.trj, task) .trj$timeout(task)
 #' @param key the attribute key (coerced to a string).
 #' @param value the value to set, accepts either a numeric or a callable object
 #' (a function) which must return a numeric.
+#' @param global if \code{TRUE}, the attribute will be global instead of per-arrival.
 #'
 #' @return Returns the trajectory object.
 #' @export
-set_attribute <- function(.trj, key, value) .trj$set_attribute(key, value)
+set_attribute <- function(.trj, key, value, global=FALSE) .trj$set_attribute(key, value, global)
 
 #' Add a activate/deactivate activity
 #'

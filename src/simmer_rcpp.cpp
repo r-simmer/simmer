@@ -140,7 +140,7 @@ SEXP Seize__new(bool verbose, std::string resource, int amount,
 }
 
 //[[Rcpp::export]]
-SEXP Seize__new_func(bool verbose, std::string resource, Function amount, bool provide_attrs,
+SEXP Seize__new_func(bool verbose, std::string resource, Function amount, int provide_attrs,
                      std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask)
 {
   return XPtr<Seize<Function> >(
@@ -156,7 +156,7 @@ SEXP SeizeSelected__new(bool verbose, int id, int amount,
 }
 
 //[[Rcpp::export]]
-SEXP SeizeSelected__new_func(bool verbose, int id, Function amount, bool provide_attrs,
+SEXP SeizeSelected__new_func(bool verbose, int id, Function amount, int provide_attrs,
                              std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask)
 {
   return XPtr<SeizeSelected<Function> >(
@@ -169,7 +169,7 @@ SEXP Release__new(bool verbose, std::string resource, int amount) {
 }
 
 //[[Rcpp::export]]
-SEXP Release__new_func(bool verbose, std::string resource, Function amount, bool provide_attrs) {
+SEXP Release__new_func(bool verbose, std::string resource, Function amount, int provide_attrs) {
   return XPtr<Release<Function> >(new Release<Function>(verbose, resource, amount, provide_attrs));
 }
 
@@ -179,7 +179,7 @@ SEXP ReleaseSelected__new(bool verbose, int id, int amount) {
 }
 
 //[[Rcpp::export]]
-SEXP ReleaseSelected__new_func(bool verbose, int id, Function amount, bool provide_attrs) {
+SEXP ReleaseSelected__new_func(bool verbose, int id, Function amount, int provide_attrs) {
   return XPtr<ReleaseSelected<Function> >(
       new ReleaseSelected<Function>(verbose, id, amount, provide_attrs));
 }
@@ -190,7 +190,7 @@ SEXP SetCapacity__new(bool verbose, std::string resource, double value) {
 }
 
 //[[Rcpp::export]]
-SEXP SetCapacity__new_func(bool verbose, std::string resource, Function value, bool provide_attrs) {
+SEXP SetCapacity__new_func(bool verbose, std::string resource, Function value, int provide_attrs) {
   return XPtr<SetCapacity<Function> >(
       new SetCapacity<Function>(verbose, resource, value, provide_attrs));
 }
@@ -201,7 +201,7 @@ SEXP SetCapacitySelected__new(bool verbose, int id, double value) {
 }
 
 //[[Rcpp::export]]
-SEXP SetCapacitySelected__new_func(bool verbose, int id, Function value, bool provide_attrs) {
+SEXP SetCapacitySelected__new_func(bool verbose, int id, Function value, int provide_attrs) {
   return XPtr<SetCapacitySelected<Function> >(
       new SetCapacitySelected<Function>(verbose, id, value, provide_attrs));
 }
@@ -212,7 +212,7 @@ SEXP SetQueue__new(bool verbose, std::string resource, double value) {
 }
 
 //[[Rcpp::export]]
-SEXP SetQueue__new_func(bool verbose, std::string resource, Function value, bool provide_attrs) {
+SEXP SetQueue__new_func(bool verbose, std::string resource, Function value, int provide_attrs) {
   return XPtr<SetQueue<Function> >(
       new SetQueue<Function>(verbose, resource, value, provide_attrs));
 }
@@ -223,7 +223,7 @@ SEXP SetQueueSelected__new(bool verbose, int id, double value) {
 }
 
 //[[Rcpp::export]]
-SEXP SetQueueSelected__new_func(bool verbose, int id, Function value, bool provide_attrs) {
+SEXP SetQueueSelected__new_func(bool verbose, int id, Function value, int provide_attrs) {
   return XPtr<SetQueueSelected<Function> >(
       new SetQueueSelected<Function>(verbose, id, value, provide_attrs));
 }
@@ -235,20 +235,21 @@ SEXP Select__new(bool verbose, std::vector<std::string> resources, std::string p
 }
 
 //[[Rcpp::export]]
-SEXP Select__new_func(bool verbose, Function resources, bool provide_attrs, int id) {
+SEXP Select__new_func(bool verbose, Function resources, int provide_attrs, int id) {
   return XPtr<Select<Function> >(
       new Select<Function>(verbose, resources, provide_attrs, "custom", id));
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new(bool verbose, std::string key, double value) {
-  return XPtr<SetAttribute<double> >(new SetAttribute<double>(verbose, key, value, 0));
+SEXP SetAttribute__new(bool verbose, std::string key, double value, bool global) {
+  return XPtr<SetAttribute<double> >(new SetAttribute<double>(verbose, key, value, 0, global));
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new_func(bool verbose, std::string key, Function value, bool provide_attrs) {
+SEXP SetAttribute__new_func(bool verbose, std::string key,
+                            Function value, int provide_attrs, bool global) {
   return XPtr<SetAttribute<Function> >(
-      new SetAttribute<Function>(verbose, key, value, provide_attrs));
+      new SetAttribute<Function>(verbose, key, value, provide_attrs, global));
 }
 
 //[[Rcpp::export]]
@@ -257,7 +258,7 @@ SEXP Activate__new(bool verbose, std::string generator) {
 }
 
 //[[Rcpp::export]]
-SEXP Activate__new_func(bool verbose, Function generator, bool provide_attrs) {
+SEXP Activate__new_func(bool verbose, Function generator, int provide_attrs) {
   return XPtr<Activate<Function> >(
       new Activate<Function>(verbose, generator, provide_attrs));
 }
@@ -268,7 +269,7 @@ SEXP Deactivate__new(bool verbose, std::string generator) {
 }
 
 //[[Rcpp::export]]
-SEXP Deactivate__new_func(bool verbose, Function generator, bool provide_attrs) {
+SEXP Deactivate__new_func(bool verbose, Function generator, int provide_attrs) {
   return XPtr<Deactivate<Function> >(
       new Deactivate<Function>(verbose, generator, provide_attrs));
 }
@@ -279,7 +280,7 @@ SEXP SetTraj__new(bool verbose, std::string generator, Environment trj) {
 }
 
 //[[Rcpp::export]]
-SEXP SetTraj__new_func(bool verbose, Function generator, bool provide_attrs, Environment trj) {
+SEXP SetTraj__new_func(bool verbose, Function generator, int provide_attrs, Environment trj) {
   return XPtr<SetTraj<Function> >(
       new SetTraj<Function>(verbose, generator, provide_attrs, trj));
 }
@@ -290,7 +291,7 @@ SEXP SetDist__new(bool verbose, std::string generator, Function dist) {
 }
 
 //[[Rcpp::export]]
-SEXP SetDist__new_func(bool verbose, Function generator, bool provide_attrs, Function dist) {
+SEXP SetDist__new_func(bool verbose, Function generator, int provide_attrs, Function dist) {
   return XPtr<SetDist<Function> >(
       new SetDist<Function>(verbose, generator, provide_attrs, dist));
 }
@@ -301,7 +302,7 @@ SEXP SetPrior__new(bool verbose, std::vector<int> values) {
 }
 
 //[[Rcpp::export]]
-SEXP SetPrior__new_func(bool verbose, Function values, bool provide_attrs) {
+SEXP SetPrior__new_func(bool verbose, Function values, int provide_attrs) {
   return XPtr<SetPrior<Function> >(new SetPrior<Function>(verbose, values, provide_attrs));
 }
 
@@ -311,12 +312,12 @@ SEXP Timeout__new(bool verbose, double delay) {
 }
 
 //[[Rcpp::export]]
-SEXP Timeout__new_func(bool verbose, Function task, bool provide_attrs) {
+SEXP Timeout__new_func(bool verbose, Function task, int provide_attrs) {
   return XPtr<Timeout<Function> >(new Timeout<Function>(verbose, task, provide_attrs));
 }
 
 //[[Rcpp::export]]
-SEXP Branch__new(bool verbose, Function option, bool provide_attrs,
+SEXP Branch__new(bool verbose, Function option, int provide_attrs,
                  std::vector<bool> cont, std::vector<Environment> trj)
 {
   return XPtr<Branch>(new Branch(verbose, option, provide_attrs, cont, trj));
@@ -328,7 +329,7 @@ SEXP Rollback__new(bool verbose, int amount, int times) {
 }
 
 //[[Rcpp::export]]
-SEXP Rollback__new_func(bool verbose, int amount, Function check, bool provide_attrs) {
+SEXP Rollback__new_func(bool verbose, int amount, Function check, int provide_attrs) {
   return XPtr<Rollback>(new Rollback(verbose, amount, 0, check, provide_attrs));
 }
 
@@ -338,7 +339,7 @@ SEXP Leave__new(bool verbose, double prob) {
 }
 
 //[[Rcpp::export]]
-SEXP Leave__new_func(bool verbose, Function prob, bool provide_attrs) {
+SEXP Leave__new_func(bool verbose, Function prob, int provide_attrs) {
   return XPtr<Leave<Function> >(new Leave<Function>(verbose, prob, provide_attrs));
 }
 
@@ -348,7 +349,7 @@ SEXP Clone__new(bool verbose, int n, std::vector<Environment> trj) {
 }
 
 //[[Rcpp::export]]
-SEXP Clone__new_func(bool verbose, Function n, bool provide_attrs, std::vector<Environment> trj) {
+SEXP Clone__new_func(bool verbose, Function n, int provide_attrs, std::vector<Environment> trj) {
   return XPtr<Clone<Function> >(new Clone<Function>(verbose, n, provide_attrs, trj));
 }
 
@@ -364,7 +365,7 @@ SEXP Batch__new(bool verbose, int n, double timeout, bool permanent, std::string
 
 //[[Rcpp::export]]
 SEXP Batch__new_func(bool verbose, int n, double timeout, bool permanent,
-                     std::string name, Function rule, bool provide_attrs)
+                     std::string name, Function rule, int provide_attrs)
 {
   return XPtr<Batch>(new Batch(verbose, n, timeout, permanent, name, rule, provide_attrs));
 }
@@ -380,7 +381,7 @@ SEXP RenegeIn__new(bool verbose, double t, std::vector<Environment> trj) {
 }
 
 //[[Rcpp::export]]
-SEXP RenegeIn__new_func(bool verbose, Function t, bool provide_attrs, std::vector<Environment> trj) {
+SEXP RenegeIn__new_func(bool verbose, Function t, int provide_attrs, std::vector<Environment> trj) {
   return XPtr<RenegeIn<Function> >(new RenegeIn<Function>(verbose, t, provide_attrs, trj));
 }
 
@@ -390,7 +391,7 @@ SEXP RenegeIf__new(bool verbose, std::string signal, std::vector<Environment> tr
 }
 
 //[[Rcpp::export]]
-SEXP RenegeIf__new_func(bool verbose, Function signal, bool provide_attrs, std::vector<Environment> trj) {
+SEXP RenegeIf__new_func(bool verbose, Function signal, int provide_attrs, std::vector<Environment> trj) {
   return XPtr<RenegeIf<Function> >(new RenegeIf<Function>(verbose, signal, provide_attrs, trj));
 }
 
@@ -401,25 +402,25 @@ SEXP RenegeAbort__new(bool verbose) {
 
 //[[Rcpp::export]]
 SEXP Send__new(bool verbose, std::vector<std::string> signals, double delay) {
-  VEC<bool> p = VEC<bool>(2, 0);
+  VEC<int> p = VEC<int>(2, 0);
   return XPtr<Send<VEC<std::string>, double> >(
       new Send<VEC<std::string>, double>(verbose, signals, delay, p));
 }
 
 //[[Rcpp::export]]
 SEXP Send__new_func1(bool verbose, Function signals,
-                     double delay, bool provide_attrs)
+                     double delay, int provide_attrs)
 {
-  VEC<bool> p = VEC<bool>(2, 0);
+  VEC<int> p = VEC<int>(2, 0);
   p[0] = provide_attrs;
   return XPtr<Send<Function, double> >(new Send<Function, double>(verbose, signals, delay, p));
 }
 
 //[[Rcpp::export]]
 SEXP Send__new_func2(bool verbose, std::vector<std::string> signals,
-                     Function delay, bool provide_attrs)
+                     Function delay, int provide_attrs)
 {
-  VEC<bool> p = VEC<bool>(2, 0);
+  VEC<int> p = VEC<int>(2, 0);
   p[1] = provide_attrs;
   return XPtr<Send<VEC<std::string>, Function> >(
       new Send<VEC<std::string>, Function>(verbose, signals, delay, p));
@@ -427,9 +428,9 @@ SEXP Send__new_func2(bool verbose, std::vector<std::string> signals,
 
 //[[Rcpp::export]]
 SEXP Send__new_func4(bool verbose, Function signals,
-                     Function delay, std::vector<bool> provide_attrs)
+                     Function delay, std::vector<int> provide_attrs)
 {
-  VEC<bool> p = provide_attrs;
+  VEC<int> p = provide_attrs;
   return XPtr<Send<Function, Function> >(new Send<Function, Function>(verbose, signals, delay, p));
 }
 
@@ -442,7 +443,7 @@ SEXP Trap__new(bool verbose, std::vector<std::string> signals,
 }
 
 //[[Rcpp::export]]
-SEXP Trap__new_func(bool verbose, Function signals, bool provide_attrs,
+SEXP Trap__new_func(bool verbose, Function signals, int provide_attrs,
                     std::vector<Environment> trj, bool interruptible) {
   return XPtr<Trap<Function> >(
       new Trap<Function>(verbose, signals, provide_attrs, trj, interruptible));
@@ -454,7 +455,7 @@ SEXP UnTrap__new(bool verbose, std::vector<std::string> signals) {
 }
 
 //[[Rcpp::export]]
-SEXP UnTrap__new_func(bool verbose, Function signals, bool provide_attrs) {
+SEXP UnTrap__new_func(bool verbose, Function signals, int provide_attrs) {
   return XPtr<UnTrap<Function> >(new UnTrap<Function>(verbose, signals, provide_attrs));
 }
 
@@ -469,7 +470,7 @@ SEXP Log__new(bool verbose, std::string message) {
 }
 
 //[[Rcpp::export]]
-SEXP Log__new_func(bool verbose, Function message, bool provide_attrs) {
+SEXP Log__new_func(bool verbose, Function message, int provide_attrs) {
   return XPtr<Log<Function> >(
       new Log<Function>(verbose, message, provide_attrs));
 }

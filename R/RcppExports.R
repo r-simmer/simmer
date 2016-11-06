@@ -149,12 +149,12 @@ Select__new_func <- function(verbose, resources, provide_attrs, id) {
     .Call('simmer_Select__new_func', PACKAGE = 'simmer', verbose, resources, provide_attrs, id)
 }
 
-SetAttribute__new <- function(verbose, key, value) {
-    .Call('simmer_SetAttribute__new', PACKAGE = 'simmer', verbose, key, value)
+SetAttribute__new <- function(verbose, key, value, global) {
+    .Call('simmer_SetAttribute__new', PACKAGE = 'simmer', verbose, key, value, global)
 }
 
-SetAttribute__new_func <- function(verbose, key, value, provide_attrs) {
-    .Call('simmer_SetAttribute__new_func', PACKAGE = 'simmer', verbose, key, value, provide_attrs)
+SetAttribute__new_func <- function(verbose, key, value, provide_attrs, global) {
+    .Call('simmer_SetAttribute__new_func', PACKAGE = 'simmer', verbose, key, value, provide_attrs, global)
 }
 
 Activate__new <- function(verbose, generator) {

@@ -55,7 +55,7 @@ simmer() %>%
 
 ### `set_attribute()`
 
-The `set_attribute(., key, value)` method sets the `value` of an arrival's attribute `key`. Be aware that `value` can only be numeric.
+The `set_attribute(., key, value, global)` method sets the `value` of an arrival's attribute `key`. Be aware that `value` can only be numeric.
 
 ```{r}
 patient_traj <- create_trajectory(name = "patient_trajectory") %>%
@@ -92,6 +92,42 @@ get_mon_attributes(env)
 ```
 
 In general, whenever an activity accepts a function as a parameter, the rule above applies, and you can obtain the current set of attributes as the first argument of that function.
+
+Attributes are _per arrival_ by default (`global=FALSE`), meaning that each arrival has its own set of attributes, not visible by anyone else:
+
+```{r}
+writer <- create_trajectory() %>%
+  set_attribute(key = "my_key", value = 123)
+
+reader <- create_trajectory() %>%
+  log_(function(attr) paste0(attr["my_key"]))
+
+env <- simmer() %>%
+  add_generator("writer", writer, at(0), mon = 2) %>%
+  add_generator("reader", reader, at(1), mon = 2) %>%
+  run()
+
+get_mon_attributes(env)
+```
+
+Thus, the reader in the example above returns `NA`, missing. However, attributes can also be global with `global=TRUE`. To retrieve the global set of attributes in any activity that accepts a function as a parameter, you need to specify a second argument:
+
+```{r}
+writer <- create_trajectory() %>%
+  set_attribute(key = "my_key", value = 123, global = TRUE)
+
+reader <- create_trajectory() %>%
+  log_(function(attr, glb) paste0(attr["my_key"], ", ", glb["my_key"]))
+
+env <- simmer() %>%
+  add_generator("writer", writer, at(0), mon = 2) %>%
+  add_generator("reader", reader, at(1), mon = 2) %>%
+  run()
+
+get_mon_attributes(env)
+```
+
+As shown above, global attributes are reported in `get_mon_attributes()` as unnamed key/pair values.
 
 ### `timeout()`
 

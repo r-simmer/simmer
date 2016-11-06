@@ -90,6 +90,7 @@ public:
     unnamedb_map.clear();
     b_count = 0;
     signal_map.clear();
+    attributes.clear();
     arr_traj_stats.clear();
     arr_res_stats.clear();
     attr_stats.clear();
@@ -313,6 +314,12 @@ public:
       signal_map[signal][arrival].first = false;
   }
 
+  void set_attribute(std::string key, double value) {
+    attributes[key] = value;
+    record_attribute("", key, value);
+  }
+  Attr* get_attributes() { return &attributes; }
+
   void register_arrival(Arrival* arrival) { arrival_map[arrival]; }
   void unregister_arrival(Arrival* arrival) {
     foreach_ (std::string signal, arrival_map[arrival])
@@ -458,6 +465,7 @@ private:
   UnnBMap unnamedb_map;     /**< map of unnamed batches */
   unsigned int b_count;     /**< unnamed batch counter */
   SigMap signal_map;        /**< map of arrivals subscribed to signals */
+  Attr attributes;          /**< user-defined (key, value) pairs */
   StatsMap arr_traj_stats;  /**< arrival statistics per trajectory */
   StatsMap arr_res_stats;   /**< arrival statistics per resource */
   StatsMap attr_stats;      /**< attribute statistics */

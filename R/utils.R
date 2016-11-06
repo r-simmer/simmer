@@ -15,9 +15,9 @@ evaluate_value <- function(value) {
 
 #' @importFrom methods formalArgs
 needs_attrs <- function(variable) {
-  if (is.function(variable) && length(formalArgs(variable)) > 0)
-    return(TRUE)
-  else return(FALSE)
+  if (is.function(variable))
+    return(length(formalArgs(variable)))
+  else return(0)
 }
 
 envs_apply <- function(envs, method, ...) {

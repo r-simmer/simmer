@@ -162,11 +162,10 @@ void Arrival::terminate(bool finished) {
   delete this;
 }
 
-int Arrival::set_attribute(std::string key, double value) {
+void Arrival::set_attribute(std::string key, double value) {
   attributes[key] = value;
   if (is_monitored() >= 2)
     sim->record_attribute(name, key, value);
-  return 0;
 }
 
 double Arrival::get_start(std::string name) {
@@ -249,11 +248,10 @@ void Batched::terminate(bool finished) {
   Arrival::terminate(finished);
 }
 
-int Batched::set_attribute(std::string key, double value) {
+void Batched::set_attribute(std::string key, double value) {
   attributes[key] = value;
   foreach_ (Arrival* arrival, arrivals)
     arrival->set_attribute(key, value);
-  return 0;
 }
 
 void Batched::erase(Arrival* arrival) {

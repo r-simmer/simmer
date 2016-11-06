@@ -4,11 +4,13 @@
 
 * New `renege_if()` activity triggers reneging upon reception of a signal broadcasted with `send()` (#84).
 * Add support for uninterruptible handlers in `trap()` (bb2aa46).
+* Add support for global attributes in `set_attribute()` (#82).
 
 ## Minor changes and fixes:
 
 * Fix bug in `set_queue_size()` with `queue_size_strict=TRUE`: arrivals were not being dropped (#83).
 * Fix bug in `set_capacity()` with a preemptive resource when the old value was `Inf`: arrivals were not being preempted (63beb2c).
+* Fix `trap()` printed information.
 * Update "Advanced Trajectory Usage" vignette.
 * New "Other SimPy Examples" vignette.
 
