@@ -127,7 +127,7 @@ env <- simmer() %>%
 get_mon_attributes(env)
 ```
 
-As shown above, global attributes are reported in `get_mon_attributes()` as unnamed key/pair values.
+As shown above, global attributes are reported in `get_mon_attributes()` as unnamed key/value pairs.
 
 ### `timeout()`
 
