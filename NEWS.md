@@ -3,6 +3,7 @@
 ## New features:
 
 * New `renege_if()` activity triggers reneging upon reception of a signal broadcasted with `send()` (#84).
+* Add support for uninterruptible handlers in `trap()` (bb2aa46).
 
 ## Minor changes and fixes:
 
