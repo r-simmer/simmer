@@ -11,6 +11,7 @@ test_that("an arrival attribute is correctly set and returned to a function", {
   t0 <- create_trajectory() %>%
     set_attribute("test", 123) %>%
     set_attribute("test", 456, global = TRUE) %>%
+    log_(function(attrs) paste0(attrs["test"])) %>%
     log_(function(attrs, glb) paste0(attrs["test"], glb["test"]))
 
   expect_output({
@@ -18,7 +19,7 @@ test_that("an arrival attribute is correctly set and returned to a function", {
       add_generator("entity", t0, at(0)) %>%
       run()
     },
-    ".*123456"
+    ".*123.*123456"
   )
 })
 
