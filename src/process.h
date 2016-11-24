@@ -199,7 +199,6 @@ public:
 
   Attr* get_attributes() { return &attributes; }
   double get_remaining() { return status.remaining; }
-  void set_start(std::string name, double value) { restime[name].start = value; }
   void set_activity(Activity* ptr) { activity = ptr; }
   double get_start() { return lifetime.start; }
   Activity* get_activity() { return activity; }

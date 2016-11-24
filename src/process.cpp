@@ -179,8 +179,10 @@ double Arrival::get_start(std::string name) {
 }
 
 void Arrival::register_entity(Resource* ptr) {
-  if (is_monitored())
-      restime[ptr->name].start = sim->now();
+  if (is_monitored()) {
+    restime[ptr->name].start = sim->now();
+    restime[ptr->name].activity = 0;
+  }
   resources.insert(ptr);
 }
 

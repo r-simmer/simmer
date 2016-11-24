@@ -56,9 +56,10 @@ test_that("resource slots are correctly filled", {
   expect_equal(sum(attributes$value), 2)
 })
 
-test_that("resources are correctly monitored", {
+test_that("resources are correctly monitored 1", {
   t0 <- create_trajectory("") %>%
     seize("dummy", 1) %>%
+    timeout(1) %>%
     release("dummy", 1)
 
   env <- simmer(verbose = TRUE) %>%
@@ -66,8 +67,38 @@ test_that("resources are correctly monitored", {
     add_generator("customer", t0, at(0)) %>%
     run()
 
+  arrivals <- env %>% get_mon_arrivals()
+  arrivals_res <- env %>% get_mon_arrivals(TRUE)
   resources <- env %>% get_mon_resources()
 
+  expect_equal(arrivals$start_time, 0)
+  expect_equal(arrivals$activity_time, 1)
+  expect_equal(arrivals_res$start_time, 0)
+  expect_equal(arrivals_res$activity_time, 1)
+  expect_equal(resources[1, ]$server, 1)
+  expect_equal(resources[2, ]$server, 0)
+})
+
+test_that("resources are correctly monitored 2", {
+  t0 <- create_trajectory("") %>%
+    seize("dummy", 1) %>%
+    timeout(1) %>%
+    release("dummy", 1) %>%
+    rollback(3, 1)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy", 2) %>%
+    add_generator("customer", t0, at(0)) %>%
+    run()
+
+  arrivals <- env %>% get_mon_arrivals()
+  arrivals_res <- env %>% get_mon_arrivals(TRUE)
+  resources <- env %>% get_mon_resources()
+
+  expect_equal(arrivals$start_time, 0)
+  expect_equal(arrivals$activity_time, 2)
+  expect_equal(arrivals_res$start_time, c(0, 1))
+  expect_equal(arrivals_res$activity_time, c(1, 1))
   expect_equal(resources[1, ]$server, 1)
   expect_equal(resources[2, ]$server, 0)
 })
