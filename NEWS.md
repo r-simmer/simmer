@@ -10,6 +10,7 @@
 
 * Fix bug in `set_queue_size()` with `queue_size_strict=TRUE`: arrivals were not being dropped (#83).
 * Fix bug in `set_capacity()` with a preemptive resource when the old value was `Inf`: arrivals were not being preempted (63beb2c).
+* Fix bug in per-resource activity monitoring: activity was not being reset (55097c9).
 * Fix `trap()` printed information.
 * Update "Advanced Trajectory Usage" vignette.
 * New "Other SimPy Examples" vignette.
