@@ -33,17 +33,8 @@ Please note that the package contains some C++ code and thus you need a developm
 
 ## Learning simmer
 
-To get started, please explore the vignettes: 
+To get started, please explore our [vignettes online](http://r-simmer.org/articles/), or in R:
 
 ``` r
 vignette(package = "simmer")
 ```
-
-These are currently available:
-
-* [Introduction to simmer](http://r-simmer.org/articles/A-introduction.html)
-* [Terminology](http://r-simmer.org/articles/B-terminology.html)
-* [Advanced trajectory usage](http://r-simmer.org/articles/C-trajectories.html)
-* [The Bank Tutorial: Part I](http://r-simmer.org/articles/D-bank-1.html)
-* [Queueing systems](http://r-simmer.org/articles/E-queueing-systems.html)
-* [Continuous-Time Markov Chains](http://r-simmer.org/articles/F-ctmc.html)

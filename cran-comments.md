@@ -1,6 +1,6 @@
-## New release
+## New patch release
 
-Finally fix (hope so) random errors on CRAN in one of the tests + many new features.
+Some minor enhancements, more documentation and bug fixes.
 
 ## Test environments
 

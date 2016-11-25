@@ -151,7 +151,8 @@ simmer.trajectory <- R6Class("simmer.trajectory",
         stop("not a trajectory")
       generator <- evaluate_value(generator)
       if (is.function(generator))
-        private$add_activity(SetTraj__new_func(private$verbose, generator, needs_attrs(generator), trajectory))
+        private$add_activity(SetTraj__new_func(private$verbose, generator,
+                                               needs_attrs(generator), trajectory))
       else private$add_activity(SetTraj__new(private$verbose, generator, trajectory))
     },
 
@@ -159,7 +160,8 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       generator <- evaluate_value(generator)
       distribution <- make_resetable(distribution)
       if (is.function(generator))
-        private$add_activity(SetDist__new_func(private$verbose, generator, needs_attrs(generator), distribution))
+        private$add_activity(SetDist__new_func(private$verbose, generator,
+                                               needs_attrs(generator), distribution))
       else private$add_activity(SetDist__new(private$verbose, generator, distribution))
     },
 
