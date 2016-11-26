@@ -76,14 +76,16 @@ navbar:
         href: articles/A-introduction.html
       - text: "Terminology"
         href: articles/B-terminology.html
-      - text: "Advanced trajectory usage"
+      - text: "Advanced Trajectory Usage"
         href: articles/C-trajectories.html
       - text: "The Bank Tutorial: Part I"
         href: articles/D-bank-1.html
-      - text: "Queueing systems"
-        href: articles/E-queueing-systems.html
+      - text: "Other SimPy Examples"
+        href: articles/E-simpy.html
+      - text: "Queueing Systems"
+        href: articles/F-queueing-systems.html
       - text: "Continuous-Time Markov Chains"
-        href: articles/F-ctmc.html
+        href: articles/G-ctmc.html
   - text: "News"
     icon: fa-newspaper-o
     href: news/index.html
