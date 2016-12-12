@@ -108,7 +108,7 @@ envs <- lapply(1:100, function(i) {
 })
 ```
 
-The advantage of the latter approach is that, if the individual replicas are heavy, it is straightforward to parallelize their execution (for instance, in the next example we use the function ```mclapply``` from the package [parallel](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf)). Nevertheless, the external pointers to the C++ simmer core are no longer valid when the parallelized execution ends. Thus, it is necessary to extract the results for each thread at the end of the execution. This can be done with the helper function ```wrap``` as follows.
+The advantage of the latter approach is that, if the individual replicas are heavy, it is straightforward to parallelize their execution (for instance, in the next example we use the function ```mclapply``` from the package [parallel](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf)). However, the external pointers to the C++ simmer core are no longer valid when the parallelized execution ends. Thus, it is necessary to extract the results for each thread at the end of the execution. This can be done with the helper function ```wrap``` as follows.
 
 ```{r}
 library(parallel)
@@ -124,7 +124,7 @@ envs <- mclapply(1:100, function(i) {
 })
 ```
 
-This helper function brings the simulation data back to R and makes it accessible through the same methods that a ```simmer``` environment.
+This helper function brings the simulation data back to R and makes it accessible through the same methods that would ordinarily be used for a ```simmer``` environment.
 
 ```{r, message=FALSE}
 envs[[1]] %>% get_n_generated("patient")
@@ -138,7 +138,7 @@ head(
 )
 ```
 
-Unfortunately, as the C++ simulation cores are destroyed, parallelization does not allow to resume the execution of replicas.
+Unfortunately, as the C++ simulation cores are destroyed, the downside of this kind of parallelization is that one cannot resume execution of the replicas.
 
 ## Basic visualization tools
 
