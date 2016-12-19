@@ -1,16 +1,17 @@
 Package: simmer
 Type: Package
-Version: 3.5.1.9000
 Title: Discrete-Event Simulation for R
+Version: 3.5.1.9000
+Authors@R: c(
+    person("Iñaki", "Ucar", email="i.ucar86@gmail.com", role=c("aut", "cph", "cre")),
+    person("Bart", "Smeets", email="bartsmeets86@gmail.com", role=c("aut", "cph")))
 Description: A process-oriented and trajectory-based Discrete-Event Simulation
     (DES) package for R. Designed to be a generic framework, it leverages the
     power of 'Rcpp' to boost the performance, turning DES in R feasible. As a
     noteworthy characteristic, 'simmer' exploits the concept of trajectory: a
     common path in the simulation model for entities of the same type.
+License: MIT + file LICENSE
 Encoding: UTF-8
-Authors@R: c(
-    person("Iñaki", "Ucar", email="i.ucar86@gmail.com", role=c("aut", "cph", "cre")),
-    person("Bart", "Smeets", email="bartsmeets86@gmail.com", role=c("aut", "cph")))
 URL: http://r-simmer.org,
      https://github.com/r-simmer/simmer
 BugReports: https://github.com/r-simmer/simmer/issues
@@ -35,6 +36,5 @@ Suggests:
 LinkingTo:
     Rcpp (>= 0.12.0),
     BH (>= 1.58.0-1)
-License: MIT + file LICENSE
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
