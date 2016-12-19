@@ -15,14 +15,14 @@ test_that("an empty environment behaves as expected", {
   expect_equal(env %>% peek(), numeric(0))
 })
 
-t0 <- create_trajectory("") %>%
+t0 <- trajectory("") %>%
   seize("server", 1) %>%
   set_attribute("dummy", 1) %>%
   timeout(1) %>%
   release("server", 1)
 
 test_that("the simulator is reset", {
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     seize("server", 1) %>%
     set_attribute("dummy", 1) %>%
     timeout(1) %>%
@@ -102,7 +102,7 @@ test_that("we can force some errors (just to complete coverage)", {
 
   env <- simmer(verbose = TRUE) %>%
     add_resource("dummy") %>%
-    add_generator("dummy", create_trajectory() %>% timeout(0), function() 1, mon = 1000)
+    add_generator("dummy", trajectory() %>% timeout(0), function() 1, mon = 1000)
   env$.__enclos_env__$private$sim_obj <- NULL
 
   expect_error(env %>% reset())

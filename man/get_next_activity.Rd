@@ -19,6 +19,6 @@ Returns an external pointer to an activity object.
 It takes an external pointer to an activity an returns the next/prev activity.
 }
 \seealso{
-\code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{print_activity}}.
+\code{\link{head.trajectory}}, \code{\link{tail.trajectory}}, \code{\link{print.externalptr}}.
 }
 

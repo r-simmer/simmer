@@ -1,12 +1,12 @@
 context("basic trajectory functionality")
 
-t0 <- create_trajectory(verbose = TRUE) %>%
+t0 <- trajectory(verbose = TRUE) %>%
   seize("nurse", 1) %>%
   select(c("a", "b")) %>%
   seize_selected(1) %>%
   timeout(function() rnorm(1, 15)) %>%
   leave(0) %>%
-  branch(function() 1, T, create_trajectory(verbose = TRUE) %>% timeout(function() 1)) %>%
+  branch(function() 1, T, trajectory(verbose = TRUE) %>% timeout(function() 1)) %>%
   set_attribute("dummy", 1) %>%
   set_prioritization(function() c(0, 0, FALSE)) %>%
   set_capacity("nurse", function() 1) %>%
@@ -15,94 +15,94 @@ t0 <- create_trajectory(verbose = TRUE) %>%
   set_queue_size_selected(function() 1) %>%
   activate(function() "dummy") %>%
   deactivate(function() "dummy") %>%
-  set_trajectory(function() "dummy", create_trajectory(verbose = TRUE) %>% timeout(1)) %>%
+  set_trajectory(function() "dummy", trajectory(verbose = TRUE) %>% timeout(1)) %>%
   set_distribution(function() "dummy", at(0)) %>%
   rollback(1) %>%
-  clone(function() 2, create_trajectory(verbose = TRUE) %>% timeout(1)) %>%
+  clone(function() 2, trajectory(verbose = TRUE) %>% timeout(1)) %>%
   synchronize() %>%
   batch(1) %>%
   separate() %>%
-  renege_in(function() 1, create_trajectory(verbose = TRUE) %>% timeout(1)) %>%
-  renege_if(function() "1", create_trajectory(verbose = TRUE) %>% timeout(1)) %>%
+  renege_in(function() 1, trajectory(verbose = TRUE) %>% timeout(1)) %>%
+  renege_if(function() "1", trajectory(verbose = TRUE) %>% timeout(1)) %>%
   renege_abort() %>%
   send(function() "asdf", function() 0) %>%
-  trap(function() "asdf", create_trajectory(verbose = TRUE) %>% timeout(1)) %>%
+  trap(function() "asdf", trajectory(verbose = TRUE) %>% timeout(1)) %>%
   untrap(function() "asdf") %>%
   wait() %>%
   log_(function() "asdf") %>%
   release_selected(1) %>%
   release("nurse", 1)
 
-trajs <- c(create_trajectory(verbose = TRUE) %>% seize("nurse", 1),
-           create_trajectory(verbose = TRUE) %>% select(c("a", "b")),
-           create_trajectory(verbose = TRUE) %>% seize_selected(1),
-           create_trajectory(verbose = TRUE) %>% timeout(function() rnorm(1, 15)),
-           create_trajectory(verbose = TRUE) %>% leave(0),
-           create_trajectory(verbose = TRUE) %>% branch(function() 1, T,
-                                                        create_trajectory(verbose = TRUE) %>%
+trajs <- c(trajectory(verbose = TRUE) %>% seize("nurse", 1),
+           trajectory(verbose = TRUE) %>% select(c("a", "b")),
+           trajectory(verbose = TRUE) %>% seize_selected(1),
+           trajectory(verbose = TRUE) %>% timeout(function() rnorm(1, 15)),
+           trajectory(verbose = TRUE) %>% leave(0),
+           trajectory(verbose = TRUE) %>% branch(function() 1, T,
+                                                        trajectory(verbose = TRUE) %>%
                                                           timeout(function() 1)),
-           create_trajectory(verbose = TRUE) %>% set_attribute("dummy", 1),
-           create_trajectory(verbose = TRUE) %>% set_prioritization(function() c(0, 0, FALSE)),
-           create_trajectory(verbose = TRUE) %>% set_capacity("nurse", function() 1),
-           create_trajectory(verbose = TRUE) %>% set_capacity_selected(function() 1),
-           create_trajectory(verbose = TRUE) %>% set_queue_size("nurse", function() 1),
-           create_trajectory(verbose = TRUE) %>% set_queue_size_selected(function() 1),
-           create_trajectory(verbose = TRUE) %>% activate(function() "dummy"),
-           create_trajectory(verbose = TRUE) %>% deactivate(function() "dummy"),
-           create_trajectory(verbose = TRUE) %>% set_trajectory(function() "dummy",
-                                                                create_trajectory(verbose = TRUE) %>%
+           trajectory(verbose = TRUE) %>% set_attribute("dummy", 1),
+           trajectory(verbose = TRUE) %>% set_prioritization(function() c(0, 0, FALSE)),
+           trajectory(verbose = TRUE) %>% set_capacity("nurse", function() 1),
+           trajectory(verbose = TRUE) %>% set_capacity_selected(function() 1),
+           trajectory(verbose = TRUE) %>% set_queue_size("nurse", function() 1),
+           trajectory(verbose = TRUE) %>% set_queue_size_selected(function() 1),
+           trajectory(verbose = TRUE) %>% activate(function() "dummy"),
+           trajectory(verbose = TRUE) %>% deactivate(function() "dummy"),
+           trajectory(verbose = TRUE) %>% set_trajectory(function() "dummy",
+                                                                trajectory(verbose = TRUE) %>%
                                                                   timeout(1)),
-           create_trajectory(verbose = TRUE) %>% set_distribution(function() "dummy", at(0)),
-           create_trajectory(verbose = TRUE) %>% rollback(1),
-           create_trajectory(verbose = TRUE) %>% clone(function() 2,
-                                                       create_trajectory(verbose = TRUE) %>% timeout(1)),
-           create_trajectory(verbose = TRUE) %>% synchronize(),
-           create_trajectory(verbose = TRUE) %>% batch(1),
-           create_trajectory(verbose = TRUE) %>% separate(),
-           create_trajectory(verbose = TRUE) %>% renege_in(function() 1,
-                                                           create_trajectory(verbose = TRUE) %>% timeout(1)),
-           create_trajectory(verbose = TRUE) %>% renege_if(function() "1",
-                                                           create_trajectory(verbose = TRUE) %>% timeout(1)),
-           create_trajectory(verbose = TRUE) %>% renege_abort(),
-           create_trajectory(verbose = TRUE) %>% send(function() "asdf", function() 0),
-           create_trajectory(verbose = TRUE) %>% trap(function() "asdf",
-                                                      create_trajectory(verbose = TRUE) %>% timeout(1)),
-           create_trajectory(verbose = TRUE) %>% untrap(function() "asdf"),
-           create_trajectory(verbose = TRUE) %>% wait(),
-           create_trajectory(verbose = TRUE) %>% log_(function() "asdf"),
-           create_trajectory(verbose = TRUE) %>% release_selected(1),
-           create_trajectory(verbose = TRUE) %>% release("nurse", 1))
+           trajectory(verbose = TRUE) %>% set_distribution(function() "dummy", at(0)),
+           trajectory(verbose = TRUE) %>% rollback(1),
+           trajectory(verbose = TRUE) %>% clone(function() 2,
+                                                       trajectory(verbose = TRUE) %>% timeout(1)),
+           trajectory(verbose = TRUE) %>% synchronize(),
+           trajectory(verbose = TRUE) %>% batch(1),
+           trajectory(verbose = TRUE) %>% separate(),
+           trajectory(verbose = TRUE) %>% renege_in(function() 1,
+                                                           trajectory(verbose = TRUE) %>% timeout(1)),
+           trajectory(verbose = TRUE) %>% renege_if(function() "1",
+                                                           trajectory(verbose = TRUE) %>% timeout(1)),
+           trajectory(verbose = TRUE) %>% renege_abort(),
+           trajectory(verbose = TRUE) %>% send(function() "asdf", function() 0),
+           trajectory(verbose = TRUE) %>% trap(function() "asdf",
+                                                      trajectory(verbose = TRUE) %>% timeout(1)),
+           trajectory(verbose = TRUE) %>% untrap(function() "asdf"),
+           trajectory(verbose = TRUE) %>% wait(),
+           trajectory(verbose = TRUE) %>% log_(function() "asdf"),
+           trajectory(verbose = TRUE) %>% release_selected(1),
+           trajectory(verbose = TRUE) %>% release("nurse", 1))
 
 N <- 30
 
 test_that("the activity chain grows as expected", {
-  head <- t0 %>% get_head()
-  for (i in 1:N) head <- get_next_activity(head)
-  tail <- t0 %>% get_tail()
-  for (i in 1:N) tail <- get_prev_activity(tail)
+  ptr_head <- head(t0)
+  for (i in 1:N) ptr_head <- get_next_activity(ptr_head)
+  ptr_tail <- tail(t0)
+  for (i in 1:N) ptr_tail <- get_prev_activity(ptr_tail)
 
-  expect_output(print_activity(head), "Release")
-  expect_output(print_activity(t0 %>% get_tail()), "Release")
-  expect_equal(get_next_activity(head), NULL)
-  expect_output(print_activity(tail), "Seize")
-  expect_output(print_activity(t0 %>% get_head()), "Seize")
-  expect_equal(get_prev_activity(tail), NULL)
+  expect_output(print(ptr_head), "Release")
+  expect_output(print(tail(t0)), "Release")
+  expect_equal(get_next_activity(ptr_head), NULL)
+  expect_output(print(ptr_tail), "Seize")
+  expect_output(print(head(t0)), "Seize")
+  expect_equal(get_prev_activity(ptr_tail), NULL)
 })
 
 test_that("the activity chain grows as expected using join", {
   t <- join(trajs)
 
-  head <- t %>% get_head()
-  for (i in 1:N) head <- get_next_activity(head)
-  tail <- t %>% get_tail()
-  for (i in 1:N) tail <- get_prev_activity(tail)
+  ptr_head <- t %>% head()
+  for (i in 1:N) ptr_head <- get_next_activity(ptr_head)
+  ptr_tail <- t %>% tail()
+  for (i in 1:N) ptr_tail <- get_prev_activity(ptr_tail)
 
-  expect_output(print_activity(head), "Release")
-  expect_output(print_activity(t %>% get_tail()), "Release")
-  expect_equal(get_next_activity(head), NULL)
-  expect_output(print_activity(tail), "Seize")
-  expect_output(print_activity(t %>% get_head()), "Seize")
-  expect_equal(get_prev_activity(tail), NULL)
+  expect_output(print(ptr_head), "Release")
+  expect_output(print(t %>% tail()), "Release")
+  expect_equal(get_next_activity(ptr_head), NULL)
+  expect_output(print(ptr_tail), "Seize")
+  expect_output(print(t %>% head()), "Seize")
+  expect_equal(get_prev_activity(ptr_tail), NULL)
 
   expect_true(length(capture.output(t)) == length(capture.output(t0)))
 
@@ -119,22 +119,22 @@ test_that("the activity chain grows as expected using join", {
 })
 
 test_that("the trajectory stores the right number of activities", {
-  t0 <- create_trajectory("my trajectory") %>%
+  t0 <- trajectory("my trajectory") %>%
     seize("nurse", 1) %>%
     timeout(function() rnorm(1, 15)) %>%
     release("nurse", 1)
 
-  expect_is(t0, "simmer.trajectory")
+  expect_is(t0, "trajectory")
   expect_equal(t0 %>% get_n_activities(), 3)
 
   t0 <- t0 %>%
     branch(function() 1, TRUE,
-           create_trajectory() %>%
+           trajectory() %>%
              seize("doctor", function() 1) %>%
              timeout(function() rnorm(1, 20)) %>%
              release("doctor", function() 1) %>%
              branch(function() 1, TRUE,
-                    create_trajectory() %>%
+                    trajectory() %>%
                       seize("administration", 1) %>%
                       timeout(1) %>%
                       release("administration", 1)
@@ -145,7 +145,7 @@ test_that("the trajectory stores the right number of activities", {
     set_attribute("dummy", 1) %>%
     set_attribute("dummy", function() 1)
 
-  expect_is(t0, "simmer.trajectory")
+  expect_is(t0, "trajectory")
   expect_equal(t0 %>% get_n_activities(), 15)
 
   output <- paste0(".*(",
@@ -173,24 +173,24 @@ test_that("the trajectory stores the right number of activities", {
 })
 
 test_that("the head/tail pointers are correctly placed", {
-  t0 <- create_trajectory()
+  t0 <- trajectory()
 
-  expect_equal(t0 %>% get_head(), NULL)
-  expect_equal(t0 %>% get_tail(), NULL)
+  expect_equal(head(t0), NULL)
+  expect_equal(tail(t0), NULL)
 
   t0 %>% seize("nurse", 1)
 
-  expect_output(print_activity(t0 %>% get_head()), "Seize")
-  expect_output(print_activity(t0 %>% get_tail()), "Seize")
+  expect_output(print(head(t0)), "Seize")
+  expect_output(print(tail(t0)), "Seize")
 
   t0 %>% timeout(function() rnorm(1, 15)) %>%
     release("nurse", 1)
 
-  expect_output(print_activity(t0 %>% get_head()), "Seize")
-  expect_output(print_activity(t0 %>% get_tail()), "Release")
+  expect_output(print(head(t0)), "Seize")
+  expect_output(print(tail(t0)), "Release")
 })
 
 test_that("we can force some errors (just to complete coverage)", {
-  expect_error(create_trajectory() %>% get_next_activity())
-  expect_error(create_trajectory() %>% get_prev_activity())
+  expect_error(trajectory() %>% get_next_activity())
+  expect_error(trajectory() %>% get_prev_activity())
 })

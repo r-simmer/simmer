@@ -52,7 +52,7 @@ env <- simmer()
 The implementation with `simmer` is as simple as defining the trajectory each arriving `car` will share and follow. This trajectory comprises seizing a wash machine, spending some time and releasing it. The process takes `WASHTIME` and removes some random percentage of dirt between 50 and 90%. The `log_()` messages are merely illustrative.
 
 ```{r, message=FALSE, warning=FALSE}
-car <- create_trajectory() %>%
+car <- trajectory() %>%
   log_("arrives at the carwash") %>%
   seize("wash", 1) %>%
   log_("enters the carwash") %>%
@@ -116,7 +116,7 @@ The `make_parts` trajectory defines a machine's operating loop. A worker seizes 
 
 ```{r, message=FALSE, warning=FALSE}
 make_parts <- function(machine)
-  create_trajectory() %>%
+  trajectory() %>%
     set_attribute("parts", 0) %>%
     seize(machine, 1) %>%
     timeout(function() rnorm(1, PT_MEAN, PT_SIGMA)) %>%
@@ -127,7 +127,7 @@ make_parts <- function(machine)
 Repairman's _unimportant_ jobs may be modelled in the same way (without the accounting part):
 
 ```{r, message=FALSE, warning=FALSE}
-other_jobs <- create_trajectory() %>%
+other_jobs <- trajectory() %>%
   seize("repairman", 1) %>%
   timeout(JOB_DURATION) %>%
   rollback(1, Inf)
@@ -138,7 +138,7 @@ Failures are high-priority arrivals, both for the machines and for the repairman
 ```{r, message=FALSE, warning=FALSE}
 machines <- paste0("machine", 1:NUM_MACHINES-1)
 
-failure <- create_trajectory() %>%
+failure <- trajectory() %>%
   select(machines, policy = "random") %>%
   seize_selected(1) %>%
   seize("repairman", 1) %>%
@@ -232,7 +232,7 @@ The main actor of this simulation is the _moviegoer_, a process that will try to
 This recipe is directly translated into a `simmer` trajectory as follows:
 
 ```{r, message=FALSE, warning=FALSE}
-moviegoer <- create_trajectory() %>%
+moviegoer <- trajectory() %>%
   # select a movie
   set_attribute("movie", function() sample(3, 1)) %>%
   select(function(attr) movies[attr["movie"]]) %>%
@@ -244,7 +244,7 @@ moviegoer <- create_trajectory() %>%
   seize("counter", 1) %>%
   # buy tickets
   seize_selected(function() sample(6, 1), continue = FALSE,
-                 reject = create_trajectory() %>%
+                 reject = trajectory() %>%
                    # not enough tickets, leave after some discussion
                    timeout(0.5) %>%
                    release("counter", 1)
@@ -255,7 +255,7 @@ moviegoer <- create_trajectory() %>%
   branch(function(attr) get_server_count(env, movies[attr["movie"]]) > (TICKETS - 2),
          continue = TRUE,
          # trigger the "sold out" event for the movie
-         create_trajectory() %>%
+         trajectory() %>%
            set_capacity_selected(0) %>%
            send(function(attr) paste0(movies[attr["movie"]], " sold out"))
   ) %>%
@@ -367,12 +367,12 @@ Let us consider just the refuelling process in the first place. A car needs to c
 GAS_STATION_LEVEL <- GAS_STATION_SIZE
 signal <- "gas station refilled"
 
-refuelling <- create_trajectory() %>%
+refuelling <- trajectory() %>%
   # check if there is enough fuel available
   branch(function(attr) FUEL_TANK_SIZE - attr["level"] > GAS_STATION_LEVEL, 
          continue = TRUE,
          # if not, block until the signal "gas station refilled" is received
-         create_trajectory() %>%
+         trajectory() %>%
            trap(signal) %>%
            wait() %>%
            untrap(signal)
@@ -388,7 +388,7 @@ refuelling <- create_trajectory() %>%
 Now a car's trajectory is straightforward. First, the starting time is saved as well as the tank level. Then, the car seizes a pump, refuels and leaves.
 
 ```{r, message=FALSE, warning=FALSE}
-car <- create_trajectory() %>%
+car <- trajectory() %>%
   set_attribute("start", function() now(env)) %>%
   set_attribute("level", function() 
     sample(FUEL_TANK_LEVEL[1]:FUEL_TANK_LEVEL[2], 1)) %>%
@@ -404,7 +404,7 @@ car <- create_trajectory() %>%
 The tank truck takes some time to arrive. Then, the gas station is completely refilled and the signal "gas station refilled" is sent to the blocked cars.
 
 ```{r, message=FALSE, warning=FALSE}
-tank_truck <- create_trajectory() %>%
+tank_truck <- trajectory() %>%
   timeout(TANK_TRUCK_TIME) %>%
   log_("tank truck arriving at gas station") %>%
   log_(function() {
@@ -418,10 +418,10 @@ tank_truck <- create_trajectory() %>%
 The controller periodically checks the `GAS_STATION_LEVEL` and calls the tank truck when needed.
 
 ```{r, message=FALSE, warning=FALSE}
-controller <- create_trajectory() %>%
+controller <- trajectory() %>%
   branch(function() GAS_STATION_LEVEL / GAS_STATION_SIZE * 100 < THRESHOLD, 
          continue = TRUE,
-         create_trajectory() %>%
+         trajectory() %>%
            log_("calling the tank truck") %>%
            join(tank_truck)
   ) %>%

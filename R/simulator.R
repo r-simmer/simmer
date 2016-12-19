@@ -75,14 +75,14 @@ Simmer <- R6Class("simmer",
 
       if (is.numeric(capacity) && is.infinite(capacity))
         capacity <- -1
-      else if (inherits(capacity, "simmer.schedule")) {
+      else if (inherits(capacity, "schedule")) {
         capacity_schedule <- capacity
         capacity <- capacity_schedule$get_schedule()$init
       }
 
       if (is.numeric(queue_size) && is.infinite(queue_size))
         queue_size <- -1
-      else if (inherits(queue_size, "simmer.schedule")) {
+      else if (inherits(queue_size, "schedule")) {
         queue_size_schedule <- queue_size
         queue_size <- queue_size_schedule$get_schedule()$init
       }
@@ -91,12 +91,12 @@ Simmer <- R6Class("simmer",
                            preemptive, preempt_order, queue_size_strict)
       if (ret) private$res[[name]] <- mon
 
-      if (inherits(capacity_schedule, "simmer.schedule"))
+      if (inherits(capacity_schedule, "schedule"))
         add_resource_manager_(private$sim_obj, name, "capacity",
                               capacity_schedule$get_schedule()$intervals,
                               capacity_schedule$get_schedule()$values,
                               capacity_schedule$get_schedule()$period)
-      if (inherits(queue_size_schedule, "simmer.schedule"))
+      if (inherits(queue_size_schedule, "schedule"))
         add_resource_manager_(private$sim_obj, name, "queue_size",
                               queue_size_schedule$get_schedule()$intervals,
                               queue_size_schedule$get_schedule()$values,
@@ -106,7 +106,7 @@ Simmer <- R6Class("simmer",
 
     add_generator = function(name_prefix, trajectory, distribution, mon=1,
                              priority=0, preemptible=priority, restart=FALSE) {
-      if (!inherits(trajectory, "simmer.trajectory"))
+      if (!inherits(trajectory, "trajectory"))
         stop("not a trajectory")
       name_prefix <- evaluate_value(name_prefix)
       mon <- evaluate_value(mon)

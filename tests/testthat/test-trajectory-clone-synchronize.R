@@ -1,14 +1,14 @@
 context("clone/synchronize")
 
 test_that("each clone follows a trajectory 1", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     batch(1) %>%
     clone(3,
-          create_trajectory("original") %>%
+          trajectory("original") %>%
             timeout(1),
-          create_trajectory("clone 1") %>%
+          trajectory("clone 1") %>%
             timeout(2),
-          create_trajectory("clone 2") %>%
+          trajectory("clone 2") %>%
             timeout(3)) %>%
     timeout(0.5)
 
@@ -22,12 +22,12 @@ test_that("each clone follows a trajectory 1", {
 })
 
 test_that("each clone follows a trajectory 2", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     batch(1) %>%
     clone(function() 3,
-          create_trajectory("original") %>%
+          trajectory("original") %>%
             timeout(1),
-          create_trajectory("clone 1") %>%
+          trajectory("clone 1") %>%
             timeout(2)) %>%
     timeout(0.5)
 
@@ -41,10 +41,10 @@ test_that("each clone follows a trajectory 2", {
 })
 
 test_that("each clone follows a trajectory 3", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     batch(1) %>%
     clone(3,
-          create_trajectory("original") %>%
+          trajectory("original") %>%
             timeout(1)) %>%
     timeout(0.5)
 
@@ -58,7 +58,7 @@ test_that("each clone follows a trajectory 3", {
 })
 
 test_that("each clone follows a trajectory 4", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     batch(1) %>%
     clone(function() 3) %>%
     timeout(0.5)
@@ -73,14 +73,14 @@ test_that("each clone follows a trajectory 4", {
 })
 
 test_that("clones synchonize with the last 1", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     batch(1) %>%
     clone(3,
-          create_trajectory("original") %>%
+          trajectory("original") %>%
             timeout(1),
-          create_trajectory("clone 1") %>%
+          trajectory("clone 1") %>%
             timeout(2),
-          create_trajectory("clone 2") %>%
+          trajectory("clone 2") %>%
             timeout(3)) %>%
     synchronize(wait = TRUE, mon_all = FALSE) %>%
     timeout(0.5)
@@ -95,14 +95,14 @@ test_that("clones synchonize with the last 1", {
 })
 
 test_that("clones synchonize with the last 2", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     batch(1) %>%
     clone(3,
-          create_trajectory("original") %>%
+          trajectory("original") %>%
             timeout(1),
-          create_trajectory("clone 1") %>%
+          trajectory("clone 1") %>%
             timeout(2),
-          create_trajectory("clone 2") %>%
+          trajectory("clone 2") %>%
             timeout(3)) %>%
     synchronize(wait = TRUE, mon_all = TRUE) %>%
     timeout(0.5)
@@ -117,14 +117,14 @@ test_that("clones synchonize with the last 2", {
 })
 
 test_that("clones synchonize with the first 1", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     batch(1) %>%
     clone(3,
-          create_trajectory("original") %>%
+          trajectory("original") %>%
             timeout(1),
-          create_trajectory("clone 1") %>%
+          trajectory("clone 1") %>%
             timeout(2),
-          create_trajectory("clone 2") %>%
+          trajectory("clone 2") %>%
             timeout(3)) %>%
     synchronize(wait = FALSE, mon_all = FALSE) %>%
     timeout(0.5)
@@ -139,14 +139,14 @@ test_that("clones synchonize with the first 1", {
 })
 
 test_that("clones synchonize with the first 2", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     batch(1) %>%
     clone(3,
-          create_trajectory("original") %>%
+          trajectory("original") %>%
             timeout(1),
-          create_trajectory("clone 1") %>%
+          trajectory("clone 1") %>%
             timeout(2),
-          create_trajectory("clone 2") %>%
+          trajectory("clone 2") %>%
             timeout(3)) %>%
     synchronize(wait = FALSE, mon_all = TRUE) %>%
     timeout(0.5)
@@ -161,7 +161,7 @@ test_that("clones synchonize with the first 2", {
 })
 
 test_that("synchronize does not affect other arrivals", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     timeout(0.5) %>%
     synchronize(wait = TRUE, mon_all = TRUE) %>%
     timeout(0.5)

@@ -2,21 +2,30 @@
 #'
 #' It can be used to visualise an activity's internal structure.
 #'
-#' @param activity an external pointer to the activity.
+#' @param x an external pointer to the activity.
+#' @param ... arguments to be passed to or from other methods.
 #'
-#' @seealso \code{\link{get_head}}, \code{\link{get_tail}},
+#' @seealso \code{\link{head.trajectory}}, \code{\link{tail.trajectory}},
 #' \code{\link{get_next_activity}}, \code{\link{get_prev_activity}}.
 #' @export
-print_activity <- function(activity) activity_print_(activity, 0)
+print.externalptr <- function(x, ...) activity_print_(x, 0)
+
+#' @param activity an external pointer to the activity.
+#' @rdname print.externalptr
+#' @export
+print_activity <- function(activity) {
+  .Deprecated("print")
+  print(activity)
+}
 
 #' Get the next/prev activity
 #'
 #' It takes an external pointer to an activity an returns the next/prev activity.
 #'
-#' @inheritParams print_activity
+#' @param activity an external pointer to the activity.
 #'
 #' @return Returns an external pointer to an activity object.
-#' @seealso \code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{print_activity}}.
+#' @seealso \code{\link{head.trajectory}}, \code{\link{tail.trajectory}}, \code{\link{print.externalptr}}.
 #' @export
 get_next_activity <- function(activity) activity_get_next_(activity)
 

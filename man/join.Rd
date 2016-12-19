@@ -16,18 +16,18 @@ Returns a new trajectory object.
 Concatenate any number of trajectories in the specified order.
 }
 \examples{
-t1 <- create_trajectory() \%>\% seize("dummy", 1)
-t2 <- create_trajectory() \%>\% timeout(1)
-t3 <- create_trajectory() \%>\% release("dummy", 1)
+t1 <- trajectory() \%>\% seize("dummy", 1)
+t2 <- trajectory() \%>\% timeout(1)
+t3 <- trajectory() \%>\% release("dummy", 1)
 
 join(t1, t2, t3)
 
-create_trajectory() \%>\%
+trajectory() \%>\%
   join(t1) \%>\%
   timeout(1) \%>\%
   join(t3)
 }
 \seealso{
-\code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{get_n_activities}}.
+\code{\link{head.trajectory}}, \code{\link{tail.trajectory}}, \code{\link{get_n_activities}}.
 }
 

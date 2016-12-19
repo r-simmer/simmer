@@ -1,14 +1,14 @@
 context("leave")
 
 test_that("an arrival leaves", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
     leave(1) %>%
     timeout(1) %>%
     release("dummy", 1)
 
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
     leave(function() 1) %>%
@@ -32,14 +32,14 @@ test_that("an arrival leaves", {
 })
 
 test_that("an arrival continues", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
     leave(0) %>%
     timeout(1) %>%
     release("dummy", 1)
 
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
     leave(function() 0) %>%

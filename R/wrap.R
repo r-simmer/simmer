@@ -1,5 +1,5 @@
 #' @importFrom R6 R6Class
-simmer.wrap <- R6Class("simmer.wrap",
+Wrap <- R6Class("wrap",
   public = list(
     name = NA,
 
@@ -147,7 +147,7 @@ simmer.wrap <- R6Class("simmer.wrap",
 #' @examples
 #' library(parallel)
 #'
-#' mm1 <- create_trajectory() %>%
+#' mm1 <- trajectory() %>%
 #'   seize("server", 1) %>%
 #'   timeout(function() rexp(1, 2)) %>%
 #'   release("server", 1)
@@ -161,4 +161,4 @@ simmer.wrap <- R6Class("simmer.wrap",
 #' })
 #'
 #' plot_resource_usage(envs, "server")
-wrap <- function(.env) simmer.wrap$new(.env)
+wrap <- function(.env) Wrap$new(.env)

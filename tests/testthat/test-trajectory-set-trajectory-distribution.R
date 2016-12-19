@@ -1,9 +1,9 @@
 context("set_trajectory/set_distribution")
 
 test_that("we can set a new trajectory", {
-  t2 <- create_trajectory() %>%
+  t2 <- trajectory() %>%
     timeout(2)
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     set_trajectory("dummy", t2) %>%
     timeout(1)
 
@@ -17,7 +17,7 @@ test_that("we can set a new trajectory", {
 })
 
 test_that("we can set a new distribution", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     set_distribution("dummy", function() 2)
 
   env <- simmer(verbose = TRUE) %>%

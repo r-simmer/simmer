@@ -1,7 +1,7 @@
 context("resource-preemption")
 
 test_that("a lower priority arrival gets rejected before accessing the server", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
@@ -20,11 +20,11 @@ test_that("a lower priority arrival gets rejected before accessing the server", 
 })
 
 test_that("tasks are NOT restarted", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     seize("dummy", 2) %>%
     timeout(10) %>%
     release("dummy", 2)
@@ -44,11 +44,11 @@ test_that("tasks are NOT restarted", {
 
 
 test_that("tasks are restarted", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     seize("dummy", 2) %>%
     timeout(10) %>%
     release("dummy", 2)
@@ -67,7 +67,7 @@ test_that("tasks are restarted", {
 })
 
 test_that("tasks are preempted in a FIFO basis", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
@@ -86,7 +86,7 @@ test_that("tasks are preempted in a FIFO basis", {
 })
 
 test_that("tasks are preempted in a LIFO basis", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
@@ -105,7 +105,7 @@ test_that("tasks are preempted in a LIFO basis", {
 })
 
 test_that("queue can exceed queue_size by default", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
@@ -129,7 +129,7 @@ test_that("queue can exceed queue_size by default", {
 })
 
 test_that("queue cannot exceed queue_size with hard limit (preempted rejected)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
@@ -153,7 +153,7 @@ test_that("queue cannot exceed queue_size with hard limit (preempted rejected)",
 })
 
 test_that("queue cannot exceed queue_size with hard limit (preempted to queue)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy")

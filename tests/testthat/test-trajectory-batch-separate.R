@@ -9,7 +9,7 @@ counter <- function() {
 }
 
 test_that("arrivals are batched", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     batch(2, timeout = 0, permanent = FALSE, rule = NULL) %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
@@ -35,7 +35,7 @@ test_that("arrivals are batched", {
 })
 
 test_that("batches are separated", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     batch(2, timeout = 0, permanent = FALSE, rule = NULL) %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
@@ -60,7 +60,7 @@ test_that("batches are separated", {
 })
 
 test_that("permanent batches are NOT separated", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     batch(2, timeout = 0, permanent = TRUE, rule = NULL) %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
@@ -85,7 +85,7 @@ test_that("permanent batches are NOT separated", {
 })
 
 test_that("a rule can prevent batching", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     batch(2, timeout = 0, permanent = FALSE, rule = function() 0) %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
@@ -110,7 +110,7 @@ test_that("a rule can prevent batching", {
 })
 
 test_that("a timeout can trigger early batches", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     batch(2, timeout = 0.5, permanent = FALSE, rule = NULL) %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
@@ -135,7 +135,7 @@ test_that("a timeout can trigger early batches", {
 })
 
 test_that("a timeout does not crash if the batch was already triggered", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     batch(1, timeout = 1, permanent = FALSE, rule = NULL) %>%
     timeout(1)
 
@@ -153,7 +153,7 @@ test_that("a timeout does not crash if the batch was already triggered", {
 })
 
 test_that("a non-triggered batch does not crash if arrivals renege", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     renege_in(1) %>%
     batch(2, timeout = 0, permanent = FALSE, rule = NULL)
 
@@ -170,7 +170,7 @@ test_that("a non-triggered batch does not crash if arrivals renege", {
 })
 
 test_that("all arrivals inside a batch store an attribute change", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     batch(2, timeout = 0, permanent = FALSE, rule = NULL) %>%
     set_attribute("asdf", 3) %>%
     separate()
@@ -188,18 +188,18 @@ test_that("all arrivals inside a batch store an attribute change", {
 })
 
 test_that("a shared name in different trajectories collects arrivals in the same batch", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
     release("dummy", 1) %>%
     #separate() %>%
     timeout(counter())
 
-  t1 <- create_trajectory(verbose = TRUE) %>%
+  t1 <- trajectory(verbose = TRUE) %>%
     batch(2, name = "asdf") %>%
     join(t)
 
-  t2 <- create_trajectory(verbose = TRUE) %>%
+  t2 <- trajectory(verbose = TRUE) %>%
     batch(2, name = "asdf") %>%
     join(t)
 
@@ -222,18 +222,18 @@ test_that("a shared name in different trajectories collects arrivals in the same
 })
 
 test_that("unnamed batches in different trajectories collects arrivals in different batches", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
     release("dummy", 1) %>%
     #separate() %>%
     timeout(counter())
 
-  t1 <- create_trajectory(verbose = TRUE) %>%
+  t1 <- trajectory(verbose = TRUE) %>%
     batch(2, name = "") %>%
     join(t)
 
-  t2 <- create_trajectory(verbose = TRUE) %>%
+  t2 <- trajectory(verbose = TRUE) %>%
     batch(2, name = "") %>%
     join(t)
 
@@ -255,7 +255,7 @@ test_that("unnamed batches in different trajectories collects arrivals in differ
 })
 
 test_that("nested batches' stats are correctly reported", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     batch(2, timeout = 0, permanent = FALSE, rule = NULL) %>%
     batch(2, timeout = 0, permanent = FALSE, rule = NULL) %>%
     seize("dummy", 1) %>%
@@ -283,7 +283,7 @@ test_that("nested batches' stats are correctly reported", {
 })
 
 test_that("nested batches are separated", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     batch(2, timeout = 0, permanent = FALSE, rule = NULL) %>%
     batch(2, timeout = 0, permanent = FALSE, rule = NULL) %>%
     seize("dummy", 1) %>%
@@ -311,7 +311,7 @@ test_that("nested batches are separated", {
 })
 
 test_that("seizes across nested batches are correctly reported", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     seize("dummy0", 1) %>%
     batch(1, timeout = 0, permanent = FALSE, rule = NULL) %>%
     seize("dummy1", 1) %>%

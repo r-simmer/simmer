@@ -2,7 +2,7 @@ context("resource-schedule")
 
 test_that("a schedule name conflicts with a generator name", {
   expect_error(simmer(verbose = TRUE) %>%
-    add_generator("asdf", create_trajectory() %>% timeout(0), at(0)) %>%
+    add_generator("asdf", trajectory() %>% timeout(0), at(0)) %>%
     add_resource("asdf", schedule(c(1, 2), c(1, 1)))
   )
 })
@@ -58,7 +58,7 @@ test_that("queue size changes", {
 
 test_that("arrivals 1) are dequeued when resource's capacity increases and
                     2) remain in server when it decreases", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(2) %>%
     release("dummy", 1)
@@ -77,7 +77,7 @@ test_that("arrivals 1) are dequeued when resource's capacity increases and
 
 test_that("arrivals 1) are dequeued when resource's capacity increases and
                     2) remain in server when it decreases", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(2) %>%
     release("dummy", 1)
@@ -95,7 +95,7 @@ test_that("arrivals 1) are dequeued when resource's capacity increases and
 })
 
 test_that("arrivals are preempted when resource's capacity decreases", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(2) %>%
     release("dummy", 1)
@@ -113,7 +113,7 @@ test_that("arrivals are preempted when resource's capacity decreases", {
 })
 
 test_that("resource's capacity decreases before post-release tasks", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("t-rex") %>%
     timeout(5) %>%
     release("t-rex")
@@ -131,7 +131,7 @@ test_that("resource's capacity decreases before post-release tasks", {
 })
 
 test_that("capacity decrease on a non-released preemptive resource does not crash", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1)
 
   sched <- schedule(c(0, 1), c(1, 0), period = Inf)

@@ -6,7 +6,7 @@ reference:
   - title: "Build trajectories"
     desc: "Methods for building trajectory objects"
     contents:
-      - create_trajectory
+      - trajectory
       - batch
       - branch
       - clone
@@ -27,10 +27,10 @@ reference:
   - title: "Manage trajectories"
     desc: "Methods for getting information about trajectory objects"
     contents:
-      - get_head
+      - head.trajectory
       - get_n_activities
       - get_next_activity
-      - print_activity
+      - print.externalptr
   - title: "Build and run simulation environments"
     desc: "Methods for building and running simulation objects"
     contents:

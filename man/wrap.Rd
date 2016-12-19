@@ -21,7 +21,7 @@ simulation backend is destroyed when the threads exit.
 \examples{
 library(parallel)
 
-mm1 <- create_trajectory() \%>\%
+mm1 <- trajectory() \%>\%
   seize("server", 1) \%>\%
   timeout(function() rexp(1, 2)) \%>\%
   release("server", 1)

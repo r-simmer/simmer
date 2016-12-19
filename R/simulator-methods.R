@@ -15,7 +15,7 @@
 #' @export
 #'
 #' @examples
-#' t0 <- create_trajectory("my trajectory") %>%
+#' t0 <- trajectory("my trajectory") %>%
 #'   ## add an intake activity
 #'   seize("nurse", 1) %>%
 #'   timeout(function() rnorm(1, 15)) %>%
@@ -128,7 +128,7 @@ add_resource <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE, preem
 #' @inheritParams reset
 #' @param name_prefix the name prefix of the generated arrivals.
 #' @param trajectory the trajectory that the generated arrivals will follow (see
-#' \code{\link{create_trajectory}}).
+#' \code{\link{trajectory}}).
 #' @param distribution a function modelling the interarrival times (returning a
 #' negative value stops the generator).
 #' @param mon whether the simulator must monitor the generated arrivals or not

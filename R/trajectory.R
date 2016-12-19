@@ -1,6 +1,6 @@
 #' @importFrom R6 R6Class
 #' @importFrom Rcpp evalCpp
-simmer.trajectory <- R6Class("simmer.trajectory",
+Trajectory <- R6Class("trajectory",
   public = list(
     name = NA,
 
@@ -12,7 +12,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
 
     print = function(indent=0) {
       margin <- paste(rep(" ", indent), collapse = "")
-      cat(paste0(margin, "simmer trajectory: ", self$name, ", ",
+      cat(paste0(margin, "trajectory: ", self$name, ", ",
                  private$n_activities, " activities\n"))
       ptr <- self$get_head()
       while (!identical(ptr, self$get_tail())) {
@@ -35,12 +35,12 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       trj <- list()
       mask <- 0
       if (!is.null(post.seize)) {
-        if (!inherits(post.seize, "simmer.trajectory")) stop("not a trajectory")
+        if (!inherits(post.seize, "trajectory")) stop("not a trajectory")
         trj <- c(trj, post.seize)
         mask <- mask + 1
       }
       if (!is.null(reject)) {
-        if (!inherits(reject, "simmer.trajectory")) stop("not a trajectory")
+        if (!inherits(reject, "trajectory")) stop("not a trajectory")
         trj <- c(trj, reject)
         mask <- mask + 2
       }
@@ -147,7 +147,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     },
 
     set_trajectory = function(generator, trajectory) {
-      if (!inherits(trajectory, "simmer.trajectory"))
+      if (!inherits(trajectory, "trajectory"))
         stop("not a trajectory")
       generator <- evaluate_value(generator)
       if (is.function(generator))
@@ -175,7 +175,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       trj <- list(...)
       if (length(continue) != length(trj))
         stop("the number of elements does not match")
-      for (i in trj) if (!inherits(i, "simmer.trajectory"))
+      for (i in trj) if (!inherits(i, "trajectory"))
         stop("not a trajectory")
       private$add_activity(Branch__new(private$verbose, option, needs_attrs(option), continue, trj))
     },
@@ -200,7 +200,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       t <- evaluate_value(t)
       traj <- list()
       if (!is.null(out)) {
-        if (!inherits(out, "simmer.trajectory")) stop("not a trajectory")
+        if (!inherits(out, "trajectory")) stop("not a trajectory")
         traj <- c(traj, out)
       }
       if (is.function(t))
@@ -212,7 +212,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       signal <- evaluate_value(signal)
       traj <- list()
       if (!is.null(out)) {
-        if (!inherits(out, "simmer.trajectory")) stop("not a trajectory")
+        if (!inherits(out, "trajectory")) stop("not a trajectory")
         traj <- c(traj, out)
       }
       if (is.function(signal))
@@ -225,7 +225,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     replicate = function(n, ...) {
       n <- evaluate_value(n)
       trj <- list(...)
-      for (i in trj) if (!inherits(i, "simmer.trajectory"))
+      for (i in trj) if (!inherits(i, "trajectory"))
         stop("not a trajectory")
       if (is.function(n))
         private$add_activity(Clone__new_func(private$verbose, n, needs_attrs(n), trj))
@@ -269,7 +269,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       interruptible <- evaluate_value(interruptible)
       traj <- list()
       if (!is.null(handler)) {
-        if (!inherits(handler, "simmer.trajectory")) stop("not a trajectory")
+        if (!inherits(handler, "trajectory")) stop("not a trajectory")
         traj <- c(traj, handler)
       }
       if (is.function(signals))
@@ -295,7 +295,7 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     },
 
     join = function(trajectory) {
-      if (!inherits(trajectory, "simmer.trajectory"))
+      if (!inherits(trajectory, "trajectory"))
         stop("not a trajectory")
       new <- self$clone(deep = TRUE)
       trajectory <- trajectory$clone(deep = TRUE)
@@ -341,5 +341,5 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     }
   )
 )
-simmer.trajectory$private_methods$clone2 <- simmer.trajectory$public_methods$clone
-simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
+Trajectory$private_methods$clone2 <- Trajectory$public_methods$clone
+Trajectory$public_methods$clone <- Trajectory$private_methods$copy

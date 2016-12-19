@@ -1,5 +1,5 @@
 #' @importFrom R6 R6Class
-simmer.schedule <- R6Class("simmer.schedule",
+Schedule <- R6Class("schedule",
   public = list(
     initialize = function(timetable, values, period=Inf) {
       if (!is.numeric(c(timetable, period, values)))
@@ -24,7 +24,7 @@ simmer.schedule <- R6Class("simmer.schedule",
     },
 
     print = function() {
-      cat(paste0("simmer schedule\n",
+      cat(paste0("schedule\n",
                  "{ timetable: ", paste(private$timetable, collapse = " "),
                  " | period: ", ifelse(private$period > 0, private$period, Inf), " }\n",
                  "{ values: ", paste(private$values, collapse = " "), " }\n"))
@@ -83,4 +83,4 @@ simmer.schedule <- R6Class("simmer.schedule",
 #'
 #' env <- simmer() %>%
 #'   add_resource("dummy", capacity_schedule)
-schedule <- function(timetable, values, period=Inf) simmer.schedule$new(timetable, values, period)
+schedule <- function(timetable, values, period=Inf) Schedule$new(timetable, values, period)

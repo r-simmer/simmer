@@ -1,7 +1,7 @@
 context("set_capacity/set_queue_size")
 
 test_that("capacity and queue size change as expected (1)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     set_capacity("dummy", 0) %>%
     set_capacity("dummy", function() Inf) %>%
     set_queue_size("dummy", Inf) %>%
@@ -28,7 +28,7 @@ test_that("capacity and queue size change as expected (1)", {
 })
 
 test_that("capacity and queue size change as expected (2)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     select("dummy0", id = 0) %>%
     select(function() "dummy1", id = 1) %>%
     set_capacity_selected(0, id = 0) %>%
@@ -57,9 +57,9 @@ test_that("capacity and queue size change as expected (2)", {
   expect_equal(env %>% get_queue_size("dummy0"), 5)
 })
 
-preempt <- create_trajectory() %>% set_capacity("res", 0)
-drop <- create_trajectory() %>% set_queue_size("res", 0)
-t <- create_trajectory() %>%
+preempt <- trajectory() %>% set_capacity("res", 0)
+drop <- trajectory() %>% set_queue_size("res", 0)
+t <- trajectory() %>%
   seize("res", 1) %>%
   timeout(10)
 

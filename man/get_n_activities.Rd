@@ -16,6 +16,6 @@ Returns the number of activities in the trajectory.
 Trajectory getter for obtaining the total number of activities defined inside it.
 }
 \seealso{
-\code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{join}}.
+\code{\link{head.trajectory}}, \code{\link{tail.trajectory}}, \code{\link{join}}.
 }
 

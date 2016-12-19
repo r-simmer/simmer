@@ -3,12 +3,12 @@ context("wrap")
 test_that("the wrapper behaves as expected", {
   expect_error("asdf" %>% wrap())
 
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     seize("server", 1) %>%
     set_attribute("attr", 1) %>%
     release("server", 1)
 
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     seize("server", 1) %>%
     timeout(1) %>%
     rollback(1, times = Inf)

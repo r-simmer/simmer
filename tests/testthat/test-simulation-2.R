@@ -1,7 +1,7 @@
 context("simulation 2")
 
 test_that("a release is executed before a seize in the same instant", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     seize("server", 1) %>%
     timeout(1) %>%
     release("server", 1)

@@ -8,7 +8,7 @@
 #'
 #' @return Returns an environment that represents the trajectory.
 #' @seealso Methods for dealing with trajectories:
-#' \code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{get_n_activities}}, \code{\link{join}},
+#' \code{\link{head.trajectory}}, \code{\link{tail.trajectory}}, \code{\link{get_n_activities}}, \code{\link{join}},
 #' \code{\link{seize}}, \code{\link{release}}, \code{\link{seize_selected}}, \code{\link{release_selected}},
 #' \code{\link{select}}, \code{\link{set_capacity}}, \code{\link{set_queue_size}},
 #' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}, \code{\link{set_prioritization}},
@@ -20,7 +20,7 @@
 #' @export
 #'
 #' @examples
-#' t0 <- create_trajectory("my trajectory") %>%
+#' t0 <- trajectory("my trajectory") %>%
 #'   ## add an intake activity
 #'   seize("nurse", 1) %>%
 #'   timeout(function() rnorm(1, 15)) %>%
@@ -36,13 +36,13 @@
 #'
 #' t0
 #'
-#' t1 <- create_trajectory("trajectory with a branch") %>%
+#' t1 <- trajectory("trajectory with a branch") %>%
 #'   seize("server", 1) %>%
 #'   # 50-50 chance for each branch
 #'   branch(function() sample(1:2, 1), continue=c(TRUE, FALSE),
-#'     create_trajectory("branch1") %>%
+#'     trajectory("branch1") %>%
 #'       timeout(function() 1),
-#'     create_trajectory("branch2") %>%
+#'     trajectory("branch2") %>%
 #'       timeout(function() rexp(1, 3)) %>%
 #'       release("server", 1)
 #'   ) %>%
@@ -51,31 +51,56 @@
 #'   timeout(function() 2)
 #'
 #' t1
-create_trajectory <- function(name="anonymous", verbose=FALSE) simmer.trajectory$new(name, verbose)
+trajectory <- function(name="anonymous", verbose=FALSE) Trajectory$new(name, verbose)
 
-#' Get the first/last activity
+#' @rdname trajectory
+#' @export
+create_trajectory <- function(name="anonymous", verbose=FALSE) {
+  .Deprecated("trajectory")
+  trajectory(name, verbose)
+}
+
+#' Return the first/last activity
 #'
 #' Trajectory getters for obtaining the pointer to its first/last activity.
 #'
-#' @param .trj the trajectory object.
+#' @param x the trajectory object.
+#' @param ... arguments to be passed to or from other methods.
 #'
 #' @return Returns an external pointer to an activity object.
 #' @seealso \code{\link{get_n_activities}}, \code{\link{join}}.
+#'
+#' @importFrom utils head tail
 #' @export
-get_head <- function(.trj) .trj$get_head()
+head.trajectory <- function(x, ...) x$get_head()
 
-#' @rdname get_head
+#' @param .trj the trajectory object.
+#' @rdname head.trajectory
 #' @export
-get_tail <- function(.trj) .trj$get_tail()
+get_head <- function(.trj) {
+  .Deprecated("head")
+  head(.trj)
+}
+
+#' @rdname head.trajectory
+#' @export
+tail.trajectory <- function(x, ...) x$get_tail()
+
+#' @rdname head.trajectory
+#' @export
+get_tail <- function(.trj) {
+  .Deprecated("tail")
+  tail(.trj)
+}
 
 #' Get the number of activities
 #'
 #' Trajectory getter for obtaining the total number of activities defined inside it.
 #'
-#' @inheritParams get_head
+#' @param .trj the trajectory object.
 #'
 #' @return Returns the number of activities in the trajectory.
-#' @seealso \code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{join}}.
+#' @seealso \code{\link{head.trajectory}}, \code{\link{tail.trajectory}}, \code{\link{join}}.
 #' @export
 get_n_activities <- function(.trj) .trj$get_n_activities()
 
@@ -86,17 +111,17 @@ get_n_activities <- function(.trj) .trj$get_n_activities()
 #' @param ... trajectory objects.
 #'
 #' @return Returns a new trajectory object.
-#' @seealso \code{\link{get_head}}, \code{\link{get_tail}}, \code{\link{get_n_activities}}.
+#' @seealso \code{\link{head.trajectory}}, \code{\link{tail.trajectory}}, \code{\link{get_n_activities}}.
 #' @export
 #'
 #' @examples
-#' t1 <- create_trajectory() %>% seize("dummy", 1)
-#' t2 <- create_trajectory() %>% timeout(1)
-#' t3 <- create_trajectory() %>% release("dummy", 1)
+#' t1 <- trajectory() %>% seize("dummy", 1)
+#' t2 <- trajectory() %>% timeout(1)
+#' t3 <- trajectory() %>% release("dummy", 1)
 #'
 #' join(t1, t2, t3)
 #'
-#' create_trajectory() %>%
+#' trajectory() %>%
 #'   join(t1) %>%
 #'   timeout(1) %>%
 #'   join(t3)
@@ -110,7 +135,7 @@ join <- function(...) {
 #'
 #' Activities for seizing/releasing a resource, by name or a previously selected one.
 #'
-#' @inheritParams get_head
+#' @param .trj the trajectory object.
 #' @inheritParams select
 #' @param resource the name of the resource.
 #' @param amount the amount to seize/release, accepts either a numeric or a callable object
@@ -145,7 +170,7 @@ release_selected <- function(.trj, amount=1, id=0) .trj$release(NA, amount, id)
 #'
 #' Modify a resource's server capacity or queue size, by name or a previously selected one.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @inheritParams select
 #' @param resource the name of the resource.
 #' @param value new value to set.
@@ -172,7 +197,7 @@ set_queue_size_selected <- function(.trj, value, id=0) .trj$set_queue_size(NA, v
 #'
 #' Resource selector for a subsequent seize/release.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param resources one or more resource names, or a callable object (a function) which
 #' must return a resource name to select.
 #' @param policy if \code{resources} is a vector of names, this parameter determines
@@ -192,7 +217,7 @@ select <- function(.trj, resources, policy=c("shortest-queue", "round-robin",
 #'
 #' Insert delays and execute user-defined tasks.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param task the timeout duration supplied by either passing a numeric or a
 #' callable object (a function) which must return a numeric (negative values are
 #' automatically coerced to positive).
@@ -205,7 +230,7 @@ timeout <- function(.trj, task) .trj$timeout(task)
 #'
 #' Modify an attribute in the form of a key/value pair.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param key the attribute key (coerced to a string).
 #' @param value the value to set, accepts either a numeric or a callable object
 #' (a function) which must return a numeric.
@@ -219,7 +244,7 @@ set_attribute <- function(.trj, key, value, global=FALSE) .trj$set_attribute(key
 #'
 #' Activate or deactivate the generation of arrivals by name.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param generator the name of the generator or a function returning a name.
 #'
 #' @return Returns the trajectory object.
@@ -235,7 +260,7 @@ deactivate <- function(.trj, generator) .trj$deactivate(generator)
 #'
 #' Modify a generator's trajectory or distribution by name.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @inheritParams activate
 #' @param trajectory the trajectory that the generated arrivals will follow.
 #'
@@ -254,7 +279,7 @@ set_distribution <- function(.trj, generator, distribution) .trj$set_distributio
 #'
 #' Modify the arrival's prioritization values.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param values expects either a vector/list or a callable object (a function)
 #' returning a vector/list of three values \code{c(priority, preemptible, restart)}.
 #' A negative value leaves the corresponding parameter unchanged.
@@ -268,7 +293,7 @@ set_prioritization <- function(.trj, values) .trj$set_prioritization(values)
 #'
 #' Define a fork with \code{N} alternative sub-trajectories.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param option a callable object (a function) which must return an integer between
 #' \code{0} and \code{N}. A return value equal to \code{0} skips the branch and
 #' continues to the next activity. A returning value between \code{1} to \code{N}
@@ -285,7 +310,7 @@ branch <- function(.trj, option, continue, ...) .trj$branch(option, continue, ..
 #'
 #' Go backwards to a previous point in the trajectory. Useful to implement loops.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param amount the amount of activities (of the same or parent trajectories) to roll back.
 #' @param times the number of repetitions until an arrival may continue.
 #' @param check a callable object (a function) which must return a boolean. If
@@ -300,7 +325,7 @@ rollback <- function(.trj, amount, times=1, check) .trj$rollback(amount, times, 
 #'
 #' Leave the trajectory with some probability.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param prob a probability or a function returning a probability.
 #'
 #' @return Returns the trajectory object.
@@ -311,7 +336,7 @@ leave <- function(.trj, prob) .trj$leave(prob)
 #'
 #' Set or unset a timer or a signal after which the arrival will abandon.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param t timeout to trigger reneging, accepts either a numeric or a callable object
 #' (a function) which must return a numeric.
 #' @param out optional sub-trajectory in case of reneging.
@@ -337,7 +362,7 @@ renege_abort <- function(.trj) .trj$renege_abort()
 #' A \code{clone} activity replicates an arrival \code{n} times (the original
 #' one + \code{n-1} copies). A \code{synchronize} activity removes all but one clone.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param n number of clones, accepts either a numeric or a callable object
 #' (a function) which must return a numeric.
 #' @param ... optional parallel sub-trajectories. Each clone will follow
@@ -347,7 +372,7 @@ renege_abort <- function(.trj) .trj$renege_abort()
 #' @export
 clone <- function(.trj, n, ...) .trj$replicate(n, ...)
 
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param wait if \code{FALSE}, all clones but the first to arrive are removed.
 #' if \code{TRUE} (default), all clones but the last to arrive are removed.
 #' @param mon_all if \code{TRUE}, \code{get_mon_arrivals} will show one
@@ -362,7 +387,7 @@ synchronize <- function(.trj, wait=TRUE, mon_all=FALSE) .trj$synchronize(wait, m
 #' Collect a number of arrivals before they can continue processing
 #' or split a previously established batch.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param n batch size, accepts a numeric.
 #' @param timeout set an optional timer which triggers batches every \code{timeout} time
 #' units even if the batch size has not been fulfilled, accepts a numeric (0 = disabled).
@@ -379,7 +404,7 @@ synchronize <- function(.trj, wait=TRUE, mon_all=FALSE) .trj$synchronize(wait, m
 batch <- function(.trj, n, timeout=0, permanent=FALSE, name="", rule=NULL)
   .trj$batch(n, timeout, permanent, name, rule)
 
-#' @inheritParams get_head
+#' @inheritParams seize
 #'
 #' @rdname batch
 #' @export
@@ -395,7 +420,7 @@ separate <- function(.trj) .trj$separate()
 #' point of the interruption. \code{untrap()} can be used to unsubscribe from signals.
 #' \code{wait()} blocks until a signal is received.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param signals signal or list of signals, accepts either a string, a list of strings or a
 #' callable object (a function) which must return a string or a list of strings.
 #' @param delay optional timeout to trigger the signals, accepts either a numeric or a callable
@@ -426,7 +451,7 @@ wait <- function(.trj) .trj$wait()
 #'
 #' Display a message preceded by the simulation time and the name of the arrival.
 #'
-#' @inheritParams get_head
+#' @inheritParams seize
 #' @param message the message to display, accepts either a string or a callable object
 #' (a function) which must return a string.
 #'
