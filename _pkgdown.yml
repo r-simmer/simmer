@@ -10,7 +10,6 @@ reference:
       - batch
       - branch
       - clone
-      - join
       - leave
       - renege_in
       - rollback
@@ -25,12 +24,11 @@ reference:
       - send
       - log_
   - title: "Manage trajectories"
-    desc: "Methods for getting information about trajectory objects"
+    desc: "Methods for manipulating trajectory objects"
     contents:
       - head.trajectory
-      - get_n_activities
-      - get_next_activity
-      - print.externalptr
+      - length.trajectory
+      - join
   - title: "Build and run simulation environments"
     desc: "Methods for building and running simulation objects"
     contents:

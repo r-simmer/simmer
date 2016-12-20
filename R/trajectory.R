@@ -1,5 +1,6 @@
 #' @importFrom R6 R6Class
 #' @importFrom Rcpp evalCpp
+#' @importFrom utils head tail
 Trajectory <- R6Class("trajectory",
   public = list(
     name = NA,
@@ -14,17 +15,39 @@ Trajectory <- R6Class("trajectory",
       margin <- paste(rep(" ", indent), collapse = "")
       cat(paste0(margin, "trajectory: ", self$name, ", ",
                  private$n_activities, " activities\n"))
-      ptr <- self$get_head()
-      while (!identical(ptr, self$get_tail())) {
-        activity_print_(ptr, indent)
-        ptr <- activity_get_next_(ptr)
-      }
-      if (!is.null(ptr)) activity_print_(ptr, indent)
+      lapply(private$ptrs, function(i) activity_print_(i, indent))
+      invisible()
     },
 
-    get_head = function() { private$ptrs[[1]] },
+    head = function(n=1L, wrap=FALSE) {
+      stopifnot(length(n) == 1L)
+      n <- if (n < 0L)
+        max(length(private$ptrs) + n, 0L)
+      else min(n, length(private$ptrs))
+      if (wrap)
+        private$slice(1, n)
+      else {
+        if (n != 1)
+          head(private$ptrs, n)
+        else private$ptrs[[1]]
+      }
+    },
 
-    get_tail = function() { private$ptrs[[length(private$ptrs)]] },
+    tail = function(n=1L, wrap=FALSE) {
+      stopifnot(length(n) == 1L)
+      n <- if (n < 0L)
+        max(length(private$ptrs) + n, 0L)
+      else min(n, length(private$ptrs))
+      if (wrap)
+        private$slice(length(private$ptrs) - n + 1, length(private$ptrs))
+      else {
+        if (n != 1)
+          tail(private$ptrs, n)
+        else private$ptrs[[length(private$ptrs)]]
+      }
+    },
+
+    length = function() { length(private$ptrs) },
 
     get_n_activities = function() { private$n_activities },
 
@@ -297,10 +320,10 @@ Trajectory <- R6Class("trajectory",
     join = function(trajectory) {
       if (!inherits(trajectory, "trajectory"))
         stop("not a trajectory")
-      new <- self$clone(deep = TRUE)
-      trajectory <- trajectory$clone(deep = TRUE)
-      if (!is.null(trajectory$get_head()) && !is.null(new$get_tail()))
-          activity_chain_(new$get_tail(), trajectory$get_head())
+      new <- self$clone()
+      trajectory <- trajectory$clone()
+      if (!is.null(trajectory$head()) && !is.null(new$tail()))
+          activity_chain_(new$tail(), trajectory$head())
       new$.__enclos_env__$private$ptrs <-
         c(new$.__enclos_env__$private$ptrs, trajectory$.__enclos_env__$private$ptrs)
       new$.__enclos_env__$private$n_activities <-
@@ -316,29 +339,32 @@ Trajectory <- R6Class("trajectory",
 
     add_activity = function(activity) {
       if (!is.null(private$ptrs))
-        activity_chain_(self$get_tail(), activity)
+        activity_chain_(self$tail(), activity)
       private$ptrs <- c(private$ptrs, activity)
       private$n_activities <- private$n_activities + activity_get_n_(activity)
       self
     },
 
-    clone2 = function(){},
-    copy = function(deep = FALSE) {
-      new <- private$clone2(deep)
-      new$.__enclos_env__$private$ptrs <- NULL
-      if (!is.null(self$get_head())) {
-        ptr <- self$get_head()
-        new_ptr <- activity_clone_(ptr)
-        new$.__enclos_env__$private$ptrs <- c(new$.__enclos_env__$private$ptrs, new_ptr)
-        while (!identical(ptr, self$get_tail())) {
-          ptr <- activity_get_next_(ptr)
-          new_ptr <- activity_clone_(ptr)
-          activity_chain_(new$get_tail(), new_ptr)
-          new$.__enclos_env__$private$ptrs <- c(new$.__enclos_env__$private$ptrs, new_ptr)
-        }
+    slice = function(start, end) {
+      new <- private$clone2(deep = TRUE)
+      ptrs <- NULL
+      n_activities <- 0
+      if (start <= end) {
+        ptrs <- unlist(lapply(start:end, function(i) {
+          new_ptr <- activity_clone_(private$ptrs[[i]])
+          n_activities <<- n_activities + activity_get_n_(new_ptr)
+          new_ptr
+        }))
+        mapply(function(i, j) activity_chain_(i, j),
+               head(ptrs, -1), tail(ptrs, -1))
       }
+      new$.__enclos_env__$private$ptrs <- ptrs
+      new$.__enclos_env__$private$n_activities <- n_activities
       new
-    }
+    },
+
+    clone2 = function(){},
+    copy = function(deep=TRUE) { private$slice(1, length(private$ptrs)) }
   )
 )
 Trajectory$private_methods$clone2 <- Trajectory$public_methods$clone

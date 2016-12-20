@@ -76,33 +76,33 @@ trajs <- c(trajectory(verbose = TRUE) %>% seize("nurse", 1),
 N <- 30
 
 test_that("the activity chain grows as expected", {
-  ptr_head <- head(t0)
-  for (i in 1:N) ptr_head <- get_next_activity(ptr_head)
-  ptr_tail <- tail(t0)
-  for (i in 1:N) ptr_tail <- get_prev_activity(ptr_tail)
+  ptr_head <- t0$head()
+  for (i in 1:N) ptr_head <- activity_get_next_(ptr_head)
+  ptr_tail <- t0$tail()
+  for (i in 1:N) ptr_tail <- activity_get_prev_(ptr_tail)
 
-  expect_output(print(ptr_head), "Release")
-  expect_output(print(tail(t0)), "Release")
-  expect_equal(get_next_activity(ptr_head), NULL)
-  expect_output(print(ptr_tail), "Seize")
-  expect_output(print(head(t0)), "Seize")
-  expect_equal(get_prev_activity(ptr_tail), NULL)
+  expect_output(activity_print_(ptr_head, 0), "Release")
+  expect_output(activity_print_(t0$tail(), 0), "Release")
+  expect_equal(activity_get_next_(ptr_head), NULL)
+  expect_output(activity_print_(ptr_tail, 0), "Seize")
+  expect_output(activity_print_(t0$head(), 0), "Seize")
+  expect_equal(activity_get_prev_(ptr_tail), NULL)
 })
 
 test_that("the activity chain grows as expected using join", {
   t <- join(trajs)
 
-  ptr_head <- t %>% head()
-  for (i in 1:N) ptr_head <- get_next_activity(ptr_head)
-  ptr_tail <- t %>% tail()
-  for (i in 1:N) ptr_tail <- get_prev_activity(ptr_tail)
+  ptr_head <- t$head()
+  for (i in 1:N) ptr_head <- activity_get_next_(ptr_head)
+  ptr_tail <- t$tail()
+  for (i in 1:N) ptr_tail <- activity_get_prev_(ptr_tail)
 
-  expect_output(print(ptr_head), "Release")
-  expect_output(print(t %>% tail()), "Release")
-  expect_equal(get_next_activity(ptr_head), NULL)
-  expect_output(print(ptr_tail), "Seize")
-  expect_output(print(t %>% head()), "Seize")
-  expect_equal(get_prev_activity(ptr_tail), NULL)
+  expect_output(activity_print_(ptr_head, 0), "Release")
+  expect_output(activity_print_(t$tail(), 0), "Release")
+  expect_equal(activity_get_next_(ptr_head), NULL)
+  expect_output(activity_print_(ptr_tail, 0), "Seize")
+  expect_output(activity_print_(t$head(), 0), "Seize")
+  expect_equal(activity_get_prev_(ptr_tail), NULL)
 
   expect_true(length(capture.output(t)) == length(capture.output(t0)))
 
@@ -125,7 +125,8 @@ test_that("the trajectory stores the right number of activities", {
     release("nurse", 1)
 
   expect_is(t0, "trajectory")
-  expect_equal(t0 %>% get_n_activities(), 3)
+  expect_equal(length(t0), 3)
+  expect_equal(get_n_activities(t0), 3)
 
   t0 <- t0 %>%
     branch(function() 1, TRUE,
@@ -146,7 +147,8 @@ test_that("the trajectory stores the right number of activities", {
     set_attribute("dummy", function() 1)
 
   expect_is(t0, "trajectory")
-  expect_equal(t0 %>% get_n_activities(), 15)
+  expect_equal(length(t0), 8)
+  expect_equal(get_n_activities(t0), 15)
 
   output <- paste0(".*(",
     "15 activities",
@@ -175,22 +177,17 @@ test_that("the trajectory stores the right number of activities", {
 test_that("the head/tail pointers are correctly placed", {
   t0 <- trajectory()
 
-  expect_equal(head(t0), NULL)
-  expect_equal(tail(t0), NULL)
+  expect_equal(t0$head(), NULL)
+  expect_equal(t0$tail(), NULL)
 
   t0 %>% seize("nurse", 1)
 
-  expect_output(print(head(t0)), "Seize")
-  expect_output(print(tail(t0)), "Seize")
+  expect_output(activity_print_(t0$head(), 0), "Seize")
+  expect_output(activity_print_(t0$tail(), 0), "Seize")
 
   t0 %>% timeout(function() rnorm(1, 15)) %>%
     release("nurse", 1)
 
-  expect_output(print(head(t0)), "Seize")
-  expect_output(print(tail(t0)), "Release")
-})
-
-test_that("we can force some errors (just to complete coverage)", {
-  expect_error(trajectory() %>% get_next_activity())
-  expect_error(trajectory() %>% get_prev_activity())
+  expect_output(activity_print_(t0$head(), 0), "Seize")
+  expect_output(activity_print_(t0$tail(), 0), "Release")
 })
