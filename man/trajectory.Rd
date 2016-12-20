@@ -56,7 +56,7 @@ t1
 }
 \seealso{
 Methods for dealing with trajectories:
-\code{\link{head.trajectory}}, \code{\link{tail.trajectory}}, \code{\link{length.trajectory}},
+\code{\link{[.trajectory}}, \code{\link{[[.trajectory}}, \code{\link{length.trajectory}},
 \code{\link{get_n_activities}}, \code{\link{join}}, \code{\link{seize}}, \code{\link{release}},
 \code{\link{seize_selected}}, \code{\link{release_selected}}, \code{\link{select}},
 \code{\link{set_capacity}}, \code{\link{set_queue_size}}, \code{\link{set_capacity_selected}},

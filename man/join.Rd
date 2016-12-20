@@ -28,6 +28,7 @@ trajectory() \%>\%
   join(t3)
 }
 \seealso{
-\code{\link{head.trajectory}}, \code{\link{tail.trajectory}}, \code{\link{length.trajectory}}.
+\code{\link{[.trajectory}}, \code{\link{[[.trajectory}}, \code{\link{length.trajectory}},
+\code{\link{get_n_activities}}.
 }
 

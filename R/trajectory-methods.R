@@ -8,7 +8,7 @@
 #'
 #' @return Returns an environment that represents the trajectory.
 #' @seealso Methods for dealing with trajectories:
-#' \code{\link{head.trajectory}}, \code{\link{tail.trajectory}}, \code{\link{length.trajectory}},
+#' \code{\link{[.trajectory}}, \code{\link{[[.trajectory}}, \code{\link{length.trajectory}},
 #' \code{\link{get_n_activities}}, \code{\link{join}}, \code{\link{seize}}, \code{\link{release}},
 #' \code{\link{seize_selected}}, \code{\link{release_selected}}, \code{\link{select}},
 #' \code{\link{set_capacity}}, \code{\link{set_queue_size}}, \code{\link{set_capacity_selected}},
@@ -61,23 +61,41 @@ create_trajectory <- function(name="anonymous", verbose=FALSE) {
   trajectory(name, verbose)
 }
 
-#' Return the first/last activity
+#' Extract parts of a trajectory
 #'
-#' Returns the first or last parts of a trajectory object.
+#' Operators acting on trajectories.
 #'
 #' @param x the trajectory object.
-#' @inheritParams utils::head
+#' @param i indices specifying elements to extract. Indices are \code{numeric} or \code{character}
+#' or \code{logical} vectors or empty (missing) or \code{NULL}.
+#'
+#' Numeric values are coerced to integer as by \code{\link{as.integer}} (and hence truncated towards
+#' zero). Negative integers indicate elemets/slices to leave out the selection.
+#'
+#' Character vectors will be matched to the names of the activities in the trajectory as by
+#' \code{\link{\%in\%}}.
+#'
+#' Logical vectors indicate elements/slices to select. Such vectors are NOT recycled to match the
+#' corresponding extent.
+#'
+#' An empty index will return the whole trajectory.
+#'
+#' An index value of \code{NULL} is treated as if it were \code{integer(0)}.
 #'
 #' @return Returns a new trajectory object.
 #' @seealso \code{\link{length.trajectory}}, \code{\link{get_n_activities}}, \code{\link{join}}.
 #'
-#' @importFrom utils head tail
+#' @name Extract.trajectory
 #' @export
-head.trajectory <- function(x, n=1L, ...) x$head(n, wrap=TRUE)
+`[.trajectory` <- function(x, i) x$subset(i)
 
-#' @rdname head.trajectory
+#' @rdname Extract.trajectory
 #' @export
-tail.trajectory <- function(x, n=1L, ...) x$tail(n, wrap=TRUE)
+`[[.trajectory` <- function(x, i) {
+  stopifnot(length(i) == 1L)
+  stopifnot(is.character(i) | (is.numeric(i) & i > 0))
+  x$subset(i)$subset(1)
+}
 
 #' Number of activities in a trajectory
 #'
@@ -85,10 +103,11 @@ tail.trajectory <- function(x, n=1L, ...) x$tail(n, wrap=TRUE)
 #' of first-level activities (sub-trajectories not included). \code{get_n_activities}
 #' returns the total number of activities (sub-trajectories included).
 #'
-#' @inheritParams head.trajectory
+#' @inheritParams Extract.trajectory
 #'
 #' @return Returns a non-negative integer of length 1.
-#' @seealso \code{\link{head.trajectory}}, \code{\link{tail.trajectory}}, \code{\link{join}}.
+#' @seealso \code{\link{[.trajectory}}, \code{\link{[[.trajectory}}, \code{\link{[[.trajectory}},
+#' \code{\link{join}}.
 #' @export
 length.trajectory <- function(x) x$length()
 
@@ -103,7 +122,8 @@ get_n_activities <- function(x) x$get_n_activities()
 #' @param ... trajectory objects.
 #'
 #' @return Returns a new trajectory object.
-#' @seealso \code{\link{head.trajectory}}, \code{\link{tail.trajectory}}, \code{\link{length.trajectory}}.
+#' @seealso \code{\link{[.trajectory}}, \code{\link{[[.trajectory}}, \code{\link{length.trajectory}},
+#' \code{\link{get_n_activities}}.
 #' @export
 #'
 #' @examples

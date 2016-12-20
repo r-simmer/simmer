@@ -21,6 +21,7 @@ of first-level activities (sub-trajectories not included). \code{get_n_activitie
 returns the total number of activities (sub-trajectories included).
 }
 \seealso{
-\code{\link{head.trajectory}}, \code{\link{tail.trajectory}}, \code{\link{join}}.
+\code{\link{[.trajectory}}, \code{\link{[[.trajectory}}, \code{\link{[[.trajectory}},
+\code{\link{join}}.
 }
 

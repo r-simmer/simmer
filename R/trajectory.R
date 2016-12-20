@@ -19,33 +19,66 @@ Trajectory <- R6Class("trajectory",
       invisible()
     },
 
-    head = function(n=1L, wrap=FALSE) {
-      stopifnot(length(n) == 1L)
-      n <- if (n < 0L)
-        max(length(private$ptrs) + n, 0L)
-      else min(n, length(private$ptrs))
-      if (wrap)
-        private$slice(1, n)
-      else {
-        if (n != 1)
-          head(private$ptrs, n)
-        else private$ptrs[[1]]
+    subset = function(i) {
+      if (missing(i)) {
+        elems <- seq_len(length(self))
+      } else {
+        stopifnot(length(i) <= length(self))
+        if (is.null(i)) i <- 0
+        if (is.logical(i)) {
+          elems <- which(i)
+        } else if (is.character(i)) {
+          elems <- which(private$names %in% i)
+        } else if (is.numeric(i)) {
+          i <- i[!is.na(i)]
+          if (any(i < 0) && any(i > 0))
+            stop("only 0's may be mixed with negative subscripts")
+          i <- as.integer(i)
+          i <- i[i != 0]
+          if (any(i < 0))
+            elems <- seq_len(length(self))[i]
+          else elems <- i
+        } else stop("invalid subscript type '", typeof(i), "'")
       }
+
+      new <- private$clone2(deep = TRUE)
+      ptrs <- NULL
+      names <- NULL
+      n_activities <- 0
+      if (length(elems)) {
+        ptrs <- sapply(elems, function(i) {
+          new_ptr <- activity_clone_(private$ptrs[[i]])
+          n_activities <<- n_activities + activity_get_n_(new_ptr)
+          new_ptr
+        })
+        mapply(function(i, j) activity_chain_(i, j),
+               head(ptrs, -1), tail(ptrs, -1))
+        names <- private$names[elems]
+      }
+      new$.__enclos_env__$private$ptrs <- ptrs
+      new$.__enclos_env__$private$names <- names
+      new$.__enclos_env__$private$n_activities <- n_activities
+      new
     },
 
-    tail = function(n=1L, wrap=FALSE) {
-      stopifnot(length(n) == 1L)
-      n <- if (n < 0L)
-        max(length(private$ptrs) + n, 0L)
-      else min(n, length(private$ptrs))
-      if (wrap)
-        private$slice(length(private$ptrs) - n + 1, length(private$ptrs))
-      else {
-        if (n != 1)
-          tail(private$ptrs, n)
-        else private$ptrs[[length(private$ptrs)]]
-      }
+    join = function(traj) {
+      stopifnot(inherits(traj, "trajectory"))
+      new <- self$clone()
+      traj <- traj$clone()
+      if (!is.null(traj$head()) && !is.null(new$tail()))
+        activity_chain_(new$tail(), traj$head())
+      new$.__enclos_env__$private$ptrs <-
+        c(new$.__enclos_env__$private$ptrs, traj$.__enclos_env__$private$ptrs)
+      new$.__enclos_env__$private$names <-
+        c(new$.__enclos_env__$private$names, traj$.__enclos_env__$private$names)
+      new$.__enclos_env__$private$n_activities <-
+        new$.__enclos_env__$private$n_activities + traj$get_n_activities()
+      new
     },
+
+    head = function() { private$ptrs[[1]] },
+
+    tail = function() { private$ptrs[[length(self)]] },
 
     length = function() { length(private$ptrs) },
 
@@ -291,19 +324,6 @@ Trajectory <- R6Class("trajectory",
       if (is.function(message))
         private$add_activity(Log__new_func(private$verbose, message, needs_attrs(message)))
       else private$add_activity(Log__new(private$verbose, message))
-    },
-
-    join = function(traj) {
-      stopifnot(inherits(traj, "trajectory"))
-      new <- self$clone()
-      traj <- traj$clone()
-      if (!is.null(traj$head()) && !is.null(new$tail()))
-          activity_chain_(new$tail(), traj$head())
-      new$.__enclos_env__$private$ptrs <-
-        c(new$.__enclos_env__$private$ptrs, traj$.__enclos_env__$private$ptrs)
-      new$.__enclos_env__$private$n_activities <-
-        new$.__enclos_env__$private$n_activities + traj$get_n_activities()
-      new
     }
   ),
 
@@ -311,35 +331,21 @@ Trajectory <- R6Class("trajectory",
     verbose = FALSE,
     n_activities = 0,
     ptrs = NULL,
+    names = NULL,
 
     add_activity = function(activity) {
+      caller <- match.call(sys.function(sys.parent(2)), sys.call(sys.parent(2)))
+      caller <- as.character(caller)[[1]]
       if (!is.null(private$ptrs))
         activity_chain_(self$tail(), activity)
       private$ptrs <- c(private$ptrs, activity)
+      private$names <- c(private$names, caller)
       private$n_activities <- private$n_activities + activity_get_n_(activity)
       self
     },
 
-    slice = function(start, end) {
-      new <- private$clone2(deep = TRUE)
-      ptrs <- NULL
-      n_activities <- 0
-      if (start <= end) {
-        ptrs <- unlist(lapply(start:end, function(i) {
-          new_ptr <- activity_clone_(private$ptrs[[i]])
-          n_activities <<- n_activities + activity_get_n_(new_ptr)
-          new_ptr
-        }))
-        mapply(function(i, j) activity_chain_(i, j),
-               head(ptrs, -1), tail(ptrs, -1))
-      }
-      new$.__enclos_env__$private$ptrs <- ptrs
-      new$.__enclos_env__$private$n_activities <- n_activities
-      new
-    },
-
     clone2 = function(){},
-    copy = function(deep=TRUE) { private$slice(1, length(private$ptrs)) }
+    copy = function(deep=TRUE) { self$subset() }
   )
 )
 Trajectory$private_methods$clone2 <- Trajectory$public_methods$clone
