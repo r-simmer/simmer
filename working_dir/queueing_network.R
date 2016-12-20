@@ -17,22 +17,22 @@ switch_port <- function(., id)
   timeout(function(attrs) attrs[["size"]] / rate) %>%
   release(paste0("res", id), 1)
 
-switch_port_1 <- create_trajectory() %>%
+switch_port_1 <- trajectory() %>%
   set_msg_size() %>%
   switch_port(1) %>%
   leave(0.25) %>%
   switch_port(2) %>%
   branch(function() (runif(1) > 0.65) + 1, c(F, F), 
-         create_trajectory() %>%
+         trajectory() %>%
            switch_port(3),
-         create_trajectory() %>%
+         trajectory() %>%
            switch_port(4))
 
-switch_port_3 <- create_trajectory() %>%
+switch_port_3 <- trajectory() %>%
   set_msg_size() %>%
   switch_port(3)
 
-switch_port_4 <- create_trajectory() %>%
+switch_port_4 <- trajectory() %>%
   set_msg_size() %>%
   switch_port(4)
 

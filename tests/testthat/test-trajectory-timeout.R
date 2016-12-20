@@ -1,7 +1,7 @@
 context("timeout")
 
 test_that("a task function that returns a non-numeric value fails", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     timeout(function() {})
 
   env <- simmer(verbose = TRUE) %>%
@@ -11,7 +11,7 @@ test_that("a task function that returns a non-numeric value fails", {
 })
 
 test_that("a timeout is correctly monitored", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy") %>%
     timeout(-3) %>%
     timeout(3) %>%
@@ -28,5 +28,5 @@ test_that("a timeout is correctly monitored", {
 })
 
 test_that("incorrect types fail", {
-  expect_error(create_trajectory() %>% timeout("dummy"))
+  expect_error(trajectory() %>% timeout("dummy"))
 })

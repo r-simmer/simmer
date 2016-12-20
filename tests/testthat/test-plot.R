@@ -1,6 +1,6 @@
 context("plot")
 
-t0 <- create_trajectory("my trajectory") %>%
+t0 <- trajectory("my trajectory") %>%
   seize("nurse", 1) %>%
   timeout(function() rnorm(1, 15)) %>%
   release("nurse", 1) %>%
@@ -52,7 +52,7 @@ test_that("multiple replication plots", {
 
 test_that("attributes are plottable", {
   t0 <-
-    create_trajectory() %>%
+    trajectory() %>%
     set_attribute("my_attr1", function() runif(1)) %>%
     set_attribute("my_attr2", function() runif(1))
 

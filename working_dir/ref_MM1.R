@@ -1,8 +1,8 @@
 library(simmer)
 
-mm1 <- create_trajectory() %>%
+mm1 <- trajectory() %>%
   branch(function() 1, T,
-         create_trajectory() %>%
+         trajectory() %>%
            seize("server", 1) %>%
            timeout(function() rexp(1, 2)) %>%
            release("server", 1)
@@ -19,7 +19,7 @@ plot_resource_usage(env, "server")
 #################################################################
 
 system.time({
-  mm1 <- create_trajectory() %>%
+  mm1 <- trajectory() %>%
     seize("server", 1) %>%
     timeout(function() rexp(1, 66)) %>%
     release("server", 1)

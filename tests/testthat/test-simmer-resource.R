@@ -24,7 +24,7 @@ test_that("a negative capacity or queue_size is converted to positive", {
 })
 
 test_that("a non-existent resource fails", {
-  t0 <- create_trajectory("") %>%
+  t0 <- trajectory("") %>%
     seize("dummy", 1) %>%
     release("dummy", 1)
 
@@ -35,7 +35,7 @@ test_that("a non-existent resource fails", {
 })
 
 test_that("resource slots are correctly filled", {
-  t0 <- create_trajectory("") %>%
+  t0 <- trajectory("") %>%
     seize("dummy", 1) %>%
     set_attribute("dummy", 1)
 
@@ -57,7 +57,7 @@ test_that("resource slots are correctly filled", {
 })
 
 test_that("resources are correctly monitored 1", {
-  t0 <- create_trajectory("") %>%
+  t0 <- trajectory("") %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
     release("dummy", 1)
@@ -80,7 +80,7 @@ test_that("resources are correctly monitored 1", {
 })
 
 test_that("resources are correctly monitored 2", {
-  t0 <- create_trajectory("") %>%
+  t0 <- trajectory("") %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
     release("dummy", 1) %>%
@@ -104,11 +104,11 @@ test_that("resources are correctly monitored 2", {
 })
 
 test_that("a big departure triggers more than one small seize from the queue", {
-  t0 <- create_trajectory("") %>%
+  t0 <- trajectory("") %>%
     seize("dummy", 2) %>%
     timeout(10) %>%
     release("dummy", 2)
-  t1 <- create_trajectory("") %>%
+  t1 <- trajectory("") %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)

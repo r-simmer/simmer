@@ -1,7 +1,7 @@
 context("log")
 
 test_that("a message is correctly printed (1)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     log_("hello world!")
 
   env <- simmer(verbose = TRUE) %>%
@@ -11,7 +11,7 @@ test_that("a message is correctly printed (1)", {
 })
 
 test_that("a message is correctly printed (2)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     log_(function() "hello world!")
 
   env <- simmer(verbose = TRUE) %>%

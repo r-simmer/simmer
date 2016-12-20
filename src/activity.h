@@ -30,6 +30,10 @@ public:
     : name(name), verbose(verbose), provide_attrs(provide_attrs), n(1),
       priority(priority), next(NULL), prev(NULL) {}
 
+  Activity(const Activity& o)
+    : name(o.name), verbose(o.verbose), provide_attrs(o.provide_attrs),
+      n(o.n), priority(o.priority), next(NULL), prev(NULL) {}
+
   virtual ~Activity() {}
 
   /**
@@ -96,10 +100,10 @@ public:
       cont(cont), trj(trj), selected(NULL)
   {
     foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
-      Rcpp::Function get_head(itr["get_head"]);
-      Rcpp::Function get_tail(itr["get_tail"]);
-      heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_head()));
-      tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_tail()));
+      Rcpp::Function head(itr["head"]);
+      Rcpp::Function tail(itr["tail"]);
+      heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(head()));
+      tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(tail()));
       Rcpp::Function get_n_activities(itr["get_n_activities"]);
       n += Rcpp::as<int>(get_n_activities());
     }
@@ -107,19 +111,16 @@ public:
       itr->set_prev(this);
   }
 
-  Fork(const Fork& o)
-    : Activity(o.name, o.verbose, o.provide_attrs, o.priority),
-      cont(o.cont), trj(o.trj), selected(NULL)
-  {
+  Fork(const Fork& o) : Activity(o), cont(o.cont), trj(o.trj), selected(NULL) {
     heads.clear();
     tails.clear();
     foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
       Rcpp::Function clone(itr["clone"]);
       itr = clone();
-      Rcpp::Function get_head(itr["get_head"]);
-      Rcpp::Function get_tail(itr["get_tail"]);
-      heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_head()));
-      tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(get_tail()));
+      Rcpp::Function head(itr["head"]);
+      Rcpp::Function tail(itr["tail"]);
+      heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(head()));
+      tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(tail()));
     }
     foreach_ (VEC<Activity*>::value_type& itr, heads)
       itr->set_prev(this);
@@ -444,7 +445,7 @@ public:
     Activity::print(indent, brief);
     if (!brief) Rcpp::Rcout <<
       "key: " << key << ", value: " << value <<
-      "global: " << global << " }" << std::endl;
+      ", global: " << global << " }" << std::endl;
     else Rcpp::Rcout << key << ", " << value << ", " << global << std::endl;
   }
 
@@ -683,8 +684,8 @@ public:
       times(times), check(check), cached(NULL), selected(NULL) {}
 
   Rollback(const Rollback& o)
-    : Activity(o.name, o.verbose, o.provide_attrs), amount(o.amount),
-      times(o.times), check(o.check), cached(NULL), selected(NULL)
+    : Activity(o), amount(o.amount), times(o.times), check(o.check),
+      cached(NULL), selected(NULL)
   {
     pending.clear();
   }
@@ -824,7 +825,7 @@ public:
     : Activity("Synchronize", verbose), wait(wait), terminate(terminate) {}
 
   Synchronize(const Synchronize& o)
-    : Activity(o.name, o.verbose), wait(o.wait), terminate(o.terminate)
+    : Activity(o), wait(o.wait), terminate(o.terminate)
   {
     pending.clear();
   }

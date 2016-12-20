@@ -1,6 +1,6 @@
 library(simmer)
 
-t <- create_trajectory(verbose=T) %>%
+t <- trajectory(verbose=T) %>%
   batch(3, timeout=1, permanent=F, rule=NULL) %>%
   seize("dummy", 1) %>%
   timeout(1) %>%

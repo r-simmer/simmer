@@ -3,14 +3,19 @@ templates:
     bootswatch: yeti
 
 reference:
-  - title: "Build trajectories"
-    desc: "Methods for building trajectory objects"
+  - title: "Build and manage trajectories"
+    desc: "Methods for building and manipulating trajectory objects"
     contents:
-      - create_trajectory
+      - trajectory
+      - Extract
+      - join
+      - length
+  - title: "Add activities"
+    desc: "Verbs for appending activities to trajectory objects"
+    contents:
       - batch
       - branch
       - clone
-      - join
       - leave
       - renege_in
       - rollback
@@ -24,13 +29,6 @@ reference:
       - set_trajectory
       - send
       - log_
-  - title: "Manage trajectories"
-    desc: "Methods for getting information about trajectory objects"
-    contents:
-      - get_head
-      - get_n_activities
-      - get_next_activity
-      - print_activity
   - title: "Build and run simulation environments"
     desc: "Methods for building and running simulation objects"
     contents:

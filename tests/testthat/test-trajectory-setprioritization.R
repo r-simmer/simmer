@@ -1,10 +1,10 @@
 context("set_prioritization")
 
 test_that("the wrong number of parameters fails", {
-  expect_output(create_trajectory() %>% set_prioritization(c(0, 0, 0)) %>% print,
+  expect_output(trajectory() %>% set_prioritization(c(0, 0, 0)) %>% print,
                 ".*SetPrior.*values:.*0, 0, 0.*")
 
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     set_prioritization(function() c(0, 0))
 
   env <- simmer(verbose = TRUE) %>%
@@ -14,11 +14,11 @@ test_that("the wrong number of parameters fails", {
 })
 
 test_that("priority queues are adhered to (2)", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     seize("server", 1) %>%
     timeout(2) %>%
     release("server", 1)
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     set_prioritization(c(1, 0, FALSE)) %>%
     seize("server", 1) %>%
     timeout(2) %>%
@@ -37,11 +37,11 @@ test_that("priority queues are adhered to (2)", {
 })
 
 test_that("priority queues are adhered to (3)", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     seize("server", 1) %>%
     timeout(2) %>%
     release("server", 1)
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     set_prioritization(function() c(1, 0, FALSE)) %>%
     seize("server", 1) %>%
     timeout(2) %>%

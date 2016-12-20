@@ -16,8 +16,8 @@ bool Process::deactivate() {
 }
 
 void Generator::set_first_activity() {
-  Rcpp::Function get_head(trj["get_head"]);
-  first_activity = Rcpp::as<Rcpp::XPtr<Activity> >(get_head());
+  Rcpp::Function head(trj["head"]);
+  first_activity = Rcpp::as<Rcpp::XPtr<Activity> >(head());
 }
 
 void Generator::run() {

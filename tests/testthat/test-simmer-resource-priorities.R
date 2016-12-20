@@ -1,7 +1,7 @@
 context("resource-priorities")
 
 test_that("priority queues are adhered to", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("server", 1) %>%
     timeout(2) %>%
     release("server", 1)
@@ -19,7 +19,7 @@ test_that("priority queues are adhered to", {
 })
 
 test_that("priority queues are adhered to and same level priorities are processed FIFO", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("server", 1) %>%
     timeout(2) %>%
     release("server", 1)
@@ -42,7 +42,7 @@ test_that("priority queues are adhered to and same level priorities are processe
 })
 
 test_that("a lower priority arrival gets rejected before accessing the server", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)

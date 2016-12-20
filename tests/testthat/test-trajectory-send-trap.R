@@ -1,7 +1,7 @@
 context("send/trap/untrap/wait")
 
 test_that("an arrival waits", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     wait()
 
   env <- simmer(verbose = TRUE) %>%
@@ -13,7 +13,7 @@ test_that("an arrival waits", {
 })
 
 test_that("a signal is immediately triggered", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send("signal")
 
   env <- simmer(verbose = TRUE) %>%
@@ -23,7 +23,7 @@ test_that("a signal is immediately triggered", {
 })
 
 test_that("a signal is triggered with some delay", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send("signal", 3)
 
   env <- simmer(verbose = TRUE) %>%
@@ -33,7 +33,7 @@ test_that("a signal is triggered with some delay", {
 })
 
 test_that("a signal is untrapped", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     untrap("asdf") %>%
     send("signal", 3) %>%
     trap("signal") %>%
@@ -53,7 +53,7 @@ test_that("a signal is untrapped", {
 })
 
 test_that("a signal is received while blocked", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send("signal", 3) %>%
     trap("signal") %>%
     wait() %>%
@@ -70,7 +70,7 @@ test_that("a signal is received while blocked", {
 })
 
 test_that("a signal is received while in a timeout", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send(function() "signal", 3) %>%
     trap(function() "signal") %>%
     timeout(10) %>%
@@ -87,7 +87,7 @@ test_that("a signal is received while in a timeout", {
 })
 
 test_that("a signal is received while blocked inside a resource", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send("signal", function() 3) %>%
     trap("signal") %>%
     seize("res", 1) %>%
@@ -111,7 +111,7 @@ test_that("a signal is received while blocked inside a resource", {
 })
 
 test_that("a signal is received while in a timeout inside a resource", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send(function() "signal", function() 3) %>%
     trap("signal") %>%
     seize("res", 1) %>%
@@ -135,7 +135,7 @@ test_that("a signal is received while in a timeout inside a resource", {
 })
 
 test_that("a signal is ignored inside a batch (1)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send("signal", 3) %>%
     trap("signal") %>%
     batch(1) %>%
@@ -156,7 +156,7 @@ test_that("a signal is ignored inside a batch (1)", {
 })
 
 test_that("a signal is ignored inside a batch (2)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send("signal", 3) %>%
     trap("signal") %>%
     batch(1) %>%
@@ -181,9 +181,9 @@ test_that("a signal is ignored inside a batch (2)", {
 })
 
 test_that("launch handler while blocked", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send("signal", 3) %>%
-    trap("signal", create_trajectory() %>% timeout(3)) %>%
+    trap("signal", trajectory() %>% timeout(3)) %>%
     wait() %>%
     timeout(1)
 
@@ -198,10 +198,10 @@ test_that("launch handler while blocked", {
 })
 
 test_that("launch handler while blocked (not interruptible)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send("signal", 3) %>%
     trap("signal",
-         create_trajectory() %>% timeout(3),
+         trajectory() %>% timeout(3),
          interruptible = FALSE) %>%
     wait() %>%
     timeout(1)
@@ -217,9 +217,9 @@ test_that("launch handler while blocked (not interruptible)", {
 })
 
 test_that("launch handler while in a timeout", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send(function() "signal", 3) %>%
-    trap(function() "signal", create_trajectory() %>% timeout(3)) %>%
+    trap(function() "signal", trajectory() %>% timeout(3)) %>%
     timeout(10) %>%
     timeout(1)
 
@@ -234,10 +234,10 @@ test_that("launch handler while in a timeout", {
 })
 
 test_that("launch handler while in a timeout (not interruptible)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send(function() "signal", 3) %>%
     trap(function() "signal",
-         create_trajectory() %>% timeout(3),
+         trajectory() %>% timeout(3),
          interruptible = FALSE) %>%
     timeout(10) %>%
     timeout(1)
@@ -253,9 +253,9 @@ test_that("launch handler while in a timeout (not interruptible)", {
 })
 
 test_that("launch handler while blocked inside a resource", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send("signal", function() 3) %>%
-    trap("signal", create_trajectory() %>% timeout(1)) %>%
+    trap("signal", trajectory() %>% timeout(1)) %>%
     seize("res", 1) %>%
     wait() %>%
     timeout(1) %>%
@@ -277,9 +277,9 @@ test_that("launch handler while blocked inside a resource", {
 })
 
 test_that("launch handler while in a timeout inside a resource", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     send(function() "signal", function() 3) %>%
-    trap("signal", create_trajectory() %>% timeout(1)) %>%
+    trap("signal", trajectory() %>% timeout(1)) %>%
     seize("res", 1) %>%
     timeout(10) %>%
     timeout(1) %>%

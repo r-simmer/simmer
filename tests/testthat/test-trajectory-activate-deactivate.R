@@ -1,7 +1,7 @@
 context("activate/deactivate")
 
 test_that("several deactivates don't crash", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     deactivate("dummy")
 
   env <- simmer(verbose = TRUE) %>%
@@ -12,7 +12,7 @@ test_that("several deactivates don't crash", {
 })
 
 test_that("generators are deactivated and activated again as expected", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     deactivate("dummy") %>%
     timeout(1) %>%
     activate("dummy")

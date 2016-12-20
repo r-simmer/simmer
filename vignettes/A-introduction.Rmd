@@ -32,7 +32,7 @@ env
 Set-up a simple trajectory. Let's say we want to simulate an ambulatory consultation where a patient is first seen by a nurse for an intake, next by a doctor for the consultation and finally by administrative staff to schedule a follow-up appointment.
 
 ```{r}
-patient <- create_trajectory("patients' path") %>%
+patient <- trajectory("patients' path") %>%
   ## add an intake activity 
   seize("nurse", 1) %>%
   timeout(function() rnorm(1, 15)) %>%

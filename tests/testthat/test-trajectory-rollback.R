@@ -1,24 +1,24 @@
 context("rollback")
 
 test_that("a rollback points to the correct activity", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     seize("nurse", 1) %>%
     timeout(function() rnorm(1, 15)) %>%
-    branch(function() 1, T, create_trajectory() %>% timeout(function() 1)) %>%
+    branch(function() 1, T, trajectory() %>% timeout(function() 1)) %>%
     rollback(3)
-  expect_output(t0 %>% get_tail() %>% print_activity(), "Seize")
+  expect_output(activity_print_(t0$tail(), 0), "Seize")
 
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     seize("nurse", 1) %>%
     timeout(function() rnorm(1, 15)) %>%
-    branch(function() 1, T, create_trajectory() %>% timeout(function() 1)) %>%
+    branch(function() 1, T, trajectory() %>% timeout(function() 1)) %>%
     rollback(30)
-  expect_output(t0 %>% get_tail() %>% print_activity(), "Seize")
+  expect_output(activity_print_(t0$tail(), 0), "Seize")
 
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     seize("dummy", 1) %>%
     branch(function() 1, T,
-           create_trajectory() %>%
+           trajectory() %>%
              rollback(2))
 
   env <- simmer(verbose = TRUE) %>%
@@ -40,8 +40,8 @@ test_that("a rollback loops the correct number of times", {
     }
   }
 
-  t0 <- create_trajectory() %>% rollback(0, 3)
-  t1 <- create_trajectory() %>% rollback(0, check = three_times())
+  t0 <- trajectory() %>% rollback(0, 3)
+  t1 <- trajectory() %>% rollback(0, check = three_times())
 
   env0 <- evaluate_promise(simmer(verbose = TRUE) %>% add_generator("dummy", t0, at(0)))$result
   env1 <- evaluate_promise(simmer(verbose = TRUE) %>% add_generator("dummy", t1, at(0)))$result
@@ -56,19 +56,19 @@ test_that("a rollback loops the correct number of times", {
   expect_output(env0 %>% run(), output)
   expect_output(env1 %>% run(), output)
 
-  t0 <- create_trajectory() %>% rollback(0, Inf)
-  expect_output(t0 %>% get_tail() %>% print_activity(), "Inf")
+  t0 <- trajectory() %>% rollback(0, Inf)
+  expect_output(print(tail(t0)), "Inf")
 })
 
 test_that("a negative amount is converted to positive", {
-  t0 <- create_trajectory() %>% seize("dummy", 1)
+  t0 <- trajectory() %>% seize("dummy", 1)
 
   expect_silent(t0 %>% rollback(-1, -1))
-  expect_output(t0 %>% get_tail() %>% print_activity(), "amount: 1 (Seize), times: 1", fixed = TRUE)
+  expect_output(activity_print_(t0$tail(), 0), "amount: 1 (Seize), times: 1", fixed = TRUE)
 })
 
 test_that("a check function that returns a non-boolean value fails", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     rollback(1, check = function() "dummy")
 
   env <- simmer(verbose = TRUE) %>%
@@ -78,7 +78,7 @@ test_that("a check function that returns a non-boolean value fails", {
 })
 
 test_that("incorrect types fail", {
-  expect_error(create_trajectory() %>% rollback("dummy", 0))
-  expect_error(create_trajectory() %>% rollback(0, "dummy"))
-  expect_error(create_trajectory() %>% rollback(0, check = 0))
+  expect_error(trajectory() %>% rollback("dummy", 0))
+  expect_error(trajectory() %>% rollback(0, "dummy"))
+  expect_error(trajectory() %>% rollback(0, check = 0))
 })

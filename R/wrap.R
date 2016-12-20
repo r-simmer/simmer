@@ -1,11 +1,10 @@
 #' @importFrom R6 R6Class
-simmer.wrap <- R6Class("simmer.wrap",
+Wrap <- R6Class("wrap",
   public = list(
     name = NA,
 
     initialize = function(env) {
-      if (!inherits(env, "simmer")) stop("not a simmer object")
-
+      stopifnot(inherits(env, "simmer"))
       self$name <- env$name
       private$now_val <- env$now()
       private$peek_val <- env$peek(Inf, TRUE)
@@ -127,38 +126,3 @@ simmer.wrap <- R6Class("simmer.wrap",
     queue_count = list()
   )
 )
-
-#' Wrap a simulation environment
-#'
-#' This function extracts the monitored data from a simulation environment
-#' making it accessible through the same methods. Only useful if you want
-#' to parallelize heavy replicas (see the example below), because the C++
-#' simulation backend is destroyed when the threads exit.
-#'
-#' @inheritParams reset
-#'
-#' @return Returns a simulation wrapper.
-#' @seealso Methods for dealing with a simulation wrapper:
-#' \code{\link{get_mon_arrivals}}, \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}},
-#' \code{\link{get_n_generated}}, \code{\link{get_capacity}}, \code{\link{get_queue_size}},
-#' \code{\link{get_server_count}}, \code{\link{get_queue_count}}.
-#' @export
-#'
-#' @examples
-#' library(parallel)
-#'
-#' mm1 <- create_trajectory() %>%
-#'   seize("server", 1) %>%
-#'   timeout(function() rexp(1, 2)) %>%
-#'   release("server", 1)
-#'
-#' envs <- mclapply(1:4, function(i) {
-#'   simmer("M/M/1 example") %>%
-#'     add_resource("server", 1) %>%
-#'     add_generator("customer", mm1, function() rexp(1, 1)) %>%
-#'     run(100) %>%
-#'     wrap()
-#' })
-#'
-#' plot_resource_usage(envs, "server")
-wrap <- function(.env) simmer.wrap$new(.env)

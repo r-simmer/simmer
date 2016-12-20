@@ -1,6 +1,7 @@
 #' @importFrom R6 R6Class
 #' @importFrom Rcpp evalCpp
-simmer.trajectory <- R6Class("simmer.trajectory",
+#' @importFrom utils head tail
+Trajectory <- R6Class("trajectory",
   public = list(
     name = NA,
 
@@ -12,41 +13,86 @@ simmer.trajectory <- R6Class("simmer.trajectory",
 
     print = function(indent=0) {
       margin <- paste(rep(" ", indent), collapse = "")
-      cat(paste0(margin, "simmer trajectory: ", self$name, ", ",
+      cat(paste0(margin, "trajectory: ", self$name, ", ",
                  private$n_activities, " activities\n"))
-      ptr <- self$get_head()
-      while (!identical(ptr, self$get_tail())) {
-        activity_print_(ptr, indent)
-        ptr <- activity_get_next_(ptr)
-      }
-      if (!is.null(ptr)) activity_print_(ptr, indent)
+      lapply(private$ptrs, function(i) activity_print_(i, indent))
+      invisible()
     },
 
-    get_head = function() { private$ptrs[[1]] },
+    subset = function(i) {
+      if (missing(i)) {
+        elems <- seq_len(length(self))
+      } else {
+        stopifnot(length(i) <= length(self))
+        if (is.null(i)) i <- 0
+        if (is.logical(i)) {
+          elems <- which(i)
+        } else if (is.character(i)) {
+          elems <- which(private$names %in% i)
+        } else if (is.numeric(i)) {
+          i <- i[!is.na(i)]
+          if (any(i < 0) && any(i > 0))
+            stop("only 0's may be mixed with negative subscripts")
+          i <- as.integer(i)
+          i <- i[i != 0]
+          if (any(i < 0))
+            elems <- seq_len(length(self))[i]
+          else elems <- i
+        } else stop("invalid subscript type '", typeof(i), "'")
+      }
 
-    get_tail = function() { private$ptrs[[length(private$ptrs)]] },
+      new <- private$clone2(deep = TRUE)
+      ptrs <- NULL
+      names <- NULL
+      n_activities <- 0
+      if (length(elems)) {
+        ptrs <- sapply(elems, function(i) {
+          new_ptr <- activity_clone_(private$ptrs[[i]])
+          n_activities <<- n_activities + activity_get_n_(new_ptr)
+          new_ptr
+        })
+        mapply(function(i, j) activity_chain_(i, j),
+               head(ptrs, -1), tail(ptrs, -1))
+        names <- private$names[elems]
+      }
+      new$.__enclos_env__$private$ptrs <- ptrs
+      new$.__enclos_env__$private$names <- names
+      new$.__enclos_env__$private$n_activities <- n_activities
+      new
+    },
+
+    join = function(traj) {
+      stopifnot(inherits(traj, "trajectory"))
+      new <- self$clone()
+      traj <- traj$clone()
+      if (!is.null(traj$head()) && !is.null(new$tail()))
+        activity_chain_(new$tail(), traj$head())
+      new$.__enclos_env__$private$ptrs <-
+        c(new$.__enclos_env__$private$ptrs, traj$.__enclos_env__$private$ptrs)
+      new$.__enclos_env__$private$names <-
+        c(new$.__enclos_env__$private$names, traj$.__enclos_env__$private$names)
+      new$.__enclos_env__$private$n_activities <-
+        new$.__enclos_env__$private$n_activities + traj$get_n_activities()
+      new
+    },
+
+    head = function() { private$ptrs[[1]] },
+
+    tail = function() { private$ptrs[[length(self)]] },
+
+    length = function() { length(private$ptrs) },
 
     get_n_activities = function() { private$n_activities },
 
     seize = function(resource, amount=1, id=0, continue=NULL, post.seize=NULL, reject=NULL) {
+      stopifnot(length(continue) == length(c(post.seize, reject)))
+      stopifnot(all(sapply(c(post.seize, reject), inherits, what = "trajectory")))
       resource <- evaluate_value(resource)
       amount <- evaluate_value(amount)
       id <- evaluate_value(id)
-      trj <- list()
-      mask <- 0
-      if (!is.null(post.seize)) {
-        if (!inherits(post.seize, "simmer.trajectory")) stop("not a trajectory")
-        trj <- c(trj, post.seize)
-        mask <- mask + 1
-      }
-      if (!is.null(reject)) {
-        if (!inherits(reject, "simmer.trajectory")) stop("not a trajectory")
-        trj <- c(trj, reject)
-        mask <- mask + 2
-      }
-      if (length(continue) != length(trj))
-        stop("the number of elements does not match")
       if (!length(continue)) continue <- TRUE
+      trj <- as.list(c(post.seize[], reject[]))
+      mask <- sum(c(1, 2) * !sapply(list(post.seize, reject), is.null))
 
       if (is.na(resource)) {
         if (is.function(amount))
@@ -147,13 +193,12 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     },
 
     set_trajectory = function(generator, trajectory) {
-      if (!inherits(trajectory, "simmer.trajectory"))
-        stop("not a trajectory")
+      stopifnot(inherits(trajectory, "trajectory"))
       generator <- evaluate_value(generator)
       if (is.function(generator))
         private$add_activity(SetTraj__new_func(private$verbose, generator,
-                                               needs_attrs(generator), trajectory))
-      else private$add_activity(SetTraj__new(private$verbose, generator, trajectory))
+                                               needs_attrs(generator), trajectory[]))
+      else private$add_activity(SetTraj__new(private$verbose, generator, trajectory[]))
     },
 
     set_distribution = function(generator, distribution) {
@@ -172,12 +217,10 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     },
 
     branch = function(option, continue, ...) {
-      trj <- list(...)
-      if (length(continue) != length(trj))
-        stop("the number of elements does not match")
-      for (i in trj) if (!inherits(i, "simmer.trajectory"))
-        stop("not a trajectory")
-      private$add_activity(Branch__new(private$verbose, option, needs_attrs(option), continue, trj))
+      stopifnot(length(continue) == length(c(...)))
+      stopifnot(all(sapply(c(...), inherits, what = "trajectory")))
+      traj <- sapply(c(...), `[`)
+      private$add_activity(Branch__new(private$verbose, option, needs_attrs(option), continue, traj))
     },
 
     rollback = function(amount, times=1, check) {
@@ -197,24 +240,18 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     },
 
     renege_in = function(t, out=NULL) {
+      stopifnot(is.null(out) || inherits(out, "trajectory"))
       t <- evaluate_value(t)
-      traj <- list()
-      if (!is.null(out)) {
-        if (!inherits(out, "simmer.trajectory")) stop("not a trajectory")
-        traj <- c(traj, out)
-      }
+      traj <- as.list(c(out[]))
       if (is.function(t))
         private$add_activity(RenegeIn__new_func(private$verbose, t, needs_attrs(t), traj))
       else private$add_activity(RenegeIn__new(private$verbose, t, traj))
     },
 
     renege_if = function(signal, out=NULL) {
+      stopifnot(is.null(out) || inherits(out, "trajectory"))
       signal <- evaluate_value(signal)
-      traj <- list()
-      if (!is.null(out)) {
-        if (!inherits(out, "simmer.trajectory")) stop("not a trajectory")
-        traj <- c(traj, out)
-      }
+      traj <- as.list(c(out[]))
       if (is.function(signal))
         private$add_activity(RenegeIf__new_func(private$verbose, signal, needs_attrs(signal), traj))
       else private$add_activity(RenegeIf__new(private$verbose, signal, traj))
@@ -223,10 +260,9 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     renege_abort = function() { private$add_activity(RenegeAbort__new(private$verbose)) },
 
     replicate = function(n, ...) {
+      stopifnot(all(sapply(c(...), inherits, what = "trajectory")))
       n <- evaluate_value(n)
-      trj <- list(...)
-      for (i in trj) if (!inherits(i, "simmer.trajectory"))
-        stop("not a trajectory")
+      trj <- sapply(c(...), `[`)
       if (is.function(n))
         private$add_activity(Clone__new_func(private$verbose, n, needs_attrs(n), trj))
       else private$add_activity(Clone__new(private$verbose, n, trj))
@@ -265,13 +301,10 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     },
 
     trap = function(signals, handler=NULL, interruptible=TRUE) {
+      stopifnot(is.null(handler) || inherits(handler, "trajectory"))
       signals <- evaluate_value(signals)
       interruptible <- evaluate_value(interruptible)
-      traj <- list()
-      if (!is.null(handler)) {
-        if (!inherits(handler, "simmer.trajectory")) stop("not a trajectory")
-        traj <- c(traj, handler)
-      }
+      traj <- as.list(c(handler[]))
       if (is.function(signals))
         private$add_activity(Trap__new_func(private$verbose, signals, needs_attrs(signals),
                                             traj, interruptible))
@@ -292,20 +325,6 @@ simmer.trajectory <- R6Class("simmer.trajectory",
       if (is.function(message))
         private$add_activity(Log__new_func(private$verbose, message, needs_attrs(message)))
       else private$add_activity(Log__new(private$verbose, message))
-    },
-
-    join = function(trajectory) {
-      if (!inherits(trajectory, "simmer.trajectory"))
-        stop("not a trajectory")
-      new <- self$clone(deep = TRUE)
-      trajectory <- trajectory$clone(deep = TRUE)
-      if (!is.null(trajectory$get_head()) && !is.null(new$get_tail()))
-          activity_chain_(new$get_tail(), trajectory$get_head())
-      new$.__enclos_env__$private$ptrs <-
-        c(new$.__enclos_env__$private$ptrs, trajectory$.__enclos_env__$private$ptrs)
-      new$.__enclos_env__$private$n_activities <-
-        new$.__enclos_env__$private$n_activities + trajectory$get_n_activities()
-      new
     }
   ),
 
@@ -313,33 +332,23 @@ simmer.trajectory <- R6Class("simmer.trajectory",
     verbose = FALSE,
     n_activities = 0,
     ptrs = NULL,
+    names = NULL,
 
     add_activity = function(activity) {
+      caller <- match.call(sys.function(sys.parent(2)), sys.call(sys.parent(2)))
+      caller <- as.character(caller)[[1]]
+      caller <- strsplit(caller, ".", fixed = TRUE)[[1]][[1]]
       if (!is.null(private$ptrs))
-        activity_chain_(self$get_tail(), activity)
+        activity_chain_(self$tail(), activity)
       private$ptrs <- c(private$ptrs, activity)
+      private$names <- c(private$names, caller)
       private$n_activities <- private$n_activities + activity_get_n_(activity)
       self
     },
 
     clone2 = function(){},
-    copy = function(deep = FALSE) {
-      new <- private$clone2(deep)
-      new$.__enclos_env__$private$ptrs <- NULL
-      if (!is.null(self$get_head())) {
-        ptr <- self$get_head()
-        new_ptr <- activity_clone_(ptr)
-        new$.__enclos_env__$private$ptrs <- c(new$.__enclos_env__$private$ptrs, new_ptr)
-        while (!identical(ptr, self$get_tail())) {
-          ptr <- activity_get_next_(ptr)
-          new_ptr <- activity_clone_(ptr)
-          activity_chain_(new$get_tail(), new_ptr)
-          new$.__enclos_env__$private$ptrs <- c(new$.__enclos_env__$private$ptrs, new_ptr)
-        }
-      }
-      new
-    }
+    copy = function(deep=TRUE) { self$subset() }
   )
 )
-simmer.trajectory$private_methods$clone2 <- simmer.trajectory$public_methods$clone
-simmer.trajectory$public_methods$clone <- simmer.trajectory$private_methods$copy
+Trajectory$private_methods$clone2 <- Trajectory$public_methods$clone
+Trajectory$public_methods$clone <- Trajectory$private_methods$copy

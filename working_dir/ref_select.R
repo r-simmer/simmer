@@ -1,6 +1,6 @@
 library(simmer)
 
-t <- create_trajectory(verbose=T) %>%
+t <- trajectory(verbose=T) %>%
   select(c("r1", "r2", "r3"), policy="round-robin") %>%
   seize_selected(1) %>%
   #timeout(10) %>%

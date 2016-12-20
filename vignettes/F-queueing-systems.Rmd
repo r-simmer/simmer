@@ -47,7 +47,7 @@ lambda <- 2
 mu <- 4
 rho <- lambda/mu # = 2/4
 
-mm1.trajectory <- create_trajectory() %>%
+mm1.trajectory <- trajectory() %>%
   seize("resource", amount=1) %>%
   timeout(function() rexp(1, mu)) %>%
   release("resource", amount=1)
@@ -143,7 +143,7 @@ This is the simulation of an M/M/2/3 system (2 server, 1 position in queue). Not
 lambda <- 2
 mu <- 4
 
-mm23.trajectory <- create_trajectory() %>%
+mm23.trajectory <- trajectory() %>%
   seize("server", amount=1) %>%
   timeout(function() rexp(1, mu)) %>%
   release("server", amount=1)

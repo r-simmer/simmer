@@ -3,7 +3,7 @@ context("simulation 1")
 test_that("a simple deterministic simulation with rejections behaves as expected", {
   n <- 100
 
-  t0 <- create_trajectory("") %>%
+  t0 <- trajectory("") %>%
     seize("server", 1) %>%
     timeout(function() 1.5) %>%
     release("server", 1)

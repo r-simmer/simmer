@@ -1,7 +1,7 @@
 context("seize/release")
 
 test_that("resources are seized/released as expected (1)", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     seize("dummy", -1) %>%
     timeout(1) %>%
     seize("dummy", function() 2) %>%
@@ -27,7 +27,7 @@ test_that("resources are seized/released as expected (1)", {
 })
 
 test_that("resources are seized/released as expected (2)", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     select("dummy0", id = 0) %>%
     select(function() "dummy1", id = 1) %>%
     seize_selected(-1, id = 0) %>%
@@ -57,7 +57,7 @@ test_that("resources are seized/released as expected (2)", {
 })
 
 test_that("a release without a previous seize fails", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     release("dummy", 1)
 
   env <- simmer(verbose = TRUE) %>%
@@ -68,7 +68,7 @@ test_that("a release without a previous seize fails", {
 })
 
 test_that("a release greater than seize fails", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1) %>%
     release("dummy", 2)
 
@@ -80,16 +80,16 @@ test_that("a release greater than seize fails", {
 })
 
 test_that("incorrect types fail", {
-  expect_error(create_trajectory() %>% seize(0, 0))
-  expect_error(create_trajectory() %>% release(0, 0))
-  expect_error(create_trajectory() %>% seize("dummy", "dummy"))
-  expect_error(create_trajectory() %>% release("dummy", "dummy"))
+  expect_error(trajectory() %>% seize(0, 0))
+  expect_error(trajectory() %>% release(0, 0))
+  expect_error(trajectory() %>% seize("dummy", "dummy"))
+  expect_error(trajectory() %>% release("dummy", "dummy"))
 })
 
 test_that("arrivals perform a post.seize and then stop", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1, continue = FALSE,
-          post.seize = create_trajectory() %>%
+          post.seize = trajectory() %>%
             timeout(2) %>%
             release("dummy", 1)) %>%
     timeout(1)
@@ -105,9 +105,9 @@ test_that("arrivals perform a post.seize and then stop", {
 })
 
 test_that("arrivals can retry a seize", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1, continue = FALSE,
-          reject = create_trajectory() %>%
+          reject = trajectory() %>%
             timeout(1) %>%
             rollback(2, Inf)) %>%
     timeout(2) %>%
@@ -125,12 +125,12 @@ test_that("arrivals can retry a seize", {
 })
 
 test_that("arrivals go through post.seize or reject and then continue", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy", 1, continue = c(TRUE, TRUE),
-          post.seize = create_trajectory() %>%
+          post.seize = trajectory() %>%
             timeout(2) %>%
             release("dummy"),
-          reject = create_trajectory() %>%
+          reject = trajectory() %>%
             timeout(3)) %>%
     timeout(3)
 
@@ -146,7 +146,7 @@ test_that("arrivals go through post.seize or reject and then continue", {
 })
 
 test_that("leaving without releasing throws a warning (arrivals)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     seize("dummy0", 2) %>%
     seize("dummy1", 1) %>%
     release("dummy0", 1)
@@ -160,7 +160,7 @@ test_that("leaving without releasing throws a warning (arrivals)", {
 })
 
 test_that("leaving without releasing throws a warning (batches)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     batch(1) %>%
     seize("dummy0", 2) %>%
     seize("dummy1", 1) %>%

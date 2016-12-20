@@ -1,11 +1,11 @@
 context("renege")
 
-s <- create_trajectory() %>%
+s <- trajectory() %>%
   send("sig") %>%
   wait()
 
 test_that("an arrival in a timeout reneges (1)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     renege_in(1) %>%
     timeout(4)
 
@@ -20,7 +20,7 @@ test_that("an arrival in a timeout reneges (1)", {
 })
 
 test_that("an arrival in a timeout reneges (2)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     renege_if("sig") %>%
     timeout(4)
 
@@ -36,8 +36,8 @@ test_that("an arrival in a timeout reneges (2)", {
 })
 
 test_that("a reneging arrival can follow a secondary sub-trajectory (1)", {
-  t <- create_trajectory() %>%
-    renege_in(1, out = create_trajectory() %>% timeout(1)) %>%
+  t <- trajectory() %>%
+    renege_in(1, out = trajectory() %>% timeout(1)) %>%
     timeout(4)
 
   env <- simmer(verbose = TRUE) %>%
@@ -51,8 +51,8 @@ test_that("a reneging arrival can follow a secondary sub-trajectory (1)", {
 })
 
 test_that("a reneging arrival can follow a secondary sub-trajectory (2)", {
-  t <- create_trajectory() %>%
-    renege_if("sig", out = create_trajectory() %>% timeout(1)) %>%
+  t <- trajectory() %>%
+    renege_if("sig", out = trajectory() %>% timeout(1)) %>%
     timeout(4)
 
   env <- simmer(verbose = TRUE) %>%
@@ -67,7 +67,7 @@ test_that("a reneging arrival can follow a secondary sub-trajectory (2)", {
 })
 
 test_that("a second renege_in resets the timeout", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     renege_in(2) %>%
     timeout(1) %>%
     renege_in(4) %>%
@@ -84,7 +84,7 @@ test_that("a second renege_in resets the timeout", {
 })
 
 test_that("a second renege_if resets the timeout", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     renege_in(2) %>%
     timeout(1) %>%
     renege_if("sig") %>%
@@ -102,7 +102,7 @@ test_that("a second renege_if resets the timeout", {
 })
 
 test_that("a second renege_in resets the signal", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     renege_if("sig") %>%
     timeout(1) %>%
     renege_in(4) %>%
@@ -120,7 +120,7 @@ test_that("a second renege_in resets the signal", {
 })
 
 test_that("a second renege_if resets the signal", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     renege_if("sig") %>%
     timeout(1) %>%
     renege_if("asdf") %>%
@@ -138,7 +138,7 @@ test_that("a second renege_if resets the signal", {
 })
 
 test_that("reneging can be aborted (1)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     renege_in(2) %>%
     timeout(1) %>%
     renege_abort() %>%
@@ -155,7 +155,7 @@ test_that("reneging can be aborted (1)", {
 })
 
 test_that("reneging can be aborted (2)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     renege_if("sig") %>%
     timeout(1) %>%
     renege_abort() %>%
@@ -173,7 +173,7 @@ test_that("reneging can be aborted (2)", {
 })
 
 test_that("an arrival being served reneges (1)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     renege_in(1) %>%
     seize("dummy", 1) %>%
     timeout(2) %>%
@@ -198,7 +198,7 @@ test_that("an arrival being served reneges (1)", {
 })
 
 test_that("an arrival being served reneges (2)", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     renege_in(1) %>%
     seize("dummy", 1) %>%
     timeout(2) %>%
@@ -223,7 +223,7 @@ test_that("an arrival being served reneges (2)", {
 })
 
 test_that("an enqueued arrival reneges", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     renege_in(1) %>%
     seize("dummy", 1) %>%
     renege_abort() %>%
@@ -252,12 +252,12 @@ test_that("an enqueued arrival reneges", {
 })
 
 test_that("a preempted arrival reneges (1)", {
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(4) %>%
     release("dummy", 1)
 
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     renege_in(2) %>%
     join(t1)
 
@@ -284,12 +284,12 @@ test_that("a preempted arrival reneges (1)", {
 })
 
 test_that("a preempted arrival reneges (2)", {
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     seize("dummy", 1) %>%
     timeout(4) %>%
     release("dummy", 1)
 
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     renege_in(2) %>%
     join(t1)
 
@@ -316,13 +316,13 @@ test_that("a preempted arrival reneges (2)", {
 })
 
 test_that("an arrival inside a batch reneges, but the batch continues", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     batch(2, name = "shared") %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
 
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     renege_in(5) %>%
     join(t0)
 
@@ -348,14 +348,14 @@ test_that("an arrival inside a batch reneges, but the batch continues", {
 })
 
 test_that("the only arrival inside a batch reneges, and the batch stops", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     batch(1) %>%
     batch(1) %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
 
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     renege_in(5) %>%
     join(t0)
 
@@ -379,13 +379,13 @@ test_that("the only arrival inside a batch reneges, and the batch stops", {
 })
 
 test_that("a permanent batch prevents reneging", {
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     batch(1, name = "shared", permanent = TRUE) %>%
     seize("dummy", 1) %>%
     timeout(10) %>%
     release("dummy", 1)
 
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     renege_in(5) %>%
     join(t0)
 
@@ -409,19 +409,19 @@ test_that("a permanent batch prevents reneging", {
 })
 
 test_that("a batch inside a batch reneges", {
-  t <- create_trajectory() %>%
+  t <- trajectory() %>%
     batch(2, name = "two") %>%
     batch(1, name = "one") %>%
     seize("dummy", 1) %>%
     timeout(2) %>%
     release("dummy", 1)
 
-  t0 <- create_trajectory() %>%
+  t0 <- trajectory() %>%
     batch(2) %>%
     renege_in(1) %>%
     join(t)
 
-  t1 <- create_trajectory() %>%
+  t1 <- trajectory() %>%
     batch(2) %>%
     join(t)
 
@@ -451,7 +451,7 @@ test_that("a batch inside a batch reneges", {
 })
 
 test_that("seizes across nested batches are correctly reported", {
-  t <- create_trajectory(verbose = TRUE) %>%
+  t <- trajectory(verbose = TRUE) %>%
     renege_in(2) %>%
     seize("dummy0", 1) %>%
     batch(1) %>%

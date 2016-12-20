@@ -18,7 +18,7 @@ Returns a simulation environment.
 This method initialises a simulation environment.
 }
 \examples{
-t0 <- create_trajectory("my trajectory") \%>\%
+t0 <- trajectory("my trajectory") \%>\%
   ## add an intake activity
   seize("nurse", 1) \%>\%
   timeout(function() rnorm(1, 15)) \%>\%

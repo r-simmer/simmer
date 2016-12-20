@@ -1,10 +1,10 @@
 context("select")
 
 test_that("core selection algorithms work: shortest-queue", {
-  t0 <- create_trajectory() %>% seize("r1", 1)
-  t1 <- create_trajectory() %>% seize("r2", 1)
+  t0 <- trajectory() %>% seize("r1", 1)
+  t1 <- trajectory() %>% seize("r2", 1)
 
-  t2 <- create_trajectory() %>%
+  t2 <- trajectory() %>%
     select(c("r1", "r2", "r3"), policy = "shortest-queue") %>%
     seize_selected(1)
 
@@ -28,10 +28,10 @@ test_that("core selection algorithms work: shortest-queue", {
 })
 
 test_that("core selection algorithms work: round-robin", {
-  t0 <- create_trajectory() %>% seize("r1", 1)
-  t1 <- create_trajectory() %>% seize("r2", 1)
+  t0 <- trajectory() %>% seize("r1", 1)
+  t1 <- trajectory() %>% seize("r2", 1)
 
-  t2 <- create_trajectory() %>%
+  t2 <- trajectory() %>%
     select(c("r1", "r2", "r3"), policy = "round-robin") %>%
     seize_selected(1)
 
@@ -55,10 +55,10 @@ test_that("core selection algorithms work: round-robin", {
 })
 
 test_that("core selection algorithms work: first-available", {
-  t0 <- create_trajectory() %>% seize("r1", 1)
-  t1 <- create_trajectory() %>% seize("r2", 1)
+  t0 <- trajectory() %>% seize("r1", 1)
+  t1 <- trajectory() %>% seize("r2", 1)
 
-  t2 <- create_trajectory() %>%
+  t2 <- trajectory() %>%
     select(c("r1", "r2", "r3"), policy = "first-available") %>%
     seize_selected(1)
 
@@ -82,10 +82,10 @@ test_that("core selection algorithms work: first-available", {
 })
 
 test_that("core selection algorithms work: random", {
-  t0 <- create_trajectory() %>% seize("r1", 1)
-  t1 <- create_trajectory() %>% seize("r2", 1)
+  t0 <- trajectory() %>% seize("r1", 1)
+  t1 <- trajectory() %>% seize("r2", 1)
 
-  t2 <- create_trajectory() %>%
+  t2 <- trajectory() %>%
     select(c("r1", "r2", "r3"), policy = "random") %>%
     seize_selected(1)
 
@@ -104,8 +104,8 @@ test_that("core selection algorithms work: random", {
 })
 
 test_that("custom selection algorithms work", {
-  t0 <- create_trajectory() %>% seize("r1", 1)
-  t1 <- create_trajectory() %>% seize("r2", 1)
+  t0 <- trajectory() %>% seize("r1", 1)
+  t1 <- trajectory() %>% seize("r2", 1)
 
   reverse_rr <- function() {
     res <- c("r1", "r2", "r3")
@@ -117,7 +117,7 @@ test_that("custom selection algorithms work", {
     }
   }
 
-  t2 <- create_trajectory() %>%
+  t2 <- trajectory() %>%
     select(reverse_rr()) %>%
     seize_selected(1)
 

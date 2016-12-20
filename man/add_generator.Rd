@@ -13,7 +13,7 @@ add_generator(.env, name_prefix, trajectory, distribution, mon = 1,
 \item{name_prefix}{the name prefix of the generated arrivals.}
 
 \item{trajectory}{the trajectory that the generated arrivals will follow (see
-\code{\link{create_trajectory}}).}
+\code{\link{trajectory}}).}
 
 \item{distribution}{a function modelling the interarrival times (returning a
 negative value stops the generator).}
