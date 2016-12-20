@@ -26,7 +26,6 @@ Returns a new trajectory object.
 Returns the first or last parts of a trajectory object.
 }
 \seealso{
-\code{\link{length.trajectory}}, \code{\link{get_n_activities}},
-\code{\link{join}}.
+\code{\link{length.trajectory}}, \code{\link{get_n_activities}}, \code{\link{join}}.
 }
 

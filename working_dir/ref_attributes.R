@@ -1,6 +1,6 @@
 library(simmer)
 
-t0 <- create_trajectory() %>%
+t0 <- trajectory() %>%
   set_attribute("health", function() sample(40:80,1)) %>%
   set_attribute("nurses_to_seize",
                 function(attrs){

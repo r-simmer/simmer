@@ -1,6 +1,6 @@
 library(simmer)
 
-t <- create_trajectory(verbose=T) %>%
+t <- trajectory(verbose=T) %>%
   renege_in(1) %>%
   seize("dummy", 1) %>%
   renege_abort() %>%

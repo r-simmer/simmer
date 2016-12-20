@@ -2,17 +2,13 @@
 Schedule <- R6Class("schedule",
   public = list(
     initialize = function(timetable, values, period=Inf) {
-      if (!is.numeric(c(timetable, period, values)))
-        stop("all arguments must be numeric")
-      if (is.unsorted(timetable) || !all(period >= timetable) ||
-          (timetable[length(timetable)] == period + timetable[1]))
-        stop("invalid timetable")
-      if (length(timetable) != length(values))
-        stop("vector lengths must agree")
-      if (length(timetable) < 2)
-        stop("at least two values required")
-      if (!all(values >= 0))
-        stop("invalid values")
+      stopifnot(is.numeric(c(timetable, period, values)))
+      stopifnot(!is.unsorted(timetable), all(period >= timetable),
+                timetable[length(timetable)] != timetable[1] + period)
+      stopifnot(length(timetable) == length(values))
+      stopifnot(length(timetable) >= 2)
+      stopifnot(all(values >= 0))
+
       private$timetable <- timetable
       private$values <- replace(values, values == Inf, -1)
       private$period <- replace(period, period == Inf, -1)

@@ -106,8 +106,7 @@ Simmer <- R6Class("simmer",
 
     add_generator = function(name_prefix, trajectory, distribution, mon=1,
                              priority=0, preemptible=priority, restart=FALSE) {
-      if (!inherits(trajectory, "trajectory"))
-        stop("not a trajectory")
+      stopifnot(inherits(trajectory, "trajectory"))
       name_prefix <- evaluate_value(name_prefix)
       mon <- evaluate_value(mon)
       priority <- evaluate_value(priority)

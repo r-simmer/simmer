@@ -4,8 +4,7 @@ Wrap <- R6Class("wrap",
     name = NA,
 
     initialize = function(env) {
-      if (!inherits(env, "simmer")) stop("not a simmer object")
-
+      stopifnot(inherits(env, "simmer"))
       self$name <- env$name
       private$now_val <- env$now()
       private$peek_val <- env$peek(Inf, TRUE)
