@@ -56,10 +56,10 @@ trajectory <- function(name="anonymous", verbose=FALSE) Trajectory$new(name, ver
 
 #' @rdname trajectory
 #' @export
-create_trajectory <- function(name="anonymous", verbose=FALSE) {
+create_trajectory <- function(name="anonymous", verbose=FALSE) { # nocov start
   .Deprecated("trajectory")
   trajectory(name, verbose)
-}
+} # nocov end
 
 #' Extract parts of a trajectory
 #'
