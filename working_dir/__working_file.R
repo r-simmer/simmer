@@ -8,6 +8,9 @@ t <- trajectory(verbose = TRUE) %>%
   release("asdf")
 
 t
+
+join(t)
+
 head(t, 2)
 tail(t, 2)
 t[c(5, 3, 1)]

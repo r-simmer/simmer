@@ -50,7 +50,10 @@ simmer <- function(name="anonymous", verbose=FALSE) Simmer$new(name, verbose)
 #' @return Returns the simulation environment.
 #' @seealso \code{\link{onestep}}, \code{\link{run}}.
 #' @export
-reset <- function(.env) .env$reset()
+reset <- function(.env) UseMethod("reset")
+
+#' @export
+reset.simmer <- function(.env) .env$reset()
 
 #' Run the simulation
 #'
@@ -62,11 +65,17 @@ reset <- function(.env) .env$reset()
 #' @return Returns the simulation environment.
 #' @seealso \code{\link{reset}}.
 #' @export
-run <- function(.env, until=1000) .env$run(until)
+run <- function(.env, until=1000) UseMethod("run")
+
+#' @export
+run.simmer <- function(.env, until=1000) .env$run(until)
 
 #' @rdname run
 #' @export
-onestep <- function(.env) .env$step()
+onestep <- function(.env) UseMethod("onestep")
+
+#' @export
+onestep.simmer <- function(.env) .env$step()
 
 #' Get current time
 #'
@@ -77,7 +86,10 @@ onestep <- function(.env) .env$step()
 #' @return Returns a numeric value.
 #' @seealso \code{\link{peek}}.
 #' @export
-now <- function(.env) .env$now()
+now <- function(.env) UseMethod("now")
+
+#' @export
+now.simmer <- function(.env) .env$now()
 
 #' Peek next events
 #'
@@ -90,7 +102,10 @@ now <- function(.env) .env$now()
 #' @return Returns numeric values if \code{verbose=F} and a data frame otherwise.
 #' @seealso \code{\link{now}}.
 #' @export
-peek <- function(.env, steps=1, verbose=FALSE) .env$peek(steps, verbose)
+peek <- function(.env, steps=1, verbose=FALSE) UseMethod("peek")
+
+#' @export
+peek.simmer <- function(.env, steps=1, verbose=FALSE) .env$peek(steps, verbose)
 
 #' Add a resource
 #'
@@ -119,6 +134,11 @@ peek <- function(.env, steps=1, verbose=FALSE) .env$peek(steps, verbose)
 #' @export
 add_resource <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE,
                          preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE)
+  UseMethod("add_resource")
+
+#' @export
+add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE,
+                                preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE)
   .env$add_resource(name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict)
 
 #' Add a generator
@@ -149,6 +169,11 @@ add_resource <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE, preem
 #' @export
 add_generator <- function(.env, name_prefix, trajectory, distribution, mon=1,
                           priority=0, preemptible=priority, restart=FALSE)
+  UseMethod("add_generator")
+
+#' @export
+add_generator.simmer <- function(.env, name_prefix, trajectory, distribution, mon=1,
+                                 priority=0, preemptible=priority, restart=FALSE)
   .env$add_generator(name_prefix, trajectory, distribution, mon, priority, preemptible, restart)
 
 #' Get statistics
@@ -164,16 +189,28 @@ add_generator <- function(.env, name_prefix, trajectory, distribution, mon=1,
 #' @name get_mon
 #' @export
 get_mon_arrivals <- function(.envs, per_resource=FALSE, ongoing=FALSE)
+  UseMethod("get_mon_arrivals", unlist(list(.envs))[[1]])
+
+#' @export
+get_mon_arrivals.simmer <- function(.envs, per_resource=FALSE, ongoing=FALSE)
   envs_apply(.envs, "get_mon_arrivals", per_resource, ongoing)
 
 #' @rdname get_mon
 #' @export
-get_mon_attributes <- function(.envs) envs_apply(.envs, "get_mon_attributes")
+get_mon_attributes <- function(.envs) UseMethod("get_mon_attributes", unlist(list(.envs))[[1]])
+
+#' @export
+get_mon_attributes.simmer <- function(.envs) envs_apply(.envs, "get_mon_attributes")
 
 #' @param data whether to retrieve the "counts", the "limits" or both.
 #' @rdname get_mon
 #' @export
-get_mon_resources <- function(.envs, data=c("counts", "limits")) envs_apply(.envs, "get_mon_resources", data)
+get_mon_resources <- function(.envs, data=c("counts", "limits"))
+  UseMethod("get_mon_resources", unlist(list(.envs))[[1]])
+
+#' @export
+get_mon_resources.simmer <- function(.envs, data=c("counts", "limits"))
+  envs_apply(.envs, "get_mon_resources", data)
 
 #' Get the number of arrivals generated
 #'
@@ -184,7 +221,10 @@ get_mon_resources <- function(.envs, data=c("counts", "limits")) envs_apply(.env
 #'
 #' @return Returns a numeric value.
 #' @export
-get_n_generated <- function(.env, generator) .env$get_n_generated(generator)
+get_n_generated <- function(.env, generator) UseMethod("get_n_generated")
+
+#' @export
+get_n_generated.simmer <- function(.env, generator) .env$get_n_generated(generator)
 
 #' Get a resource's parameter
 #'
@@ -195,16 +235,28 @@ get_n_generated <- function(.env, generator) .env$get_n_generated(generator)
 #'
 #' @return Returns a numeric value.
 #' @export
-get_capacity <- function(.env, resource) .env$get_capacity(resource)
+get_capacity <- function(.env, resource) UseMethod("get_capacity")
+
+#' @export
+get_capacity.simmer <- function(.env, resource) .env$get_capacity(resource)
 
 #' @rdname get_capacity
 #' @export
-get_queue_size <- function(.env, resource) .env$get_queue_size(resource)
+get_queue_size <- function(.env, resource) UseMethod("get_queue_size")
+
+#' @export
+get_queue_size.simmer <- function(.env, resource) .env$get_queue_size(resource)
 
 #' @rdname get_capacity
 #' @export
-get_server_count <- function(.env, resource) .env$get_server_count(resource)
+get_server_count <- function(.env, resource) UseMethod("get_server_count")
+
+#' @export
+get_server_count.simmer <- function(.env, resource) .env$get_server_count(resource)
 
 #' @rdname get_capacity
 #' @export
-get_queue_count <- function(.env, resource) .env$get_queue_count(resource)
+get_queue_count <- function(.env, resource) UseMethod("get_queue_count")
+
+#' @export
+get_queue_count.simmer <- function(.env, resource) .env$get_queue_count(resource)

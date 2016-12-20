@@ -18,20 +18,34 @@
 #' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
 #' @export
 seize <- function(.trj, resource, amount=1, continue=NULL, post.seize=NULL, reject=NULL)
+  UseMethod("seize")
+
+#' @export
+seize.trajectory <- function(.trj, resource, amount=1, continue=NULL, post.seize=NULL, reject=NULL)
   .trj$seize(resource, amount, 0, continue, post.seize, reject)
 
 #' @rdname seize
 #' @export
 seize_selected <- function(.trj, amount=1, id=0, continue=NULL, post.seize=NULL, reject=NULL)
+  UseMethod("seize_selected")
+
+#' @export
+seize_selected.trajectory <- function(.trj, amount=1, id=0, continue=NULL, post.seize=NULL, reject=NULL)
   .trj$seize(NA, amount, id, continue, post.seize, reject)
 
 #' @rdname seize
 #' @export
-release <- function(.trj, resource, amount=1) .trj$release(resource, amount)
+release <- function(.trj, resource, amount=1) UseMethod("release")
+
+#' @export
+release.trajectory <- function(.trj, resource, amount=1) .trj$release(resource, amount)
 
 #' @rdname seize
 #' @export
-release_selected <- function(.trj, amount=1, id=0) .trj$release(NA, amount, id)
+release_selected <- function(.trj, amount=1, id=0) UseMethod("release_selected")
+
+#' @export
+release_selected.trajectory <- function(.trj, amount=1, id=0) .trj$release(NA, amount, id)
 
 #' Add a set capacity/queue size activity
 #'
@@ -46,19 +60,31 @@ release_selected <- function(.trj, amount=1, id=0) .trj$release(NA, amount, id)
 #' @seealso \code{\link{select}}, \code{\link{seize}}, \code{\link{release}},
 #' \code{\link{seize_selected}}, \code{\link{release_selected}}.
 #' @export
-set_capacity <- function(.trj, resource, value) .trj$set_capacity(resource, value)
+set_capacity <- function(.trj, resource, value) UseMethod("set_capacity")
+
+#' @export
+set_capacity.trajectory <- function(.trj, resource, value) .trj$set_capacity(resource, value)
 
 #' @rdname set_capacity
 #' @export
-set_capacity_selected <- function(.trj, value, id=0) .trj$set_capacity(NA, value, id)
+set_capacity_selected <- function(.trj, value, id=0) UseMethod("set_capacity_selected")
+
+#' @export
+set_capacity_selected.trajectory <- function(.trj, value, id=0) .trj$set_capacity(NA, value, id)
 
 #' @rdname set_capacity
 #' @export
-set_queue_size <- function(.trj, resource, value) .trj$set_queue_size(resource, value)
+set_queue_size <- function(.trj, resource, value) UseMethod("set_queue_size")
+
+#' @export
+set_queue_size.trajectory <- function(.trj, resource, value) .trj$set_queue_size(resource, value)
 
 #' @rdname set_capacity
 #' @export
-set_queue_size_selected <- function(.trj, value, id=0) .trj$set_queue_size(NA, value, id)
+set_queue_size_selected <- function(.trj, value, id=0) UseMethod("set_queue_size_selected")
+
+#' @export
+set_queue_size_selected.trajectory <- function(.trj, value, id=0) .trj$set_queue_size(NA, value, id)
 
 #' Select a resource
 #'
@@ -78,6 +104,11 @@ set_queue_size_selected <- function(.trj, value, id=0) .trj$set_queue_size(NA, v
 #' @export
 select <- function(.trj, resources, policy=c("shortest-queue", "round-robin",
                                              "first-available", "random"), id=0)
+  UseMethod("select")
+
+#' @export
+select.trajectory <- function(.trj, resources, policy=c("shortest-queue", "round-robin",
+                                             "first-available", "random"), id=0)
   .trj$select(resources, policy, id)
 
 #' Add a timeout activity
@@ -91,7 +122,10 @@ select <- function(.trj, resources, policy=c("shortest-queue", "round-robin",
 #'
 #' @return Returns the trajectory object.
 #' @export
-timeout <- function(.trj, task) .trj$timeout(task)
+timeout <- function(.trj, task) UseMethod("timeout")
+
+#' @export
+timeout.trajectory <- function(.trj, task) .trj$timeout(task)
 
 #' Add a set attribute activity
 #'
@@ -105,7 +139,10 @@ timeout <- function(.trj, task) .trj$timeout(task)
 #'
 #' @return Returns the trajectory object.
 #' @export
-set_attribute <- function(.trj, key, value, global=FALSE) .trj$set_attribute(key, value, global)
+set_attribute <- function(.trj, key, value, global=FALSE) UseMethod("set_attribute")
+
+#' @export
+set_attribute.trajectory <- function(.trj, key, value, global=FALSE) .trj$set_attribute(key, value, global)
 
 #' Add a activate/deactivate activity
 #'
@@ -117,11 +154,17 @@ set_attribute <- function(.trj, key, value, global=FALSE) .trj$set_attribute(key
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{set_trajectory}}, \code{\link{set_distribution}}.
 #' @export
-activate <- function(.trj, generator) .trj$activate(generator)
+activate <- function(.trj, generator) UseMethod("activate")
+
+#' @export
+activate.trajectory <- function(.trj, generator) .trj$activate(generator)
 
 #' @rdname activate
 #' @export
-deactivate <- function(.trj, generator) .trj$deactivate(generator)
+deactivate <- function(.trj, generator) UseMethod("deactivate")
+
+#' @export
+deactivate.trajectory <- function(.trj, generator) .trj$deactivate(generator)
 
 #' Add a set trajectory/distribution activity
 #'
@@ -134,13 +177,21 @@ deactivate <- function(.trj, generator) .trj$deactivate(generator)
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{activate}}, \code{\link{deactivate}}.
 #' @export
-set_trajectory <- function(.trj, generator, trajectory) .trj$set_trajectory(generator, trajectory)
+set_trajectory <- function(.trj, generator, trajectory) UseMethod("set_trajectory")
+
+#' @export
+set_trajectory.trajectory <- function(.trj, generator, trajectory)
+  .trj$set_trajectory(generator, trajectory)
 
 #' @rdname set_trajectory
 #' @param distribution a function modelling the interarrival times (returning a
 #' negative value stops the generator).
 #' @export
-set_distribution <- function(.trj, generator, distribution) .trj$set_distribution(generator, distribution)
+set_distribution <- function(.trj, generator, distribution) UseMethod("set_distribution")
+
+#' @export
+set_distribution.trajectory <- function(.trj, generator, distribution)
+  .trj$set_distribution(generator, distribution)
 
 #' Add a set prioritization activity
 #'
@@ -154,7 +205,10 @@ set_distribution <- function(.trj, generator, distribution) .trj$set_distributio
 #'
 #' @return Returns the trajectory object.
 #' @export
-set_prioritization <- function(.trj, values) .trj$set_prioritization(values)
+set_prioritization <- function(.trj, values) UseMethod("set_prioritization")
+
+#' @export
+set_prioritization.trajectory <- function(.trj, values) .trj$set_prioritization(values)
 
 #' Add a branch activity
 #'
@@ -171,7 +225,10 @@ set_prioritization <- function(.trj, values) .trj$set_prioritization(values)
 #'
 #' @return Returns the trajectory object.
 #' @export
-branch <- function(.trj, option, continue, ...) .trj$branch(option, continue, ...)
+branch <- function(.trj, option, continue, ...) UseMethod("branch")
+
+#' @export
+branch.trajectory <- function(.trj, option, continue, ...) .trj$branch(option, continue, ...)
 
 #' Add a rollback activity
 #'
@@ -186,7 +243,10 @@ branch <- function(.trj, option, continue, ...) .trj$branch(option, continue, ..
 #'
 #' @return Returns the trajectory object.
 #' @export
-rollback <- function(.trj, amount, times=1, check) .trj$rollback(amount, times, check)
+rollback <- function(.trj, amount, times=1, check) UseMethod("rollback")
+
+#' @export
+rollback.trajectory <- function(.trj, amount, times=1, check) .trj$rollback(amount, times, check)
 
 #' Add a leave activity
 #'
@@ -197,7 +257,10 @@ rollback <- function(.trj, amount, times=1, check) .trj$rollback(amount, times, 
 #'
 #' @return Returns the trajectory object.
 #' @export
-leave <- function(.trj, prob) .trj$leave(prob)
+leave <- function(.trj, prob) UseMethod("leave")
+
+#' @export
+leave.trajectory <- function(.trj, prob) .trj$leave(prob)
 
 #' Add a renege activity
 #'
@@ -210,7 +273,10 @@ leave <- function(.trj, prob) .trj$leave(prob)
 #'
 #' @return Returns the trajectory object.
 #' @export
-renege_in <- function(.trj, t, out=NULL) .trj$renege_in(t, out)
+renege_in <- function(.trj, t, out=NULL) UseMethod("renege_in")
+
+#' @export
+renege_in.trajectory <- function(.trj, t, out=NULL) .trj$renege_in(t, out)
 
 #' @param signal signal to trigger reneging, accepts either a string or a callable object
 #' (a function) which must return a string.
@@ -218,11 +284,17 @@ renege_in <- function(.trj, t, out=NULL) .trj$renege_in(t, out)
 #' @rdname renege_in
 #' @seealso \code{\link{send}}
 #' @export
-renege_if <- function(.trj, signal, out=NULL) .trj$renege_if(signal, out)
+renege_if <- function(.trj, signal, out=NULL) UseMethod("renege_if")
+
+#' @export
+renege_if.trajectory <- function(.trj, signal, out=NULL) .trj$renege_if(signal, out)
 
 #' @rdname renege_in
 #' @export
-renege_abort <- function(.trj) .trj$renege_abort()
+renege_abort <- function(.trj) UseMethod("renege_abort")
+
+#' @export
+renege_abort.trajectory <- function(.trj) .trj$renege_abort()
 
 #' Add a clone/synchronize activity
 #'
@@ -237,7 +309,10 @@ renege_abort <- function(.trj) .trj$renege_abort()
 #'
 #' @return Returns the trajectory object.
 #' @export
-clone <- function(.trj, n, ...) .trj$replicate(n, ...)
+clone <- function(.trj, n, ...) UseMethod("clone")
+
+#' @export
+clone.trajectory <- function(.trj, n, ...) .trj$replicate(n, ...)
 
 #' @inheritParams seize
 #' @param wait if \code{FALSE}, all clones but the first to arrive are removed.
@@ -247,7 +322,10 @@ clone <- function(.trj, n, ...) .trj$replicate(n, ...)
 #'
 #' @rdname clone
 #' @export
-synchronize <- function(.trj, wait=TRUE, mon_all=FALSE) .trj$synchronize(wait, mon_all)
+synchronize <- function(.trj, wait=TRUE, mon_all=FALSE) UseMethod("synchronize")
+
+#' @export
+synchronize.trajectory <- function(.trj, wait=TRUE, mon_all=FALSE) .trj$synchronize(wait, mon_all)
 
 #' Add a batch/separate activity
 #'
@@ -268,14 +346,20 @@ synchronize <- function(.trj, wait=TRUE, mon_all=FALSE) .trj$synchronize(wait, m
 #'
 #' @return Returns the trajectory object.
 #' @export
-batch <- function(.trj, n, timeout=0, permanent=FALSE, name="", rule=NULL)
+batch <- function(.trj, n, timeout=0, permanent=FALSE, name="", rule=NULL) UseMethod("batch")
+
+#' @export
+batch.trajectory <- function(.trj, n, timeout=0, permanent=FALSE, name="", rule=NULL)
   .trj$batch(n, timeout, permanent, name, rule)
 
 #' @inheritParams seize
 #'
 #' @rdname batch
 #' @export
-separate <- function(.trj) .trj$separate()
+separate <- function(.trj) UseMethod("separate")
+
+#' @export
+separate.trajectory <- function(.trj) .trj$separate()
 
 #' Add an inter-arrival communication activity
 #'
@@ -296,23 +380,35 @@ separate <- function(.trj) .trj$separate()
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{renege_if}}
 #' @export
-send <- function(.trj, signals, delay=0) .trj$send(signals, delay)
+send <- function(.trj, signals, delay=0) UseMethod("send")
+
+#' @export
+send.trajectory <- function(.trj, signals, delay=0) .trj$send(signals, delay)
 
 #' @param handler optional trajectory object to handle a signal received.
 #' @param interruptible whether the handler can be interrupted by signals.
 #'
 #' @rdname send
 #' @export
-trap <- function(.trj, signals, handler=NULL, interruptible=TRUE)
+trap <- function(.trj, signals, handler=NULL, interruptible=TRUE) UseMethod("trap")
+
+#' @export
+trap.trajectory <- function(.trj, signals, handler=NULL, interruptible=TRUE)
   .trj$trap(signals, handler, interruptible)
 
 #' @rdname send
 #' @export
-untrap <- function(.trj, signals) .trj$untrap(signals)
+untrap <- function(.trj, signals) UseMethod("untrap")
+
+#' @export
+untrap.trajectory <- function(.trj, signals) .trj$untrap(signals)
 
 #' @rdname send
 #' @export
-wait <- function(.trj) .trj$wait()
+wait <- function(.trj) UseMethod("wait")
+
+#' @export
+wait.trajectory <- function(.trj) .trj$wait()
 
 #' Add a logging activity
 #'
@@ -324,4 +420,7 @@ wait <- function(.trj) .trj$wait()
 #'
 #' @return Returns the trajectory object.
 #' @export
-log_ <- function(.trj, message) .trj$log(message)
+log_ <- function(.trj, message) UseMethod("log_")
+
+#' @export
+log_.trajectory <- function(.trj, message) .trj$log(message)

@@ -85,11 +85,11 @@ create_trajectory <- function(name="anonymous", verbose=FALSE) {
 #' @return Returns a new trajectory object.
 #' @seealso \code{\link{length.trajectory}}, \code{\link{get_n_activities}}, \code{\link{join}}.
 #'
-#' @name Extract.trajectory
+#' @name Extract
 #' @export
 `[.trajectory` <- function(x, i) x$subset(i)
 
-#' @rdname Extract.trajectory
+#' @rdname Extract
 #' @export
 `[[.trajectory` <- function(x, i) {
   stopifnot(length(i) == 1L)
@@ -103,17 +103,21 @@ create_trajectory <- function(name="anonymous", verbose=FALSE) {
 #' of first-level activities (sub-trajectories not included). \code{get_n_activities}
 #' returns the total number of activities (sub-trajectories included).
 #'
-#' @inheritParams Extract.trajectory
+#' @inheritParams Extract
 #'
 #' @return Returns a non-negative integer of length 1.
-#' @seealso \code{\link{[.trajectory}}, \code{\link{[[.trajectory}}, \code{\link{[[.trajectory}},
-#' \code{\link{join}}.
+#' @seealso \code{\link{[.trajectory}}, \code{\link{[[.trajectory}}, \code{\link{join}}.
+#'
+#' @name length
 #' @export
 length.trajectory <- function(x) x$length()
 
-#' @rdname length.trajectory
+#' @rdname length
 #' @export
-get_n_activities <- function(x) x$get_n_activities()
+get_n_activities <- function(x) UseMethod("get_n_activities")
+
+#' @export
+get_n_activities.trajectory <- function(x) x$get_n_activities()
 
 #' Join trajectories
 #'
@@ -137,7 +141,10 @@ get_n_activities <- function(x) x$get_n_activities()
 #'   join(t1) %>%
 #'   timeout(1) %>%
 #'   join(t3)
-join <- function(...) {
+join <- function(...) UseMethod("join", c(...)[[1]])
+
+#' @export
+join.trajectory <- function(...) {
   traj <- c(...)
   for (i in traj[-1]) traj[[1]] <- traj[[1]]$join(i)
   traj[[1]]
