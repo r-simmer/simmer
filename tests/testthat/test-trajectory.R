@@ -191,3 +191,80 @@ test_that("the head/tail pointers are correctly placed", {
   expect_output(activity_print_(t0$head(), 0), "Seize")
   expect_output(activity_print_(t0$tail(), 0), "Release")
 })
+
+t0 <- trajectory(verbose = TRUE) %>%
+  timeout(1)
+t1 <- trajectory(verbose = TRUE) %>%
+  branch(function() 1, c(TRUE), t0) %>%
+  join(t0) %>%
+  branch(function() 1, c(TRUE, TRUE, TRUE), t0, t0, t0) %>%
+  join(t0) %>%
+  branch(function() 1, c(TRUE, TRUE, TRUE, TRUE, TRUE), t0, t0, t0, t0, t0)
+
+test_that("special cases subsetting with [ works as expected", {
+  test <- t1[]
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 14)
+  test <- t1[NULL]
+  expect_equal(length(test), 0)
+  expect_equal(get_n_activities(test), 0)
+  test <- t1[NA]
+  expect_equal(length(test), 0)
+  expect_equal(get_n_activities(test), 0)
+})
+
+test_that("logical subsetting with [ works as expected", {
+  test <- t1[TRUE]
+  expect_equal(length(test), 1)
+  expect_equal(get_n_activities(test), 2)
+  test <- t1[c(rep(FALSE, 4), TRUE)]
+  expect_equal(length(test), 1)
+  expect_equal(get_n_activities(test), 6)
+  test <- t1[c(TRUE, FALSE, TRUE, FALSE, TRUE)]
+  expect_equal(length(test), 3)
+  expect_equal(get_n_activities(test), 12)
+  expect_error(t1[rep(TRUE, 20)])
+})
+
+test_that("integer subsetting with [ works as expected", {
+  test <- t1[1]
+  expect_equal(length(test), 1)
+  expect_equal(get_n_activities(test), 2)
+  test <- t1[length(t1)]
+  expect_equal(length(test), 1)
+  expect_equal(get_n_activities(test), 6)
+  test <- t1[c(1, 3, 5)]
+  expect_equal(length(test), 3)
+  expect_equal(get_n_activities(test), 12)
+  test <- t1[-c(2, 4)]
+  expect_equal(length(test), 3)
+  expect_equal(get_n_activities(test), 12)
+  expect_error(t1[c(1, -1)])
+})
+
+test_that("character subsetting with [ works as expected", {
+  test <- t1["branch"]
+  expect_equal(length(test), 3)
+  expect_equal(get_n_activities(test), 12)
+  test <- t1["asdf"]
+  expect_equal(length(test), 0)
+  expect_equal(get_n_activities(test), 0)
+})
+
+test_that("integer subsetting with [[ works as expected", {
+  test <- t1[[1]]
+  expect_equal(length(test), 1)
+  expect_equal(get_n_activities(test), 2)
+  test <- t1[[length(t1)]]
+  expect_equal(length(test), 1)
+  expect_equal(get_n_activities(test), 6)
+  expect_error(t1[[c(1, 3, 5)]])
+  expect_error(t1[[-1]])
+})
+
+test_that("character subsetting with [ works as expected", {
+  test <- t1[["branch"]]
+  expect_equal(length(test), 1)
+  expect_equal(get_n_activities(test), 2)
+  expect_error(t1[["asdf"]])
+})
