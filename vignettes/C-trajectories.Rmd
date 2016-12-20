@@ -1036,9 +1036,11 @@ simmer() %>%
 
 Note that, in contrast to `trap()`, reneging is triggered even if the arrival is in a queue or is part of a non-permanent batch.
 
-## Concatenating trajectories
+## Manipulating trajectories: joining and subsetting
 
-It is possible to concatenate together any number of trajectories using the `join(...)` verb. It may be used as a standalone function as follows:
+### `join()`
+
+The `join(...)` method is very useful to concatenate together any number of trajectories. It may be used as a standalone function as follows:
 
 ```{r}
 t1 <- trajectory() %>% seize("dummy", 1)
@@ -1057,6 +1059,68 @@ t0 <- trajectory() %>%
   timeout(1) %>%
   join(t3)
 t0
+```
+
+### `[`, `[[`
+
+You can think about a trajectory object as a list of activities that has a length
+
+```{r}
+length(t0)
+```
+
+and can be subset using the standard operator `[`. For instance, you can select the activities you want with a logical vector:
+
+```{r}
+t0[c(TRUE, FALSE, TRUE)]
+```
+
+Or a set of indices that respect the order given:
+
+```{r}
+t0[c(1, 3)]
+t0[c(3, 1)]
+```
+
+Or a set of indices to remove from the selection:
+
+```{r}
+t0[-2]
+```
+
+Or by name, but note that this does **not** respect the order given though, because it performs a match:
+
+```{r}
+t0[c("seize", "release")]
+t0[c("release", "seize")]
+```
+
+If you provide no indices, the whole trajectory is returned:
+
+```{r}
+t0[]
+```
+
+In fact, you are **cloning** the trajectory with the latter command. It is equivalent to `t0[1:length(t0)]` or `join(t0)`.
+
+The generics `head()` and `tail()` use the `[` operator under the hood, thus you can use them as well:
+
+```{r}
+head(t0, 2)
+tail(t0, -1)
+```
+
+The `[[` operator can also be used to extract **only one** element:
+
+```{r}
+t0[[2]]
+```
+
+which is equivalent to `t0[2]`. If a string is provided, it ensures that only the first match is returned:
+
+```{r}
+join(t0, t0)["timeout"]
+join(t0, t0)[["timeout"]]
 ```
 
 ## Interacting with the environment from within a trajectory
