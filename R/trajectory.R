@@ -91,7 +91,7 @@ Trajectory <- R6Class("trajectory",
       amount <- evaluate_value(amount)
       id <- evaluate_value(id)
       if (!length(continue)) continue <- TRUE
-      trj <- as.list(c(post.seize, reject))
+      trj <- as.list(c(post.seize[], reject[]))
       mask <- sum(c(1, 2) * !sapply(list(post.seize, reject), is.null))
 
       if (is.na(resource)) {
@@ -197,8 +197,8 @@ Trajectory <- R6Class("trajectory",
       generator <- evaluate_value(generator)
       if (is.function(generator))
         private$add_activity(SetTraj__new_func(private$verbose, generator,
-                                               needs_attrs(generator), trajectory))
-      else private$add_activity(SetTraj__new(private$verbose, generator, trajectory))
+                                               needs_attrs(generator), trajectory[]))
+      else private$add_activity(SetTraj__new(private$verbose, generator, trajectory[]))
     },
 
     set_distribution = function(generator, distribution) {
@@ -219,7 +219,8 @@ Trajectory <- R6Class("trajectory",
     branch = function(option, continue, ...) {
       stopifnot(length(continue) == length(c(...)))
       stopifnot(all(sapply(c(...), inherits, what = "trajectory")))
-      private$add_activity(Branch__new(private$verbose, option, needs_attrs(option), continue, c(...)))
+      traj <- sapply(c(...), `[`)
+      private$add_activity(Branch__new(private$verbose, option, needs_attrs(option), continue, traj))
     },
 
     rollback = function(amount, times=1, check) {
@@ -241,7 +242,7 @@ Trajectory <- R6Class("trajectory",
     renege_in = function(t, out=NULL) {
       stopifnot(is.null(out) || inherits(out, "trajectory"))
       t <- evaluate_value(t)
-      traj <- as.list(c(out))
+      traj <- as.list(c(out[]))
       if (is.function(t))
         private$add_activity(RenegeIn__new_func(private$verbose, t, needs_attrs(t), traj))
       else private$add_activity(RenegeIn__new(private$verbose, t, traj))
@@ -250,7 +251,7 @@ Trajectory <- R6Class("trajectory",
     renege_if = function(signal, out=NULL) {
       stopifnot(is.null(out) || inherits(out, "trajectory"))
       signal <- evaluate_value(signal)
-      traj <- as.list(c(out))
+      traj <- as.list(c(out[]))
       if (is.function(signal))
         private$add_activity(RenegeIf__new_func(private$verbose, signal, needs_attrs(signal), traj))
       else private$add_activity(RenegeIf__new(private$verbose, signal, traj))
@@ -261,7 +262,7 @@ Trajectory <- R6Class("trajectory",
     replicate = function(n, ...) {
       stopifnot(all(sapply(c(...), inherits, what = "trajectory")))
       n <- evaluate_value(n)
-      trj <- c(...)
+      trj <- sapply(c(...), `[`)
       if (is.function(n))
         private$add_activity(Clone__new_func(private$verbose, n, needs_attrs(n), trj))
       else private$add_activity(Clone__new(private$verbose, n, trj))
@@ -303,7 +304,7 @@ Trajectory <- R6Class("trajectory",
       stopifnot(is.null(handler) || inherits(handler, "trajectory"))
       signals <- evaluate_value(signals)
       interruptible <- evaluate_value(interruptible)
-      traj <- as.list(c(handler))
+      traj <- as.list(c(handler[]))
       if (is.function(signals))
         private$add_activity(Trap__new_func(private$verbose, signals, needs_attrs(signals),
                                             traj, interruptible))

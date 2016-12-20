@@ -113,7 +113,7 @@ Simmer <- R6Class("simmer",
       preemptible <- evaluate_value(preemptible)
       restart <- evaluate_value(restart)
       distribution <- make_resetable(distribution)
-      ret <- add_generator_(private$sim_obj, name_prefix, trajectory, distribution, mon,
+      ret <- add_generator_(private$sim_obj, name_prefix, trajectory[], distribution, mon,
                             priority, preemptible, restart)
       if (ret) private$gen[[name_prefix]] <- mon
       self
