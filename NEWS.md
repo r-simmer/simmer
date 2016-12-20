@@ -10,6 +10,7 @@
 * `create_trajectory()` has been deprecated in favor of `trajectory()` (76c1317).
 * All methods are now S3 methods, so that a nice intelligible error is displayed if you apply a method to the wrong object (e891045).
 * All the activity management -related stuff has been removed, i.e, `get_head()`, `get_tail()`, `print_activity()`, `get_next_activity()`, `get_prev_activity()` (f86375a). These methods were only useful for development purposes and nobody should be using them. And it was never a good idea to directly expose external pointers.
+* Clone all trajectories before passing them to the C++ core (f655cae).
 
 # simmer 3.5.1
 
