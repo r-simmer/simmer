@@ -1,3 +1,16 @@
+# simmer 3.5.1.9000
+
+## New features:
+
+* New subsetting operators, `[` and `[[`, for trajectories (1847898). Think about trajectories as lists of activities and these operators will do (almost) everything you expect. As a side effect, the generics `head()` and `tail()` automatically work with trajectories also as expected.
+* New `length()` method to obtain the number of first-level activities in a trajectory (f86375a). Useful in combination with the subsetting operators.
+
+## Minor changes and fixes:
+
+* `create_trajectory()` has been deprecated in favor of `trajectory()` (76c1317).
+* All methods are now S3 methods, so that a nice intelligible error is displayed if you apply a method to the wrong object (e891045).
+* All the activity management -related stuff has been removed, i.e, `get_head()`, `get_tail()`, `print_activity()`, `get_next_activity()`, `get_prev_activity()` (f86375a). These methods were only useful for development purposes and nobody should be using them. And it was never a good idea to directly expose external pointers.
+
 # simmer 3.5.1
 
 ## New features:
