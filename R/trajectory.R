@@ -332,9 +332,9 @@ Trajectory <- R6::R6Class("trajectory",
     names = NULL,
 
     add_activity = function(activity) {
-      caller <- match.call(sys.function(sys.parent(2)), sys.call(sys.parent(2)))
+      caller <- match.call(sys.function(-1), sys.call(-1))
       caller <- as.character(caller)[[1]]
-      caller <- strsplit(caller, ".", fixed = TRUE)[[1]][[1]]
+      caller <- strsplit(caller, "$", fixed = TRUE)[[1]][[2]]
       if (!is.null(private$ptrs))
         activity_chain_(self$tail(), activity)
       private$ptrs <- c(private$ptrs, activity)
