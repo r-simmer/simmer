@@ -1,5 +1,4 @@
-#' @importFrom R6 R6Class
-Wrap <- R6Class("wrap",
+Wrap <- R6::R6Class("wrap",
   public = list(
     name = NA,
 

@@ -1,7 +1,4 @@
-#' @useDynLib simmer
-#' @importFrom R6 R6Class
-#' @importFrom Rcpp evalCpp
-Simmer <- R6Class("simmer",
+Simmer <- R6::R6Class("simmer",
   public = list(
     name = NA,
 

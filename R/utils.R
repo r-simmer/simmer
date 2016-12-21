@@ -1,3 +1,5 @@
+#' @useDynLib simmer
+#' @importFrom Rcpp evalCpp
 #' @importFrom magrittr %>%
 #' @export
 magrittr::`%>%`
@@ -13,10 +15,9 @@ evaluate_value <- function(value) {
     error = function(err) value)
 }
 
-#' @importFrom methods formalArgs
 needs_attrs <- function(variable) {
   if (is.function(variable))
-    return(length(formalArgs(variable)))
+    return(length(methods::formalArgs(variable)))
   else return(0)
 }
 
@@ -32,7 +33,6 @@ envs_apply <- function(envs, method, ...) {
   }))
 }
 
-#' @importFrom utils head install.packages menu
 checkInstall <- function(pkgs) {
   good <- rep(TRUE, length(pkgs))
   for (i in seq(along = pkgs)) {
@@ -49,8 +49,8 @@ checkInstall <- function(pkgs) {
               " now?",
               sep = ""))
     if (interactive()) {
-      if (menu(c("yes", "no")) == 1)
-        install.packages(pkgs[!good])
+      if (utils::menu(c("yes", "no")) == 1)
+        utils::install.packages(pkgs[!good])
       else stop()
     } else stop() # nocov end
   }

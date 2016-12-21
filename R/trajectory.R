@@ -1,7 +1,4 @@
-#' @importFrom R6 R6Class
-#' @importFrom Rcpp evalCpp
-#' @importFrom utils head tail
-Trajectory <- R6Class("trajectory",
+Trajectory <- R6::R6Class("trajectory",
   public = list(
     name = NA,
 
@@ -52,7 +49,7 @@ Trajectory <- R6Class("trajectory",
           new_ptr
         })
         mapply(function(i, j) activity_chain_(i, j),
-               head(ptrs, -1), tail(ptrs, -1))
+               utils::head(ptrs, -1), utils::tail(ptrs, -1))
         names <- private$names[elems]
       }
       new$.__enclos_env__$private$ptrs <- ptrs

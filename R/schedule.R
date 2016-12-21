@@ -1,5 +1,4 @@
-#' @importFrom R6 R6Class
-Schedule <- R6Class("schedule",
+Schedule <- R6::R6Class("schedule",
   public = list(
     initialize = function(timetable, values, period=Inf) {
       stopifnot(is.numeric(c(timetable, period, values)))

@@ -30,7 +30,7 @@ plot_resource_usage <- function(envs, resource_name, items=c("system", "queue", 
     dplyr::mutate(item = factor(item)) %>%
     dplyr::filter(item %in% items) %>%
     dplyr::group_by(resource, replication, item) %>%
-    dplyr::mutate(mean = c(0, cumsum(head(value, -1) * diff(time))) / time) %>%
+    dplyr::mutate(mean = c(0, cumsum(utils::head(value, -1) * diff(time))) / time) %>%
     dplyr::ungroup()
 
   if (is.list(envs)) env <- envs[[1]]
