@@ -1,18 +1,19 @@
 Trajectory <- R6::R6Class("trajectory",
   public = list(
     name = NA,
+    verbose = NA,
 
     initialize = function(name="anonymous", verbose=FALSE) {
       self$name <- evaluate_value(name)
-      private$verbose <- evaluate_value(verbose)
+      self$verbose <- evaluate_value(verbose)
       self
     },
 
-    print = function(indent=0) {
+    print = function(indent=0, verbose=self$verbose) {
       margin <- paste(rep(" ", indent), collapse = "")
       cat(paste0(margin, "trajectory: ", self$name, ", ",
                  private$n_activities, " activities\n"))
-      lapply(private$ptrs, function(i) activity_print_(i, indent))
+      lapply(private$ptrs, function(i) activity_print_(i, indent, verbose))
       invisible()
     },
 
@@ -93,14 +94,14 @@ Trajectory <- R6::R6Class("trajectory",
 
       if (is.na(resource)) {
         if (is.function(amount))
-          private$add_activity(SeizeSelected__new_func(private$verbose, id, amount, needs_attrs(amount),
+          private$add_activity(SeizeSelected__new_func(id, amount, needs_attrs(amount),
                                                        continue, trj, mask))
-        else private$add_activity(SeizeSelected__new(private$verbose, id, amount, continue, trj, mask))
+        else private$add_activity(SeizeSelected__new(id, amount, continue, trj, mask))
       } else {
         if (is.function(amount))
-          private$add_activity(Seize__new_func(private$verbose, resource, amount, needs_attrs(amount),
+          private$add_activity(Seize__new_func(resource, amount, needs_attrs(amount),
                                                continue, trj, mask))
-        else private$add_activity(Seize__new(private$verbose, resource, amount, continue, trj, mask))
+        else private$add_activity(Seize__new(resource, amount, continue, trj, mask))
       }
     },
 
@@ -110,12 +111,12 @@ Trajectory <- R6::R6Class("trajectory",
       id <- evaluate_value(id)
       if (is.na(resource)) {
         if (is.function(amount))
-          private$add_activity(ReleaseSelected__new_func(private$verbose, id, amount, needs_attrs(amount)))
-        else private$add_activity(ReleaseSelected__new(private$verbose, id, amount))
+          private$add_activity(ReleaseSelected__new_func(id, amount, needs_attrs(amount)))
+        else private$add_activity(ReleaseSelected__new(id, amount))
       } else {
         if (is.function(amount))
-          private$add_activity(Release__new_func(private$verbose, resource, amount, needs_attrs(amount)))
-        else private$add_activity(Release__new(private$verbose, resource, amount))
+          private$add_activity(Release__new_func(resource, amount, needs_attrs(amount)))
+        else private$add_activity(Release__new(resource, amount))
       }
     },
 
@@ -125,12 +126,12 @@ Trajectory <- R6::R6Class("trajectory",
       id <- evaluate_value(id)
       if (is.na(resource)) {
         if (is.function(value))
-          private$add_activity(SetCapacitySelected__new_func(private$verbose, id, value, needs_attrs(value)))
-        else private$add_activity(SetCapacitySelected__new(private$verbose, id, value))
+          private$add_activity(SetCapacitySelected__new_func(id, value, needs_attrs(value)))
+        else private$add_activity(SetCapacitySelected__new(id, value))
       } else {
         if (is.function(value))
-          private$add_activity(SetCapacity__new_func(private$verbose, resource, value, needs_attrs(value)))
-        else private$add_activity(SetCapacity__new(private$verbose, resource, value))
+          private$add_activity(SetCapacity__new_func(resource, value, needs_attrs(value)))
+        else private$add_activity(SetCapacity__new(resource, value))
       }
     },
 
@@ -140,12 +141,12 @@ Trajectory <- R6::R6Class("trajectory",
       id <- evaluate_value(id)
       if (is.na(resource)) {
         if (is.function(value))
-          private$add_activity(SetQueueSelected__new_func(private$verbose, id, value, needs_attrs(value)))
-        else private$add_activity(SetQueueSelected__new(private$verbose, id, value))
+          private$add_activity(SetQueueSelected__new_func(id, value, needs_attrs(value)))
+        else private$add_activity(SetQueueSelected__new(id, value))
       } else {
         if (is.function(value))
-          private$add_activity(SetQueue__new_func(private$verbose, resource, value, needs_attrs(value)))
-        else private$add_activity(SetQueue__new(private$verbose, resource, value))
+          private$add_activity(SetQueue__new_func(resource, value, needs_attrs(value)))
+        else private$add_activity(SetQueue__new(resource, value))
       }
     },
 
@@ -155,15 +156,15 @@ Trajectory <- R6::R6Class("trajectory",
       policy <- match.arg(policy)
       id <- evaluate_value(id)
       if (is.function(resources))
-        private$add_activity(Select__new_func(private$verbose, resources, needs_attrs(resources), id))
-      else private$add_activity(Select__new(private$verbose, resources, policy, id))
+        private$add_activity(Select__new_func(resources, needs_attrs(resources), id))
+      else private$add_activity(Select__new(resources, policy, id))
     },
 
     timeout = function(task) {
       task <- evaluate_value(task)
       if (is.function(task))
-        private$add_activity(Timeout__new_func(private$verbose, task, needs_attrs(task)))
-      else private$add_activity(Timeout__new(private$verbose, task))
+        private$add_activity(Timeout__new_func(task, needs_attrs(task)))
+      else private$add_activity(Timeout__new(task))
     },
 
     set_attribute = function(key, value, global=FALSE) {
@@ -171,53 +172,53 @@ Trajectory <- R6::R6Class("trajectory",
       value <- evaluate_value(value)
       global <- evaluate_value(global)
       if (is.function(value))
-        private$add_activity(SetAttribute__new_func(private$verbose, key, value, needs_attrs(value), global))
-      else private$add_activity(SetAttribute__new(private$verbose, key, value, global))
+        private$add_activity(SetAttribute__new_func(key, value, needs_attrs(value), global))
+      else private$add_activity(SetAttribute__new(key, value, global))
     },
 
     activate = function(generator) {
       generator <- evaluate_value(generator)
       if (is.function(generator))
-        private$add_activity(Activate__new_func(private$verbose, generator, needs_attrs(generator)))
-      else private$add_activity(Activate__new(private$verbose, generator))
+        private$add_activity(Activate__new_func(generator, needs_attrs(generator)))
+      else private$add_activity(Activate__new(generator))
     },
 
     deactivate = function(generator) {
       generator <- evaluate_value(generator)
       if (is.function(generator))
-        private$add_activity(Deactivate__new_func(private$verbose, generator, needs_attrs(generator)))
-      else private$add_activity(Deactivate__new(private$verbose, generator))
+        private$add_activity(Deactivate__new_func(generator, needs_attrs(generator)))
+      else private$add_activity(Deactivate__new(generator))
     },
 
     set_trajectory = function(generator, trajectory) {
       stopifnot(inherits(trajectory, "trajectory"))
       generator <- evaluate_value(generator)
       if (is.function(generator))
-        private$add_activity(SetTraj__new_func(private$verbose, generator,
+        private$add_activity(SetTraj__new_func(generator,
                                                needs_attrs(generator), trajectory[]))
-      else private$add_activity(SetTraj__new(private$verbose, generator, trajectory[]))
+      else private$add_activity(SetTraj__new(generator, trajectory[]))
     },
 
     set_distribution = function(generator, distribution) {
       generator <- evaluate_value(generator)
       distribution <- make_resetable(distribution)
       if (is.function(generator))
-        private$add_activity(SetDist__new_func(private$verbose, generator,
+        private$add_activity(SetDist__new_func(generator,
                                                needs_attrs(generator), distribution))
-      else private$add_activity(SetDist__new(private$verbose, generator, distribution))
+      else private$add_activity(SetDist__new(generator, distribution))
     },
 
     set_prioritization = function(values) {
       if (is.function(values))
-        private$add_activity(SetPrior__new_func(private$verbose, values, needs_attrs(values)))
-      else private$add_activity(SetPrior__new(private$verbose, values))
+        private$add_activity(SetPrior__new_func(values, needs_attrs(values)))
+      else private$add_activity(SetPrior__new(values))
     },
 
     branch = function(option, continue, ...) {
       stopifnot(length(continue) == length(c(...)))
       stopifnot(all(sapply(c(...), inherits, what = "trajectory")))
       traj <- sapply(c(...), `[`)
-      private$add_activity(Branch__new(private$verbose, option, needs_attrs(option), continue, traj))
+      private$add_activity(Branch__new(option, needs_attrs(option), continue, traj))
     },
 
     rollback = function(amount, times=1, check) {
@@ -225,15 +226,15 @@ Trajectory <- R6::R6Class("trajectory",
       times <- evaluate_value(times)
       if (is.infinite(times)) times <- -1
       if (missing(check))
-        private$add_activity(Rollback__new(private$verbose, amount, times))
-      else private$add_activity(Rollback__new_func(private$verbose, amount, check, needs_attrs(check)))
+        private$add_activity(Rollback__new(amount, times))
+      else private$add_activity(Rollback__new_func(amount, check, needs_attrs(check)))
     },
 
     leave = function(prob) {
       prob <- evaluate_value(prob)
       if (is.function(prob))
-        private$add_activity(Leave__new_func(private$verbose, prob, needs_attrs(prob)))
-      else private$add_activity(Leave__new(private$verbose, prob))
+        private$add_activity(Leave__new_func(prob, needs_attrs(prob)))
+      else private$add_activity(Leave__new(prob))
     },
 
     renege_in = function(t, out=NULL) {
@@ -241,8 +242,8 @@ Trajectory <- R6::R6Class("trajectory",
       t <- evaluate_value(t)
       traj <- as.list(c(out[]))
       if (is.function(t))
-        private$add_activity(RenegeIn__new_func(private$verbose, t, needs_attrs(t), traj))
-      else private$add_activity(RenegeIn__new(private$verbose, t, traj))
+        private$add_activity(RenegeIn__new_func(t, needs_attrs(t), traj))
+      else private$add_activity(RenegeIn__new(t, traj))
     },
 
     renege_if = function(signal, out=NULL) {
@@ -250,25 +251,25 @@ Trajectory <- R6::R6Class("trajectory",
       signal <- evaluate_value(signal)
       traj <- as.list(c(out[]))
       if (is.function(signal))
-        private$add_activity(RenegeIf__new_func(private$verbose, signal, needs_attrs(signal), traj))
-      else private$add_activity(RenegeIf__new(private$verbose, signal, traj))
+        private$add_activity(RenegeIf__new_func(signal, needs_attrs(signal), traj))
+      else private$add_activity(RenegeIf__new(signal, traj))
     },
 
-    renege_abort = function() { private$add_activity(RenegeAbort__new(private$verbose)) },
+    renege_abort = function() { private$add_activity(RenegeAbort__new()) },
 
     replicate = function(n, ...) {
       stopifnot(all(sapply(c(...), inherits, what = "trajectory")))
       n <- evaluate_value(n)
       trj <- sapply(c(...), `[`)
       if (is.function(n))
-        private$add_activity(Clone__new_func(private$verbose, n, needs_attrs(n), trj))
-      else private$add_activity(Clone__new(private$verbose, n, trj))
+        private$add_activity(Clone__new_func(n, needs_attrs(n), trj))
+      else private$add_activity(Clone__new(n, trj))
     },
 
     synchronize = function(wait=TRUE, mon_all=FALSE) {
       wait <- evaluate_value(wait)
       mon_all <- evaluate_value(mon_all)
-      private$add_activity(Synchronize__new(private$verbose, wait, mon_all))
+      private$add_activity(Synchronize__new(wait, mon_all))
     },
 
     batch = function(n, timeout=0, permanent=FALSE, name="", rule=NULL) {
@@ -277,24 +278,24 @@ Trajectory <- R6::R6Class("trajectory",
       permanent <- evaluate_value(permanent)
       name <- evaluate_value(name)
       if (is.function(rule))
-        private$add_activity(Batch__new_func(private$verbose, n, timeout, permanent, name,
+        private$add_activity(Batch__new_func(n, timeout, permanent, name,
                                              rule, needs_attrs(rule)))
-      else private$add_activity(Batch__new(private$verbose, n, timeout, permanent, name))
+      else private$add_activity(Batch__new(n, timeout, permanent, name))
     },
 
-    separate = function() { private$add_activity(Separate__new(private$verbose)) },
+    separate = function() { private$add_activity(Separate__new()) },
 
     send = function(signals, delay=0) {
       signals <- evaluate_value(signals)
       delay <- evaluate_value(delay)
       if (is.function(signals) && is.function(delay))
-        private$add_activity(Send__new_func4(private$verbose, signals, delay,
+        private$add_activity(Send__new_func4(signals, delay,
                                              c(needs_attrs(signals), needs_attrs(delay))))
       else if (is.function(delay))
-        private$add_activity(Send__new_func2(private$verbose, signals, delay, needs_attrs(delay)))
+        private$add_activity(Send__new_func2(signals, delay, needs_attrs(delay)))
       else if (is.function(signals))
-        private$add_activity(Send__new_func1(private$verbose, signals, delay, needs_attrs(signals)))
-      else private$add_activity(Send__new(private$verbose, signals, delay))
+        private$add_activity(Send__new_func1(signals, delay, needs_attrs(signals)))
+      else private$add_activity(Send__new(signals, delay))
     },
 
     trap = function(signals, handler=NULL, interruptible=TRUE) {
@@ -303,30 +304,29 @@ Trajectory <- R6::R6Class("trajectory",
       interruptible <- evaluate_value(interruptible)
       traj <- as.list(c(handler[]))
       if (is.function(signals))
-        private$add_activity(Trap__new_func(private$verbose, signals, needs_attrs(signals),
+        private$add_activity(Trap__new_func(signals, needs_attrs(signals),
                                             traj, interruptible))
-      else private$add_activity(Trap__new(private$verbose, signals, traj, interruptible))
+      else private$add_activity(Trap__new(signals, traj, interruptible))
     },
 
     untrap = function(signals) {
       signals <- evaluate_value(signals)
       if (is.function(signals))
-        private$add_activity(UnTrap__new_func(private$verbose, signals, needs_attrs(signals)))
-      else private$add_activity(UnTrap__new(private$verbose, signals))
+        private$add_activity(UnTrap__new_func(signals, needs_attrs(signals)))
+      else private$add_activity(UnTrap__new(signals))
     },
 
-    wait = function() { private$add_activity(Wait__new(private$verbose)) },
+    wait = function() { private$add_activity(Wait__new()) },
 
     log = function(message) {
       message <- evaluate_value(message)
       if (is.function(message))
-        private$add_activity(Log__new_func(private$verbose, message, needs_attrs(message)))
-      else private$add_activity(Log__new(private$verbose, message))
+        private$add_activity(Log__new_func(message, needs_attrs(message)))
+      else private$add_activity(Log__new(message))
     }
   ),
 
   private = list(
-    verbose = FALSE,
     n_activities = 0,
     ptrs = NULL,
     names = NULL,

@@ -81,11 +81,11 @@ test_that("the activity chain grows as expected", {
   ptr_tail <- t0$tail()
   for (i in 1:N) ptr_tail <- activity_get_prev_(ptr_tail)
 
-  expect_output(activity_print_(ptr_head, 0), "Release")
-  expect_output(activity_print_(t0$tail(), 0), "Release")
+  expect_output(activity_print_(ptr_head, 0, 0), "Release")
+  expect_output(activity_print_(t0$tail(), 0, 0), "Release")
   expect_equal(activity_get_next_(ptr_head), NULL)
-  expect_output(activity_print_(ptr_tail, 0), "Seize")
-  expect_output(activity_print_(t0$head(), 0), "Seize")
+  expect_output(activity_print_(ptr_tail, 0, 0), "Seize")
+  expect_output(activity_print_(t0$head(), 0, 0), "Seize")
   expect_equal(activity_get_prev_(ptr_tail), NULL)
 })
 
@@ -97,11 +97,11 @@ test_that("the activity chain grows as expected using join", {
   ptr_tail <- t$tail()
   for (i in 1:N) ptr_tail <- activity_get_prev_(ptr_tail)
 
-  expect_output(activity_print_(ptr_head, 0), "Release")
-  expect_output(activity_print_(t$tail(), 0), "Release")
+  expect_output(activity_print_(ptr_head, 0, 0), "Release")
+  expect_output(activity_print_(t$tail(), 0, 0), "Release")
   expect_equal(activity_get_next_(ptr_head), NULL)
-  expect_output(activity_print_(ptr_tail, 0), "Seize")
-  expect_output(activity_print_(t$head(), 0), "Seize")
+  expect_output(activity_print_(ptr_tail, 0, 0), "Seize")
+  expect_output(activity_print_(t$head(), 0, 0), "Seize")
   expect_equal(activity_get_prev_(ptr_tail), NULL)
 
   expect_true(length(capture.output(t)) == length(capture.output(t0)))
@@ -182,14 +182,14 @@ test_that("the head/tail pointers are correctly placed", {
 
   t0 %>% seize("nurse", 1)
 
-  expect_output(activity_print_(t0$head(), 0), "Seize")
-  expect_output(activity_print_(t0$tail(), 0), "Seize")
+  expect_output(activity_print_(t0$head(), 0, 0), "Seize")
+  expect_output(activity_print_(t0$tail(), 0, 0), "Seize")
 
   t0 %>% timeout(function() rnorm(1, 15)) %>%
     release("nurse", 1)
 
-  expect_output(activity_print_(t0$head(), 0), "Seize")
-  expect_output(activity_print_(t0$tail(), 0), "Release")
+  expect_output(activity_print_(t0$head(), 0, 0), "Seize")
+  expect_output(activity_print_(t0$tail(), 0, 0), "Release")
 })
 
 t0 <- trajectory(verbose = TRUE) %>%

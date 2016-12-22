@@ -13,7 +13,6 @@ public:
   BASE_CLONEABLE(Activity)
 
   std::string name;
-  bool verbose;
   VEC<int> provide_attrs;
   int n;
   int priority;
@@ -25,14 +24,13 @@ public:
    * @param provide_attrs whether the activity should expose the arrival's attributes
    * @param priority      simulation priority
    */
-  Activity(std::string name, bool verbose,
-           VEC<int> provide_attrs = VEC<int>(0), int priority = 0)
-    : name(name), verbose(verbose), provide_attrs(provide_attrs), n(1),
+  Activity(std::string name, VEC<int> provide_attrs = VEC<int>(0), int priority = 0)
+    : name(name), provide_attrs(provide_attrs), n(1),
       priority(priority), next(NULL), prev(NULL) {}
 
   Activity(const Activity& o)
-    : name(o.name), verbose(o.verbose), provide_attrs(o.provide_attrs),
-      n(o.n), priority(o.priority), next(NULL), prev(NULL) {}
+    : name(o.name), provide_attrs(o.provide_attrs), n(o.n),
+      priority(o.priority), next(NULL), prev(NULL) {}
 
   virtual ~Activity() {}
 
@@ -40,7 +38,7 @@ public:
    * Print the activity info.
    * @param indent number of spaces at the beginning of each line
    */
-  virtual void print(int indent = 0, bool brief = false) {
+  virtual void print(int indent = 0, bool verbose = false, bool brief = false) {
     if (!brief) {
       for (int i = 0; i < indent; ++i)
         Rcpp::Rcout << " ";
@@ -94,10 +92,9 @@ protected:
 // abstract class for multipath activities
 class Fork : public Activity {
 public:
-  Fork(std::string name, bool verbose, VEC<bool> cont, VEC<Rcpp::Environment> trj,
+  Fork(std::string name, VEC<bool> cont, VEC<Rcpp::Environment> trj,
        VEC<int> provide_attrs = VEC<int>(0), int priority = 0)
-    : Activity(name, verbose, provide_attrs, priority),
-      cont(cont), trj(trj), selected(NULL)
+    : Activity(name, provide_attrs, priority), cont(cont), trj(trj), selected(NULL)
   {
     foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
       Rcpp::Function head(itr["head"]);
@@ -126,7 +123,7 @@ public:
       itr->set_prev(this);
   }
 
-  void print(int indent = 0, bool brief = false) {
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
     indent += 2;
     if (!brief) {
       if (indent > 10) return; // max 6 levels
@@ -134,7 +131,7 @@ public:
         for (int j = 0; j < indent; ++j) Rcpp::Rcout << " ";
         Rcpp::Rcout << "Fork " << i+1 << (cont[i] ? ", continue," : ", stop,");
         Rcpp::Function print(trj[i]["print"]);
-        print(indent);
+        print(indent, verbose);
       }
     } else Rcpp::Rcout << trj.size() << " paths" << std::endl;
   }
@@ -186,17 +183,17 @@ class Seize : public Fork, public ResGetter {
 public:
   CLONEABLE(Seize<T>)
 
-  Seize(bool verbose, std::string resource, T amount, int provide_attrs,
+  Seize(std::string resource, T amount, int provide_attrs,
         VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask)
-    : Fork("Seize", verbose, cont, trj, VEC<int>(1, provide_attrs)),
+    : Fork("Seize", cont, trj, VEC<int>(1, provide_attrs)),
       ResGetter(resource), amount(amount), mask(mask) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
     else Rcpp::Rcout << resource << ", " << amount << ", ";
-    Fork::print(indent, brief);
+    Fork::print(indent, verbose, brief);
   }
 
   double run(Arrival* arrival) {
@@ -236,9 +233,9 @@ class SeizeSelected : public Seize<T> {
 public:
   CLONEABLE(SeizeSelected<T>)
 
-  SeizeSelected(bool verbose, int id, T amount, int provide_attrs,
+  SeizeSelected(int id, T amount, int provide_attrs,
                 VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask)
-    : Seize<T>(verbose, "[]", amount, provide_attrs, cont, trj, mask), id(id) {}
+    : Seize<T>("[]", amount, provide_attrs, cont, trj, mask), id(id) {}
 
 protected:
   int id;
@@ -256,12 +253,12 @@ class Release : public Activity, public ResGetter {
 public:
   CLONEABLE(Release<T>)
 
-  Release(bool verbose, std::string resource, T amount, int provide_attrs)
-    : Activity("Release", verbose, VEC<int>(1, provide_attrs), PRIORITY_RELEASE),
+  Release(std::string resource, T amount, int provide_attrs)
+    : Activity("Release", VEC<int>(1, provide_attrs), PRIORITY_RELEASE),
       ResGetter(resource), amount(amount) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
     else Rcpp::Rcout << resource << ", " << amount << std::endl;
@@ -284,8 +281,8 @@ class ReleaseSelected : public Release<T> {
 public:
   CLONEABLE(ReleaseSelected<T>)
 
-  ReleaseSelected(bool verbose, int id, T amount, int provide_attrs)
-    : Release<T>(verbose, "[]", amount, provide_attrs), id(id) {}
+  ReleaseSelected(int id, T amount, int provide_attrs)
+    : Release<T>("[]", amount, provide_attrs), id(id) {}
 
 protected:
   int id;
@@ -303,12 +300,12 @@ class SetCapacity : public Activity, public ResGetter {
 public:
   CLONEABLE(SetCapacity<T>)
 
-  SetCapacity(bool verbose, std::string resource, T value, int provide_attrs)
-    : Activity("SetCapacity", verbose, VEC<int>(1, provide_attrs)),
+  SetCapacity(std::string resource, T value, int provide_attrs)
+    : Activity("SetCapacity", VEC<int>(1, provide_attrs)),
       ResGetter(resource), value(value) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "resource: " << resource << ", value: " << value << " }" << std::endl;
     else Rcpp::Rcout << resource << ", " << value << std::endl;
@@ -333,8 +330,8 @@ class SetCapacitySelected : public SetCapacity<T> {
 public:
   CLONEABLE(SetCapacitySelected<T>)
 
-  SetCapacitySelected(bool verbose, int id, T value, int provide_attrs)
-    : SetCapacity<T>(verbose, "[]", value, provide_attrs), id(id) {}
+  SetCapacitySelected(int id, T value, int provide_attrs)
+    : SetCapacity<T>("[]", value, provide_attrs), id(id) {}
 
 protected:
   int id;
@@ -352,12 +349,12 @@ class SetQueue : public Activity, public ResGetter {
 public:
   CLONEABLE(SetQueue<T>)
 
-  SetQueue(bool verbose, std::string resource, T value, int provide_attrs)
-    : Activity("SetQueue", verbose, VEC<int>(1, provide_attrs)),
+  SetQueue(std::string resource, T value, int provide_attrs)
+    : Activity("SetQueue", VEC<int>(1, provide_attrs)),
       ResGetter(resource), value(value) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "resource: " << resource << ", value: " << value << " }" << std::endl;
     else Rcpp::Rcout << resource << ", " << value << std::endl;
@@ -382,8 +379,8 @@ class SetQueueSelected : public SetQueue<T> {
 public:
   CLONEABLE(SetQueueSelected<T>)
 
-  SetQueueSelected(bool verbose, int id, T value, int provide_attrs)
-    : SetQueue<T>(verbose, "[]", value, provide_attrs), id(id) {}
+  SetQueueSelected(int id, T value, int provide_attrs)
+    : SetQueue<T>("[]", value, provide_attrs), id(id) {}
 
 protected:
   int id;
@@ -401,12 +398,12 @@ class Select : public Activity {
 public:
   CLONEABLE(Select<T>)
 
-  Select(bool verbose, T resources, int provide_attrs, std::string policy, int id)
-    : Activity("Select", verbose, VEC<int>(1, provide_attrs)), resources(resources),
+  Select(T resources, int provide_attrs, std::string policy, int id)
+    : Activity("Select", VEC<int>(1, provide_attrs)), resources(resources),
       policy(policy), id(id), dispatcher(Policy(resources, policy)) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "resources: " << resources << ", policy: " << policy << " }" << std::endl;
     else Rcpp::Rcout << resources << ", " << policy << std::endl;
@@ -437,12 +434,12 @@ class SetAttribute : public Activity {
 public:
   CLONEABLE(SetAttribute<T>)
 
-  SetAttribute(bool verbose, std::string key, T value, int provide_attrs, bool global)
-    : Activity("SetAttribute", verbose, VEC<int>(1, provide_attrs)),
+  SetAttribute(std::string key, T value, int provide_attrs, bool global)
+    : Activity("SetAttribute", VEC<int>(1, provide_attrs)),
       key(key), value(value), global(global) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "key: " << key << ", value: " << value <<
       ", global: " << global << " }" << std::endl;
@@ -471,12 +468,12 @@ class Activate : public Activity {
 public:
   CLONEABLE(Activate<T>)
 
-  Activate(bool verbose, T generator, int provide_attrs)
-    : Activity("Activate", verbose, VEC<int>(1, provide_attrs), PRIORITY_MAX),
+  Activate(T generator, int provide_attrs)
+    : Activity("Activate", VEC<int>(1, provide_attrs), PRIORITY_MAX),
       generator(generator) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "generator: " << generator << " }" << std::endl;
     else Rcpp::Rcout << generator << std::endl;
@@ -500,12 +497,12 @@ class Deactivate : public Activity {
 public:
   CLONEABLE(Deactivate<T>)
 
-  Deactivate(bool verbose, T generator, int provide_attrs)
-    : Activity("Deactivate", verbose, VEC<int>(1, provide_attrs), PRIORITY_MAX),
+  Deactivate(T generator, int provide_attrs)
+    : Activity("Deactivate", VEC<int>(1, provide_attrs), PRIORITY_MAX),
       generator(generator) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "generator: " << generator << " }" << std::endl;
     else Rcpp::Rcout << generator << std::endl;
@@ -529,12 +526,12 @@ class SetTraj : public Activity {
 public:
   CLONEABLE(SetTraj<T>)
 
-  SetTraj(bool verbose, T generator, int provide_attrs, Rcpp::Environment trj)
-    : Activity("SetTraj", verbose, VEC<int>(1, provide_attrs), PRIORITY_MAX),
+  SetTraj(T generator, int provide_attrs, Rcpp::Environment trj)
+    : Activity("SetTraj", VEC<int>(1, provide_attrs), PRIORITY_MAX),
       generator(generator), trj(trj) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "generator: " << generator << ", trajectory: " << trj << " }" << std::endl;
     else Rcpp::Rcout << generator << ", " << trj << std::endl;
@@ -559,12 +556,12 @@ class SetDist : public Activity {
 public:
   CLONEABLE(SetDist<T>)
 
-  SetDist(bool verbose, T generator, int provide_attrs, Rcpp::Function dist)
-    : Activity("SetDist", verbose, VEC<int>(1, provide_attrs), PRIORITY_MAX),
+  SetDist(T generator, int provide_attrs, Rcpp::Function dist)
+    : Activity("SetDist", VEC<int>(1, provide_attrs), PRIORITY_MAX),
       generator(generator), dist(dist) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "generator: " << generator << ", distribution: " << dist << " }" << std::endl;
     else Rcpp::Rcout << generator << ", " << dist << std::endl;
@@ -589,11 +586,11 @@ class SetPrior : public Activity {
 public:
   CLONEABLE(SetPrior<T>)
 
-  SetPrior(bool verbose, T values, int provide_attrs)
-    : Activity("SetPrior", verbose, VEC<int>(1, provide_attrs)), values(values) {}
+  SetPrior(T values, int provide_attrs)
+    : Activity("SetPrior", VEC<int>(1, provide_attrs)), values(values) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "values: " << values << " }" << std::endl;
     else Rcpp::Rcout << values << std::endl;
@@ -621,11 +618,11 @@ class Timeout : public Activity {
 public:
   CLONEABLE(Timeout<T>)
 
-  Timeout(bool verbose, T delay, int provide_attrs)
-    : Activity("Timeout", verbose, VEC<int>(1, provide_attrs)), delay(delay) {}
+  Timeout(T delay, int provide_attrs)
+    : Activity("Timeout", VEC<int>(1, provide_attrs)), delay(delay) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout << "delay: " << delay << " }" << std::endl;
     else Rcpp::Rcout << delay << std::endl;
   }
@@ -647,16 +644,16 @@ class Branch : public Fork {
 public:
   CLONEABLE(Branch)
 
-  Branch(bool verbose, Rcpp::Function option, int provide_attrs,
+  Branch(Rcpp::Function option, int provide_attrs,
          VEC<bool> cont, VEC<Rcpp::Environment> trj)
-    : Fork("Branch", verbose, cont, trj, VEC<int>(1, provide_attrs)), option(option) {}
+    : Fork("Branch", cont, trj, VEC<int>(1, provide_attrs)), option(option) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "option: " << option << " }" << std::endl;
     else Rcpp::Rcout << option << ", ";
-    Fork::print(indent, brief);
+    Fork::print(indent, verbose, brief);
   }
 
   double run(Arrival* arrival) {
@@ -678,9 +675,9 @@ class Rollback : public Activity {
 public:
   CLONEABLE(Rollback)
 
-  Rollback(bool verbose, int amount, int times,
+  Rollback(int amount, int times,
            OPT<Rcpp::Function> check = NONE, int provide_attrs = false)
-    : Activity("Rollback", verbose, VEC<int>(1, provide_attrs)), amount(std::abs(amount)),
+    : Activity("Rollback", VEC<int>(1, provide_attrs)), amount(std::abs(amount)),
       times(times), check(check), cached(NULL), selected(NULL) {}
 
   Rollback(const Rollback& o)
@@ -690,9 +687,9 @@ public:
     pending.clear();
   }
 
-  void print(int indent = 0, bool brief = false) {
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
     if (!cached) cached = goback();
-    Activity::print(indent, brief);
+    Activity::print(indent, verbose, brief);
     if (!brief) {
       Rcpp::Rcout << "amount: " << amount << " (" << cached->name << "), ";
       if (check) Rcpp::Rcout << "check: " << *check;
@@ -755,11 +752,11 @@ class Leave : public Activity {
 public:
   CLONEABLE(Leave<T>)
 
-  Leave(bool verbose, T prob, int provide_attrs)
-    : Activity("Leave", verbose, VEC<int>(1, provide_attrs)), prob(prob) {}
+  Leave(T prob, int provide_attrs)
+    : Activity("Leave", VEC<int>(1, provide_attrs)), prob(prob) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "prob: " << prob << " }" << std::endl;
     else Rcpp::Rcout << prob << std::endl;
@@ -784,16 +781,16 @@ class Clone : public Fork {
 public:
   CLONEABLE(Clone<T>)
 
-  Clone(bool verbose, T n, int provide_attrs, VEC<Rcpp::Environment> trj)
-    : Fork("Clone", verbose, VEC<bool>(trj.size(), true),
+  Clone(T n, int provide_attrs, VEC<Rcpp::Environment> trj)
+    : Fork("Clone", VEC<bool>(trj.size(), true),
       trj, VEC<int>(1, provide_attrs)), n(n) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "n: " << n << " }" << std::endl;
     else Rcpp::Rcout << n << ", ";
-    Fork::print(indent, brief);
+    Fork::print(indent, verbose, brief);
   }
 
   double run(Arrival* arrival) {
@@ -821,8 +818,8 @@ class Synchronize : public Activity {
 public:
   CLONEABLE(Synchronize)
 
-  Synchronize(bool verbose, bool wait, bool terminate)
-    : Activity("Synchronize", verbose), wait(wait), terminate(terminate) {}
+  Synchronize(bool wait, bool terminate)
+    : Activity("Synchronize"), wait(wait), terminate(terminate) {}
 
   Synchronize(const Synchronize& o)
     : Activity(o), wait(o.wait), terminate(o.terminate)
@@ -830,8 +827,8 @@ public:
     pending.clear();
   }
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "wait: " << wait << " }" << std::endl;
     else Rcpp::Rcout << wait << std::endl;
@@ -872,13 +869,13 @@ class Batch : public Activity {
 public:
   CLONEABLE(Batch)
 
-  Batch(bool verbose, int n, double timeout, bool permanent, std::string id = "",
+  Batch(int n, double timeout, bool permanent, std::string id = "",
         OPT<Rcpp::Function> rule = NONE, int provide_attrs = false)
-    : Activity("Batch", verbose, VEC<int>(1, provide_attrs)), n(n),
+    : Activity("Batch", VEC<int>(1, provide_attrs)), n(n),
       timeout(std::abs(timeout)), permanent(permanent), id(id), rule(rule) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "n: " << n << ", timeout: " << timeout << ", permanent: " << permanent <<
       ", name: " << id << " }" << std::endl;
@@ -946,10 +943,10 @@ class Separate : public Activity {
 public:
   CLONEABLE(Separate)
 
-  Separate(bool verbose) : Activity("Separate", verbose) {}
+  Separate() : Activity("Separate") {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout << " }" << std::endl;
     else Rcpp::Rcout << std::endl;
   }
@@ -972,16 +969,16 @@ class RenegeIn : public Fork {
 public:
   CLONEABLE(RenegeIn<T>)
 
-  RenegeIn(bool verbose, T t, int provide_attrs, VEC<Rcpp::Environment> trj)
-    : Fork("RenegeIn", verbose, VEC<bool>(trj.size(), false),
+  RenegeIn(T t, int provide_attrs, VEC<Rcpp::Environment> trj)
+    : Fork("RenegeIn", VEC<bool>(trj.size(), false),
       trj, VEC<int>(1, provide_attrs)), t(t) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "t: " << t << " }" << std::endl;
     else Rcpp::Rcout << t << ", ";
-    Fork::print(indent, brief);
+    Fork::print(indent, verbose, brief);
   }
 
   double run(Arrival* arrival) {
@@ -1005,16 +1002,16 @@ class RenegeIf : public Fork {
 public:
   CLONEABLE(RenegeIf<T>)
 
-  RenegeIf(bool verbose, T signal, int provide_attrs, VEC<Rcpp::Environment> trj)
-    : Fork("RenegeIf", verbose, VEC<bool>(trj.size(), false),
+  RenegeIf(T signal, int provide_attrs, VEC<Rcpp::Environment> trj)
+    : Fork("RenegeIf", VEC<bool>(trj.size(), false),
       trj, VEC<int>(1, provide_attrs)), signal(signal) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "signal: " << signal << " }" << std::endl;
     else Rcpp::Rcout << signal << ", ";
-    Fork::print(indent, brief);
+    Fork::print(indent, verbose, brief);
   }
 
   double run(Arrival* arrival) {
@@ -1037,10 +1034,10 @@ class RenegeAbort : public Activity {
 public:
   CLONEABLE(RenegeAbort)
 
-  RenegeAbort(bool verbose) : Activity("RenegeAbort", verbose) {}
+  RenegeAbort() : Activity("RenegeAbort") {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout << " }" << std::endl;
     else Rcpp::Rcout << std::endl;
   }
@@ -1059,11 +1056,11 @@ class Send : public Activity {
 public:
   CLONEABLE(Send<T COMMA U>)
 
-  Send(bool verbose, T signals, U delay, VEC<int> provide_attrs)
-    : Activity("Send", verbose, provide_attrs), signals(signals), delay(delay) {}
+  Send(T signals, U delay, VEC<int> provide_attrs)
+    : Activity("Send", provide_attrs), signals(signals), delay(delay) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "signals: " << signals << ", delay: " << delay << " }" << std::endl;
     else Rcpp::Rcout << signals << ", " << delay << std::endl;
@@ -1093,25 +1090,25 @@ class Trap : public Fork {
 public:
   CLONEABLE(Trap<T>)
 
-  Trap(bool verbose, T signals, int provide_attrs,
+  Trap(T signals, int provide_attrs,
        VEC<Rcpp::Environment> trj, bool interruptible)
-    : Fork("Trap", verbose, VEC<bool>(trj.size(), false),
+    : Fork("Trap", VEC<bool>(trj.size(), false),
       trj, VEC<int>(1, provide_attrs)),
       signals(signals), interruptible(interruptible) {}
 
   Trap(const Trap& o)
-    : Fork(o.name, o.verbose, o.cont, o.trj, o.provide_attrs),
+    : Fork(o.name, o.cont, o.trj, o.provide_attrs),
       signals(o.signals), interruptible(o.interruptible)
   {
     pending.clear();
   }
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) {
       Rcpp::Rcout << "signals: " << signals << " }" << std::endl;
     } else Rcpp::Rcout << signals << ", ";
-    Fork::print(indent, brief);
+    Fork::print(indent, verbose, brief);
   }
 
   double run(Arrival* arrival) {
@@ -1159,11 +1156,11 @@ class UnTrap : public Activity {
 public:
   CLONEABLE(UnTrap<T>)
 
-  UnTrap(bool verbose, T signals, int provide_attrs)
-    : Activity("UnTrap", verbose, VEC<int>(1, provide_attrs)), signals(signals) {}
+  UnTrap(T signals, int provide_attrs)
+    : Activity("UnTrap", VEC<int>(1, provide_attrs)), signals(signals) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
       "signals: " << signals << " }" << std::endl;
     else Rcpp::Rcout << signals << std::endl;
@@ -1186,10 +1183,10 @@ class Wait : public Activity {
 public:
   CLONEABLE(Wait)
 
-  Wait(bool verbose) : Activity("Wait", verbose) {}
+  Wait() : Activity("Wait") {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout << " }" << std::endl;
     else Rcpp::Rcout << std::endl;
   }
@@ -1205,11 +1202,11 @@ class Log : public Activity {
 public:
   CLONEABLE(Log<T>)
 
-  Log(bool verbose, T message, int provide_attrs)
-    : Activity("Log", verbose, VEC<int>(1, provide_attrs)), message(message) {}
+  Log(T message, int provide_attrs)
+    : Activity("Log", VEC<int>(1, provide_attrs)), message(message) {}
 
-  void print(int indent = 0, bool brief = false) {
-    Activity::print(indent, brief);
+  void print(int indent = 0, bool verbose = false, bool brief = false) {
+    Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout << "message }" << std::endl;
     else Rcpp::Rcout << "message" << std::endl;
   }
