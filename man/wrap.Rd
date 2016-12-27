@@ -34,7 +34,6 @@ envs <- mclapply(1:4, function(i) {
     wrap()
 })
 
-plot_resource_usage(envs, "server")
 }
 \seealso{
 Methods for dealing with a simulation wrapper:

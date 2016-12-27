@@ -12,6 +12,7 @@
 #' \code{\link{plot_evolution_arrival_times}}, \code{\link{plot_attributes}}.
 #' @export
 plot_resource_usage <- function(envs, resource_name, items=c("system", "queue", "server"), steps = FALSE) {
+  .Deprecated("simmer.plot::plot")
   checkInstall(c("dplyr", "tidyr", "ggplot2", "scales"))
   # Hack to avoid spurious notes
   resource <- item <- value <- server <- queue <- system <- replication <- time <- NULL
@@ -66,6 +67,7 @@ plot_resource_usage <- function(envs, resource_name, items=c("system", "queue", 
 #' \code{\link{plot_evolution_arrival_times}}, \code{\link{plot_attributes}}.
 #' @export
 plot_resource_utilization <- function(envs, resources) {
+  .Deprecated("simmer.plot::plot")
   checkInstall(c("dplyr", "tidyr", "ggplot2", "scales"))
   # Hack to avoid spurious notes
   resource <- item <- value <- server <- queue <- system <- replication <- capacity <- runtime <-
@@ -115,6 +117,7 @@ plot_resource_utilization <- function(envs, resources) {
 #' \code{\link{plot_attributes}}.
 #' @export
 plot_evolution_arrival_times <- function(envs, type=c("activity_time", "waiting_time", "flow_time")){
+  .Deprecated("simmer.plot::plot")
   checkInstall(c("dplyr", "tidyr", "ggplot2", "scales"))
   # Hack to avoid spurious notes
   end_time <- start_time <- flow_time <- activity_time <-
@@ -168,6 +171,7 @@ plot_evolution_arrival_times <- function(envs, type=c("activity_time", "waiting_
 #' \code{\link{plot_evolution_arrival_times}}.
 #' @export
 plot_attributes <- function(envs, keys=c()) {
+  .Deprecated("simmer.plot::plot")
   checkInstall(c("dplyr", "tidyr", "ggplot2", "scales"))
   # Hack to avoid spurious notes
   time <- key <- value <- replication <- NULL

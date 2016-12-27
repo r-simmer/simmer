@@ -33,11 +33,9 @@
 #'   add_resource("nurse", 1) %>%
 #'   add_resource("doctor", 2) %>%
 #'   add_resource("administration", 1) %>%
-#'   add_generator("patient", t0, function() rnorm(1, 10, 2))
+#'   add_generator("patient", t0, function() rnorm(1, 10, 2)) %>%
+#'   run(until=80)
 #'
-#' env %>% run(until=80)
-#'
-#' plot_resource_usage(env, "doctor")
 simmer <- function(name="anonymous", verbose=FALSE) Simmer$new(name, verbose)
 
 #' Reset a simulator

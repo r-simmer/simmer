@@ -36,11 +36,9 @@ env <- simmer("SuperDuperSim") \%>\%
   add_resource("nurse", 1) \%>\%
   add_resource("doctor", 2) \%>\%
   add_resource("administration", 1) \%>\%
-  add_generator("patient", t0, function() rnorm(1, 10, 2))
+  add_generator("patient", t0, function() rnorm(1, 10, 2)) \%>\%
+  run(until=80)
 
-env \%>\% run(until=80)
-
-plot_resource_usage(env, "doctor")
 }
 \seealso{
 Methods for dealing with a simulation environment:

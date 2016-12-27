@@ -140,32 +140,6 @@ head(
 
 Unfortunately, as the C++ simulation cores are destroyed, the downside of this kind of parallelization is that one cannot resume execution of the replicas.
 
-## Basic visualization tools
+## Basic visualisation tools
 
-This package provides some basic visualization tools to help you take a glance at your simulations quickly, but of course you probably may want to extract the RAW data with the functions shown above and develop your own data analysis.
-
-For instance, after you've left it simmering for a bit (pun intended), we can have a look at the overall resource utilization. The top and bottom of the error bars show respectively the 25th and 75th percentile of the utilization across all the replications. The top of the bar shows the median utilization.
-
-```{r, message=FALSE}
-plot_resource_utilization(envs, c("nurse", "doctor","administration"))
-```
-
-It is also possible to have a look at a specific resource and its activity during the simulation.
-
-```{r, message=FALSE}
-plot_resource_usage(envs, "doctor", items="server", steps=T)
-```
-
-In the above graph, the individual lines are all separate replications. The step lines are instantaneous utilization and the smooth line is a running average. Let's take a look now at a specific replication. In the example below the 6th replication is shown.
-
-```{r, message=FALSE}
-plot_resource_usage(envs[[6]], "doctor", items="server", steps=T)
-```
-
-Next we can have a look at the evolution of the arrivals' flow time during the simulation. In the below plot, each individual line represents a replication. A smooth line is drawn over them. All arrivals that didn't finish their entire trajectory are excluded from the plot.
-
-```{r, message=FALSE}
-plot_evolution_arrival_times(envs, type = "flow_time")
-```
-
-Similarly one can have a look at the evolution of the activity times with ```type = "activity_time"``` and waiting times with ```type = "waiting_time"```.
+You may want to try the `simmer.plot` package, a plugin for `simmer` that provides some basic visualisation tools to help you take a quick glance at your simulation results or debug a trajectory object.

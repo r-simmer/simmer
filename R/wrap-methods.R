@@ -30,7 +30,6 @@
 #'     wrap()
 #' })
 #'
-#' plot_resource_usage(envs, "server")
 wrap <- function(.env) Wrap$new(.env)
 
 #' @export
