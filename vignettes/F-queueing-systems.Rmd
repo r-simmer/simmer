@@ -238,7 +238,7 @@ In the analysis, we filter arrivals from generator 1 that reach queues 3 and 4, 
 
 ```{r}
 res <- get_mon_arrivals(env, per_resource = TRUE) %>%
-  select(name, resource) %>%
+  dplyr::select(name, resource) %>%
   filter(resource %in% c("md1_3", "md1_4"))
 arr <- get_mon_arrivals(env) %>%
   mutate(waiting_time = end_time - (start_time + activity_time),
