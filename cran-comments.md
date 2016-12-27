@@ -27,7 +27,7 @@ File 'LICENSE':
   COPYRIGHT HOLDERS: BART SMEETS, IÑAKI UCAR
 
 Possibly mis-spelled words in DESCRIPTION:
-  DES (6:6, 8:70)
+  DES (9:6, 10:55)
 
 * checking installed package size ... NOTE
   installed size is  10.1Mb
