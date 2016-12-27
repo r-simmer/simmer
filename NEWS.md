@@ -1,4 +1,4 @@
-# simmer 3.5.1.9000
+# simmer 3.6.0
 
 ## New features:
 
@@ -8,6 +8,7 @@
 ## Minor changes and fixes:
 
 * `create_trajectory()` has been deprecated in favor of `trajectory()` (76c1317).
+* `plot_resource_usage()`, `plot_resource_utilization()`, `plot_evolution_arrival_times()` and `plot_attributes()` have been deprecated and will be removed in the next release in order to minimise dependencies (5b43f2b). We plan to release a new package on CRAN covering these features and new ones.
 * All methods are now S3 methods, so that a nice intelligible error is displayed if you apply a method to the wrong object (e891045).
 * All the activity management -related stuff has been removed, i.e, `get_head()`, `get_tail()`, `print_activity()`, `get_next_activity()`, `get_prev_activity()` (f86375a). These methods were only useful for development purposes and nobody should be using them. And it was never a good idea to directly expose external pointers.
 * Clone all trajectories before passing them to the C++ core (f655cae).

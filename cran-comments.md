@@ -1,10 +1,10 @@
-## New patch release
+## New minor release
 
-Some minor enhancements, more documentation and bug fixes.
+Some new features and improvements for dealing with trajectories. Functions have been converted to S3 methods and some of them have been deprecated. In particular, we plan to remove all the plotting functionalities in the next release, which are non-essential to DES, and in the meantime, release a new package on CRAN covering these features.
 
 ## Test environments
 
-* Fedora 24 + GCC + clang (local), R 3.3.1
+* Fedora 25 + GCC + clang (local), R 3.3.2
 * Rocker image, GCC + SAN + R devel
 * Rocker image, clang + UBSAN + R devel
 * Docker image, clang + R patched
@@ -30,9 +30,9 @@ Possibly mis-spelled words in DESCRIPTION:
   DES (6:6, 8:70)
 
 * checking installed package size ... NOTE
-  installed size is  8.9Mb
+  installed size is  10.1Mb
   sub-directories of 1Mb or more:
-    libs   7.9Mb
+    libs   9.0Mb
 
 ## Downstream dependencies
 
