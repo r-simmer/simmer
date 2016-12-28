@@ -22,7 +22,7 @@ theme_set(theme_bw())
 
 ## Introduction
 
-These examples are adapted from the Python package 'SimPy', [here](https://simpy.readthedocs.io/en/latest/examples). Users familiar with SimPy may find these examples helpful for transitioning to `simmer`. Some very basic material is not covered. Beginners should first read the vignettes 'Introduction', 'Terminology', 'Advanced Trajectory Usage' and 'The Bank Tutorial'.
+These examples are adapted from the Python package 'SimPy', [here](https://simpy.readthedocs.io/en/latest/examples). Users familiar with SimPy may find these examples helpful for transitioning to `simmer`. Some very basic material is not covered. Beginners should first read the vignettes [_Introduction to simmer_](A-introduction.html), [_Terminology_](B-terminology.html), [_Advanced Trajectory Usage_](C-trajectories.html) and [_The Bank Tutorial_](D-bank-1.html).
 
 ## Carwash
 

@@ -142,4 +142,7 @@ Unfortunately, as the C++ simulation cores are destroyed, the downside of this k
 
 ## Basic visualisation tools
 
-You may want to try the `simmer.plot` package, a plugin for `simmer` that provides some basic visualisation tools to help you take a quick glance at your simulation results or debug a trajectory object.
+You may want to try the `simmer.plot` package, a plugin for `simmer` that provides some basic visualisation tools to help you take a quick glance at your simulation results or debug a trajectory object:
+
+- [_Plotting simmer statistics_](http://r-simmer.org/extensions/plot/articles/plot.simmer.html)
+- [_Plotting simmer trajectories_](http://r-simmer.org/extensions/plot/articles/plot.trajectory.html).

@@ -7,13 +7,21 @@
 
 **simmer** is a process-oriented and trajectory-based Discrete-Event Simulation (DES) package for R. Designed to be a generic framework like [SimPy](https://simpy.readthedocs.org) or [SimJulia](http://simjuliajl.readthedocs.org), it leverages the power of [Rcpp](http://www.rcpp.org/) to boost the performance and turning DES in R feasible. As a noteworthy characteristic, simmer exploits the concept of _trajectory_: a common path in the simulation model for entities of the same type. It is pretty flexible and simple to use, and leverages the chaining/piping workflow introduced by the [magrittr](https://github.com/smbache/magrittr) package.
 
-## Documentation
+## Extensions
 
-Documentation is available at [r-simmer.org/reference](http://r-simmer.org/reference).
+| Package          | Description                                     | Status
+| ---------------- | ----------------------------------------------- | ------------------
+| [**simmer.plot**](http://r-simmer.org/extensions/plot)  |  Plotting Methods for 'simmer' | [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/simmer.plot)](http://cran.r-project.org/package=simmer.plot)
+| **simmer.optim** | Parameter Optimization Functions for 'simmer' | [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/simmer.optim)](http://cran.r-project.org/package=simmer.optim)
+| **simmer.json**  | Read / Load 'simmer' Definitions in JSON Format | [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/simmer.json)](http://cran.r-project.org/package=simmer.json)
 
 ## Mailing list
 
 For bugs and/or issues, create a new issue on GitHub. For other questions or comments, please subscribe to the [simmer-devel mailing list](https://groups.google.com/forum/#!forum/simmer-devel). You must be a member to post messages, but anyone can read the archived discussions.
+
+## Documentation
+
+Documentation is available at [r-simmer.org/reference](http://r-simmer.org/reference).
 
 ## Installation
 

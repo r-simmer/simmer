@@ -83,3 +83,8 @@ navbar:
   - text: "News"
     icon: fa-newspaper-o
     href: news/index.html
+  - text: "Extensions"
+    icon: fa-puzzle-piece
+    menu:
+      - text: "simmer.plot"
+        href: extensions/plot
