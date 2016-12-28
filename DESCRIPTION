@@ -29,7 +29,6 @@ Suggests:
     dplyr,
     tidyr,
     ggplot2,
-    scales,
     testthat,
     knitr,
     rmarkdown,
