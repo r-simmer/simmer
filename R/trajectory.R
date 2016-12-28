@@ -49,8 +49,7 @@ Trajectory <- R6Class("trajectory",
           n_activities <<- n_activities + activity_get_n_(new_ptr)
           new_ptr
         })
-        mapply(function(i, j) activity_chain_(i, j),
-               utils::head(ptrs, -1), utils::tail(ptrs, -1))
+        mapply(function(i, j) activity_chain_(i, j), ptrs[-length(ptrs)], ptrs[-1])
         names <- private$names[elems]
       }
       new$.__enclos_env__$private$ptrs <- ptrs
