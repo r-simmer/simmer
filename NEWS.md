@@ -1,3 +1,9 @@
+# simmer 3.6.0.9000
+
+## Minor changes and fixes:
+
+* Remove plotting functions (bb9656b), deprecated since v3.6.0. The new `simmer.plot` package (on CRAN) already covers these features among others.
+
 # simmer 3.6.0
 
 ## New features:
