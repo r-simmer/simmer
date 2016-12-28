@@ -36,29 +36,6 @@ envs_apply <- function(envs, method, ...) {
   }))
 }
 
-checkInstall <- function(pkgs) {
-  good <- rep(TRUE, length(pkgs))
-  for (i in seq(along = pkgs)) {
-    tested <- try(find.package(pkgs[i]), silent = TRUE)
-    if (class(tested)[1] == "try-error") good[i] <- FALSE
-  }
-  if (any(!good)) {
-    pklist <- paste(pkgs[!good], collapse = ", ") # nocov start
-    cat(paste("simmer's plotting capabilities depend on ",
-              ifelse(sum(!good) > 1, "missing packages (", "a missing package ("),
-              pklist,
-              ").\nWould you like to try to install",
-              ifelse(sum(!good) > 1, " them", " it"),
-              " now?",
-              sep = ""))
-    if (interactive()) {
-      if (utils::menu(c("yes", "no")) == 1)
-        utils::install.packages(pkgs[!good])
-      else stop()
-    } else stop() # nocov end
-  }
-}
-
 make_resetable <- function(distribution) {
   init <- as.list(environment(distribution))
   environment(distribution)$.reset <- new.env(parent = environment(distribution))
