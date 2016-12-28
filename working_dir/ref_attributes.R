@@ -1,4 +1,5 @@
 library(simmer)
+library(simmer.plot)
 
 t0 <- trajectory() %>%
   set_attribute("health", function() sample(40:80,1)) %>%
@@ -27,6 +28,6 @@ env<-simmer() %>%
 
 attributes <- env %>% get_mon_attributes()
 
-plot_resource_usage(env, "nurse", items="server", steps=T)
-plot_attributes(env)
-plot_attributes(env, "health")
+plot(env, "res", "usage", "nurse", items="server", steps=T)
+plot(env, "attr")
+plot(env, "attr", keys="health")

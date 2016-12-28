@@ -20,7 +20,7 @@ theme_set(theme_bw())
 
 ```{r, message=FALSE}
 library(simmer)
-library(ggplot2)
+library(simmer.plot)
 library(dplyr)
 library(parallel)
 set.seed(1234)
@@ -58,11 +58,11 @@ mm1.env <- simmer() %>%
   run(until=2000)
 ```
 
-Our package provides convenience plotting functions to quickly visualise the usage of a resource over time, for instance. Down below, we can see how the simulation converges to the theoretical average number of customers in the system.
+Our `simmer.plot` package provides convenience plotting functions to quickly visualise the usage of a resource over time, for instance. Down below, we can see how the simulation converges to the theoretical average number of customers in the system.
 
 ```{r}
 # Evolution of the average number of customers in the system
-graph <- plot_resource_usage(mm1.env, "resource", items="system")
+graph <- plot(mm1.env, "resources", "usage", "resource", items="system")
 
 # Theoretical value
 mm1.N <- rho/(1-rho)
@@ -72,7 +72,7 @@ graph + geom_hline(yintercept=mm1.N)
 It is possible also to visualise, for instance, the instantaneous usage of individual elements by playing with the parameters `items` and `steps`.
 
 ```{r}
-plot_resource_usage(mm1.env, "resource", items=c("queue", "server"), steps=TRUE) +
+plot(mm1.env, "resources", "usage", "resource", items=c("queue", "server"), steps=TRUE) +
   xlim(0, 20) + ylim(0, 4)
 ```
 

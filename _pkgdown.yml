@@ -56,10 +56,6 @@ reference:
       - from_to
       - schedule
       - to
-  - title: "Plotting"
-    desc: "Basic plotting functions"
-    contents:
-      - starts_with("plot_")
 
 navbar:
   title: simmer | DES for R

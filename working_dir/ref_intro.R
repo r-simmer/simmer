@@ -1,4 +1,5 @@
 library(simmer)
+library(simmer.plot)
 
 t0 <- trajectory("my trajectory") %>%
   ## add an intake activity
@@ -23,6 +24,6 @@ envs <- lapply(1:100, function(i) {
     run(80)
 })
 
-plot_resource_usage(envs, "doctor", items="server", steps=T)
-plot_resource_utilization(envs, c("nurse", "doctor","administration"))
-plot_evolution_arrival_times(envs, type="flow_time")
+plot(envs, "res", "usage", "doctor", items="server", steps=T)
+plot(envs, "res", "utilization", c("nurse", "doctor","administration"))
+plot(envs, "arr", "flow_time")

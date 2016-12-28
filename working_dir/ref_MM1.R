@@ -1,4 +1,5 @@
 library(simmer)
+library(simmer.plot)
 
 mm1 <- trajectory() %>%
   branch(function() 1, T,
@@ -14,7 +15,7 @@ env <- simmer(verbose=T) %>%
   add_generator("customer", mm1, function() rexp(1, 1), mon=F) %>%
   run(1000)
 
-plot_resource_usage(env, "server")
+plot(env, "res", "usage", "server")
 
 #################################################################
 
@@ -31,4 +32,4 @@ system.time({
 })
 # 16 seconds (Simpy: 30 seconds)
 
-plot_resource_usage(env, "server")
+plot(env, "res", "usage", "server")

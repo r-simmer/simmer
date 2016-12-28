@@ -28,7 +28,7 @@ theme_set(theme_bw())
 
 ```{r, message=FALSE}
 library(simmer)
-library(ggplot2)
+library(simmer.plot)
 library(dplyr)
 library(tidyr)
 set.seed(1234)
@@ -155,7 +155,7 @@ This `option.3` is equivalent to `option.1` in terms of performance. But, of cou
 gas.station <- option.3(5000)
 
 # Evolution + theoretical value
-graph <- plot_resource_usage(gas.station, "pump", items="system")
+graph <- plot(gas.station, "resources", "usage", "pump", items="system")
 graph + geom_hline(yintercept=N_average_theor)
 ```
 
@@ -349,7 +349,7 @@ Options 1, 2 and 3 are slower, but they give us the correct numbers, because the
 gas.station <- option.1(5000)
 
 # Evolution + theoretical value
-graph <- plot_resource_usage(gas.station, "pump", items="system")
+graph <- plot(gas.station, "resources", "usage", "pump", items="system")
 graph + geom_hline(yintercept=N_average_theor)
 ```
 

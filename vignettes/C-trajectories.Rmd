@@ -20,7 +20,7 @@ theme_set(theme_bw())
 
 ```{r, message=FALSE}
 library(simmer)
-library(ggplot2)
+library(simmer.plot)
 ```
 
 ## Available set of activities
@@ -354,8 +354,7 @@ env <- env %>%
   add_generator("t2_", t2, function() rexp(1, 1)) %>%
   run(100)
 
-plot_resource_usage(env, "res1", steps = TRUE)
-plot_resource_usage(env, "res2", steps = TRUE)
+plot(env, "resources", "usage", c("res1", "res2"), steps = TRUE)
 ```
 
 ### `select()`

@@ -24,6 +24,7 @@ Imports:
     methods,
     utils
 Suggests:
+    simmer.plot,
     parallel,
     dplyr,
     tidyr,

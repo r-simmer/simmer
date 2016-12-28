@@ -1,4 +1,5 @@
 library(simmer)
+library(simmer.plot)
 
 # define a 24-hour period
 #  - from 8 to 16 h -> 10 units
@@ -19,7 +20,7 @@ env <- simmer() %>%
   add_generator("patient", t0, function() rexp(1, 5)) %>%
   run(200)
 
-plot_resource_usage(env, "doctor")
+plot(env, "res", "usage", "doctor")
 
 t0<-
   trajectory() %>%
@@ -34,4 +35,4 @@ sim<-
   run()
 
 get_mon_arrivals(sim)
-plot_resource_usage(sim, "t-rex")
+plot(sim, "res", "usage", "t-rex")
