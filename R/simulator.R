@@ -1,4 +1,4 @@
-Simmer <- R6::R6Class("simmer",
+Simmer <- R6Class("simmer",
   public = list(
     name = NA,
 

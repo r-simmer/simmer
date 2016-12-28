@@ -1,4 +1,4 @@
-Wrap <- R6::R6Class("wrap",
+Wrap <- R6Class("wrap",
   public = list(
     name = NA,
 

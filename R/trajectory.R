@@ -1,4 +1,4 @@
-Trajectory <- R6::R6Class("trajectory",
+Trajectory <- R6Class("trajectory",
   public = list(
     name = NA,
     verbose = NA,

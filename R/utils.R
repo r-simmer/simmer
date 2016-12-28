@@ -1,5 +1,8 @@
 #' @useDynLib simmer
 #' @importFrom Rcpp evalCpp
+#' @importFrom R6 R6Class
+NULL
+
 #' @importFrom magrittr %>%
 #' @export
 magrittr::`%>%`
