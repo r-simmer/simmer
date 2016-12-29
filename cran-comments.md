@@ -23,8 +23,8 @@ Maintainer: ‘Iñaki Ucar <i.ucar86@gmail.com>’
 License components with restrictions and base license permitting such:
   MIT + file LICENSE
 File 'LICENSE':
-  YEAR: 2014-2016
-  COPYRIGHT HOLDERS: BART SMEETS, IÑAKI UCAR
+  YEAR: 2014-2017
+  COPYRIGHT HOLDER: Bart Smeets, Iñaki Ucar
 
 Possibly mis-spelled words in DESCRIPTION:
   DES (9:6, 10:55)
