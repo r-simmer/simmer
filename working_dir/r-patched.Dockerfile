@@ -41,6 +41,7 @@ RUN apt-get update -qq \
 		libtiff5-dev \
 		libssl-dev \
 		libx11-dev \
+		libxml2-dev \
 		libxt-dev \
 		mpack \
 		subversion \
