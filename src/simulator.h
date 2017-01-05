@@ -154,7 +154,7 @@ public:
    * @param   until   time of ending
    */
   void run(double until) {
-    long int nsteps = 0;
+    size_t nsteps = 0;
     while (step(until))
       if (++nsteps % 100000 == 0) Rcpp::checkUserInterrupt();
   }
@@ -277,7 +277,7 @@ public:
     }
   }
 
-  unsigned int get_batch_count() { return b_count++; }
+  size_t get_batch_count() { return b_count++; }
 
   void broadcast(VEC<std::string> signals) {
     foreach_ (std::string signal, signals) {
@@ -463,7 +463,7 @@ private:
   ArrMap arrival_map;       /**< map of ongoing arrivals */
   NamBMap namedb_map;       /**< map of named batches */
   UnnBMap unnamedb_map;     /**< map of unnamed batches */
-  unsigned int b_count;     /**< unnamed batch counter */
+  size_t b_count;           /**< unnamed batch counter */
   SigMap signal_map;        /**< map of arrivals subscribed to signals */
   Attr attributes;          /**< user-defined (key, value) pairs */
   StatsMap arr_traj_stats;  /**< arrival statistics per trajectory */

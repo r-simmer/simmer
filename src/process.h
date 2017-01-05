@@ -45,7 +45,7 @@ private:
   VEC<int> value;
   int period;
   Setter set;
-  unsigned int index;
+  size_t index;
 };
 
 class Task : public Process {
@@ -275,7 +275,7 @@ public:
     : Arrival(sim, name, true, Order(), NULL, priority), permanent(permanent) {}
 
   Batched(const Batched& o) : Arrival(o), arrivals(o.arrivals), permanent(o.permanent) {
-    for (unsigned int i=0; i<arrivals.size(); i++) {
+    for (size_t i=0; i<arrivals.size(); i++) {
       arrivals[i] = arrivals[i]->clone();
       arrivals[i]->register_entity(this);
     }

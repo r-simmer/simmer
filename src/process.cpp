@@ -23,10 +23,10 @@ void Generator::set_first_activity() {
 void Generator::run() {
   // get the delay for the next (n) arrival(s)
   Rcpp::NumericVector delays = dist();
-  int n = delays.size();
+  size_t n = delays.size();
   double delay = 0;
 
-  for(int i = 0; i < n; ++i) {
+  for (size_t i = 0; i < n; ++i) {
     if (delays[i] < 0) {
       active = false;
       return;
