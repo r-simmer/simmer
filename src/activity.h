@@ -191,7 +191,7 @@ public:
   void print(size_t indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
-      "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
+      "resource: " << resource << ", " << "amount: " << amount << " }" << std::endl;
     else Rcpp::Rcout << resource << ", " << amount << ", ";
     Fork::print(indent, verbose, brief);
   }
@@ -260,7 +260,7 @@ public:
   void print(size_t indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
-      "resource: " << resource << " | " << "amount: " << amount << " }" << std::endl;
+      "resource: " << resource << ", " << "amount: " << amount << " }" << std::endl;
     else Rcpp::Rcout << resource << ", " << amount << std::endl;
   }
 
