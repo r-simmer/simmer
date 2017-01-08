@@ -2,7 +2,7 @@
 #include "simulator.h"
 
 int rand_int(int min, int max) {
-  return int(round(R::runif(0, 1) * (max - min + 1) + min - 0.5));
+  return int(R::fround(R::runif(0, 1) * (max - min + 1) + min - 0.5, 0));
 }
 
 Resource* Policy::policy_shortest_queue(Simulator* sim) {
