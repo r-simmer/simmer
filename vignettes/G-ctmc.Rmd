@@ -14,8 +14,6 @@ vignette: >
 ```{r, cache = FALSE, include=FALSE}
 knitr::opts_chunk$set(collapse = T, comment = "#>",
                       fig.width = 6, fig.height = 4, fig.align = "center")
-library(ggplot2)
-theme_set(theme_bw())
 ```
 
 <script type="text/x-mathjax-config">
@@ -29,8 +27,6 @@ theme_set(theme_bw())
 ```{r, message=FALSE}
 library(simmer)
 library(simmer.plot)
-library(dplyr)
-library(tidyr)
 set.seed(1234)
 ```
 
@@ -155,8 +151,8 @@ This `option.3` is equivalent to `option.1` in terms of performance. But, of cou
 gas.station <- option.3(5000)
 
 # Evolution + theoretical value
-graph <- plot(gas.station, "resources", "usage", "pump", items="system")
-graph + geom_hline(yintercept=N_average_theor)
+plot(gas.station, "resources", "usage", "pump", items="system") +
+  geom_hline(yintercept=N_average_theor)
 ```
 
 And these are some performance results:
@@ -168,8 +164,8 @@ t <- 1000/lambda
 tm <- microbenchmark(option.1(t), 
                      option.2(t), 
                      option.3(t))
-graph <- autoplot(tm)
-graph + scale_y_log10(breaks=function(limits) pretty(limits, 5)) +
+autoplot(tm) + 
+  scale_y_log10(breaks=function(limits) pretty(limits, 5)) +
   ylab("Time [milliseconds]")
 ```
 
@@ -349,8 +345,8 @@ Options 1, 2 and 3 are slower, but they give us the correct numbers, because the
 gas.station <- option.1(5000)
 
 # Evolution + theoretical value
-graph <- plot(gas.station, "resources", "usage", "pump", items="system")
-graph + geom_hline(yintercept=N_average_theor)
+plot(gas.station, "resources", "usage", "pump", items="system") + 
+  geom_hline(yintercept=N_average_theor)
 ```
 
 However, it is not the case in options 4 and 5. The parameters of these models are _adulterated_ to fit our performance purposes. Therefore, we need to extract the RAW data, rescale the numbers and plot them. And, of course, we get the same figure:
@@ -360,20 +356,20 @@ gas.station <- option.5(5000)
 
 limits <- data.frame(item = c("system"), value = c(2))
 
-graph <- gas.station %>% get_mon_resources() %>% 
-  gather(item, value, server, queue, system) %>%
-  mutate(value = round(value * 2/5),                  # rescaling here <------
+get_mon_resources(gas.station) %>% 
+  tidyr::gather(item, value, server, queue, system) %>%
+  dplyr::mutate(value = round(value * 2/5),                  # rescaling here <------
          item = factor(item)) %>%
-  filter(item %in% "system") %>%
-  group_by(resource, replication, item) %>%
-  mutate(mean = c(0, cumsum(head(value, -1) * diff(time))) / time) %>% 
-  ungroup() %>%
+  dplyr::filter(item %in% "system") %>%
+  dplyr::group_by(resource, replication, item) %>%
+  dplyr::mutate(mean = c(0, cumsum(head(value, -1) * diff(time))) / time) %>% 
+  dplyr::ungroup() %>%
   ggplot() + aes(x=time, color=item) +
   geom_line(aes(y=mean, group=interaction(replication, item))) +
   ggtitle("Resource usage: pump") +
   ylab("in use") + xlab("time") + expand_limits(y=0) +
-  geom_hline(aes(yintercept=value, color=item), limits, lty=2)
-graph + geom_hline(yintercept=N_average_theor)
+  geom_hline(aes(yintercept=value, color=item), limits, lty=2) + 
+  geom_hline(yintercept=N_average_theor)
 ```
 
 Finally, these are some performance results:
@@ -387,8 +383,8 @@ tm <- microbenchmark(option.1(t),
                      option.3(t),
                      option.4(t),
                      option.5(t))
-graph <- autoplot(tm)
-graph + scale_y_log10(breaks=function(limits) pretty(limits, 5)) +
+autoplot(tm) + 
+  scale_y_log10(breaks=function(limits) pretty(limits, 5)) +
   ylab("Time [milliseconds]")
 ```
 

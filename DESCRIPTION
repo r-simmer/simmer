@@ -27,7 +27,6 @@ Suggests:
     parallel,
     dplyr,
     tidyr,
-    ggplot2,
     testthat,
     knitr,
     rmarkdown,

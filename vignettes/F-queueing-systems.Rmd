@@ -14,14 +14,11 @@ vignette: >
 ```{r, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(collapse = T, comment = "#>", 
                       fig.width = 6, fig.height = 4, fig.align = "center")
-library(ggplot2)
-theme_set(theme_bw())
 ```
 
 ```{r, message=FALSE}
 library(simmer)
 library(simmer.plot)
-library(dplyr)
 library(parallel)
 set.seed(1234)
 ```
@@ -61,12 +58,12 @@ mm1.env <- simmer() %>%
 Our `simmer.plot` package provides convenience plotting functions to quickly visualise the usage of a resource over time, for instance. Down below, we can see how the simulation converges to the theoretical average number of customers in the system.
 
 ```{r}
-# Evolution of the average number of customers in the system
-graph <- plot(mm1.env, "resources", "usage", "resource", items="system")
-
 # Theoretical value
 mm1.N <- rho/(1-rho)
-graph + geom_hline(yintercept=mm1.N)
+
+# Evolution of the average number of customers in the system
+plot(mm1.env, "resources", "usage", "resource", items="system") +
+  geom_hline(yintercept=mm1.N)
 ```
 
 It is possible also to visualise, for instance, the instantaneous usage of individual elements by playing with the parameters `items` and `steps`.
@@ -102,9 +99,9 @@ Parallelizing has the shortcoming that we lose the underlying C++ objects when e
 
 ```{r, eval=FALSE}
 t_system <- get_mon_arrivals(envs) %>%
-  mutate(t_system = end_time - start_time) %>%
-  group_by(replication) %>%
-  summarise(mean = mean(t_system))
+  dplyr::mutate(t_system = end_time - start_time) %>%
+  dplyr::group_by(replication) %>%
+  dplyr::summarise(mean = mean(t_system))
 
 t.test(t_system$mean)
 #> 
@@ -159,7 +156,7 @@ In this case, there are rejections when the queue is full.
 ```{r}
 mm23.arrivals <- get_mon_arrivals(mm23.env)
 mm23.arrivals %>%
-  summarise(rejection_rate = sum(!finished)/length(finished))
+  dplyr::summarise(rejection_rate = sum(!finished)/length(finished))
 ```
 
 Despite this, the time spent in the system still follows an exponential random variable, as in the M/M/1 case, but the average has dropped.
@@ -239,14 +236,14 @@ In the analysis, we filter arrivals from generator 1 that reach queues 3 and 4, 
 ```{r}
 res <- get_mon_arrivals(env, per_resource = TRUE) %>%
   dplyr::select(name, resource) %>%
-  filter(resource %in% c("md1_3", "md1_4"))
+  dplyr::filter(resource %in% c("md1_3", "md1_4"))
 arr <- get_mon_arrivals(env) %>%
-  mutate(waiting_time = end_time - (start_time + activity_time),
-         generator = regmatches(name, regexpr("arrival[[:digit:]]", name))) %>%
-  left_join(res) %>%
-  group_by(generator, resource)
+  dplyr::mutate(waiting_time = end_time - (start_time + activity_time),
+                generator = regmatches(name, regexpr("arrival[[:digit:]]", name))) %>%
+  dplyr::left_join(res) %>%
+  dplyr::group_by(generator, resource)
 
-summarise(arr, average = sum(waiting_time) / n())
+dplyr::summarise(arr, average = sum(waiting_time) / n())
 get_n_generated(env, "arrival1_") + get_n_generated(env, "arrival4_")
-count(arr)
+dplyr::count(arr)
 ```
