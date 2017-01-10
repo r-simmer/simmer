@@ -7,9 +7,9 @@ reference:
     desc: "Methods for building and manipulating trajectory objects"
     contents:
       - trajectory
-      - Extract
+      - Extract.trajectory
       - join
-      - length
+      - length.trajectory
   - title: "Add activities"
     desc: "Verbs for appending activities to trajectory objects"
     contents:

@@ -85,11 +85,11 @@ create_trajectory <- function(name="anonymous", verbose=FALSE) { # nocov start
 #' @return Returns a new trajectory object.
 #' @seealso \code{\link{length.trajectory}}, \code{\link{get_n_activities}}, \code{\link{join}}.
 #'
-#' @name Extract
+#' @name Extract.trajectory
 #' @export
 `[.trajectory` <- function(x, i) x$subset(i)
 
-#' @rdname Extract
+#' @rdname Extract.trajectory
 #' @export
 `[[.trajectory` <- function(x, i) {
   stopifnot(length(i) == 1L)
@@ -103,16 +103,15 @@ create_trajectory <- function(name="anonymous", verbose=FALSE) { # nocov start
 #' of first-level activities (sub-trajectories not included). \code{get_n_activities}
 #' returns the total number of activities (sub-trajectories included).
 #'
-#' @inheritParams Extract
+#' @inheritParams Extract.trajectory
 #'
 #' @return Returns a non-negative integer of length 1.
 #' @seealso \code{\link{[.trajectory}}, \code{\link{[[.trajectory}}, \code{\link{join}}.
 #'
-#' @name length
 #' @export
 length.trajectory <- function(x) x$length()
 
-#' @rdname length
+#' @rdname length.trajectory
 #' @export
 get_n_activities <- function(x) UseMethod("get_n_activities")
 
