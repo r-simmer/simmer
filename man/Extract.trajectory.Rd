@@ -3,12 +3,18 @@
 \name{Extract.trajectory}
 \alias{Extract.trajectory}
 \alias{[.trajectory}
+\alias{[<-.trajectory}
 \alias{[[.trajectory}
-\title{Extract parts of a trajectory}
+\alias{[[<-.trajectory}
+\title{Extract or replace parts of a trajectory}
 \usage{
 \method{[}{trajectory}(x, i)
 
 \method{[[}{trajectory}(x, i)
+
+\method{[}{trajectory}(x, i) <- value
+
+\method{[[}{trajectory}(x, i) <- value
 }
 \arguments{
 \item{x}{the trajectory object.}
@@ -28,12 +34,14 @@ match the corresponding extent.
 An empty index will return the whole trajectory.
 
 An index value of \code{NULL} is treated as if it were \code{integer(0)}.}
+
+\item{value}{another trajectory object.}
 }
 \value{
 Returns a new trajectory object.
 }
 \description{
-Operators acting on trajectories.
+Operators acting on trajectories to extract or replace parts.
 }
 \seealso{
 \code{\link{length.trajectory}}, \code{\link{get_n_activities}}, \code{\link{join}}.

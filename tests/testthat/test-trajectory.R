@@ -213,6 +213,25 @@ test_that("special cases subsetting with [ works as expected", {
   expect_equal(get_n_activities(test), 0)
 })
 
+test_that("special cases replacing with [ works as expected", {
+  test <- t1[]
+  test[] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 5)
+  test <- t1[]
+  test[NULL] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 14)
+  test <- t1[]
+  test[NA] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 14)
+  test <- trajectory()
+  test[] <- t0
+  expect_equal(length(test), 0)
+  expect_equal(get_n_activities(test), 0)
+})
+
 test_that("logical subsetting with [ works as expected", {
   test <- t1[TRUE]
   expect_equal(length(test), 5)
@@ -232,6 +251,29 @@ test_that("logical subsetting with [ works as expected", {
   expect_error(t1[rep(TRUE, 20)])
 })
 
+test_that("logical replacing with [ works as expected", {
+  test <- t1[]
+  test[TRUE] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 5)
+  test <- t1[]
+  test[c(rep(FALSE, 4), TRUE)] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 9)
+  test <- t1[]
+  test[c(TRUE, FALSE, TRUE, FALSE, TRUE)] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 5)
+  test <- t1[]
+  test[c(TRUE, FALSE)] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 5)
+  test <- t1[]
+  test[c(FALSE, TRUE)] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 14)
+})
+
 test_that("integer subsetting with [ works as expected", {
   test <- t1[1]
   expect_equal(length(test), 1)
@@ -248,6 +290,25 @@ test_that("integer subsetting with [ works as expected", {
   expect_error(t1[c(1, -1)])
 })
 
+test_that("integer replacing with [ works as expected", {
+  test <- t1[]
+  test[1] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 13)
+  test <- t1[]
+  test[length(t1)] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 9)
+  test <- t1[]
+  test[c(1, 3, 5)] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 5)
+  test <- t1[]
+  test[-c(2, 4)] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 5)
+})
+
 test_that("character subsetting with [ works as expected", {
   test <- t1["branch"]
   expect_equal(length(test), 3)
@@ -255,6 +316,17 @@ test_that("character subsetting with [ works as expected", {
   test <- t1["asdf"]
   expect_equal(length(test), 0)
   expect_equal(get_n_activities(test), 0)
+})
+
+test_that("character replacing with [ works as expected", {
+  test <- t1[]
+  test["branch"] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 5)
+  test <- t1[]
+  test["asdf"] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 14)
 })
 
 test_that("integer subsetting with [[ works as expected", {
@@ -268,9 +340,27 @@ test_that("integer subsetting with [[ works as expected", {
   expect_error(t1[[-1]])
 })
 
+test_that("integer replacing with [[ works as expected", {
+  test <- t1[]
+  test[[1]] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 13)
+  test <- t1[]
+  test[[length(t1)]] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 9)
+})
+
 test_that("character subsetting with [ works as expected", {
   test <- t1[["branch"]]
   expect_equal(length(test), 1)
   expect_equal(get_n_activities(test), 2)
   expect_error(t1[["asdf"]])
+})
+
+test_that("character replacing with [ works as expected", {
+  test <- t1[]
+  test[["branch"]] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 13)
 })

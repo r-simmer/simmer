@@ -17,45 +17,41 @@ Trajectory <- R6Class("trajectory",
       invisible()
     },
 
-    subset = function(i) {
-      if (missing(i)) {
-        elems <- seq_len(length(self))
-      } else {
-        stopifnot(length(i) <= length(self))
-        if (is.null(i)) i <- 0
-        if (is.logical(i)) {
-          elems <- which(rep_len(i, length(self)))
-        } else if (is.character(i)) {
-          elems <- which(private$names %in% i)
-        } else if (is.numeric(i)) {
-          i <- i[!is.na(i)]
-          if (any(i < 0) && any(i > 0))
-            stop("only 0's may be mixed with negative subscripts")
-          i <- as.integer(i)
-          i <- i[i != 0]
-          if (any(i < 0))
-            elems <- seq_len(length(self))[i]
-          else elems <- i
-        } else stop("invalid subscript type '", typeof(i), "'")
-      }
-
+    subset = function(i, double=FALSE) {
+      parts <- private$get_parts(i, double)
       new <- private$clone2(deep = TRUE)
       ptrs <- NULL
       names <- NULL
       n_activities <- 0
-      if (length(elems)) {
-        ptrs <- sapply(elems, function(i) {
+      if (length(parts)) {
+        ptrs <- sapply(parts, function(i) {
           new_ptr <- activity_clone_(private$ptrs[[i]])
           n_activities <<- n_activities + activity_get_n_(new_ptr)
           new_ptr
         })
         mapply(function(i, j) activity_chain_(i, j), ptrs[-length(ptrs)], ptrs[-1])
-        names <- private$names[elems]
+        names <- private$names[parts]
       }
       new$.__enclos_env__$private$ptrs <- ptrs
       new$.__enclos_env__$private$names <- names
       new$.__enclos_env__$private$n_activities <- n_activities
       new
+    },
+
+    split = function() { lapply(seq_len(length(self)), self$subset) },
+
+    replace = function(i, value, double=FALSE) {
+      stopifnot(inherits(value, "trajectory"))
+      if (!length(self)) self
+      else {
+        parts <- private$get_parts(i, double)
+        verbose <- self$verbose
+        new <- self$split()
+        new[parts] <- value$split()
+        new <- join(new)
+        new$verbose <- verbose
+        new
+      }
     },
 
     join = function(traj) {
@@ -340,6 +336,31 @@ Trajectory <- R6Class("trajectory",
       private$names <- c(private$names, caller)
       private$n_activities <- private$n_activities + activity_get_n_(activity)
       self
+    },
+
+    get_parts = function(i, double=FALSE) {
+      if (missing(i)) {
+        parts <- seq_len(length(self))
+      } else {
+        stopifnot(length(i) <= length(self))
+        if (is.null(i)) i <- 0
+        if (is.logical(i)) {
+          parts <- which(rep_len(i, length(self)))
+        } else if (is.character(i)) {
+          parts <- which(private$names %in% i)
+          if (double) parts <- parts[[1]]
+        } else if (is.numeric(i)) {
+          i <- i[!is.na(i)]
+          if (any(i < 0) && any(i > 0))
+            stop("only 0's may be mixed with negative subscripts")
+          i <- as.integer(i)
+          i <- i[i != 0]
+          if (any(i < 0))
+            parts <- seq_len(length(self))[i]
+          else parts <- i
+        } else stop("invalid subscript type '", typeof(i), "'")
+      }
+      parts
     },
 
     clone2 = function(){},
