@@ -364,3 +364,9 @@ test_that("character replacing with [ works as expected", {
   expect_equal(length(test), 5)
   expect_equal(get_n_activities(test), 13)
 })
+
+test_that("rep works for trajectories", {
+  test <- rep(t1, times=2, length.out=10, each=2)
+  expect_equal(length(test), 10)
+  expect_equal(get_n_activities(test), 28)
+})
