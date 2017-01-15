@@ -2,6 +2,9 @@
 
 ## Minor changes and fixes:
 
+* Recycle logical indexes when subsetting (2526e75).
+* Implement replacement operators, `[<-` and `[[<-` (#88).
+* Provide `rep()` S3 method for trajectories (7fa515e).
 * Remove plotting functions (bb9656b), deprecated since v3.6.0. The new `simmer.plot` package (on CRAN) already covers these features among others.
 
 # simmer 3.6.0
