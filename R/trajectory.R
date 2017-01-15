@@ -24,7 +24,7 @@ Trajectory <- R6Class("trajectory",
         stopifnot(length(i) <= length(self))
         if (is.null(i)) i <- 0
         if (is.logical(i)) {
-          elems <- which(i)
+          elems <- which(rep_len(i, length(self)))
         } else if (is.character(i)) {
           elems <- which(private$names %in% i)
         } else if (is.numeric(i)) {

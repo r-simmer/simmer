@@ -75,8 +75,8 @@ create_trajectory <- function(name="anonymous", verbose=FALSE) { # nocov start
 #' Character vectors will be matched to the names of the activities in the trajectory as by
 #' \code{\link{\%in\%}}.
 #'
-#' Logical vectors indicate elements/slices to select. Such vectors are NOT recycled to match the
-#' corresponding extent.
+#' Logical vectors indicate elements/slices to select. Such vectors are recycled if necessary to
+#' match the corresponding extent.
 #'
 #' An empty index will return the whole trajectory.
 #'
