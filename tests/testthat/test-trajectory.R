@@ -215,14 +215,20 @@ test_that("special cases subsetting with [ works as expected", {
 
 test_that("logical subsetting with [ works as expected", {
   test <- t1[TRUE]
-  expect_equal(length(test), 1)
-  expect_equal(get_n_activities(test), 2)
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 14)
   test <- t1[c(rep(FALSE, 4), TRUE)]
   expect_equal(length(test), 1)
   expect_equal(get_n_activities(test), 6)
   test <- t1[c(TRUE, FALSE, TRUE, FALSE, TRUE)]
   expect_equal(length(test), 3)
   expect_equal(get_n_activities(test), 12)
+  test <- t1[c(TRUE, FALSE)]
+  expect_equal(length(test), 3)
+  expect_equal(get_n_activities(test), 12)
+  test <- t1[c(FALSE, TRUE)]
+  expect_equal(length(test), 2)
+  expect_equal(get_n_activities(test), 2)
   expect_error(t1[rep(TRUE, 20)])
 })
 
