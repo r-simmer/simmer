@@ -166,3 +166,6 @@ join.trajectory <- function(...) {
   for (i in traj[-1]) traj[[1]] <- traj[[1]]$join(i)
   traj[[1]]
 }
+
+#' @export
+rep.trajectory <- function(x, ...) x$rep(...)

@@ -69,6 +69,10 @@ Trajectory <- R6Class("trajectory",
       new
     },
 
+    rep = function(times=1, length.out=NA, each=1) {
+      join(rep(self$split(), times, length.out, each))
+    },
+
     head = function() { private$ptrs[[1]] },
 
     tail = function() { private$ptrs[[length(self)]] },
