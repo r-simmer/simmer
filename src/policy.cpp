@@ -1,10 +1,6 @@
 #include "policy.h"
 #include "simulator.h"
 
-int rand_int(int min, int max) {
-  return int(R::fround(R::runif(0, 1) * (max - min + 1) + min - 0.5, 0));
-}
-
 Resource* Policy::policy_shortest_queue(Simulator* sim) {
   Resource* selected = sim->get_resource(resources[0]);
   size_t n = resources.size();
@@ -43,6 +39,6 @@ select:
 }
 
 Resource* Policy::policy_random(Simulator* sim) {
-  int i = rand_int(0, resources.size()-1);
-  return sim->get_resource(resources[i]);
+  int i = Rcpp::sample(resources.size(), 1)[0];
+  return sim->get_resource(resources[i-1]);
 }

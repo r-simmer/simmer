@@ -32,7 +32,7 @@ Suggests:
     rmarkdown,
     covr
 LinkingTo:
-    Rcpp (>= 0.12.8),
+    Rcpp (>= 0.12.9),
     BH (>= 1.62.0-1)
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
