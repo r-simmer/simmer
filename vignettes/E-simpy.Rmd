@@ -146,11 +146,9 @@ failure <- trajectory() %>%
 The machines and their workers are appended to the simulation environment. Note that each machine, which is defined as preemptive, has space for one worker (or a failure) and no space in queue.
 
 ```{r, message=FALSE, warning=FALSE}
-lapply(machines, function(i) {
-  env %>%
-    add_resource(i, 1, 0, preemptive = TRUE) %>%
-    add_generator(paste0(i, "_worker"), make_parts(i), at(0), mon = 2)
-}) %>% invisible
+for (i in machines) env %>%
+  add_resource(i, 1, 0, preemptive = TRUE) %>%
+  add_generator(paste0(i, "_worker"), make_parts(i), at(0), mon = 2)
 ```
 
 The same for the repairman, but this time the queue is infinite, since there could be any number of machines at any time waiting for repairments.
@@ -263,7 +261,8 @@ which actually constitutes a quite interesting subset of `simmer`'s capabilities
 
 ```{r, message=FALSE, warning=FALSE}
 # add movies as resources with capacity TICKETS and no queue
-lapply(movies, function(i) add_resource(env, i, TICKETS, 0)) %>% invisible
+for (i in movies) env %>%
+  add_resource(i, TICKETS, 0)
 
 # add ticket counter with capacity 1 and infinite queue
 env %>% add_resource("counter", 1, Inf)

@@ -223,7 +223,8 @@ Finally, we prepare and run the simulation environment with the resources and ge
 
 ```{r}
 env <- simmer()
-lapply(1:4, function(i) env %>% add_resource(paste0("md1_", i))) %>% invisible
+for (i in 1:4) env %>% 
+  add_resource(paste0("md1_", i))
 env %>%
   add_generator("arrival1_", to_queue_1, function() rexp(1, lambda1), mon=2) %>%
   add_generator("arrival3_", to_queue_3, function() rexp(1, lambda3), mon=2) %>%
