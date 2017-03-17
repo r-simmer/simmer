@@ -18,4 +18,3 @@ Get the current simulation time.
 \seealso{
 \code{\link{peek}}.
 }
-

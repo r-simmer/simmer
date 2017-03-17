@@ -31,4 +31,3 @@ trajectory() \%>\%
 \code{\link{[.trajectory}}, \code{\link{[[.trajectory}}, \code{\link{length.trajectory}},
 \code{\link{get_n_activities}}.
 }
-

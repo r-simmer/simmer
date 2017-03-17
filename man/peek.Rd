@@ -22,4 +22,3 @@ Look for future events in the event queue and (optionally) obtain info about the
 \seealso{
 \code{\link{now}}.
 }
-

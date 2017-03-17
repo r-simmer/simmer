@@ -18,4 +18,3 @@ Returns the trajectory object.
 \description{
 Display a message preceded by the simulation time and the name of the arrival.
 }
-

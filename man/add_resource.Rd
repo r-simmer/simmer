@@ -43,4 +43,3 @@ Define a new resource in a simulation environment.
 \seealso{
 Convenience functions: \code{\link{schedule}}.
 }
-

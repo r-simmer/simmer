@@ -25,4 +25,3 @@ Returns the trajectory object.
 \description{
 Define a fork with \code{N} alternative sub-trajectories.
 }
-

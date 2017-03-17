@@ -29,4 +29,3 @@ Resource selector for a subsequent seize/release.
 \code{\link{seize_selected}}, \code{\link{release_selected}},
 \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
 }
-

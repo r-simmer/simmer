@@ -41,4 +41,3 @@ Methods for dealing with a simulation wrapper:
 \code{\link{get_n_generated}}, \code{\link{get_capacity}}, \code{\link{get_queue_size}},
 \code{\link{get_server_count}}, \code{\link{get_queue_count}}.
 }
-

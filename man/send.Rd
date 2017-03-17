@@ -43,4 +43,3 @@ point of the interruption. \code{untrap()} can be used to unsubscribe from signa
 \seealso{
 \code{\link{renege_if}}
 }
-

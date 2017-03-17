@@ -23,4 +23,3 @@ Returns the trajectory object.
 \description{
 Go backwards to a previous point in the trajectory. Useful to implement loops.
 }
-

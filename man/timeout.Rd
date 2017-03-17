@@ -19,4 +19,3 @@ Returns the trajectory object.
 \description{
 Insert delays and execute user-defined tasks.
 }
-

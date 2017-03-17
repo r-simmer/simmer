@@ -19,4 +19,3 @@ time, event queue, resources, generators and statistics.
 \seealso{
 \code{\link{onestep}}, \code{\link{run}}.
 }
-

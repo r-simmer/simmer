@@ -22,4 +22,3 @@ Returns the trajectory object.
 \description{
 Modify an attribute in the form of a key/value pair.
 }
-

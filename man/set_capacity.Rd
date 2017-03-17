@@ -34,4 +34,3 @@ Modify a resource's server capacity or queue size, by name or a previously selec
 \code{\link{select}}, \code{\link{seize}}, \code{\link{release}},
 \code{\link{seize_selected}}, \code{\link{release_selected}}.
 }
-

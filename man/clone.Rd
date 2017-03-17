@@ -31,4 +31,3 @@ Returns the trajectory object.
 A \code{clone} activity replicates an arrival \code{n} times (the original
 one + \code{n-1} copies). A \code{synchronize} activity removes all but one clone.
 }
-

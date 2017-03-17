@@ -2,9 +2,9 @@
 % Please edit documentation in R/simulator-methods.R
 \name{get_capacity}
 \alias{get_capacity}
-\alias{get_queue_count}
 \alias{get_queue_size}
 \alias{get_server_count}
+\alias{get_queue_count}
 \title{Get a resource's parameter}
 \usage{
 get_capacity(.env, resource)
@@ -26,4 +26,3 @@ Returns a numeric value.
 \description{
 Getters for a resource's server capacity/count and queue size/count.
 }
-

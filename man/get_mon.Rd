@@ -29,4 +29,3 @@ Returns a data frame.
 \description{
 Simulator getters for obtaining monitored data (if any) about arrivals, attributes and resources.
 }
-

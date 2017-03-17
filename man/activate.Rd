@@ -23,4 +23,3 @@ Activate or deactivate the generation of arrivals by name.
 \seealso{
 \code{\link{set_trajectory}}, \code{\link{set_distribution}}.
 }
-

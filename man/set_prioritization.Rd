@@ -20,4 +20,3 @@ Returns the trajectory object.
 \description{
 Modify the arrival's prioritization values.
 }
-

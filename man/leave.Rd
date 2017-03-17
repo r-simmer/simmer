@@ -17,4 +17,3 @@ Returns the trajectory object.
 \description{
 Leave the trajectory with some probability.
 }
-

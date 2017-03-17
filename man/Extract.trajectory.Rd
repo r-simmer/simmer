@@ -3,8 +3,8 @@
 \name{Extract.trajectory}
 \alias{Extract.trajectory}
 \alias{[.trajectory}
-\alias{[<-.trajectory}
 \alias{[[.trajectory}
+\alias{[<-.trajectory}
 \alias{[[<-.trajectory}
 \title{Extract or replace parts of a trajectory}
 \usage{
@@ -46,4 +46,3 @@ Operators acting on trajectories to extract or replace parts.
 \seealso{
 \code{\link{length.trajectory}}, \code{\link{get_n_activities}}, \code{\link{join}}.
 }
-

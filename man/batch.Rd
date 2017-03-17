@@ -33,4 +33,3 @@ Returns the trajectory object.
 Collect a number of arrivals before they can continue processing
 or split a previously established batch.
 }
-

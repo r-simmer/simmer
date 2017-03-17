@@ -34,4 +34,3 @@ env <- simmer(verbose=TRUE) \%>\%
 \seealso{
 \code{\link{add_generator}}.
 }
-

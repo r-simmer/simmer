@@ -43,4 +43,3 @@ Define a new generator of arrivals in a simulation environment.
 Convenience functions: \code{\link{at}}, \code{\link{from}},
 \code{\link{to}}, \code{\link{from_to}}.
 }
-

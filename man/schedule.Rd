@@ -31,4 +31,3 @@ env <- simmer() \%>\%
 \seealso{
 \code{\link{add_resource}}.
 }
-
