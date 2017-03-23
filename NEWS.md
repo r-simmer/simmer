@@ -6,6 +6,8 @@
 * Implement replacement operators, `[<-` and `[[<-` (#88).
 * Provide `rep()` S3 method for trajectories (7fa515e).
 * Remove plotting functions (bb9656b), deprecated since v3.6.0. The new `simmer.plot` package (on CRAN) already covers these features among others.
+* Don't evaluate vignette chunks if `Suggests` are not installed (e40e5b6).
+* Rewrite DESCRIPTION (3f26516).
 
 # simmer 3.6.0
 
