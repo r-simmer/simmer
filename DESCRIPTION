@@ -6,10 +6,11 @@ Authors@R: c(
     person("Iñaki", "Ucar", email="i.ucar86@gmail.com", role=c("aut", "cph", "cre")),
     person("Bart", "Smeets", email="bartsmeets86@gmail.com", role=c("aut", "cph")))
 Description: A process-oriented and trajectory-based Discrete-Event Simulation
-    (DES) package for R. Designed to be a generic framework, it leverages the
-    power of 'Rcpp' to boost the performance, turning DES in R feasible. As a
-    noteworthy characteristic, 'simmer' exploits the concept of trajectory: a
-    common path in the simulation model for entities of the same type.
+    (DES) package for R. It is designed as a generic yet powerful framework. The
+    architecture encloses a robust and fast simulation core written in C++ with
+    automatic monitoring capabilities. It provides a rich and flexible R API that
+    revolves around the concept of trajectory, a common path in the simulation
+    model for entities of the same type.
 License: MIT + file LICENSE
 Encoding: UTF-8
 URL: http://r-simmer.org,
