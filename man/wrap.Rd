@@ -19,6 +19,7 @@ to parallelize heavy replicas (see the example below), because the C++
 simulation backend is destroyed when the threads exit.
 }
 \examples{
+\dontrun{
 library(parallel)
 
 mm1 <- trajectory() \%>\%
@@ -33,7 +34,7 @@ envs <- mclapply(1:4, function(i) {
     run(100) \%>\%
     wrap()
 })
-
+}
 }
 \seealso{
 Methods for dealing with a simulation wrapper:

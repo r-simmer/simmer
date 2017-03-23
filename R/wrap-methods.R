@@ -15,6 +15,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(parallel)
 #'
 #' mm1 <- trajectory() %>%
@@ -29,7 +30,7 @@
 #'     run(100) %>%
 #'     wrap()
 #' })
-#'
+#' }
 wrap <- function(.env) Wrap$new(.env)
 
 #' @export
