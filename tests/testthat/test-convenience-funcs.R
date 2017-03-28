@@ -13,9 +13,9 @@ test_that("from returns the correct values", {
   expect_equal(gen_func(), 5)
   expect_equal(gen_func(), 1)
 
-  gen_func2 <- from(5, function() 1, arrive = FALSE)
-  expect_equal(gen_func2(), 6)
-  expect_equal(gen_func2(), 1)
+  gen_func <- from(5, function() 1, arrive = FALSE)
+  expect_equal(gen_func(), 6)
+  expect_equal(gen_func(), 1)
 })
 
 test_that("to returns the correct values", {
@@ -33,6 +33,8 @@ test_that("to returns the correct values", {
 })
 
 test_that("from_to returns the correct values", {
+  expect_error(from_to(5, 8, function() 1, every=7))
+
   gen_func <- from_to(5, 8, function() 1)
   expect_equal(gen_func(), 5)
   expect_equal(gen_func(), 1)
@@ -48,17 +50,57 @@ test_that("from_to returns the correct values", {
   expect_equal(gen_func(), 5)
   expect_equal(gen_func(), c(1, 1, -1))
 
-  gen_func2 <- from_to(5, 8, function() 1, arrive = FALSE)
-  expect_equal(gen_func2(), 6)
-  expect_equal(gen_func2(), 1)
-  expect_equal(gen_func2(), -1)
+  gen_func <- from_to(5, 8, function() 1, every=10)
+  expect_equal(gen_func(), 5)
+  expect_equal(gen_func(), 1)
+  expect_equal(gen_func(), 1)
+  expect_equal(gen_func(), 8)
+  expect_equal(gen_func(), 1)
+  expect_equal(gen_func(), 1)
+  expect_equal(gen_func(), 8)
 
-  gen_func2 <- from_to(5, 8, function() c(1, 1), arrive = FALSE)
-  expect_equal(gen_func2(), c(6, 1))
-  expect_equal(gen_func2(), -1)
+  gen_func <- from_to(5, 8, function() c(1, 1), every=10)
+  expect_equal(gen_func(), 5)
+  expect_equal(gen_func(), c(1, 1))
+  expect_equal(gen_func(), 8)
+  expect_equal(gen_func(), c(1, 1))
+  expect_equal(gen_func(), 8)
 
-  gen_func2 <- from_to(5, 8, function() c(1, 1, 1), arrive = FALSE)
-  expect_equal(gen_func2(), c(6, 1, -1))
+  gen_func <- from_to(5, 8, function() c(1, 1, 1), every=10)
+  expect_equal(gen_func(), 5)
+  expect_equal(gen_func(), c(1, 1))
+  expect_equal(gen_func(), 8)
+  expect_equal(gen_func(), c(1, 1))
+  expect_equal(gen_func(), 8)
+
+  gen_func <- from_to(5, 8, function() 1, arrive = FALSE)
+  expect_equal(gen_func(), 6)
+  expect_equal(gen_func(), 1)
+  expect_equal(gen_func(), -1)
+
+  gen_func <- from_to(5, 8, function() c(1, 1), arrive = FALSE)
+  expect_equal(gen_func(), c(6, 1))
+  expect_equal(gen_func(), -1)
+
+  gen_func <- from_to(5, 8, function() c(1, 1, 1), arrive = FALSE)
+  expect_equal(gen_func(), c(6, 1, -1))
+
+  gen_func <- from_to(5, 8, function() 1, arrive = FALSE, every=10)
+  expect_equal(gen_func(), 6)
+  expect_equal(gen_func(), 1)
+  expect_equal(gen_func(), 9)
+  expect_equal(gen_func(), 1)
+  expect_equal(gen_func(), 9)
+
+  gen_func <- from_to(5, 8, function() c(1, 1), arrive = FALSE, every=10)
+  expect_equal(gen_func(), c(6, 1))
+  expect_equal(gen_func(), c(9, 1))
+  expect_equal(gen_func(), c(9, 1))
+
+  gen_func <- from_to(5, 8, function() c(1, 1, 1), arrive = FALSE, every=10)
+  expect_equal(gen_func(), c(6, 1))
+  expect_equal(gen_func(), c(9, 1))
+  expect_equal(gen_func(), c(9, 1))
 })
 
 test_that("schedule returns the correct values", {

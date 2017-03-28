@@ -16,10 +16,13 @@ Returns a generator function.
 Generator convenience function to generate arrivals at specific times.
 }
 \examples{
-t0 <- trajectory() \%>\% timeout(0)
-env <- simmer(verbose=TRUE) \%>\%
+t0 <- trajectory() \%>\%
+  timeout(0)
+
+simmer() \%>\%
   add_generator("dummy", t0, at(0, c(1,10,30), 40, 43)) \%>\%
-  run(100)
+  run(100) \%>\%
+  get_mon_arrivals()
 }
 \seealso{
 \code{\link{add_generator}}.

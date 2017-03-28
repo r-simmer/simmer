@@ -4,7 +4,7 @@
 \alias{from_to}
 \title{Generate arrivals starting and stopping at specified times}
 \usage{
-from_to(start_time, stop_time, dist, arrive = TRUE)
+from_to(start_time, stop_time, dist, arrive = TRUE, every = NULL)
 }
 \arguments{
 \item{start_time}{the time at which to launch the initial arrival.}
@@ -18,6 +18,8 @@ generated at \code{start_time} and will follow \code{dist} from then on.
 If set to \code{FALSE}, will initiate \code{dist} at \code{start_time}
 (and the first arrival will most likely start at a time later than
 \code{start_time}).}
+
+\item{every}{repeat with this time cycle.}
 }
 \value{
 Returns a generator function.
@@ -26,10 +28,14 @@ Returns a generator function.
 Generator convenience function to generate inter-arrivals with specified start and stop times.
 }
 \examples{
-t0 <- trajectory() \%>\% timeout(0)
-env <- simmer(verbose=TRUE) \%>\%
-  add_generator("dummy", t0, from_to(5, 10, function() runif(1, 1, 2))) \%>\%
-  run(100)
+t0 <- trajectory() \%>\%
+  timeout(0)
+
+# from 8 to 16 h every 24 h:
+simmer() \%>\%
+  add_generator("dummy", t0, from_to(8, 16, function() runif(1, 1, 2), every=24)) \%>\%
+  run(48) \%>\%
+  get_mon_arrivals()
 }
 \seealso{
 \code{\link{add_generator}}.

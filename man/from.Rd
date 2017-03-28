@@ -24,10 +24,13 @@ Returns a generator function.
 Generator convenience function to generate inter-arrivals with a specified start time.
 }
 \examples{
-t0 <- trajectory() \%>\% timeout(0)
-env <- simmer(verbose=TRUE) \%>\%
+t0 <- trajectory() \%>\%
+  timeout(0)
+
+simmer() \%>\%
   add_generator("dummy", t0, from(5, function() runif(1, 1, 2))) \%>\%
-  run(10)
+  run(10) \%>\%
+  get_mon_arrivals()
 }
 \seealso{
 \code{\link{add_generator}}.
