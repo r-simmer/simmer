@@ -8,6 +8,7 @@
 * Remove plotting functions (bb9656b), deprecated since v3.6.0. The new `simmer.plot` package (on CRAN) already covers these features among others.
 * Don't evaluate vignette chunks if `Suggests` are not installed (e40e5b6).
 * Rewrite DESCRIPTION (3f26516).
+* Add an `every` parameter to the `from_to()` convenience function (9d68887).
 
 # simmer 3.6.0
 
