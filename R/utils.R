@@ -1,4 +1,4 @@
-#' @useDynLib simmer
+#' @useDynLib simmer, .registration=TRUE
 #' @importFrom Rcpp evalCpp
 #' @importFrom R6 R6Class
 NULL
