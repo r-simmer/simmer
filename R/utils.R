@@ -1,12 +1,3 @@
-#' @useDynLib simmer, .registration=TRUE
-#' @importFrom Rcpp evalCpp
-#' @importFrom R6 R6Class
-NULL
-
-#' @importFrom magrittr %>%
-#' @export
-magrittr::`%>%`
-
 .onUnload <- function (libpath) {
   library.dynam.unload("simmer", libpath)
 }
