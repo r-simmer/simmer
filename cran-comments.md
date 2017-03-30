@@ -1,3 +1,7 @@
+## Resubmission
+
+The incoming pretest failed. Fixed compilation error on Windows x64: changed size_t to unsigned long in conversion to SEXP.
+
 ## New patch release
 
 Some minor new features and fixes. Plotting functionalities (deprecated in the previous version) covered by the simmer.plot package have been removed.
