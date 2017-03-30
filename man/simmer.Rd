@@ -60,8 +60,8 @@ env <- simmer("SuperDuperSim") \%>\%
 
 }
 \seealso{
-\pkg{simmer}'s \link[homepage]{http://r-simmer.org} and
-\link[GitHub repository]{https://github.com/r-simmer/simmer}.
+\pkg{simmer}'s homepage \url{http://r-simmer.org} and
+GitHub repository \url{https://github.com/r-simmer/simmer}.
 
 Methods for dealing with a simulation environment:
 \code{\link{reset}}, \code{\link{now}}, \code{\link{peek}}, \code{\link{onestep}}, \code{\link{run}},

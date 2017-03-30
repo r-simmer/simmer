@@ -10,8 +10,8 @@
 #'
 #' @author Iñaki Ucar and Bart Smeets
 #'
-#' @seealso \pkg{simmer}'s \link[homepage]{http://r-simmer.org} and
-#' \link[GitHub repository]{https://github.com/r-simmer/simmer}.
+#' @seealso \pkg{simmer}'s homepage \url{http://r-simmer.org} and
+#' GitHub repository \url{https://github.com/r-simmer/simmer}.
 #'
 #' @examples
 #' \dontrun{
