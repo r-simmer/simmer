@@ -1,10 +1,10 @@
-## New minor release
+## New patch release
 
-Some new features and improvements for dealing with trajectories. Functions have been converted to S3 methods and some of them have been deprecated. In particular, we plan to remove all the plotting functionalities in the next release, which are non-essential to DES, and in the meantime, release a new package on CRAN covering these features.
+Some minor new features and fixes. Plotting functionalities (deprecated in the previous version) covered by the simmer.plot package have been removed.
 
 ## Test environments
 
-* Fedora 25 + GCC + clang (local), R 3.3.2
+* Fedora 25 + GCC + clang (local), R 3.3.3
 * Rocker image, GCC + SAN + R devel
 * Rocker image, clang + UBSAN + R devel
 * Docker image, clang + R patched
@@ -27,13 +27,13 @@ File 'LICENSE':
   COPYRIGHT HOLDER: Bart Smeets, Iñaki Ucar
 
 Possibly mis-spelled words in DESCRIPTION:
-  DES (9:6, 10:55)
+  DES (9:6)
 
 * checking installed package size ... NOTE
-  installed size is  10.1Mb
+  installed size is  11.0Mb
   sub-directories of 1Mb or more:
-    libs   9.0Mb
+    libs   10.0Mb
 
 ## Downstream dependencies
 
-There are currently no downstream dependencies for this package.
+There is one downstream dependency, simmer.plot, for which I'm the maintainer too.

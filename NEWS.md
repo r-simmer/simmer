@@ -1,4 +1,4 @@
-# simmer 3.6.0.9000
+# simmer 3.6.1
 
 ## Minor changes and fixes:
 
