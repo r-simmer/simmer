@@ -1,3 +1,10 @@
+# simmer 3.6.1.9000
+
+## Minor changes and fixes:
+
+* Fix `trap()`'s handler cloning and associated test (#91).
+* Update "The Bank Tutorial: Part I" vignette (@nacnudus in #90).
+
 # simmer 3.6.1
 
 ## Minor changes and fixes:

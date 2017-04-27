@@ -111,7 +111,7 @@ test_that("the activity chain grows as expected using join", {
     line <- capture.output(i)
     regmatches(line, regexpr("<- 0x[[:alnum:]]{7} ->", line))
   }) %>% unlist
-  ptrs_t <- lapply(capture.output(t0), function(i) {
+  ptrs_t <- lapply(capture.output(t), function(i) {
     regmatches(i, regexpr("<- 0x[[:alnum:]]{7} ->", i))
   }) %>% unlist
 

@@ -1096,10 +1096,7 @@ public:
       trj, VEC<int>(1, provide_attrs)),
       signals(signals), interruptible(interruptible) {}
 
-  Trap(const Trap& o)
-    : Fork(o.name, o.cont, o.trj, o.provide_attrs),
-      signals(o.signals), interruptible(o.interruptible)
-  {
+  Trap(const Trap& o) : Fork(o), signals(o.signals), interruptible(o.interruptible) {
     pending.clear();
   }
 
