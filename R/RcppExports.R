@@ -145,8 +145,8 @@ Select__new <- function(resources, policy, id) {
     .Call('simmer_Select__new', PACKAGE = 'simmer', resources, policy, id)
 }
 
-Select__new_func <- function(resources, provide_attrs, id) {
-    .Call('simmer_Select__new_func', PACKAGE = 'simmer', resources, provide_attrs, id)
+Select__new_func <- function(resources, provide_attrs, policy, id) {
+    .Call('simmer_Select__new_func', PACKAGE = 'simmer', resources, provide_attrs, policy, id)
 }
 
 SetAttribute__new <- function(key, value, global) {

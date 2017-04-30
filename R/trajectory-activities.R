@@ -92,10 +92,12 @@ set_queue_size_selected.trajectory <- function(.trj, value, id=0) .trj$set_queue
 #'
 #' @inheritParams seize
 #' @param resources one or more resource names, or a callable object (a function) which
-#' must return a resource name to select.
-#' @param policy if \code{resources} is a vector of names, this parameter determines
-#' the criteria for selecting a resource among the set of policies available; otherwise,
-#' it is ignored.
+#' must return one or more resource names.
+#' @param policy if \code{resources} is a character vector, this parameter determines
+#' the criteria for selecting a resource among the set of policies available:
+#' 'shortest-queue' selects the least busy resource, 'round-robin' selects the resources
+#' in order cyclically, 'first-available' selects the first resource available,
+#' and 'random' selects one at random.
 #' @param id selection identifier for nested usage.
 #'
 #' @return Returns the trajectory object.

@@ -2,8 +2,9 @@
 
 ## Minor changes and fixes:
 
-* Fix `trap()`'s handler cloning and associated test (#91).
 * Update "The Bank Tutorial: Part I" vignette (@nacnudus in #90).
+* Fix `trap()`'s handler cloning and associated test (#91).
+* Apply `select()`'s `policy` also when `resources` is a function (#92).
 
 # simmer 3.6.1
 

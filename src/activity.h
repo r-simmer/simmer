@@ -400,28 +400,23 @@ public:
 
   Select(T resources, int provide_attrs, std::string policy, int id)
     : Activity("Select", VEC<int>(1, provide_attrs)), resources(resources),
-      policy(policy), id(id), dispatcher(Policy(resources, policy)) {}
+      id(id), dispatcher(Policy(policy)) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
     if (!brief) Rcpp::Rcout <<
-      "resources: " << resources << ", policy: " << policy << " }" << std::endl;
-    else Rcpp::Rcout << resources << ", " << policy << std::endl;
+      "resources: " << resources << ", policy: " << dispatcher << " }" << std::endl;
+    else Rcpp::Rcout << resources << ", " << dispatcher << std::endl;
   }
 
   double run(Arrival* arrival) {
-    Resource* selected;
-    if (typeid(T) == typeid(Rcpp::Function)) {
-      VEC<std::string> res = get<VEC<std::string> >(resources, 0, arrival);
-      selected = arrival->sim->get_resource(res[0]);
-    } else selected = dispatcher.dispatch(arrival->sim);
-    arrival->set_selected(id, selected);
+    VEC<std::string> res = get<VEC<std::string> >(resources, 0, arrival);
+    arrival->set_selected(id, dispatcher.dispatch(arrival->sim, res));
     return 0;
   }
 
 protected:
   T resources;
-  std::string policy;
   int id;
   Policy dispatcher;
 };

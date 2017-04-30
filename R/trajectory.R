@@ -155,7 +155,7 @@ Trajectory <- R6Class("trajectory",
       policy <- match.arg(policy)
       id <- evaluate_value(id)
       if (is.function(resources))
-        private$add_activity(Select__new_func(resources, needs_attrs(resources), id))
+        private$add_activity(Select__new_func(resources, needs_attrs(resources), policy, id))
       else private$add_activity(Select__new(resources, policy, id))
     },
 

@@ -60,7 +60,7 @@ extern SEXP simmer_Seize__new_func(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP simmer_SeizeSelected__new(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP simmer_SeizeSelected__new_func(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP simmer_Select__new(SEXP, SEXP, SEXP);
-extern SEXP simmer_Select__new_func(SEXP, SEXP, SEXP);
+extern SEXP simmer_Select__new_func(SEXP, SEXP, SEXP, SEXP);
 extern SEXP simmer_Send__new(SEXP, SEXP);
 extern SEXP simmer_Send__new_func1(SEXP, SEXP, SEXP);
 extern SEXP simmer_Send__new_func2(SEXP, SEXP, SEXP);
@@ -146,7 +146,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"simmer_SeizeSelected__new",            (DL_FUNC) &simmer_SeizeSelected__new,            5},
   {"simmer_SeizeSelected__new_func",       (DL_FUNC) &simmer_SeizeSelected__new_func,       6},
   {"simmer_Select__new",                   (DL_FUNC) &simmer_Select__new,                   3},
-  {"simmer_Select__new_func",              (DL_FUNC) &simmer_Select__new_func,              3},
+  {"simmer_Select__new_func",              (DL_FUNC) &simmer_Select__new_func,              4},
   {"simmer_Send__new",                     (DL_FUNC) &simmer_Send__new,                     2},
   {"simmer_Send__new_func1",               (DL_FUNC) &simmer_Send__new_func1,               3},
   {"simmer_Send__new_func2",               (DL_FUNC) &simmer_Send__new_func2,               3},

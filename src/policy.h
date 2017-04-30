@@ -8,36 +8,33 @@ class Simulator;
 class Resource;
 
 class Policy {
-  typedef Resource* (Policy::*method)(Simulator*);
+  typedef Resource* (Policy::*method)(Simulator*, VEC<std::string>);
   typedef UMAP<std::string, method> MethodMap;
 
 public:
-  std::string name;
-
-  Policy(Rcpp::Function resources, std::string policy) {}
-  Policy(VEC<std::string> resources, std::string policy)
-    : name(policy), resources(resources)
-  {
+  Policy(std::string policy) : name(policy) {
     policies["shortest-queue"]    = &Policy::policy_shortest_queue;
     policies["round-robin"]       = &Policy::policy_round_robin;
     policies["first-available"]   = &Policy::policy_first_available;
     policies["random"]            = &Policy::policy_random;
   }
 
-  Resource* dispatch(Simulator* sim) {
+  friend std::ostream& operator<<(std::ostream& out, const Policy& policy);
+
+  Resource* dispatch(Simulator* sim, VEC<std::string> resources) {
     MethodMap::iterator x = policies.find(name);
     if (x == policies.end()) Rcpp::stop("policy '" + name + "' not supported (typo?)");
-    return ((*this).*(x->second))(sim);
+    return ((*this).*(x->second))(sim, resources);
   }
 
 private:
-  VEC<std::string> resources;
+  std::string name;
   MethodMap policies;
 
-  Resource* policy_shortest_queue(Simulator* sim);
-  Resource* policy_round_robin(Simulator* sim);
-  Resource* policy_first_available(Simulator* sim);
-  Resource* policy_random(Simulator* sim);
+  Resource* policy_shortest_queue(Simulator* sim, VEC<std::string> resources);
+  Resource* policy_round_robin(Simulator* sim, VEC<std::string> resources);
+  Resource* policy_first_available(Simulator* sim, VEC<std::string> resources);
+  Resource* policy_random(Simulator* sim, VEC<std::string> resources);
 };
 
 #endif

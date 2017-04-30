@@ -11,11 +11,13 @@ select(.trj, resources, policy = c("shortest-queue", "round-robin",
 \item{.trj}{the trajectory object.}
 
 \item{resources}{one or more resource names, or a callable object (a function) which
-must return a resource name to select.}
+must return one or more resource names.}
 
-\item{policy}{if \code{resources} is a vector of names, this parameter determines
-the criteria for selecting a resource among the set of policies available; otherwise,
-it is ignored.}
+\item{policy}{if \code{resources} is a character vector, this parameter determines
+the criteria for selecting a resource among the set of policies available:
+'shortest-queue' selects the least busy resource, 'round-robin' selects the resources
+in order cyclically, 'first-available' selects the first resource available,
+and 'random' selects one at random.}
 
 \item{id}{selection identifier for nested usage.}
 }

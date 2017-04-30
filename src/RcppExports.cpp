@@ -466,15 +466,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // Select__new_func
-SEXP Select__new_func(Function resources, int provide_attrs, int id);
-RcppExport SEXP simmer_Select__new_func(SEXP resourcesSEXP, SEXP provide_attrsSEXP, SEXP idSEXP) {
+SEXP Select__new_func(Function resources, int provide_attrs, std::string policy, int id);
+RcppExport SEXP simmer_Select__new_func(SEXP resourcesSEXP, SEXP provide_attrsSEXP, SEXP policySEXP, SEXP idSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Function >::type resources(resourcesSEXP);
     Rcpp::traits::input_parameter< int >::type provide_attrs(provide_attrsSEXP);
+    Rcpp::traits::input_parameter< std::string >::type policy(policySEXP);
     Rcpp::traits::input_parameter< int >::type id(idSEXP);
-    rcpp_result_gen = Rcpp::wrap(Select__new_func(resources, provide_attrs, id));
+    rcpp_result_gen = Rcpp::wrap(Select__new_func(resources, provide_attrs, policy, id));
     return rcpp_result_gen;
 END_RCPP
 }

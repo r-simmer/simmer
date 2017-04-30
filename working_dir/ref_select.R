@@ -1,7 +1,7 @@
 library(simmer)
 
 t <- trajectory(verbose=T) %>%
-  select(c("r1", "r2", "r3"), policy="round-robin") %>%
+  select(function() c("r1", "r2", "r3"), policy="round-robin") %>%
   seize_selected(1) %>%
   #timeout(10) %>%
   #release_selected(1) %>%

@@ -235,9 +235,9 @@ SEXP Select__new(std::vector<std::string> resources, std::string policy, int id)
 }
 
 //[[Rcpp::export]]
-SEXP Select__new_func(Function resources, int provide_attrs, int id) {
+SEXP Select__new_func(Function resources, int provide_attrs, std::string policy, int id) {
   return XPtr<Select<Function> >(
-      new Select<Function>(resources, provide_attrs, "custom", id));
+      new Select<Function>(resources, provide_attrs, policy, id));
 }
 
 //[[Rcpp::export]]

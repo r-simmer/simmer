@@ -1,7 +1,12 @@
 #include "policy.h"
 #include "simulator.h"
 
-Resource* Policy::policy_shortest_queue(Simulator* sim) {
+std::ostream& operator<<(std::ostream& out, const Policy& policy) {
+  out << policy.name;
+  return out;
+}
+
+Resource* Policy::policy_shortest_queue(Simulator* sim, VEC<std::string> resources) {
   Resource* selected = sim->get_resource(resources[0]);
   size_t n = resources.size();
   for (size_t i = 1; i < n; i++) {
@@ -13,14 +18,14 @@ Resource* Policy::policy_shortest_queue(Simulator* sim) {
   return selected;
 }
 
-Resource* Policy::policy_round_robin(Simulator* sim) {
+Resource* Policy::policy_round_robin(Simulator* sim, VEC<std::string> resources) {
   static int i = -1;
-  if (++i == (int)resources.size())
+  if (++i >= (int)resources.size())
     i = 0;
   return sim->get_resource(resources[i]);
 }
 
-Resource* Policy::policy_first_available(Simulator* sim) {
+Resource* Policy::policy_first_available(Simulator* sim, VEC<std::string> resources) {
   size_t i, n = resources.size();
   Resource* selected;
   for (i = 0; i < n; i++) {
@@ -38,7 +43,7 @@ select:
   return selected;
 }
 
-Resource* Policy::policy_random(Simulator* sim) {
+Resource* Policy::policy_random(Simulator* sim, VEC<std::string> resources) {
   int i = Rcpp::sample(resources.size(), 1)[0];
   return sim->get_resource(resources[i-1]);
 }
