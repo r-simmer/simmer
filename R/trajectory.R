@@ -273,12 +273,19 @@ Trajectory <- R6Class("trajectory",
 
     batch = function(n, timeout=0, permanent=FALSE, name="", rule=NULL) {
       n <- evaluate_value(n)
+      if (is.infinite(n)) n <- -1
       timeout <- evaluate_value(timeout)
       permanent <- evaluate_value(permanent)
       name <- evaluate_value(name)
-      if (is.function(rule))
-        private$add_activity(Batch__new_func(n, timeout, permanent, name,
-                                             rule, needs_attrs(rule)))
+      if (is.function(timeout) && is.function(rule))
+        private$add_activity(Batch__new_func4(n, timeout, permanent, name, rule,
+                                              c(needs_attrs(timeout), needs_attrs(rule))))
+      else if (is.function(rule))
+        private$add_activity(Batch__new_func2(n, timeout, permanent, name, rule,
+                                              needs_attrs(rule)))
+      else if (is.function(timeout))
+        private$add_activity(Batch__new_func1(n, timeout, permanent, name,
+                                              needs_attrs(timeout)))
       else private$add_activity(Batch__new(n, timeout, permanent, name))
     },
 

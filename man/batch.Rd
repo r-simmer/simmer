@@ -15,7 +15,8 @@ separate(.trj)
 \item{n}{batch size, accepts a numeric.}
 
 \item{timeout}{set an optional timer which triggers batches every \code{timeout} time
-units even if the batch size has not been fulfilled, accepts a numeric (0 = disabled).}
+units even if the batch size has not been fulfilled, accepts a numeric or a callable
+object (a function) which must return a numeric (0 = disabled).}
 
 \item{permanent}{if \code{TRUE}, batches cannot be split.}
 

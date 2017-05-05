@@ -337,7 +337,8 @@ synchronize.trajectory <- function(.trj, wait=TRUE, mon_all=FALSE) .trj$synchron
 #' @inheritParams seize
 #' @param n batch size, accepts a numeric.
 #' @param timeout set an optional timer which triggers batches every \code{timeout} time
-#' units even if the batch size has not been fulfilled, accepts a numeric (0 = disabled).
+#' units even if the batch size has not been fulfilled, accepts a numeric or a callable
+#' object (a function) which must return a numeric (0 = disabled).
 #' @param permanent if \code{TRUE}, batches cannot be split.
 #' @param name optional string. Unnamed batches from different \code{batch} activities are
 #' independent. However, if you want to feed arrivals from different trajectories into a

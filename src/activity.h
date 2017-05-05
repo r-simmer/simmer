@@ -860,29 +860,32 @@ protected:
 /**
  * Create a batch.
  */
+template <typename T>
 class Batch : public Activity {
 public:
-  CLONEABLE(Batch)
+  CLONEABLE(Batch<T>)
 
-  Batch(int n, double timeout, bool permanent, std::string id = "",
-        OPT<Rcpp::Function> rule = NONE, int provide_attrs = false)
-    : Activity("Batch", VEC<int>(1, provide_attrs)), n(n),
-      timeout(std::abs(timeout)), permanent(permanent), id(id), rule(rule) {}
+  Batch(int n, T timeout, VEC<int> provide_attrs, bool permanent,
+        std::string id = "", OPT<Rcpp::Function> rule = NONE)
+    : Activity("Batch", provide_attrs),
+      n(n), timeout(timeout), permanent(permanent), id(id), rule(rule) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout <<
-      "n: " << n << ", timeout: " << timeout << ", permanent: " << permanent <<
+    if (!brief) {
+      if (n >= 0) Rcpp::Rcout << "n: " << n;
+      else Rcpp::Rcout << "n: Inf";
+      Rcpp::Rcout << ", timeout: " << timeout << ", permanent: " << permanent <<
       ", name: " << id << " }" << std::endl;
-    else Rcpp::Rcout << n << ", " << timeout << ", " << permanent << ", " << id << std::endl;
+    } else Rcpp::Rcout << n << ", " << timeout << ", " << permanent << ", " << id << std::endl;
   }
 
   double run(Arrival* arrival) {
-    if (rule && !get<bool>(*rule, 0, arrival))
+    if (rule && !get<bool>(*rule, 1, arrival))
       return 0;
     Batched** ptr = arrival->sim->get_batch(this, id);
     if (!(*ptr))
-      *ptr = init(arrival->sim);
+      *ptr = init(arrival);
     (*ptr)->insert(arrival);
     if ((int)(*ptr)->size() == n)
       trigger(arrival->sim, *ptr);
@@ -891,27 +894,28 @@ public:
 
 protected:
   int n;
-  double timeout;
+  T timeout;
   bool permanent;
   std::string id;
   OPT<Rcpp::Function> rule;
 
-  Batched* init(Simulator* sim) {
+  Batched* init(Arrival* arrival) {
     std::string str;
     Batched* ptr = NULL;
     if (id.size()) {
       str = "batch_" + id;
-      ptr = new Batched(sim, str, permanent);
+      ptr = new Batched(arrival->sim, str, permanent);
     } else {
-      int count = sim->get_batch_count();
+      int count = arrival->sim->get_batch_count();
       str= "batch" + boost::lexical_cast<std::string>(count);
-      ptr = new Batched(sim, str, permanent, count);
+      ptr = new Batched(arrival->sim, str, permanent, count);
     }
-    if (timeout) {
-      Task* task = new Task(sim, "Batch-Timer",
-                            boost::bind(&Batch::trigger, this, sim, ptr),
+    double dt = std::abs(get<double>(timeout, 0, arrival));
+    if (dt) {
+      Task* task = new Task(arrival->sim, "Batch-Timer",
+                            boost::bind(&Batch::trigger, this, arrival->sim, ptr),
                             PRIORITY_MIN);
-      task->activate(timeout);
+      task->activate(dt);
     }
     return ptr;
   }
@@ -923,7 +927,7 @@ protected:
     if ((*ptr)->size()) {
       (*ptr)->set_activity(this->get_next());
       (*ptr)->activate();
-      *ptr = init((*ptr)->sim);
+      *ptr = init(*ptr);
     } else {
       delete *ptr;
       *ptr = NULL;

@@ -241,8 +241,16 @@ Batch__new <- function(n, timeout, permanent, name) {
     .Call('simmer_Batch__new', PACKAGE = 'simmer', n, timeout, permanent, name)
 }
 
-Batch__new_func <- function(n, timeout, permanent, name, rule, provide_attrs) {
-    .Call('simmer_Batch__new_func', PACKAGE = 'simmer', n, timeout, permanent, name, rule, provide_attrs)
+Batch__new_func1 <- function(n, timeout, permanent, name, provide_attrs) {
+    .Call('simmer_Batch__new_func1', PACKAGE = 'simmer', n, timeout, permanent, name, provide_attrs)
+}
+
+Batch__new_func2 <- function(n, timeout, permanent, name, rule, provide_attrs) {
+    .Call('simmer_Batch__new_func2', PACKAGE = 'simmer', n, timeout, permanent, name, rule, provide_attrs)
+}
+
+Batch__new_func4 <- function(n, timeout, permanent, name, rule, provide_attrs) {
+    .Call('simmer_Batch__new_func4', PACKAGE = 'simmer', n, timeout, permanent, name, rule, provide_attrs)
 }
 
 Separate__new <- function() {
