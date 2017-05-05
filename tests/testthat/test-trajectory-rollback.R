@@ -57,7 +57,7 @@ test_that("a rollback loops the correct number of times", {
   expect_output(env1 %>% run(), output)
 
   t0 <- trajectory() %>% rollback(0, Inf)
-  expect_output(print(tail(t0)), "Inf")
+  expect_output(print(tail(t0)), "-1")
 })
 
 test_that("a negative amount is converted to positive", {
