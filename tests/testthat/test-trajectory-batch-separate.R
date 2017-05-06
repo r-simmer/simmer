@@ -36,7 +36,7 @@ test_that("arrivals are batched", {
 
 test_that("batches are separated", {
   t <- trajectory(verbose = TRUE) %>%
-    batch(2, timeout = 0, permanent = FALSE, rule = NULL) %>%
+    batch(2, timeout = function() 0, permanent = FALSE, rule = NULL) %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
     release("dummy", 1) %>%
@@ -86,7 +86,7 @@ test_that("permanent batches are NOT separated", {
 
 test_that("a rule can prevent batching", {
   t <- trajectory(verbose = TRUE) %>%
-    batch(2, timeout = 0, permanent = FALSE, rule = function() 0) %>%
+    batch(2, timeout = function() 0, permanent = FALSE, rule = function() 0) %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
     release("dummy", 1) %>%
