@@ -173,7 +173,7 @@ public:
                      int mon, int priority, int preemptible, bool restart)
   {
     if (process_map.find(name_prefix) != process_map.end()) {
-      Rcpp::warning("process " + name_prefix + " already defined");
+      Rcpp::warning("process '%s' already defined", name_prefix);
       return false;
     }
     Generator* gen = new Generator(this, name_prefix, mon, trj, dist,
@@ -197,7 +197,7 @@ public:
                     bool preemptive, std::string preempt_order, bool queue_size_strict)
   {
     if (resource_map.find(name) != resource_map.end()) {
-      Rcpp::warning("resource " + name + " already defined");
+      Rcpp::warning("resource '%s' already defined", name);
       return false;
     }
     Resource* res;
@@ -228,10 +228,10 @@ public:
                             VEC<double> duration, VEC<int> value, int period)
   {
     if (process_map.find(name) != process_map.end())
-      Rcpp::stop("process " + name + " already defined");
+      Rcpp::stop("process '%s' already defined", name);
     EntMap::iterator search = resource_map.find(name);
     if (search == resource_map.end())
-      Rcpp::stop("resource '" + name + "' not found (typo?)");
+      Rcpp::stop("resource '%s' not found (typo?)", name);
     Resource* res = (Resource*)search->second;
     Manager* manager;
     if (param.compare("capacity") == 0)
@@ -251,7 +251,7 @@ public:
   Generator* get_generator(std::string name) {
     EntMap::iterator search = process_map.find(name);
     if (search == process_map.end())
-      Rcpp::stop("generator '" + name + "' not found (typo?)");
+      Rcpp::stop("generator '%s' not found (typo?)", name);
     return (Generator*)search->second;
   }
 
@@ -261,7 +261,7 @@ public:
   Resource* get_resource(std::string name) {
     EntMap::iterator search = resource_map.find(name);
     if (search == resource_map.end())
-      Rcpp::stop("resource '" + name + "' not found (typo?)");
+      Rcpp::stop("resource '%s' not found (typo?)", name);
     return (Resource*)search->second;
   }
 

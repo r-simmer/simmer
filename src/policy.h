@@ -23,7 +23,7 @@ public:
 
   Resource* dispatch(Simulator* sim, VEC<std::string> resources) {
     MethodMap::iterator x = policies.find(name);
-    if (x == policies.end()) Rcpp::stop("policy '" + name + "' not supported (typo?)");
+    if (x == policies.end()) Rcpp::stop("policy '%s' not supported (typo?)", name);
     return ((*this).*(x->second))(sim, resources);
   }
 

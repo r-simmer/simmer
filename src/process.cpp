@@ -153,7 +153,7 @@ void Arrival::stop() {
 
 void Arrival::terminate(bool finished) {
   foreach_ (ResMSet::value_type& itr, resources) {
-    Rcpp::warning("`%s`: leaving without releasing `%s`", name, itr->name);
+    Rcpp::warning("'%s': leaving without releasing '%s'", name, itr->name);
     itr->erase(this, true);
   }
   unset_remaining();

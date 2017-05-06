@@ -618,6 +618,8 @@ public:
 
   double run(Arrival* arrival) {
     double value = get<double>(delay, 0, arrival);
+    if (R_IsNA(value))
+      Rcpp::stop("%s: missing value (NA returned)", name);
     return std::abs(value);
   }
 
