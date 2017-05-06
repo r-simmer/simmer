@@ -39,3 +39,8 @@ make_resetable <- function(distribution) {
   environment(environment(distribution)$.reset$reset) <- environment(distribution)$.reset
   return(distribution)
 }
+
+binarise <- function(...) {
+  args <- c(...)
+  sum(2^(seq_along(args) - 1) * args) + 1
+}
