@@ -225,7 +225,7 @@ Trajectory <- R6Class("trajectory",
       private$add_activity(Branch__new(option, needs_attrs(option), continue, traj))
     },
 
-    rollback = function(amount, times=1, check) {
+    rollback = function(amount, times=Inf, check) {
       amount <- evaluate_value(amount)
       times <- evaluate_value(times)
       if (is.infinite(times)) times <- -1
