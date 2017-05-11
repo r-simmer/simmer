@@ -28,6 +28,8 @@ envs_apply <- function(envs, method, ...) {
 }
 
 make_resetable <- function(distribution) {
+  if (identical(environment(distribution), .GlobalEnv))
+    environment(distribution) <- new.env(parent = environment(distribution))
   init <- as.list(environment(distribution))
   environment(distribution)$.reset <- new.env(parent = environment(distribution))
   environment(distribution)$.reset$init <- init
