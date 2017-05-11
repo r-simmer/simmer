@@ -21,8 +21,7 @@ Depends:
 Imports:
     Rcpp,
     R6,
-    magrittr,
-    methods
+    magrittr
 Suggests:
     simmer.plot,
     parallel,
