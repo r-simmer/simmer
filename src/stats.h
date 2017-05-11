@@ -7,12 +7,6 @@ class StatsMap {
   typedef boost::variant< VEC<bool>, VEC<int>, VEC<double>, VEC<std::string> > StatsVec;
   typedef UMAP<std::string, StatsVec> StatsContainer;
 
-  class clear_vec: public boost::static_visitor<> {
-  public:
-    template <typename T>
-    void operator()(T & operand) const { operand.clear(); }
-  };
-
 public:
   template <typename T>
   VEC<T> get(std::string key) {
@@ -28,10 +22,7 @@ public:
     boost::get< VEC<T> >(map[key]).push_back(value);
   }
 
-  void clear() {
-    foreach_ (StatsContainer::value_type& itr, map)
-      boost::apply_visitor(clear_vec(), itr.second);
-  }
+  void clear() { map.clear(); }
 
 private:
   StatsContainer map;
