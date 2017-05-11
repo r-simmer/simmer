@@ -11,7 +11,7 @@ evaluate_value <- function(value) {
 
 needs_attrs <- function(variable) {
   if (is.function(variable))
-    return(length(methods::formalArgs(variable)))
+    return(length(formals(variable)))
   else return(0)
 }
 
