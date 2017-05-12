@@ -21,7 +21,7 @@ t0 <- trajectory("") %>%
   timeout(1) %>%
   release("server", 1)
 
-test_that("the simulator is reset", {
+test_that("the simulator is reset (1)", {
   t1 <- trajectory() %>%
     seize("server", 1) %>%
     set_attribute("dummy", 1) %>%
@@ -36,6 +36,34 @@ test_that("the simulator is reset", {
     add_generator("entity1", t1, function() 0.5, mon = 2, preemptible = 10, priority = 10) %>%
     run(4) %>%
     reset()
+
+  arrivals <- env %>% get_mon_arrivals()
+  arrivals_res <- env %>% get_mon_arrivals(TRUE)
+  resources <- env %>% get_mon_resources()
+  attributes <- env %>% get_mon_attributes()
+
+  expect_equal(env %>% now(), 0)
+  expect_equal(env %>% peek(), 0)
+  expect_equal(nrow(arrivals), 0)
+  expect_equal(nrow(arrivals_res), 0)
+  expect_equal(nrow(resources), 0)
+  expect_equal(nrow(attributes), 0)
+})
+
+test_that("the simulator is reset (2)", {
+  t1 <- trajectory() %>%
+    renege_in(3) %>%
+    seize("res") %>%
+    renege_abort() %>%
+    timeout(5) %>%
+    release("res")
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("res") %>%
+    add_generator("dummy", t1, at(0, 0)) %>%
+    run(2)
+
+  expect_silent(reset(env))
 
   arrivals <- env %>% get_mon_arrivals()
   arrivals_res <- env %>% get_mon_arrivals(TRUE)
