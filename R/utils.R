@@ -11,7 +11,7 @@ evaluate_value <- function(value) {
 
 needs_attrs <- function(variable) {
   if (is.function(variable))
-    return(length(methods::formalArgs(variable)))
+    return(length(formals(variable)))
   else return(0)
 }
 
@@ -28,6 +28,8 @@ envs_apply <- function(envs, method, ...) {
 }
 
 make_resetable <- function(distribution) {
+  if (identical(environment(distribution), .GlobalEnv))
+    environment(distribution) <- new.env(parent = environment(distribution))
   init <- as.list(environment(distribution))
   environment(distribution)$.reset <- new.env(parent = environment(distribution))
   environment(distribution)$.reset$init <- init

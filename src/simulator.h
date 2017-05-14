@@ -54,10 +54,10 @@ public:
     : name(name), verbose(verbose), now_(0), b_count(0) {}
 
   ~Simulator() {
-    foreach_ (PQueue::value_type& itr, event_queue)
-      if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
     foreach_ (EntMap::value_type& itr, resource_map)
       delete itr.second;
+    foreach_ (PQueue::value_type& itr, event_queue)
+      if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
     foreach_ (EntMap::value_type& itr, process_map)
       delete itr.second;
     foreach_ (NamBMap::value_type& itr, namedb_map)
@@ -71,12 +71,12 @@ public:
    */
   void reset() {
     now_ = 0;
+    foreach_ (EntMap::value_type& itr, resource_map)
+      ((Resource*)itr.second)->reset();
     foreach_ (PQueue::value_type& itr, event_queue)
       if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
     event_queue.clear();
     event_map.clear();
-    foreach_ (EntMap::value_type& itr, resource_map)
-      ((Resource*)itr.second)->reset();
     foreach_ (EntMap::value_type& itr, process_map) {
       ((Process*)itr.second)->reset();
       ((Process*)itr.second)->activate();
