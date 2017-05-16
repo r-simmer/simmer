@@ -4,10 +4,10 @@
 
 evaluate_value <- function(value) {
   value <- magrittr_workaround(value)
-  tryCatch({
-      abs(eval(parse(text = value)))
-    },
-    error = function(err) value)
+  if (is.null(value)) value
+  else tryCatch({
+    abs(eval(parse(text = value)))
+  }, error = function(err) value)
 }
 
 needs_attrs <- function(variable) {
