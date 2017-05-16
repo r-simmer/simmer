@@ -27,8 +27,9 @@ test_that("priority queues are adhered to (2)", {
   env <- simmer(verbose = TRUE) %>%
     add_resource("server", 1) %>%
     add_generator("__nonprior", t0, at(c(0, 0))) %>%
-    add_generator("__prior", t1, at(1)) %>% # should be served second
-    run()
+    add_generator("__prior", t1, at(1)) # should be served second
+
+  expect_warning(run(env))
 
   arrs <-
     env %>% get_mon_arrivals()
@@ -50,8 +51,9 @@ test_that("priority queues are adhered to (3)", {
   env <- simmer(verbose = TRUE) %>%
     add_resource("server", 1) %>%
     add_generator("__nonprior", t0, at(c(0, 0))) %>%
-    add_generator("__prior", t1, at(1)) %>% # should be served second
-    run()
+    add_generator("__prior", t1, at(1))# should be served second
+
+  expect_warning(run(env))
 
   arrs <-
     env %>% get_mon_arrivals()

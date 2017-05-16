@@ -4,9 +4,9 @@
 
 evaluate_value <- function(value) {
   value <- magrittr_workaround(value)
-  if (is.null(value)) value
+  if (is.null(value) || is.function(value)) value
   else tryCatch({
-    abs(eval(parse(text = value)))
+    sapply(value, function(i) abs(eval(parse(text = i))))
   }, error = function(err) value)
 }
 
