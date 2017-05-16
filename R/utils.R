@@ -3,6 +3,7 @@
 }
 
 evaluate_value <- function(value) {
+  value <- magrittr_workaround(value)
   tryCatch({
       abs(eval(parse(text = value)))
     },
@@ -28,6 +29,7 @@ envs_apply <- function(envs, method, ...) {
 }
 
 make_resetable <- function(distribution) {
+  distribution <- magrittr_workaround(distribution)
   if (identical(environment(distribution), .GlobalEnv))
     environment(distribution) <- new.env(parent = environment(distribution))
   init <- as.list(environment(distribution))
@@ -45,4 +47,12 @@ make_resetable <- function(distribution) {
 binarise <- function(...) {
   args <- c(...)
   sum(2^(seq_along(args) - 1) * args) + 1
+}
+
+# see https://github.com/tidyverse/magrittr/issues/146
+magrittr_workaround <- function(func) {
+  if (is.function(func) && !identical(environment(func), .GlobalEnv) &&
+      "." %in% ls(envir=environment(func), all.names=TRUE))
+    rm(".", envir=environment(func))
+  func
 }

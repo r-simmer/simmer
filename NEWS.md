@@ -9,6 +9,7 @@
 * Change `rollback()`'s default behaviour to `times=Inf`, i.e., infinite loop (#95).
 * Stop and throw an error when `timeout()` returns a missing value (#96 and #97).
 * Fix memory management: resetting the environment was clearing but not deallocating memory (#98).
+* Fix object destruction: workaround for tidyverse/magrittr#146.
 
 # simmer 3.6.1
 

@@ -211,6 +211,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     set_prioritization = function(values) {
+      values <- evaluate_value(values)
       switch(
         binarise(is.function(values)),
         private$add_activity(SetPrior__new(values)),
@@ -292,6 +293,7 @@ Trajectory <- R6Class("trajectory",
       timeout <- evaluate_value(timeout)
       permanent <- evaluate_value(permanent)
       name <- evaluate_value(name)
+      rule <- evaluate_value(rule)
       switch(
         binarise(is.function(timeout), is.function(rule)),
         private$add_activity(Batch__new(n, timeout, permanent, name)),
