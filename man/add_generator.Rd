@@ -20,7 +20,7 @@ negative value stops the generator).}
 
 \item{mon}{whether the simulator must monitor the generated arrivals or not
 (0 = no monitoring, 1 = simple arrival monitoring, 2 = level 1 + arrival
-attribute montoring)}
+attribute monitoring)}
 
 \item{priority}{the priority of each arrival (a higher integer equals higher
 priority; defaults to the minimum priority, which is 0).}

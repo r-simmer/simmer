@@ -151,7 +151,7 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
 #' negative value stops the generator).
 #' @param mon whether the simulator must monitor the generated arrivals or not
 #' (0 = no monitoring, 1 = simple arrival monitoring, 2 = level 1 + arrival
-#' attribute montoring)
+#' attribute monitoring)
 #' @param priority the priority of each arrival (a higher integer equals higher
 #' priority; defaults to the minimum priority, which is 0).
 #' @param preemptible if a seize occurs in a preemptive resource, this parameter

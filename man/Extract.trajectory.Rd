@@ -23,7 +23,7 @@
 or \code{logical} vectors or empty (missing) or \code{NULL}.
 
 Numeric values are coerced to integer as by \code{\link{as.integer}} (and hence truncated towards
-zero). Negative integers indicate elemets/slices to leave out the selection.
+zero). Negative integers indicate elements/slices to leave out the selection.
 
 Character vectors will be matched to the names of the activities in the trajectory as by
 \code{\link{\%in\%}}.

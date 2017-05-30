@@ -27,6 +27,7 @@ File 'LICENSE':
 
 Possibly mis-spelled words in DESCRIPTION:
   DES (9:6)
+  API (11:74)
 
 * checking installed package size ... NOTE
   installed size is  11.0Mb
