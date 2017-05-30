@@ -67,19 +67,19 @@ navbar:
     icon: fa-graduation-cap
     menu:
       - text: "Introduction to simmer"
-        href: articles/A-introduction.html
+        href: articles/simmer-01-introduction.html
       - text: "Terminology"
-        href: articles/B-terminology.html
+        href: articles/simmer-02-terminology.html
       - text: "Advanced Trajectory Usage"
-        href: articles/C-trajectories.html
+        href: articles/simmer-03-trajectories.html
       - text: "The Bank Tutorial: Part I"
-        href: articles/D-bank-1.html
+        href: articles/simmer-04-bank-1.html
       - text: "Other SimPy Examples"
-        href: articles/E-simpy.html
+        href: articles/simmer-05-simpy.html
       - text: "Queueing Systems"
-        href: articles/F-queueing-systems.html
+        href: articles/simmer-06-queueing-systems.html
       - text: "Continuous-Time Markov Chains"
-        href: articles/G-ctmc.html
+        href: articles/simmer-07-ctmc.html
   - text: "News"
     icon: fa-newspaper-o
     href: news/index.html
