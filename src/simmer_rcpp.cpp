@@ -3,7 +3,7 @@
 #include "entity.h"
 #include "process.h"
 #include "resource.h"
-#include "stats.h"
+#include "monitor.h"
 #include "simulator.h"
 
 using namespace Rcpp;
@@ -26,14 +26,9 @@ double now_(SEXP sim_) {
 }
 
 //[[Rcpp::export]]
-List peek_(SEXP sim_, int steps) {
+DataFrame peek_(SEXP sim_, int steps) {
   XPtr<Simulator> sim(sim_);
-  std::pair<VEC<double>, VEC<std::string> > ret = sim->peek(steps);
-
-  return List::create(
-    Rcpp::Named("time")     = ret.first,
-    Rcpp::Named("process")  = ret.second
-  );
+  return sim->peek(steps);
 }
 
 //[[Rcpp::export]]
@@ -73,33 +68,33 @@ bool add_resource_manager_(SEXP sim_, std::string name, std::string param,
 }
 
 //[[Rcpp::export]]
-List get_mon_arrivals_(SEXP sim_, bool per_resource, bool ongoing) {
+DataFrame get_mon_arrivals_(SEXP sim_, bool per_resource, bool ongoing) {
   XPtr<Simulator> sim(sim_);
-  return sim->get_arr_stats(per_resource, ongoing);
+  return sim->get_mon_arrivals(per_resource, ongoing);
 }
 
 //[[Rcpp::export]]
-List get_mon_attributes_(SEXP sim_) {
+DataFrame get_mon_attributes_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
-  return sim->get_attr_stats();
+  return sim->get_mon_attributes();
 }
 
 //[[Rcpp::export]]
-List get_mon_resource_(SEXP sim_) {
+DataFrame get_mon_resources_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
-  return sim->get_res_stats();
+  return sim->get_mon_resources();
 }
 
 //[[Rcpp::export]]
-List get_mon_resource_counts_(SEXP sim_) {
+DataFrame get_mon_resources_counts_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
-  return sim->get_res_stats_counts();
+  return sim->get_mon_resources_counts();
 }
 
 //[[Rcpp::export]]
-List get_mon_resource_limits_(SEXP sim_) {
+DataFrame get_mon_resources_limits_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
-  return sim->get_res_stats_limits();
+  return sim->get_mon_resources_limits();
 }
 
 //[[Rcpp::export]]

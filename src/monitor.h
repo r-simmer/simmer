@@ -1,11 +1,11 @@
-#ifndef STATS_H
-#define STATS_H
+#ifndef MONITOR_H
+#define MONITOR_H
 
 #include "simmer.h"
 
-class StatsMap {
-  typedef boost::variant< VEC<bool>, VEC<int>, VEC<double>, VEC<std::string> > StatsVec;
-  typedef UMAP<std::string, StatsVec> StatsContainer;
+class Monitor {
+  typedef boost::variant< VEC<bool>, VEC<int>, VEC<double>, VEC<std::string> > MonVec;
+  typedef UMAP<std::string, MonVec> MonContainer;
 
 public:
   template <typename T>
@@ -25,7 +25,7 @@ public:
   void clear() { map.clear(); }
 
 private:
-  StatsContainer map;
+  MonContainer map;
 };
 
 #endif

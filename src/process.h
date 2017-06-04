@@ -49,10 +49,8 @@ private:
 };
 
 class Task : public Process {
-  typedef boost::function<void ()> Bind;
-
 public:
-  Task(Simulator* sim, std::string name, Bind task, int priority = 0)
+  Task(Simulator* sim, std::string name, BIND(void) task, int priority = 0)
     : Process(sim, name, false, priority), task(task) {}
   ~Task() { reset(); }
 
@@ -60,7 +58,7 @@ public:
   void run();
 
 private:
-  Bind task;
+  BIND(void) task;
 };
 
 struct Order {

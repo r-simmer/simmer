@@ -1,3 +1,9 @@
+# simmer 3.6.2.9000
+
+## Minor changes and fixes:
+
+* Use `Rcpp::DataFrame` instead of `Rcpp::List` (#104).
+
 # simmer 3.6.2
 
 ## Minor changes and fixes:

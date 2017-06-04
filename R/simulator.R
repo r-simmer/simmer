@@ -41,7 +41,7 @@ Simmer <- R6Class("simmer",
       steps <- evaluate_value(steps)
       verbose <- evaluate_value(verbose)
       steps <- replace(steps, steps == Inf, -1)
-      ret <- as.data.frame(peek_(private$sim_obj, steps))
+      ret <- peek_(private$sim_obj, steps)
       if (!verbose) ret$time
       else ret # nocov
     },
@@ -119,25 +119,20 @@ Simmer <- R6Class("simmer",
     get_mon_arrivals = function(per_resource=FALSE, ongoing=FALSE) {
       per_resource <- evaluate_value(per_resource)
       ongoing <- evaluate_value(ongoing)
-      as.data.frame(
-        get_mon_arrivals_(private$sim_obj, per_resource, ongoing),
-        stringsAsFactors = FALSE
-      )
+      get_mon_arrivals_(private$sim_obj, per_resource, ongoing)
     },
 
-    get_mon_attributes = function()
-      as.data.frame(get_mon_attributes_(private$sim_obj), stringsAsFactors = FALSE),
+    get_mon_attributes = function() get_mon_attributes_(private$sim_obj),
 
     get_mon_resources = function(data=c("counts", "limits")) {
       data <- match.arg(data, several.ok = TRUE)
-      monitor_data <- as.data.frame(
+      monitor_data <-
         if (identical(data, "counts"))
-          get_mon_resource_counts_(private$sim_obj)
+          get_mon_resources_counts_(private$sim_obj)
         else if (identical(data, "limits"))
-          get_mon_resource_limits_(private$sim_obj)
+          get_mon_resources_limits_(private$sim_obj)
         else
-          get_mon_resource_(private$sim_obj)
-        , stringsAsFactors = FALSE)
+          get_mon_resources_(private$sim_obj)
       if (identical(data, "limits")) {
         monitor_data$server <-
           replace(monitor_data$server, monitor_data$server == -1, Inf)

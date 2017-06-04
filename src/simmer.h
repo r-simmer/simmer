@@ -40,6 +40,8 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
+#define BIND(T) boost::function<T ()>
+
 #define FMT(n, justify) std::setw(n) << std::justify
 
 #define PRIORITY_MAX            std::numeric_limits<int>::min()

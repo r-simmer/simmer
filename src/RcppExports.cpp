@@ -39,7 +39,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // peek_
-List peek_(SEXP sim_, int steps);
+DataFrame peek_(SEXP sim_, int steps);
 RcppExport SEXP simmer_peek_(SEXP sim_SEXP, SEXP stepsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -124,7 +124,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_mon_arrivals_
-List get_mon_arrivals_(SEXP sim_, bool per_resource, bool ongoing);
+DataFrame get_mon_arrivals_(SEXP sim_, bool per_resource, bool ongoing);
 RcppExport SEXP simmer_get_mon_arrivals_(SEXP sim_SEXP, SEXP per_resourceSEXP, SEXP ongoingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -137,7 +137,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_mon_attributes_
-List get_mon_attributes_(SEXP sim_);
+DataFrame get_mon_attributes_(SEXP sim_);
 RcppExport SEXP simmer_get_mon_attributes_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -147,36 +147,36 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// get_mon_resource_
-List get_mon_resource_(SEXP sim_);
-RcppExport SEXP simmer_get_mon_resource_(SEXP sim_SEXP) {
+// get_mon_resources_
+DataFrame get_mon_resources_(SEXP sim_);
+RcppExport SEXP simmer_get_mon_resources_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    rcpp_result_gen = Rcpp::wrap(get_mon_resource_(sim_));
+    rcpp_result_gen = Rcpp::wrap(get_mon_resources_(sim_));
     return rcpp_result_gen;
 END_RCPP
 }
-// get_mon_resource_counts_
-List get_mon_resource_counts_(SEXP sim_);
-RcppExport SEXP simmer_get_mon_resource_counts_(SEXP sim_SEXP) {
+// get_mon_resources_counts_
+DataFrame get_mon_resources_counts_(SEXP sim_);
+RcppExport SEXP simmer_get_mon_resources_counts_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    rcpp_result_gen = Rcpp::wrap(get_mon_resource_counts_(sim_));
+    rcpp_result_gen = Rcpp::wrap(get_mon_resources_counts_(sim_));
     return rcpp_result_gen;
 END_RCPP
 }
-// get_mon_resource_limits_
-List get_mon_resource_limits_(SEXP sim_);
-RcppExport SEXP simmer_get_mon_resource_limits_(SEXP sim_SEXP) {
+// get_mon_resources_limits_
+DataFrame get_mon_resources_limits_(SEXP sim_);
+RcppExport SEXP simmer_get_mon_resources_limits_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    rcpp_result_gen = Rcpp::wrap(get_mon_resource_limits_(sim_));
+    rcpp_result_gen = Rcpp::wrap(get_mon_resources_limits_(sim_));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1078,4 +1078,99 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(activity_clone_(activity_));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"simmer_Simulator__new", (DL_FUNC) &simmer_Simulator__new, 2},
+    {"simmer_reset_", (DL_FUNC) &simmer_reset_, 1},
+    {"simmer_now_", (DL_FUNC) &simmer_now_, 1},
+    {"simmer_peek_", (DL_FUNC) &simmer_peek_, 2},
+    {"simmer_step_", (DL_FUNC) &simmer_step_, 1},
+    {"simmer_run_", (DL_FUNC) &simmer_run_, 2},
+    {"simmer_add_generator_", (DL_FUNC) &simmer_add_generator_, 8},
+    {"simmer_add_resource_", (DL_FUNC) &simmer_add_resource_, 8},
+    {"simmer_add_resource_manager_", (DL_FUNC) &simmer_add_resource_manager_, 6},
+    {"simmer_get_mon_arrivals_", (DL_FUNC) &simmer_get_mon_arrivals_, 3},
+    {"simmer_get_mon_attributes_", (DL_FUNC) &simmer_get_mon_attributes_, 1},
+    {"simmer_get_mon_resources_", (DL_FUNC) &simmer_get_mon_resources_, 1},
+    {"simmer_get_mon_resources_counts_", (DL_FUNC) &simmer_get_mon_resources_counts_, 1},
+    {"simmer_get_mon_resources_limits_", (DL_FUNC) &simmer_get_mon_resources_limits_, 1},
+    {"simmer_get_n_generated_", (DL_FUNC) &simmer_get_n_generated_, 2},
+    {"simmer_get_capacity_", (DL_FUNC) &simmer_get_capacity_, 2},
+    {"simmer_get_queue_size_", (DL_FUNC) &simmer_get_queue_size_, 2},
+    {"simmer_get_server_count_", (DL_FUNC) &simmer_get_server_count_, 2},
+    {"simmer_get_queue_count_", (DL_FUNC) &simmer_get_queue_count_, 2},
+    {"simmer_Seize__new", (DL_FUNC) &simmer_Seize__new, 5},
+    {"simmer_Seize__new_func", (DL_FUNC) &simmer_Seize__new_func, 6},
+    {"simmer_SeizeSelected__new", (DL_FUNC) &simmer_SeizeSelected__new, 5},
+    {"simmer_SeizeSelected__new_func", (DL_FUNC) &simmer_SeizeSelected__new_func, 6},
+    {"simmer_Release__new", (DL_FUNC) &simmer_Release__new, 2},
+    {"simmer_Release__new_func", (DL_FUNC) &simmer_Release__new_func, 3},
+    {"simmer_ReleaseSelected__new", (DL_FUNC) &simmer_ReleaseSelected__new, 2},
+    {"simmer_ReleaseSelected__new_func", (DL_FUNC) &simmer_ReleaseSelected__new_func, 3},
+    {"simmer_SetCapacity__new", (DL_FUNC) &simmer_SetCapacity__new, 2},
+    {"simmer_SetCapacity__new_func", (DL_FUNC) &simmer_SetCapacity__new_func, 3},
+    {"simmer_SetCapacitySelected__new", (DL_FUNC) &simmer_SetCapacitySelected__new, 2},
+    {"simmer_SetCapacitySelected__new_func", (DL_FUNC) &simmer_SetCapacitySelected__new_func, 3},
+    {"simmer_SetQueue__new", (DL_FUNC) &simmer_SetQueue__new, 2},
+    {"simmer_SetQueue__new_func", (DL_FUNC) &simmer_SetQueue__new_func, 3},
+    {"simmer_SetQueueSelected__new", (DL_FUNC) &simmer_SetQueueSelected__new, 2},
+    {"simmer_SetQueueSelected__new_func", (DL_FUNC) &simmer_SetQueueSelected__new_func, 3},
+    {"simmer_Select__new", (DL_FUNC) &simmer_Select__new, 3},
+    {"simmer_Select__new_func", (DL_FUNC) &simmer_Select__new_func, 4},
+    {"simmer_SetAttribute__new", (DL_FUNC) &simmer_SetAttribute__new, 3},
+    {"simmer_SetAttribute__new_func", (DL_FUNC) &simmer_SetAttribute__new_func, 4},
+    {"simmer_Activate__new", (DL_FUNC) &simmer_Activate__new, 1},
+    {"simmer_Activate__new_func", (DL_FUNC) &simmer_Activate__new_func, 2},
+    {"simmer_Deactivate__new", (DL_FUNC) &simmer_Deactivate__new, 1},
+    {"simmer_Deactivate__new_func", (DL_FUNC) &simmer_Deactivate__new_func, 2},
+    {"simmer_SetTraj__new", (DL_FUNC) &simmer_SetTraj__new, 2},
+    {"simmer_SetTraj__new_func", (DL_FUNC) &simmer_SetTraj__new_func, 3},
+    {"simmer_SetDist__new", (DL_FUNC) &simmer_SetDist__new, 2},
+    {"simmer_SetDist__new_func", (DL_FUNC) &simmer_SetDist__new_func, 3},
+    {"simmer_SetPrior__new", (DL_FUNC) &simmer_SetPrior__new, 1},
+    {"simmer_SetPrior__new_func", (DL_FUNC) &simmer_SetPrior__new_func, 2},
+    {"simmer_Timeout__new", (DL_FUNC) &simmer_Timeout__new, 1},
+    {"simmer_Timeout__new_func", (DL_FUNC) &simmer_Timeout__new_func, 2},
+    {"simmer_Branch__new", (DL_FUNC) &simmer_Branch__new, 4},
+    {"simmer_Rollback__new", (DL_FUNC) &simmer_Rollback__new, 2},
+    {"simmer_Rollback__new_func", (DL_FUNC) &simmer_Rollback__new_func, 3},
+    {"simmer_Leave__new", (DL_FUNC) &simmer_Leave__new, 1},
+    {"simmer_Leave__new_func", (DL_FUNC) &simmer_Leave__new_func, 2},
+    {"simmer_Clone__new", (DL_FUNC) &simmer_Clone__new, 2},
+    {"simmer_Clone__new_func", (DL_FUNC) &simmer_Clone__new_func, 3},
+    {"simmer_Synchronize__new", (DL_FUNC) &simmer_Synchronize__new, 2},
+    {"simmer_Batch__new", (DL_FUNC) &simmer_Batch__new, 4},
+    {"simmer_Batch__new_func1", (DL_FUNC) &simmer_Batch__new_func1, 5},
+    {"simmer_Batch__new_func2", (DL_FUNC) &simmer_Batch__new_func2, 6},
+    {"simmer_Batch__new_func4", (DL_FUNC) &simmer_Batch__new_func4, 6},
+    {"simmer_Separate__new", (DL_FUNC) &simmer_Separate__new, 0},
+    {"simmer_RenegeIn__new", (DL_FUNC) &simmer_RenegeIn__new, 2},
+    {"simmer_RenegeIn__new_func", (DL_FUNC) &simmer_RenegeIn__new_func, 3},
+    {"simmer_RenegeIf__new", (DL_FUNC) &simmer_RenegeIf__new, 2},
+    {"simmer_RenegeIf__new_func", (DL_FUNC) &simmer_RenegeIf__new_func, 3},
+    {"simmer_RenegeAbort__new", (DL_FUNC) &simmer_RenegeAbort__new, 0},
+    {"simmer_Send__new", (DL_FUNC) &simmer_Send__new, 2},
+    {"simmer_Send__new_func1", (DL_FUNC) &simmer_Send__new_func1, 3},
+    {"simmer_Send__new_func2", (DL_FUNC) &simmer_Send__new_func2, 3},
+    {"simmer_Send__new_func4", (DL_FUNC) &simmer_Send__new_func4, 3},
+    {"simmer_Trap__new", (DL_FUNC) &simmer_Trap__new, 3},
+    {"simmer_Trap__new_func", (DL_FUNC) &simmer_Trap__new_func, 4},
+    {"simmer_UnTrap__new", (DL_FUNC) &simmer_UnTrap__new, 1},
+    {"simmer_UnTrap__new_func", (DL_FUNC) &simmer_UnTrap__new_func, 2},
+    {"simmer_Wait__new", (DL_FUNC) &simmer_Wait__new, 0},
+    {"simmer_Log__new", (DL_FUNC) &simmer_Log__new, 1},
+    {"simmer_Log__new_func", (DL_FUNC) &simmer_Log__new_func, 2},
+    {"simmer_activity_get_n_", (DL_FUNC) &simmer_activity_get_n_, 1},
+    {"simmer_activity_print_", (DL_FUNC) &simmer_activity_print_, 3},
+    {"simmer_activity_get_next_", (DL_FUNC) &simmer_activity_get_next_, 1},
+    {"simmer_activity_get_prev_", (DL_FUNC) &simmer_activity_get_prev_, 1},
+    {"simmer_activity_chain_", (DL_FUNC) &simmer_activity_chain_, 2},
+    {"simmer_activity_clone_", (DL_FUNC) &simmer_activity_clone_, 1},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_simmer(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }
