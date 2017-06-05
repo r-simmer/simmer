@@ -96,7 +96,7 @@ public:
     mon_resources.clear();
   }
 
-  double now() { return now_; }
+  double now() const { return now_; }
 
   /**
    * Schedule a future event.
@@ -116,11 +116,11 @@ public:
   /**
    * Look for future events.
    */
-  Rcpp::DataFrame peek(int steps) {
+  Rcpp::DataFrame peek(int steps) const {
     VEC<double> time;
     VEC<std::string> process;
     if (steps) {
-      foreach_ (PQueue::value_type& itr, event_queue) {
+      foreach_ (const PQueue::value_type& itr, event_queue) {
         time.push_back(itr.time);
         process.push_back(itr.process->name);
         if (!--steps) break;
@@ -251,8 +251,8 @@ public:
   /**
    * Get a generator by name.
    */
-  Generator* get_generator(std::string name) {
-    EntMap::iterator search = process_map.find(name);
+  Generator* get_generator(std::string name) const {
+    EntMap::const_iterator search = process_map.find(name);
     if (search == process_map.end())
       Rcpp::stop("generator '%s' not found (typo?)", name);
     return (Generator*)search->second;
@@ -261,8 +261,8 @@ public:
   /**
    * Get a resource by name.
    */
-  Resource* get_resource(std::string name) {
-    EntMap::iterator search = resource_map.find(name);
+  Resource* get_resource(std::string name) const {
+    EntMap::const_iterator search = resource_map.find(name);
     if (search == resource_map.end())
       Rcpp::stop("resource '%s' not found (typo?)", name);
     return (Resource*)search->second;
@@ -283,8 +283,8 @@ public:
   size_t get_batch_count() { return b_count++; }
 
   void broadcast(VEC<std::string> signals) {
-    foreach_ (std::string signal, signals) {
-      foreach_ (HandlerMap::value_type& itr, signal_map[signal]) {
+    foreach_ (const std::string signal, signals) {
+      foreach_ (const HandlerMap::value_type& itr, signal_map[signal]) {
         if (!itr.second.first)
           continue;
         Task* task = new Task(this, "Handler", itr.second.second);
@@ -297,11 +297,11 @@ public:
     arrival_map[arrival].emplace(signal);
   }
   void subscribe(VEC<std::string> signals, Arrival* arrival, BIND(void) handler) {
-    foreach_ (std::string signal, signals)
+    foreach_ (const std::string signal, signals)
       subscribe(signal, arrival, handler);
   }
   void subscribe(Arrival* arrival) {
-    foreach_ (std::string signal, arrival_map[arrival])
+    foreach_ (const std::string signal, arrival_map[arrival])
       signal_map[signal][arrival].first = true;
   }
   void unsubscribe(std::string signal, Arrival* arrival) {
@@ -309,11 +309,11 @@ public:
     arrival_map[arrival].erase(signal);
   }
   void unsubscribe(VEC<std::string> signals, Arrival* arrival) {
-    foreach_ (std::string signal, signals)
+    foreach_ (const std::string signal, signals)
       unsubscribe(signal, arrival);
   }
   void unsubscribe(Arrival* arrival) {
-    foreach_ (std::string signal, arrival_map[arrival])
+    foreach_ (const std::string signal, arrival_map[arrival])
       signal_map[signal][arrival].first = false;
   }
 
@@ -325,7 +325,7 @@ public:
 
   void register_arrival(Arrival* arrival) { arrival_map[arrival]; }
   void unregister_arrival(Arrival* arrival) {
-    foreach_ (std::string signal, arrival_map[arrival])
+    foreach_ (const std::string signal, arrival_map[arrival])
       signal_map[signal].erase(arrival);
     arrival_map.erase(arrival);
   }
@@ -366,7 +366,7 @@ public:
   /**
    * Get monitoring data.
    */
-  Rcpp::DataFrame get_mon_arrivals(bool per_resource, bool ongoing) {
+  Rcpp::DataFrame get_mon_arrivals(bool per_resource, bool ongoing) const {
     if (!per_resource) {
       VEC<std::string> name             = mon_arr_traj.get<std::string>("name");
       VEC<double> start_time            = mon_arr_traj.get<double>("start_time");
@@ -374,7 +374,7 @@ public:
       VEC<double> activity_time         = mon_arr_traj.get<double>("activity_time");
       Rcpp::LogicalVector finished      = Rcpp::wrap(mon_arr_traj.get<bool>("finished"));
       if (ongoing) {
-        foreach_ (ArrMap::value_type& itr, arrival_map) {
+        foreach_ (const ArrMap::value_type& itr, arrival_map) {
           if (!itr.first->is_monitored())
             continue;
           name.push_back(itr.first->name);
@@ -399,10 +399,10 @@ public:
       VEC<double> activity_time         = mon_arr_res.get<double>("activity_time");
       VEC<std::string> resource         = mon_arr_res.get<std::string>("resource");
       if (ongoing) {
-        foreach_ (ArrMap::value_type& itr1, arrival_map) {
+        foreach_ (const ArrMap::value_type& itr1, arrival_map) {
           if (!itr1.first->is_monitored())
             continue;
-          foreach_ (EntMap::value_type& itr2, resource_map) {
+          foreach_ (const EntMap::value_type& itr2, resource_map) {
             double start = itr1.first->get_start(itr2.second->name);
             if (start < 0)
               continue;
@@ -424,7 +424,7 @@ public:
       );
     }
   }
-  Rcpp::DataFrame get_mon_attributes() {
+  Rcpp::DataFrame get_mon_attributes() const {
     return Rcpp::DataFrame::create(
       Rcpp::Named("time")             = mon_attributes.get<double>("time"),
       Rcpp::Named("name")             = mon_attributes.get<std::string>("name"),
@@ -433,7 +433,7 @@ public:
       Rcpp::Named("stringsAsFactors") = false
     );
   }
-  Rcpp::DataFrame get_mon_resources() {
+  Rcpp::DataFrame get_mon_resources() const {
     return Rcpp::DataFrame::create(
       Rcpp::Named("resource")         = mon_resources.get<std::string>("resource"),
       Rcpp::Named("time")             = mon_resources.get<double>("time"),
@@ -444,7 +444,7 @@ public:
       Rcpp::Named("stringsAsFactors") = false
     );
   }
-  Rcpp::DataFrame get_mon_resources_counts() {
+  Rcpp::DataFrame get_mon_resources_counts() const {
     return Rcpp::DataFrame::create(
       Rcpp::Named("resource")         = mon_resources.get<std::string>("resource"),
       Rcpp::Named("time")             = mon_resources.get<double>("time"),
@@ -453,7 +453,7 @@ public:
       Rcpp::Named("stringsAsFactors") = false
     );
   }
-  Rcpp::DataFrame get_mon_resources_limits() {
+  Rcpp::DataFrame get_mon_resources_limits() const {
     return Rcpp::DataFrame::create(
       Rcpp::Named("resource")         = mon_resources.get<std::string>("resource"),
       Rcpp::Named("time")             = mon_resources.get<double>("time"),

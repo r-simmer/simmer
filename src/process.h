@@ -19,7 +19,7 @@ public:
   virtual void run() = 0;
   virtual bool activate(double delay = 0);
   virtual bool deactivate();
-  bool is_active() { return active; }
+  bool is_active() const { return active; }
 
 protected:
   bool active;
@@ -76,7 +76,7 @@ public:
     if (preemptible < priority)
       preemptible = priority;
   }
-  int get_priority() { return priority; }
+  int get_priority() const { return priority; }
   void set_preemptible(int value) {
     if (value < priority) {
       Rcpp::warning("`preemptible` level cannot be < `priority`, `preemptible` set to %d", priority);
@@ -84,9 +84,9 @@ public:
     }
     preemptible = value;
   }
-  int get_preemptible() { return preemptible; }
+  int get_preemptible() const { return preemptible; }
   void set_restart(bool value) { restart = value; }
-  bool get_restart() { return restart; }
+  bool get_restart() const { return restart; }
 
 private:
   int priority;       /**< arrival priority */
@@ -126,7 +126,7 @@ public:
 
   void run();
 
-  int get_n_generated() { return count; }
+  int get_n_generated() const { return count; }
   void set_trajectory(Rcpp::Environment new_trj) {
     trj = new_trj;
     set_first_activity();
@@ -196,13 +196,18 @@ public:
   double get_start(std::string name);
 
   Attr* get_attributes() { return &attributes; }
-  double get_remaining() { return status.remaining; }
+  double get_remaining() const { return status.remaining; }
   void set_activity(Activity* ptr) { activity = ptr; }
-  double get_start() { return lifetime.start; }
-  Activity* get_activity() { return activity; }
+  double get_start() const { return lifetime.start; }
+  Activity* get_activity() const { return activity; }
 
   void set_selected(int id, Resource* res) { selected[id] = res; }
-  Resource* get_selected(int id) { return selected[id]; }
+  Resource* get_selected(int id) const {
+    SelMap::const_iterator search = selected.find(id);
+    if (search != selected.end())
+      return search->second;
+    return NULL;
+  }
   void register_entity(Resource* ptr);
   void register_entity(Batched* ptr) { batch = ptr; }
   void unregister_entity(Resource* ptr);
@@ -231,8 +236,8 @@ protected:
   ResMSet resources;    /**< resources that contain this arrival */
 
   void renege(Activity* next);
-  virtual void report(std::string resource);
-  virtual void report(std::string resource, double start, double activity);
+  virtual void report(std::string resource) const;
+  virtual void report(std::string resource, double start, double activity) const;
   bool leave_resources(bool flag = false);
 
   virtual void update_activity(double value) {
@@ -300,8 +305,8 @@ public:
 
   void set_attribute(std::string key, double value);
 
-  bool is_permanent() { return permanent; }
-  size_t size() { return arrivals.size(); }
+  bool is_permanent() const { return permanent; }
+  size_t size() const { return arrivals.size(); }
 
   void insert(Arrival* arrival) {
     arrival->set_activity(NULL);
@@ -314,21 +319,23 @@ protected:
   VEC<Arrival*> arrivals;
   bool permanent;
 
-  void report(std::string resource) {
-    foreach_ (Arrival* arrival, arrivals) {
-      if (arrival->is_monitored())
-        arrival->report(resource, restime[resource].start, restime[resource].activity);
+  void report(std::string resource) const {
+    foreach_ (const Arrival* arrival, arrivals) {
+      if (arrival->is_monitored()) {
+        ArrTime time = restime.find(resource)->second;
+        arrival->report(resource, time.start, time.activity);
+      }
     }
   }
 
-  void report(std::string resource, double start, double activity) {
-    foreach_ (Arrival* arrival, arrivals) {
+  void report(std::string resource, double start, double activity) const {
+    foreach_ (const Arrival* arrival, arrivals) {
       if (arrival->is_monitored())
         arrival->report(resource, start, activity);
     }
   }
 
-  void report(Arrival* arrival);
+  void report(Arrival* arrival) const;
 
   void update_activity(double value) {
     Arrival::update_activity(value);

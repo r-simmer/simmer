@@ -1,5 +1,15 @@
 context("select")
 
+test_that("no selection throws an error", {
+  t0 <- trajectory() %>% seize_selected()
+
+  env <- simmer() %>%
+    add_resource("res") %>%
+    add_generator("asdf", t0, at(0))
+
+  expect_error(run(env))
+})
+
 test_that("core selection algorithms work: shortest-queue", {
   t0 <- trajectory() %>% seize("r1", 1)
   t1 <- trajectory() %>% seize("r2", 1)

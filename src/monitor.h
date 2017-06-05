@@ -5,13 +5,14 @@
 
 class Monitor {
   typedef boost::variant< VEC<bool>, VEC<int>, VEC<double>, VEC<std::string> > MonVec;
-  typedef UMAP<std::string, MonVec> MonContainer;
+  typedef UMAP<std::string, MonVec> MonMap;
 
 public:
   template <typename T>
-  VEC<T> get(std::string key) {
-    if (map.find(key) != map.end())
-      return boost::get< VEC<T> >(map[key]);
+  VEC<T> get(std::string key) const {
+    MonMap::const_iterator search = map.find(key);
+    if (search != map.end())
+      return boost::get< VEC<T> >(search->second);
     return VEC<T>();
   }
 
@@ -25,7 +26,7 @@ public:
   void clear() { map.clear(); }
 
 private:
-  MonContainer map;
+  MonMap map;
 };
 
 #endif

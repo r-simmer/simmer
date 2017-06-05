@@ -18,7 +18,7 @@ public:
     : sim(sim), name(name), mon(std::abs(mon)) {}
   virtual ~Entity() {}
   virtual void reset() = 0;
-  int is_monitored() { return mon; }
+  int is_monitored() const { return mon; }
 
 private:
   int mon;

@@ -79,10 +79,10 @@ protected:
   Activity* prev;
 
   template <typename T>
-  T get(T var, int index, Arrival* arrival) { return var; }
+  T get(T var, int index, Arrival* arrival) const { return var; }
 
   template <typename T>
-  T get(Rcpp::Function call, int index, Arrival* arrival) {
+  T get(Rcpp::Function call, int index, Arrival* arrival) const {
     switch (provide_attrs[index]) {
     case 1:
       return Rcpp::as<T>(call(*arrival->get_attributes()));
@@ -102,7 +102,7 @@ public:
        VEC<int> provide_attrs = VEC<int>(0), int priority = 0)
     : Activity(name, provide_attrs, priority), cont(cont), trj(trj), selected(NULL)
   {
-    foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
+    foreach_ (const VEC<Rcpp::Environment>::value_type& itr, trj) {
       Rcpp::Function head(itr["head"]);
       Rcpp::Function tail(itr["tail"]);
       heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(head()));
@@ -110,7 +110,7 @@ public:
       Rcpp::Function get_n_activities(itr["get_n_activities"]);
       n += Rcpp::as<int>(get_n_activities());
     }
-    foreach_ (VEC<Activity*>::value_type& itr, heads)
+    foreach_ (const VEC<Activity*>::value_type& itr, heads)
       itr->set_prev(this);
   }
 
@@ -125,7 +125,7 @@ public:
       heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(head()));
       tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(tail()));
     }
-    foreach_ (VEC<Activity*>::value_type& itr, heads)
+    foreach_ (const VEC<Activity*>::value_type& itr, heads)
       itr->set_prev(this);
   }
 
@@ -171,13 +171,24 @@ class ResGetter {
 public:
   BASE_CLONEABLE(ResGetter)
 
-  ResGetter(std::string resource) : resource(resource) {}
+  ResGetter(std::string name, std::string resource)
+    : name(name), resource(resource), id(-1) {}
 
 protected:
+  std::string name;
   std::string resource;
+  int id;
 
-  virtual Resource* get_resource(Arrival* arrival) {
-    return arrival->sim->get_resource(resource);
+  void set_id(int i) { id = std::abs(i); }
+
+  Resource* get_resource(Arrival* arrival) const {
+    Resource* selected = NULL;
+    if (id < 0)
+      selected = arrival->sim->get_resource(resource);
+    else selected = arrival->get_selected(id);
+    if (!selected)
+      Rcpp::stop("%s: %s: no resource selected", arrival->name, name);
+    return selected;
   }
 };
 
@@ -192,7 +203,7 @@ public:
   Seize(std::string resource, T amount, int provide_attrs,
         VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask)
     : Fork("Seize", cont, trj, VEC<int>(1, provide_attrs)),
-      ResGetter(resource), amount(amount), mask(mask) {}
+      ResGetter("Seize", resource), amount(amount), mask(mask) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -240,14 +251,7 @@ public:
 
   SeizeSelected(int id, T amount, int provide_attrs,
                 VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask)
-    : Seize<T>("[]", amount, provide_attrs, cont, trj, mask), id(id) {}
-
-protected:
-  int id;
-
-  Resource* get_resource(Arrival* arrival) {
-    return arrival->get_selected(id);
-  }
+    : Seize<T>("[]", amount, provide_attrs, cont, trj, mask) { this->set_id(id); }
 };
 
 /**
@@ -260,7 +264,7 @@ public:
 
   Release(std::string resource, T amount, int provide_attrs)
     : Activity("Release", VEC<int>(1, provide_attrs), PRIORITY_RELEASE),
-      ResGetter(resource), amount(amount) {}
+      ResGetter("Release", resource), amount(amount) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -286,14 +290,7 @@ public:
   CLONEABLE(ReleaseSelected<T>)
 
   ReleaseSelected(int id, T amount, int provide_attrs)
-    : Release<T>("[]", amount, provide_attrs), id(id) {}
-
-protected:
-  int id;
-
-  Resource* get_resource(Arrival* arrival) {
-    return arrival->get_selected(id);
-  }
+    : Release<T>("[]", amount, provide_attrs) { this->set_id(id); }
 };
 
 /**
@@ -306,7 +303,7 @@ public:
 
   SetCapacity(std::string resource, T value, int provide_attrs)
     : Activity("SetCapacity", VEC<int>(1, provide_attrs)),
-      ResGetter(resource), value(value) {}
+      ResGetter("SetCapacity", resource), value(value) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -334,14 +331,7 @@ public:
   CLONEABLE(SetCapacitySelected<T>)
 
   SetCapacitySelected(int id, T value, int provide_attrs)
-    : SetCapacity<T>("[]", value, provide_attrs), id(id) {}
-
-protected:
-  int id;
-
-  Resource* get_resource(Arrival* arrival) {
-    return arrival->get_selected(id);
-  }
+    : SetCapacity<T>("[]", value, provide_attrs) { this->set_id(id); }
 };
 
 /**
@@ -354,7 +344,7 @@ public:
 
   SetQueue(std::string resource, T value, int provide_attrs)
     : Activity("SetQueue", VEC<int>(1, provide_attrs)),
-      ResGetter(resource), value(value) {}
+      ResGetter("SetQueue", resource), value(value) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -382,14 +372,7 @@ public:
   CLONEABLE(SetQueueSelected<T>)
 
   SetQueueSelected(int id, T value, int provide_attrs)
-    : SetQueue<T>("[]", value, provide_attrs), id(id) {}
-
-protected:
-  int id;
-
-  Resource* get_resource(Arrival* arrival) {
-    return arrival->get_selected(id);
-  }
+    : SetQueue<T>("[]", value, provide_attrs) { this->set_id(id); }
 };
 
 /**

@@ -50,10 +50,10 @@ public:
 
   void set_capacity(int value);
   void set_queue_size(int value);
-  int get_capacity() { return capacity; }
-  int get_queue_size() { return queue_size; }
-  int get_server_count() { return server_count; }
-  int get_queue_count() { return queue_count; }
+  int get_capacity() const { return capacity; }
+  int get_queue_size() const { return queue_size; }
+  int get_server_count() const { return server_count; }
+  int get_queue_count() const { return queue_count; }
 
 protected:
   int capacity;
@@ -64,7 +64,7 @@ protected:
 
   int post_release();
 
-  void verbose_print(double time, std::string arrival, std::string status) {
+  void verbose_print(double time, std::string arrival, std::string status) const {
     Rcpp::Rcout <<
       FMT(10, right) << time << " |" <<
       FMT(12, right) << "resource: " << FMT(15, left) << name << "|" <<
@@ -72,8 +72,8 @@ protected:
       status << std::endl;
   }
 
-  virtual bool room_in_server(int amount, int priority) = 0;
-  virtual bool room_in_queue(int amount, int priority) = 0;
+  virtual bool room_in_server(int amount, int priority) const = 0;
+  virtual bool room_in_queue(int amount, int priority) const = 0;
   virtual bool try_free_server(bool verbose, double time) = 0;
   virtual bool try_free_queue(bool verbose, double time) = 0;
   virtual bool try_serve_from_queue(bool verbose, double time) = 0;
@@ -159,17 +159,17 @@ protected:
   T server;
   ServerMap server_map;
 
-  bool room_in_server(int amount, int priority) {
+  bool room_in_server(int amount, int priority) const {
     if (capacity < 0)
       return true;
     return server_count + amount <= capacity;
   }
 
-  bool room_in_queue(int amount, int priority) {
+  bool room_in_queue(int amount, int priority) const {
     if (queue_size < 0 || queue_count + amount <= queue_size)
       return true;
     int count = 0;
-    foreach_r_ (RPQueue::value_type& itr, queue) {
+    foreach_r_ (const RPQueue::value_type& itr, queue) {
       if (priority > itr.priority())
         count += itr.amount;
       else
@@ -293,11 +293,11 @@ protected:
   RPQueue preempted;
   QueueMap preempted_map;
 
-  bool room_in_server(int amount, int priority) {
+  bool room_in_server(int amount, int priority) const {
     if (this->capacity < 0 || this->server_count + amount <= this->capacity)
       return true;
     int count = 0;
-    foreach_ (typename T::value_type& itr, this->server) {
+    foreach_ (const typename T::value_type& itr, this->server) {
       if (priority > itr.preemptible())
         count += itr.amount;
       else
