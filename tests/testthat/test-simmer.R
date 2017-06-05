@@ -78,6 +78,19 @@ test_that("the simulator is reset (2)", {
   expect_equal(nrow(attributes), 0)
 })
 
+test_that("the progress is reported", {
+  t1 <- trajectory() %>% timeout(1)
+
+  progress <- NULL
+  record <- function(x) progress <<- c(progress, x)
+
+  env <- simmer() %>%
+    add_generator("dummy", t1, at(0)) %>%
+    run(progress=record)
+
+  expect_equal(progress, seq(0, 1, 0.1))
+})
+
 test_that("the simulator stops if there are no more events", {
   env <- simmer(verbose = TRUE) %>%
     add_resource("server", 1) %>%

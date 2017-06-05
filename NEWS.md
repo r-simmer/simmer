@@ -1,5 +1,9 @@
 # simmer 3.6.2.9000
 
+## New features:
+
+* Show simulation progress via an optional `progress` callback in `run()` (#103).
+
 ## Minor changes and fixes:
 
 * Use `Rcpp::DataFrame` instead of `Rcpp::List` (#104).

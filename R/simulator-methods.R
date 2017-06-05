@@ -59,14 +59,29 @@ reset.simmer <- function(.env) .env$reset()
 #'
 #' @inheritParams reset
 #' @param until stop time.
+#' @param progress optional callback to show the progress of the simulation. The
+#' completed ratio is periodically passed as argument to the callback.
+#' @param steps number of steps to show as progress (it takes effect only if
+#' \code{progress} is provided).
 #'
 #' @return Returns the simulation environment.
 #' @seealso \code{\link{reset}}.
 #' @export
-run <- function(.env, until=1000) UseMethod("run")
+run <- function(.env, until=1000, progress=NULL, steps=10) UseMethod("run")
 
 #' @export
-run.simmer <- function(.env, until=1000) .env$run(until)
+run.simmer <- function(.env, until=1000, progress=NULL, steps=10) {
+  progress <- evaluate_value(progress)
+  steps <- evaluate_value(steps)
+  if (is.function(progress)) {
+    progress(0)
+    for (i in seq(until/steps, until, until/steps)) {
+      .env$run(until=i)
+      progress(i/until)
+    }
+    .env
+  } else .env$run(until=until)
+}
 
 #' @rdname run
 #' @export

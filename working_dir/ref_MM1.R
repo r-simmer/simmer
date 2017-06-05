@@ -28,7 +28,7 @@ system.time({
   env <- simmer(verbose=F) %>%
     add_resource("server", 1) %>%
     add_generator("customer", mm1, function() rexp(100, 60), mon=F) %>%
-    run(10000)
+    run(10000, progress=progress::progress_bar$new()$update)
 })
 # 16 seconds (Simpy: 30 seconds)
 
