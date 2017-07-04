@@ -448,7 +448,6 @@ opening and shutting the door every 30 minutes for ever.
 
 ```{r, message = FALSE}
 library(simmer)
-library(dplyr)
 
 maxTime = 150
 
@@ -486,7 +485,7 @@ bank %>%
 bank %>% run(until = maxTime)
 bank %>%
   get_mon_arrivals %>%
-  mutate(waiting_time = end_time - start_time - activity_time)
+  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
 ```
 
 The output run for this program shows how the first two customers have to wait
@@ -504,7 +503,6 @@ itself -- so the customers are separated immediately after the batch.
 
 ```{r, message = FALSE}
 library(simmer)
-library(dplyr)
 
 maxTime = 150
 
@@ -540,7 +538,7 @@ bank %>%
 bank %>% run(until = maxTime)
 bank %>%
   get_mon_arrivals %>%
-  mutate(waiting_time = end_time - start_time - activity_time)
+  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
 ```
 
 This second method gives the same output as the first.
