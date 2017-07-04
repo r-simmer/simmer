@@ -1,0 +1,706 @@
+---
+title: "The Bank Tutorial: Part II"
+author: "Duncan Garmonsway"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{The Bank Tutorial: Part II}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, cache = FALSE, include=FALSE}
+knitr::opts_chunk$set(collapse = T, comment = "#>",
+                      fig.width = 6, fig.height = 4, fig.align = "center")
+
+required <- c("dplyr")
+
+if (!all(unlist(lapply(required, function(pkg) requireNamespace(pkg, quietly = TRUE)))))
+  knitr::opts_chunk$set(eval = FALSE)
+```
+
+## Introduction
+
+This tutorial is adapted from a tutorial for the Python 2 package 'SimPy',
+[here](https://pythonhosted.org/SimPy/Tutorials/TheBank2.html).  Users familiar
+with SimPy may find this tutorial helpful for transitioning to simmer.  Some
+very basic material is not covered.  Beginners should first read the vignettes
+[_Introduction to simmer_](A-introduction.html),
+[_Terminology_](B-terminology.html), [_Advanced Trajectory
+Usage_](C-trajectories.html) and [_The Bank Tutorial: Part I_](D-bank-1.html).
+
+## Priority customers
+
+In many situations there is a system of priority service. Those customers with
+high priority are served first, those with low priority must wait. In some
+cases, preemptive priority will even allow a high-priority customer to interrupt
+the service of one with a lower priority.
+
+Simmer implements priority requests with an extra integer priority argument to
+`add_generator()`.  By default, priority is zero; higher integers have higher
+priority.  For this to operate, the resource must have been created with
+`preemptive = TRUE`.
+
+### Priority customers without preemption
+
+In the first example, we modify the program with random arrivals, one counter,
+and a fixed service time (like _One Service counter_ in _The Bank Tutorial: Part
+I_) to process a high priority customer.
+
+Here, we give each customer a priority. Since the default is `priority = 0` this
+is easy for most of them.
+
+To observe the priority in action, while all other customers have the default
+priority of 0, we create and activate one special customer, Guido, with priority
+1 who arrives at time 23. This is to ensure that he arrives after Customer2.
+
+Since the activity trace does not produce the waiting time by default, this is
+calculated and appended using the `mutate` function in the dplyr package.
+
+```{r, message = FALSE}
+library(simmer)
+
+set.seed(1933)
+
+bank <- simmer()
+
+customer <-
+  trajectory("Customer's path") %>%
+  set_attribute("start_time", function() {now(bank)}) %>%
+  log_(function() {
+         paste("Queue is", get_queue_count(bank, "counter"), "on arrival")
+         }) %>%
+  seize("counter") %>%
+  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  timeout(12) %>%
+  release("counter") %>%
+  log_("Completed")
+
+bank <-
+  simmer("bank") %>%
+  add_resource("counter") %>%
+  add_generator("Customer", customer, function() {c(0, rexp(4, 1/10), -1)}) %>%
+  add_generator("Guido", customer, at(23), priority = 1)
+
+bank %>% run(until = 400)
+bank %>%
+  get_mon_arrivals %>%
+  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
+```
+
+The output above displays the number of customers in the queue just as each one
+arrives.  That count does not include any customer in service.
+
+Reading carefully one can see that when Guido arrives Customer0 has been served
+and left at 12, Customer1 is in service and two (customers 2 and 3) are
+queueing. Guido has priority over those waiting and is served before them at 24.
+When Guido leaves at 36, Customer02 starts service.
+
+### Priority customers with preemption
+
+Now we allow Guido to have preemptive priority. He will displace any customer in
+service when he arrives. That customer will resume when Guido finishes (unless
+higher priority customers intervene). It requires only a change to one line of
+the program, adding the argument, `preemptive = TRUE` to the `add_resource`
+function call.
+
+```{r, message = FALSE}
+library(simmer)
+
+set.seed(1933)
+
+bank <- simmer()
+
+customer <-
+  trajectory("Customer's path") %>%
+  set_attribute("start_time", function() {now(bank)}) %>%
+  log_(function() {
+         paste("Queue is", get_queue_count(bank, "counter"), "on arrival")
+         }) %>%
+  seize("counter") %>%
+  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  timeout(12) %>%
+  release("counter") %>%
+  log_("Completed")
+
+bank <-
+  simmer("bank") %>%
+  add_resource("counter", preemptive = TRUE) %>%
+  add_generator("Customer", customer, function() {c(0, rexp(4, 1/10), -1)}) %>%
+  add_generator("Guido", customer, at(23), priority = 1)
+
+bank %>% run(until = 400)
+bank %>%
+  get_mon_arrivals %>%
+  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
+```
+
+Though Guido arrives at the same time, 23, he no longer has to wait and
+immediately goes into service, displacing the incumbent, Customer1. That
+customer had already completed 23 - 12 = 11 minutes of his service.  When Guido
+finishes at 35, Customer1 resumes service and takes 36 - 35 = 1 minutes to
+finish. His total service time is the same as before (12 minutes).
+
+## Balking and reneging customers
+
+Balking occurs when a customer refuses to join a queue if it is too long.
+Reneging (or, better, abandonment) occurs if an impatient customer gives up
+while still waiting and before being served.
+
+### Balking customers
+
+Another term for a system with balking customers is one where “blocked
+customers” are “cleared”, termed by engineers a BCC system. This is very
+convenient analytically in queueing theory and formulae developed using this
+assumption are used extensively for planning communication systems. The easiest
+case is when no queueing is allowed.
+
+As an example let us investigate a BCC system with a single server but the
+waiting space is limited. We will estimate the rate of balking when the maximum
+number in the queue is set to 1. On arrival into the system the customer must
+first check to see if there is room. If there is not enough room, the customer
+balks.
+
+To get the balking rate, we first count the number of arrivals that didn't
+finish, using the data given by `get_mon_arrivals()`.  Then we divide it by the
+current model time from `now(bank)`.
+
+```{r}
+library(simmer)
+
+timeInBank <- 12 # mean, minutes
+ARRint <- 10     # mean, minutes
+numServers <- 1  # servers
+maxInSystem <- 2 # customers
+maxInQueue <- maxInSystem - numServers
+
+maxNumber <- 8
+maxTime <- 400  # minutes
+set.seed(59098)
+
+bank <- simmer()
+
+customer <-
+  trajectory("Customer's path") %>%
+  log_("Here I am") %>%
+  set_attribute("start_time", function() {now(bank)}) %>%
+  seize("counter",
+        continue = FALSE,
+        reject =
+          trajectory("Balked customer") %>%
+          log_("BALKING")) %>%
+  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  timeout(function() {rexp(1, 1/timeInBank)}) %>%
+  release("counter") %>%
+  log_("Finished")
+
+bank <-
+  simmer("bank") %>%
+  add_resource("counter",
+               capacity = numServers,
+               queue_size = maxInQueue) %>%
+  add_generator("Customer",
+                customer,
+                at(c(0, cumsum(rexp(maxNumber - 1, 1 / ARRint)))))
+
+bank %>% run(until = maxTime)
+
+number_balked <- sum(!get_mon_arrivals(bank)$finished)
+paste("Balking rate is", number_balked / now(bank), "customers per minute.")
+```
+
+When Customer2 arrives, Customer0 is already in service and Customer1 is
+waiting.  There is no room, so Customer2 balks. By the vagaries of exponential
+random numbers, Customer0 takes a very long time to serve (22.7358 minutes) so
+the first one to find room is number Customer6 at 25.5339.
+
+### Reneging (or abandoning) customers
+
+Often in practice an impatient customer will leave the queue before being
+served. Simmer can model this reneging behaviour using the `renege_in()`
+function in a trajectory.  This defines the maximum time that a customer will
+wait before reneging, as well as an 'out' trajectory for them to follow when
+they renege.
+
+If the customer reaches the server before reneging, then their impatience must
+be cancelled with the `renege_abort()` function.
+
+```{r, message = FALSE}
+library(simmer)
+
+timeInBank <- 15 # mean, minutes
+ARRint <- 10     # mean, minutes
+numServers <- 1  # servers
+
+maxNumber <- 5
+maxTime <- 400   # minutes
+maxWaitTime <- 12 # minutes, maximum time to wait before reneging
+set.seed(59030)
+
+bank <- simmer()
+
+customer <-
+  trajectory("Customer's path") %>%
+  log_("Here I am") %>%
+  set_attribute("start_time", function() {now(bank)}) %>%
+  renege_in(maxWaitTime,
+            out = trajectory("Reneging customer") %>%
+              log_(function(attr) {
+                     paste("Waited", now(bank) - attr["start_time"], "I am off")
+                   })) %>%
+  seize("counter") %>%
+  renege_abort() %>% # Stay if I'm being attended within maxWaitTime
+  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  timeout(function() {rexp(1, 1/timeInBank)}) %>%
+  release("counter") %>%
+  log_("Completed")
+
+bank <-
+  simmer("bank") %>%
+  add_resource("counter",
+               capacity = numServers) %>%
+  add_generator("Customer",
+                customer,
+                at(c(0, cumsum(rexp(maxNumber - 1, 1 / ARRint)))))
+
+bank %>% run(until = maxTime)
+```
+
+Customer1 arrives after Customer0 but has only 12 minutes patience. After that
+time in the queue (at time 28.5058) he abandons the queue to leave Customer2 to
+take his place.  Customer2 and Customer3 also renege. Customer4 is served within
+12 minutes.
+
+## Interrupting a process
+
+Klaus goes into the bank to talk to the manager. For clarity we ignore the
+counters and other customers. During his conversation his cellphone rings. When
+he finishes the call he continues the conversation.
+
+In this example, the call is another trajectory, whose only activities are to
+send a signal (the ringing of the phone), and to write that event to the log.
+
+In Klaus' trajectory, the `trap` activity causes him to listen for the phone to
+ring. Supposing the phone doesn't ring, then his trajectory would continue to
+the `timeout` activity, where he would do his banking business for 20 minutes,
+and then finish.
+
+Supposing the phone _does_ ring, then Klaus would enter the sub-trajectory
+defined within the `trap` function as a 'handler'.  In that trajectory, he makes
+his excuses, answers the phone, then returns to business.  At the end of the
+trajectory, he continues the original trajectory at the next step _following_
+the original `timeout`, without spending the rest of the 20 minutes on his
+banking.
+
+To make Klaus spend a full 20 minutes banking, we add a `timeout` activity to
+the end of the 'handler', but first we have to calculate how much time remains
+after the interruption.  This is done by storing the 'start' time in an
+attribute, and calculating how much time is left when the phone rings.
+
+By default, interruptions can themselves be interrupted, as illustrated in this
+example by the phone ringing twice.  This could be avoided by setting
+`interruptible = FALSE` in the `trap` activity.
+
+```{r, message = FALSE}
+library(simmer)
+
+timeInBank <-  20
+timeOfCall <-   9
+onphone    <-   3
+maxTime    <- 100
+
+bank <- simmer()
+
+customer <-
+  trajectory("Customer's path") %>%
+  trap("phonecall",
+       handler = trajectory() %>%
+         log_("Excuse me") %>%
+         set_attribute("timeleft",
+                       function(attr) {
+                         attr["timeleft"] - (now(bank) - attr["start"])
+                       }) %>%
+         log_("Hello! I'll call back") %>%
+         timeout(onphone) %>%
+         log_("Sorry, where were we?") %>%
+         set_attribute("start", function() {now(bank)}) %>%
+         log_(function(attr) {paste("Time left:", attr["timeleft"])}) %>%
+         timeout(function(attr) {attr["timeleft"]})
+       ) %>%
+  log_("Here I am") %>%
+  set_attribute("timeleft", timeInBank) %>%
+  set_attribute("start", function() {now(bank)}) %>%
+  timeout(timeInBank) %>%
+  log_("Completed")
+
+phone <-
+  trajectory("Phone") %>%
+  log_("Ringgg!") %>%
+  send("phonecall")
+
+bank <-
+  simmer("bank") %>%
+  add_generator("Klaus", customer, at(0)) %>%
+  add_generator("Phone", phone, at(timeOfCall, timeOfCall + 7))
+
+bank %>% run(until = maxTime)
+```
+
+As this has no random numbers the results are reasonably clear: the first
+interrupting call occurs at 9. It takes Klaus 3 minutes to listen to the message
+and he resumes the conversation with the bank manager at 12.  The phone rings
+again at 16, he listens for three more minutes, and resumes the conversation at
+19, finally finishing at 26.  The total time of conversation is 9 + 4 + 7 = 20
+minutes, the same as it would have been if the interrupt had not occurred.
+
+## Wait until the bank door opens
+
+Customers arrive at random, some of them getting to the bank before the door is
+opened by a doorman. They wait for the door to be opened and then rush in and
+queue to be served.
+
+This model defines the door as a resource, just like the counter.  The capacity
+of the door is defined according to the `schedule` function, so that it has zero
+capacity when it is shut, and infinite capacity when it is open.  Customers
+'seize' the door and must then wait until it has capacity to 'serve' them.  Once
+it is available, all waiting customers are 'served' immediately (i.e. they pass
+through the door).  There is no `timeout` between 'seizing' and 'releasing' the
+door.
+
+For the sake of announcing in the log that the door has been opened, a doorman
+trajectory is defined.
+
+```{r, message = FALSE}
+library(simmer)
+
+maxTime = 400
+set.seed(393937)
+
+bank <- simmer()
+
+customer <-
+  trajectory("Customer's path") %>%
+  log_(function() {
+         capacity <-
+           get_mon_resources(bank) %>%
+           dplyr::filter(resource == "door") %>%
+           .$capacity
+         if (length(capacity) == 0 || tail(capacity, 1) == 0) {
+           return("Here I am but the door is shut.")
+         }
+         "Here I am and the door is open."
+       }) %>%
+  seize("door") %>%
+  log_("I can go in!") %>%
+  release("door") %>%
+  seize("counter") %>%
+  timeout(function() {rexp(1, 1/10)}) %>%
+  release("counter")
+
+openTime <- rexp(1, 1/10)
+
+door_schedule <- schedule(c(0, openTime), c(0, Inf))
+
+doorman <-
+  trajectory() %>%
+  timeout(openTime) %>%
+  log_("Ladies and Gentlemen! You man all enter.")
+
+bank <-
+  simmer("bank") %>%
+  add_resource("door", capacity = door_schedule) %>%
+  add_resource("counter") %>%
+  add_generator("Customer",
+                customer,
+                at(c(0, cumsum(rexp(5 - 1, 0.1))))) %>%
+  add_generator("Doorman", doorman, at(0))
+
+bank %>% run(until = maxTime)
+bank %>%
+  get_mon_arrivals %>%
+  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
+```
+
+The output above programs shows how the first two customers have to wait until
+the door is opened.
+
+# Wait for the doorman to give a signal
+
+Customers arrive at random, some of them getting to the bank before the door is
+open. This is controlled by an automatic machine called the doorman which opens
+the door only at intervals of 30 minutes (it is a very secure bank). The
+customers wait for the door to be opened and all those waiting enter and proceed
+to the counter. The door is closed behind them.
+
+There are at least two ways to implement this model.  The first example uses a
+schedule, and the second uses batching.
+
+The principle behind the schedule is that the door is modelled as a server with
+zero capacity for 30 minutes, then infinite capacity for zero minutes, then
+repeat the 30-minute cycle.  In the moment that it has infinite capacity, all
+the customers will pass through the door (i.e. they will be 'served').
+
+For the sake of announcing in the log that the door has been opened, a doorman
+trajectory is defined.  The doorman has a `rollback` step so that it keeps
+opening and shutting the door every 30 minutes for ever.
+
+```{r, message = FALSE}
+library(simmer)
+library(dplyr)
+
+maxTime = 150
+
+customer <-
+  trajectory("Customer's path") %>%
+  log_("Here I am, but the door is shut.") %>%
+  set_attribute("start_time", function() {now(bank)}) %>%
+  seize("door") %>%
+  log_("The door is open!") %>%
+  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  release("door") %>%
+  seize("counter") %>%
+  timeout(function() {rexp(1, 1/10)}) %>%
+  release("counter") %>%
+  log_("Finished.")
+
+door_schedule <- schedule(c(30, 30), c(Inf, 0), period = 30)
+
+doorman <-
+  trajectory("Doorman") %>%
+  timeout(30) %>%
+  log_("You may enter.") %>%
+  rollback(2, times = Inf)
+
+set.seed(393939)
+bank <- simmer("bank")
+bank %>%
+  add_resource("door", capacity = door_schedule) %>%
+  add_resource("counter") %>%
+  add_generator("Customer",
+                customer,
+                at(c(0, cumsum(rexp(5 - 1, 0.1))))) %>%
+  add_generator("Doorman", doorman, at(0))
+
+bank %>% run(until = maxTime)
+bank %>%
+  get_mon_arrivals %>%
+  mutate(waiting_time = end_time - start_time - activity_time)
+```
+
+The output run for this program shows how the first two customers have to wait
+until the door is opened, and then the next three have to wait.
+
+The second method is batching.  Customers can be collected into batches of a
+given size, or for a given time, or whichever occurs first.  Here, they are
+collected for periods of 30, and the number of customers in each batch is
+unrestricted.
+
+After the batch is created with `batch`, usually the customers will all be
+processed together by a server, before separating with `separate`.  In this
+example, there is no need for a server -- the door is modelled by the batch
+itself -- so the customers are separated immediately after the batch.
+
+```{r, message = FALSE}
+library(simmer)
+library(dplyr)
+
+maxTime = 150
+
+customer <-
+  trajectory("Customer's path") %>%
+  log_("Here I am, but the door is shut.") %>%
+  set_attribute("start_time", function() {now(bank)}) %>%
+  batch(n = Inf, timeout = 30) %>%
+  separate() %>%
+  log_("The door is open!") %>%
+  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  seize("counter") %>%
+  timeout(function() {rexp(1, 1/10)}) %>%
+  release("counter") %>%
+  log_("Finished.")
+
+doorman <-
+  trajectory("Doorman") %>%
+  timeout(30) %>%
+  log_("You may enter.") %>%
+  rollback(2, times = Inf)
+
+set.seed(393939)
+bank <- simmer("bank")
+bank %>%
+  add_resource("door") %>%
+  add_resource("counter") %>%
+  add_generator("Customer",
+                customer,
+                at(c(0, cumsum(rexp(5 - 1, 0.1))))) %>%
+  add_generator("Doorman", doorman, at(0))
+
+bank %>% run(until = maxTime)
+bank %>%
+  get_mon_arrivals %>%
+  mutate(waiting_time = end_time - start_time - activity_time)
+```
+
+This second method gives the same output as the first.
+
+## Monitors
+
+Monitors record events in a simulation. Unlike SimPy, Simmer does this by
+default, so the records are available after -- in fact, even during -- a
+simulation.  Data that is collected by monitors is available from the following
+functions:
+
+```{r, eval = FALSE}
+get_capacity
+get_mon_arrivals
+get_mon_attributes
+get_mon_resources
+get_n_activities
+get_n_generated
+get_queue_count
+get_queue_size
+get_server_count
+```
+
+### Plotting a Histogram of Monitor results
+
+A Monitor can construct a histogram from its data using the histogram method. In
+this model we monitor the time in the system for the customers. This is
+calculated for each customer in line 29, using the arrival time saved in line
+19. We create the Monitor, Mon, at line 37 and the times are observed at line 30.
+
+The histogram is constructed from the Monitor, after the simulation has
+finished, at line 55. The SimPy SimPlot package allows simple plotting of
+results from simulations. Here we use the SimPlot plotHistogram method. The
+plotting routines appear in lines 57-61. The plotHistogram call is in line 58.
+
+```{r}
+library(simmer)
+library(ggplot2)
+
+bank <- simmer()
+
+customer <-
+  trajectory("Customer's path") %>%
+  seize("counter") %>%
+  timeout(12) %>%
+  release("counter")
+
+set.seed(393939)
+bank <-
+  simmer("bank") %>%
+  add_resource("counter") %>%
+  add_generator("Customer",
+                customer,
+                at(c(0, cumsum(rexp(20 - 1, 0.1)))))
+
+bank %>% run(400)
+bank %>%
+  get_mon_arrivals %>%
+  ggplot(aes(end_time - start_time)) +
+  geom_histogram() +
+  xlab("Time spent in the system") +
+  ylab("Number of customers")
+```
+
+### Monitoring a Resource
+
+Now consider observing the number of customers waiting or active in a Resource.
+
+`get_mon_resources()` returns a table of states and times for the counter.
+Whenever a customer enters/leaves a queue/counter, a new row is created
+recording the number of customers in the queue, the counter and the system as a
+whole.  We call this the 'state'.  The amount of time that the state lasts is
+the difference in time between one state and the next, which we calculate with
+the `diff()` function.  Finally, we multiply the number of customers in each
+state by the duration of the state, and divide by the duration of the simulation
+(the time at the end) to get the average.
+
+```{r, message = FALSE}
+library(simmer)
+
+set.seed(1234)
+
+bank <- simmer()
+
+customer <-
+  trajectory("Customer's path") %>%
+  log_("Arrived") %>%
+  set_attribute("start_time", function() {now(bank)}) %>%
+  seize("counter") %>%
+  log_("Got counter") %>%
+  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  timeout(12) %>%
+  release("counter") %>%
+  log_("Finished")
+
+bank <-
+  simmer("bank") %>%
+  add_resource("counter") %>%
+  add_generator("Customer", customer, function() {c(0, rexp(4, 1/10), -1)})
+
+bank %>% run(until = 400)
+customer_monitor <-
+  get_mon_arrivals(bank) %>%
+  dplyr::mutate(wait = end_time - start_time - activity_time)
+mean_waiting_time <- mean(customer_monitor$wait)
+
+resource_monitor <- get_mon_resources(bank)
+
+queue_state <- head(resource_monitor$queue, -1)
+server_state <- head(resource_monitor$server, -1)
+
+time_state_lasted <- diff(resource_monitor$time)
+time_at_end <- max(resource_monitor$time)
+
+mean_active_customers <- sum(server_state * time_state_lasted) / time_at_end
+mean_waiting_customers <- sum(queue_state * time_state_lasted) / time_at_end
+
+cat(" Average waiting = ", mean_waiting_customers, "\n",
+    "Average active  = ", mean_active_customers, "\n")
+```
+
+### Plotting from Resource Monitors
+
+All the `get_mon_*()` return information that enables us to graph the output.
+Alternative plotting packages can be used; here we use the `simmer.plot`
+package just to graph the number of customers waiting for the counter.
+
+The `simmer.plot` package is imported at line 2.  The function
+`get_mon_resources()` is not called because the function `plot()` calles
+`get_mon_resources()` itself.  The `plot()` function has arguments to specifiy
+what to plot.
+
+```{r, message = FALSE}
+library(simmer)
+library(simmer.plot)
+
+timeInBank <- 12 # mean, minutes
+
+set.seed(1234)
+
+bank <- simmer()
+
+customer <-
+  trajectory("Customer's path") %>%
+  set_attribute("start_time", function() {now(bank)}) %>%
+  seize("counter") %>%
+  timeout(function() {rexp(1, 1/timeInBank)}) %>%
+  release("counter")
+
+bank <-
+  simmer("bank") %>%
+  add_resource("counter") %>%
+  add_generator("Customer", customer, function() {c(0, rexp(19, 1/10), -1)})
+
+bank %>% run(until = 400)
+
+plot(bank,
+     what = "resources",
+     metric = "usage",
+     names = "counter",
+     items = "system",
+     steps = TRUE)
+```
