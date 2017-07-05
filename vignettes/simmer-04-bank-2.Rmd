@@ -15,7 +15,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = T, comment = "#>",
                       fig.width = 6, fig.height = 4, fig.align = "center")
 
-required <- c("dplyr")
+required <- c("simmer.plot", "dplyr")
 
 if (!all(unlist(lapply(required, function(pkg) requireNamespace(pkg, quietly = TRUE)))))
   knitr::opts_chunk$set(eval = FALSE)
@@ -406,7 +406,7 @@ door_schedule <- schedule(c(0, openTime), c(0, Inf))
 doorman <-
   trajectory() %>%
   timeout(openTime) %>%
-  log_("Ladies and Gentlemen! You man all enter.")
+  log_("Ladies and Gentlemen! You can all enter.")
 
 bank <-
   simmer("bank") %>%
@@ -562,17 +562,17 @@ get_queue_size
 get_server_count
 ```
 
-### Plotting a Histogram of Monitor results
+The `get_mon_*()` functions return a data frame (which is growing during the
+simulation, so that, although possible, it is computationally expensive to call
+them from inside a trajectory).  The others return a numeric value.
 
-A Monitor can construct a histogram from its data using the histogram method. In
-this model we monitor the time in the system for the customers. This is
-calculated for each customer in line 29, using the arrival time saved in line
-19. We create the Monitor, Mon, at line 37 and the times are observed at line 30.
+### Plotting a histogram of monitor results
 
-The histogram is constructed from the Monitor, after the simulation has
-finished, at line 55. The SimPy SimPlot package allows simple plotting of
-results from simulations. Here we use the SimPlot plotHistogram method. The
-plotting routines appear in lines 57-61. The plotHistogram call is in line 58.
+A histogram of the amount of time that customers spend in the
+bank can be plotted by taking some basic information -- start and end time of
+each customer -- from the `get_mon_arrivals()` function, and then calculating
+the elapsed time.  This example draws the plot with the `ggplot2` package, but
+other plotting packages, and base R graphics, could do something similar.
 
 ```{r}
 library(simmer)
@@ -603,7 +603,7 @@ bank %>%
   ylab("Number of customers")
 ```
 
-### Monitoring a Resource
+### Monitoring a resource
 
 Now consider observing the number of customers waiting or active in a Resource.
 
@@ -660,7 +660,7 @@ cat(" Average waiting = ", mean_waiting_customers, "\n",
     "Average active  = ", mean_active_customers, "\n")
 ```
 
-### Plotting from Resource Monitors
+### Plotting from resource monitors
 
 All the `get_mon_*()` return information that enables us to graph the output.
 Alternative plotting packages can be used; here we use the `simmer.plot`

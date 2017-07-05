@@ -3,6 +3,7 @@
 ## New features:
 
 * Show simulation progress via an optional `progress` callback in `run()` (#103).
+* New "The Bank Tutorial: Part II" vignette, by Duncan Garmonsway @nacnudus (#106)
 
 ## Minor changes and fixes:
 
