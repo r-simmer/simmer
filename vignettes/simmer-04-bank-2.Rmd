@@ -96,7 +96,7 @@ arrives.  That count does not include any customer in service.
 Reading carefully one can see that when Guido arrives Customer0 has been served
 and left at 12, Customer1 is in service and two (customers 2 and 3) are
 queueing. Guido has priority over those waiting and is served before them at 24.
-When Guido leaves at 36, Customer02 starts service.
+When Guido leaves at 36, Customer2 starts service.
 
 ### Priority customers with preemption
 
@@ -406,7 +406,7 @@ door_schedule <- schedule(c(0, openTime), c(0, Inf))
 doorman <-
   trajectory() %>%
   timeout(openTime) %>%
-  log_("Ladies and Gentlemen! You can all enter.")
+  log_("Ladies and Gentlemen! You may all enter.")
 
 bank <-
   simmer("bank") %>%
