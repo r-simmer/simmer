@@ -576,7 +576,8 @@ other plotting packages, and base R graphics, could do something similar.
 
 ```{r}
 library(simmer)
-library(ggplot2)
+library(simmer.plot)
+# library(ggplot2) # (automatically loaded with simmer.plot)
 
 bank <- simmer()
 
