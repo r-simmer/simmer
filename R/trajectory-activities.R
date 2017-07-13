@@ -245,10 +245,10 @@ branch.trajectory <- function(.trj, option, continue, ...) .trj$branch(option, c
 #'
 #' @return Returns the trajectory object.
 #' @export
-rollback <- function(.trj, amount, times=Inf, check) UseMethod("rollback")
+rollback <- function(.trj, amount, times=Inf, check=NULL) UseMethod("rollback")
 
 #' @export
-rollback.trajectory <- function(.trj, amount, times=Inf, check) .trj$rollback(amount, times, check)
+rollback.trajectory <- function(.trj, amount, times=Inf, check=NULL) .trj$rollback(amount, times, check)
 
 #' Add a leave activity
 #'

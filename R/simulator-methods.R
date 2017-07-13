@@ -71,8 +71,7 @@ run <- function(.env, until=1000, progress=NULL, steps=10) UseMethod("run")
 
 #' @export
 run.simmer <- function(.env, until=1000, progress=NULL, steps=10) {
-  progress <- evaluate_value(progress)
-  steps <- evaluate_value(steps)
+  check_args(until, progress, steps, types=c("number", "function or NULL", "number"))
   if (is.function(progress)) {
     progress(0)
     for (i in seq(until/steps, until, until/steps)) {

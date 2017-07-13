@@ -4,7 +4,7 @@
 \alias{rollback}
 \title{Add a rollback activity}
 \usage{
-rollback(.trj, amount, times = Inf, check)
+rollback(.trj, amount, times = Inf, check = NULL)
 }
 \arguments{
 \item{.trj}{the trajectory object.}

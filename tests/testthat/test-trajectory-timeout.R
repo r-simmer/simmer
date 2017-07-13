@@ -11,11 +11,7 @@ test_that("a task function that returns a non-numeric value fails", {
 })
 
 test_that("a missing value fails", {
-  t0 <- trajectory() %>%
-    timeout(NA)
-  env <- simmer(verbose = TRUE) %>%
-    add_generator("dummy", t0, at(0))
-  expect_error(env %>% run())
+  expect_error(trajectory() %>% timeout(NA))
 
   t0 <- trajectory() %>%
     timeout(NaN)

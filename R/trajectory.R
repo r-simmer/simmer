@@ -4,8 +4,9 @@ Trajectory <- R6Class("trajectory",
     verbose = NA,
 
     initialize = function(name="anonymous", verbose=FALSE) {
-      self$name <- evaluate_value(name)
-      self$verbose <- evaluate_value(verbose)
+      check_args(name, verbose, types=c("string", "flag"), n=3)
+      self$name <- name
+      self$verbose <- verbose
       self
     },
 
@@ -83,11 +84,9 @@ Trajectory <- R6Class("trajectory",
 
     seize = function(resource, amount=1, id=0, continue=NULL, post.seize=NULL, reject=NULL) {
       stopifnot(length(continue) == length(c(post.seize, reject)))
-      stopifnot(all(sapply(c(post.seize, reject), inherits, what = "trajectory")))
-      resource <- evaluate_value(resource)
-      amount <- evaluate_value(amount)
-      id <- evaluate_value(id)
       if (!length(continue)) continue <- TRUE
+      check_args(resource, amount, id, continue, post.seize, reject,
+            types=c("string or NA", "number or function", "number", "flag", rep("trajectory or NULL", 2)))
       trj <- as.list(c(post.seize[], reject[]))
       mask <- sum(c(1, 2) * !sapply(list(post.seize, reject), is.null))
       switch(
@@ -102,9 +101,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     release = function(resource, amount=1, id=0) {
-      resource <- evaluate_value(resource)
-      amount <- evaluate_value(amount)
-      id <- evaluate_value(id)
+      check_args(resource, amount, id, types=c("string or NA", "number or function", "number"))
       switch(
         binarise(is.na(resource), is.function(amount)),
         private$add_activity(Release__new(resource, amount)),
@@ -115,9 +112,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     set_capacity = function(resource, value, id=0) {
-      resource <- evaluate_value(resource)
-      value <- evaluate_value(value)
-      id <- evaluate_value(id)
+      check_args(resource, value, id, types=c("string or NA", "numeric or function", "number"))
       switch(
         binarise(is.na(resource), is.function(value)),
         private$add_activity(SetCapacity__new(resource, value)),
@@ -128,9 +123,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     set_queue_size = function(resource, value, id=0) {
-      resource <- evaluate_value(resource)
-      value <- evaluate_value(value)
-      id <- evaluate_value(id)
+      check_args(resource, value, id, types=c("string or NA", "numeric or function", "number"))
       switch(
         binarise(is.na(resource), is.function(value)),
         private$add_activity(SetQueue__new(resource, value)),
@@ -142,9 +135,8 @@ Trajectory <- R6Class("trajectory",
 
     select = function(resources, policy=c("shortest-queue", "round-robin",
                                           "first-available", "random"), id=0) {
-      resources <- evaluate_value(resources)
+      check_args(resources, id, types=c("string vector or function", "number"))
       policy <- match.arg(policy)
-      id <- evaluate_value(id)
       switch(
         binarise(is.function(resources)),
         private$add_activity(Select__new(resources, policy, id)),
@@ -153,7 +145,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     timeout = function(task) {
-      task <- evaluate_value(task)
+      check_args(task, types="number or function")
       switch(
         binarise(is.function(task)),
         private$add_activity(Timeout__new(task)),
@@ -162,9 +154,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     set_attribute = function(key, value, global=FALSE) {
-      key <- as.character(key)
-      value <- evaluate_value(value)
-      global <- evaluate_value(global)
+      check_args(key, value, global, types=c("string", "numeric or function", "flag"))
       switch(
         binarise(is.function(value)),
         private$add_activity(SetAttribute__new(key, value, global)),
@@ -173,7 +163,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     activate = function(generator) {
-      generator <- evaluate_value(generator)
+      check_args(generator, types="string or function")
       switch(
         binarise(is.function(generator)),
         private$add_activity(Activate__new(generator)),
@@ -182,7 +172,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     deactivate = function(generator) {
-      generator <- evaluate_value(generator)
+      check_args(generator, types="string or function")
       switch(
         binarise(is.function(generator)),
         private$add_activity(Deactivate__new(generator)),
@@ -191,8 +181,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     set_trajectory = function(generator, trajectory) {
-      stopifnot(inherits(trajectory, "trajectory"))
-      generator <- evaluate_value(generator)
+      check_args(generator, trajectory, types=c("string or function", "trajectory"))
       switch(
         binarise(is.function(generator)),
         private$add_activity(SetTraj__new(generator, trajectory[])),
@@ -201,7 +190,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     set_distribution = function(generator, distribution) {
-      generator <- evaluate_value(generator)
+      check_args(generator, distribution, types=c("string or function", "function"))
       distribution <- make_resetable(distribution)
       switch(
         binarise(is.function(generator)),
@@ -211,7 +200,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     set_prioritization = function(values) {
-      values <- evaluate_value(values)
+      check_args(values, types="number vector or function")
       switch(
         binarise(is.function(values)),
         private$add_activity(SetPrior__new(values)),
@@ -220,25 +209,24 @@ Trajectory <- R6Class("trajectory",
     },
 
     branch = function(option, continue, ...) {
+      check_args(option, continue, ...,
+            types=c("function", "flag", rep("trajectory", length(c(...)))))
       stopifnot(length(continue) == length(c(...)))
-      stopifnot(all(sapply(c(...), inherits, what = "trajectory")))
       traj <- sapply(c(...), `[`)
       private$add_activity(Branch__new(option, needs_attrs(option), continue, traj))
     },
 
-    rollback = function(amount, times=Inf, check) {
-      amount <- evaluate_value(amount)
-      times <- evaluate_value(times)
-      if (is.infinite(times)) times <- -1
+    rollback = function(amount, times=Inf, check=NULL) {
+      check_args(amount, times, check, types=c(rep("number", 2), "function or NULL"))
       switch(
-        binarise(!missing(check)),
+        binarise(is.function(check)),
         private$add_activity(Rollback__new(amount, times)),
         private$add_activity(Rollback__new_func(amount, check, needs_attrs(check)))
       )
     },
 
     leave = function(prob) {
-      prob <- evaluate_value(prob)
+      check_args(prob, types="number or function")
       switch(
         binarise(is.function(prob)),
         private$add_activity(Leave__new(prob)),
@@ -247,8 +235,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     renege_in = function(t, out=NULL) {
-      stopifnot(is.null(out) || inherits(out, "trajectory"))
-      t <- evaluate_value(t)
+      check_args(t, out, types=c("number or function", "trajectory or NULL"))
       traj <- as.list(c(out[]))
       switch(
         binarise(is.function(t)),
@@ -258,8 +245,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     renege_if = function(signal, out=NULL) {
-      stopifnot(is.null(out) || inherits(out, "trajectory"))
-      signal <- evaluate_value(signal)
+      check_args(signal, out, types=c("string or function", "trajectory or NULL"))
       traj <- as.list(c(out[]))
       switch(
         binarise(is.function(signal)),
@@ -271,8 +257,7 @@ Trajectory <- R6Class("trajectory",
     renege_abort = function() { private$add_activity(RenegeAbort__new()) },
 
     replicate = function(n, ...) {
-      stopifnot(all(sapply(c(...), inherits, what = "trajectory")))
-      n <- evaluate_value(n)
+      check_args(n, ..., types=c("number or function", rep("trajectory", length(c(...)))))
       trj <- sapply(c(...), `[`)
       switch(
         binarise(is.function(n)),
@@ -282,18 +267,13 @@ Trajectory <- R6Class("trajectory",
     },
 
     synchronize = function(wait=TRUE, mon_all=FALSE) {
-      wait <- evaluate_value(wait)
-      mon_all <- evaluate_value(mon_all)
+      check_args(wait, mon_all, types=rep("flag", 2))
       private$add_activity(Synchronize__new(wait, mon_all))
     },
 
     batch = function(n, timeout=0, permanent=FALSE, name="", rule=NULL) {
-      n <- evaluate_value(n)
-      if (is.infinite(n)) n <- -1
-      timeout <- evaluate_value(timeout)
-      permanent <- evaluate_value(permanent)
-      name <- evaluate_value(name)
-      rule <- evaluate_value(rule)
+      check_args(n, timeout, permanent, name, rule,
+                 types=c("number", "number or function", "flag", "string", "function or NULL"))
       switch(
         binarise(is.function(timeout), is.function(rule)),
         private$add_activity(Batch__new(n, timeout, permanent, name)),
@@ -309,8 +289,7 @@ Trajectory <- R6Class("trajectory",
     separate = function() { private$add_activity(Separate__new()) },
 
     send = function(signals, delay=0) {
-      signals <- evaluate_value(signals)
-      delay <- evaluate_value(delay)
+      check_args(signals, delay, types=c("string vector or function", "number or function"))
       switch(
         binarise(is.function(signals), is.function(delay)),
         private$add_activity(Send__new(signals, delay)),
@@ -322,9 +301,8 @@ Trajectory <- R6Class("trajectory",
     },
 
     trap = function(signals, handler=NULL, interruptible=TRUE) {
-      stopifnot(is.null(handler) || inherits(handler, "trajectory"))
-      signals <- evaluate_value(signals)
-      interruptible <- evaluate_value(interruptible)
+      check_args(signals, handler, interruptible,
+                 types=c("string vector or function", "trajectory or NULL", "flag"))
       traj <- as.list(c(handler[]))
       switch(
         binarise(is.function(signals)),
@@ -334,7 +312,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     untrap = function(signals) {
-      signals <- evaluate_value(signals)
+      check_args(signals, types="string vector or function")
       switch(
         binarise(is.function(signals)),
         private$add_activity(UnTrap__new(signals)),
@@ -345,7 +323,7 @@ Trajectory <- R6Class("trajectory",
     wait = function() { private$add_activity(Wait__new()) },
 
     log = function(message) {
-      message <- evaluate_value(message)
+      check_args(message, types="string or function")
       switch(
         binarise(is.function(message)),
         private$add_activity(Log__new(message)),
