@@ -4,6 +4,7 @@
 
 * Show simulation progress via an optional `progress` callback in `run()` (#103).
 * New "The Bank Tutorial: Part II" vignette, by Duncan Garmonsway @nacnudus (#106).
+* Improve argument parsing and error messages (#107).
 
 ## Minor changes and fixes:
 
