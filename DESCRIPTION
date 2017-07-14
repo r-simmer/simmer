@@ -34,5 +34,6 @@ Suggests:
 LinkingTo:
     Rcpp (>= 0.12.9),
     BH (>= 1.62.0-1)
+ByteCompile: yes
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
