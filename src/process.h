@@ -201,8 +201,8 @@ public:
   double get_start() const { return lifetime.start; }
   Activity* get_activity() const { return activity; }
 
-  void set_selected(int id, Resource* res) { selected[id] = res; }
-  Resource* get_selected(int id) const {
+  void set_resource_selected(int id, Resource* res) { selected[id] = res; }
+  Resource* get_resource_selected(int id) const {
     SelMap::const_iterator search = selected.find(id);
     if (search != selected.end())
       return search->second;

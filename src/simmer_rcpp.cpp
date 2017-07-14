@@ -146,16 +146,14 @@ SEXP Seize__new_func(std::string resource, Function amount, int provide_attrs,
 SEXP SeizeSelected__new(int id, int amount,
                         std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask)
 {
-  return XPtr<SeizeSelected<int> >(
-      new SeizeSelected<int>(id, amount, 0, cont, trj, mask));
+  return XPtr<Seize<int> >(new Seize<int>(id, amount, 0, cont, trj, mask));
 }
 
 //[[Rcpp::export]]
 SEXP SeizeSelected__new_func(int id, Function amount, int provide_attrs,
                              std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask)
 {
-  return XPtr<SeizeSelected<Function> >(
-      new SeizeSelected<Function>(id, amount, provide_attrs, cont, trj, mask));
+  return XPtr<Seize<Function> >(new Seize<Function>(id, amount, provide_attrs, cont, trj, mask));
 }
 
 //[[Rcpp::export]]
@@ -170,13 +168,12 @@ SEXP Release__new_func(std::string resource, Function amount, int provide_attrs)
 
 //[[Rcpp::export]]
 SEXP ReleaseSelected__new(int id, int amount) {
-  return XPtr<ReleaseSelected<int> >(new ReleaseSelected<int>(id, amount, 0));
+  return XPtr<Release<int> >(new Release<int>(id, amount, 0));
 }
 
 //[[Rcpp::export]]
 SEXP ReleaseSelected__new_func(int id, Function amount, int provide_attrs) {
-  return XPtr<ReleaseSelected<Function> >(
-      new ReleaseSelected<Function>(id, amount, provide_attrs));
+  return XPtr<Release<Function> >(new Release<Function>(id, amount, provide_attrs));
 }
 
 //[[Rcpp::export]]
@@ -192,13 +189,13 @@ SEXP SetCapacity__new_func(std::string resource, Function value, int provide_att
 
 //[[Rcpp::export]]
 SEXP SetCapacitySelected__new(int id, double value) {
-  return XPtr<SetCapacitySelected<double> >(new SetCapacitySelected<double>(id, value, 0));
+  return XPtr<SetCapacity<double> >(new SetCapacity<double>(id, value, 0));
 }
 
 //[[Rcpp::export]]
 SEXP SetCapacitySelected__new_func(int id, Function value, int provide_attrs) {
-  return XPtr<SetCapacitySelected<Function> >(
-      new SetCapacitySelected<Function>(id, value, provide_attrs));
+  return XPtr<SetCapacity<Function> >(
+      new SetCapacity<Function>(id, value, provide_attrs));
 }
 
 //[[Rcpp::export]]
@@ -214,13 +211,12 @@ SEXP SetQueue__new_func(std::string resource, Function value, int provide_attrs)
 
 //[[Rcpp::export]]
 SEXP SetQueueSelected__new(int id, double value) {
-  return XPtr<SetQueueSelected<double> >(new SetQueueSelected<double>(id, value, 0));
+  return XPtr<SetQueue<double> >(new SetQueue<double>(id, value, 0));
 }
 
 //[[Rcpp::export]]
 SEXP SetQueueSelected__new_func(int id, Function value, int provide_attrs) {
-  return XPtr<SetQueueSelected<Function> >(
-      new SetQueueSelected<Function>(id, value, provide_attrs));
+  return XPtr<SetQueue<Function> >(new SetQueue<Function>(id, value, provide_attrs));
 }
 
 //[[Rcpp::export]]

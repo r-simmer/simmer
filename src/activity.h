@@ -171,23 +171,21 @@ class ResGetter {
 public:
   BASE_CLONEABLE(ResGetter)
 
-  ResGetter(std::string name, std::string resource)
-    : name(name), resource(resource), id(-1) {}
+  ResGetter(std::string name, std::string resource, int id = -1)
+    : name(name), resource(resource), id(id) {}
 
 protected:
   std::string name;
   std::string resource;
   int id;
 
-  void set_id(int i) { id = std::abs(i); }
-
   Resource* get_resource(Arrival* arrival) const {
     Resource* selected = NULL;
     if (id < 0)
       selected = arrival->sim->get_resource(resource);
-    else selected = arrival->get_selected(id);
+    else selected = arrival->get_resource_selected(id);
     if (!selected)
-      Rcpp::stop("%s: %s: no resource selected", arrival->name, name);
+      Rcpp::stop("%s: %s(%s, %i): no resource selected", arrival->name, name, resource, id);
     return selected;
   }
 };
@@ -204,6 +202,11 @@ public:
         VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask)
     : Fork("Seize", cont, trj, VEC<int>(1, provide_attrs)),
       ResGetter("Seize", resource), amount(amount), mask(mask) {}
+
+  Seize(int id, T amount, int provide_attrs,
+        VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask)
+    : Fork("Seize", cont, trj, VEC<int>(1, provide_attrs)),
+      ResGetter("Seize", "[]", id), amount(amount), mask(mask) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -242,19 +245,6 @@ protected:
 };
 
 /**
- * Seize a selected resource.
- */
-template <typename T>
-class SeizeSelected : public Seize<T> {
-public:
-  CLONEABLE(SeizeSelected<T>)
-
-  SeizeSelected(int id, T amount, int provide_attrs,
-                VEC<bool> cont, VEC<Rcpp::Environment> trj, unsigned short mask)
-    : Seize<T>("[]", amount, provide_attrs, cont, trj, mask) { this->set_id(id); }
-};
-
-/**
  * Release a resource.
  */
 template <typename T>
@@ -265,6 +255,10 @@ public:
   Release(std::string resource, T amount, int provide_attrs)
     : Activity("Release", VEC<int>(1, provide_attrs), PRIORITY_RELEASE),
       ResGetter("Release", resource), amount(amount) {}
+
+  Release(int id, T amount, int provide_attrs)
+    : Activity("Release", VEC<int>(1, provide_attrs), PRIORITY_RELEASE),
+      ResGetter("Release", "[]", id), amount(amount) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -282,18 +276,6 @@ protected:
 };
 
 /**
- * Release a selected resource.
- */
-template <typename T>
-class ReleaseSelected : public Release<T> {
-public:
-  CLONEABLE(ReleaseSelected<T>)
-
-  ReleaseSelected(int id, T amount, int provide_attrs)
-    : Release<T>("[]", amount, provide_attrs) { this->set_id(id); }
-};
-
-/**
  * Set a resource's capacity.
  */
 template <typename T>
@@ -304,6 +286,10 @@ public:
   SetCapacity(std::string resource, T value, int provide_attrs)
     : Activity("SetCapacity", VEC<int>(1, provide_attrs)),
       ResGetter("SetCapacity", resource), value(value) {}
+
+  SetCapacity(int id, T value, int provide_attrs)
+    : Activity("SetCapacity", VEC<int>(1, provide_attrs)),
+      ResGetter("SetCapacity", "[]", id), value(value) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -323,18 +309,6 @@ protected:
 };
 
 /**
-* Set a selected resource's capacity.
-*/
-template <typename T>
-class SetCapacitySelected : public SetCapacity<T> {
-public:
-  CLONEABLE(SetCapacitySelected<T>)
-
-  SetCapacitySelected(int id, T value, int provide_attrs)
-    : SetCapacity<T>("[]", value, provide_attrs) { this->set_id(id); }
-};
-
-/**
 * Set a resource's queue size.
 */
 template <typename T>
@@ -345,6 +319,10 @@ public:
   SetQueue(std::string resource, T value, int provide_attrs)
     : Activity("SetQueue", VEC<int>(1, provide_attrs)),
       ResGetter("SetQueue", resource), value(value) {}
+
+  SetQueue(int id, T value, int provide_attrs)
+    : Activity("SetQueue", VEC<int>(1, provide_attrs)),
+      ResGetter("SetQueue", "[]", id), value(value) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -361,18 +339,6 @@ public:
 
 protected:
   T value;
-};
-
-/**
-* Set a selected resource's queue size.
-*/
-template <typename T>
-class SetQueueSelected : public SetQueue<T> {
-public:
-  CLONEABLE(SetQueueSelected<T>)
-
-  SetQueueSelected(int id, T value, int provide_attrs)
-    : SetQueue<T>("[]", value, provide_attrs) { this->set_id(id); }
 };
 
 /**
@@ -395,7 +361,7 @@ public:
 
   double run(Arrival* arrival) {
     VEC<std::string> res = get<VEC<std::string> >(resources, 0, arrival);
-    arrival->set_selected(id, policy.dispatch(arrival->sim, res));
+    arrival->set_resource_selected(id, policy.dispatch(arrival->sim, res));
     return 0;
   }
 
