@@ -146,8 +146,10 @@ public:
       return false;
     }
     now_ = ev->time;
+    process_ = ev->process;
     event_map.erase(ev->process);
-    ev->process->run();
+    process_->run();
+    process_ = NULL;
     event_queue.erase(ev);
     return true;
   }
@@ -268,6 +270,12 @@ public:
     return (Resource*)search->second;
   }
 
+  Arrival* get_running_arrival() const {
+    if (!dynamic_cast<Arrival*>(process_))
+      Rcpp::stop("there is no arrival running");
+    return (Arrival*)process_;
+  }
+
   Batched** get_batch(Activity* ptr, std::string id) {
     if (id.size()) {
       if (namedb_map.find(id) == namedb_map.end())
@@ -320,6 +328,12 @@ public:
   void set_attribute(std::string key, double value) {
     attributes[key] = value;
     record_attribute("", key, value);
+  }
+  double get_attribute(std::string key) const {
+    Attr::const_iterator search = attributes.find(key);
+    if (search == attributes.end())
+      return NA_REAL;
+    return search->second;
   }
   Attr* get_attributes() { return &attributes; }
 
@@ -464,6 +478,7 @@ public:
 
 private:
   double now_;              /**< simulation time */
+  Process* process_;        /**< running process */
   PQueue event_queue;       /**< the event queue */
   EntMap resource_map;      /**< map of resources */
   EntMap process_map;       /**< map of processes */

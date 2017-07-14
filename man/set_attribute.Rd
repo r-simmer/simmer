@@ -9,7 +9,7 @@ set_attribute(.trj, key, value, global = FALSE)
 \arguments{
 \item{.trj}{the trajectory object.}
 
-\item{key}{the attribute key (coerced to a string).}
+\item{key}{the attribute name.}
 
 \item{value}{the value to set, accepts either a numeric or a callable object
 (a function) which must return a numeric.}
@@ -21,4 +21,7 @@ Returns the trajectory object.
 }
 \description{
 Modify an attribute in the form of a key/value pair.
+}
+\seealso{
+\code{\link{get_attribute}}.
 }

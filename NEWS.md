@@ -4,11 +4,14 @@
 
 * Show simulation progress via an optional `progress` callback in `run()` (#103).
 * New "The Bank Tutorial: Part II" vignette, by Duncan Garmonsway @nacnudus (#106).
-* Improve argument parsing and error messages (#107).
+* New getters for running arrivals (#109), meant to be used inside trajectories:
+    * `get_name()` retrieves the arrival name.
+    * `get_attribute()` retrieves an attribute by name. The old method of retrieving them by providing a function with one argument is deprecated in favour of `get_attribute()`, and will be removed in version 3.7.x.
 
 ## Minor changes and fixes:
 
 * Use `Rcpp::DataFrame` instead of `Rcpp::List` (#104).
+* Improve argument parsing and error messages (#107).
 
 # simmer 3.6.2
 

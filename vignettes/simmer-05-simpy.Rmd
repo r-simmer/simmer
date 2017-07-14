@@ -61,8 +61,8 @@ car <- trajectory() %>%
   log_("enters the carwash") %>%
   timeout(WASHTIME) %>%
   set_attribute("dirt_removed", function() sample(50:99, 1)) %>%
-  log_(function(attr) 
-    paste0(attr["dirt_removed"], "% of dirt was removed")) %>%
+  log_(function() 
+    paste0(get_attribute(env, "dirt_removed"), "% of dirt was removed")) %>%
   release("wash", 1) %>%
   log_("leaves the carwash")
 ```
@@ -121,7 +121,7 @@ make_parts <- function(machine)
     set_attribute("parts", 0) %>%
     seize(machine, 1) %>%
     timeout(function() rnorm(1, PT_MEAN, PT_SIGMA)) %>%
-    set_attribute("parts", function(attr) attr["parts"] + 1) %>%
+    set_attribute("parts", function() get_attribute(env, "parts") + 1) %>%
     rollback(2, Inf) # go to 'timeout' over and over
 ```
 
@@ -232,11 +232,11 @@ This recipe is directly translated into a `simmer` trajectory as follows:
 moviegoer <- trajectory() %>%
   # select a movie
   set_attribute("movie", function() sample(3, 1)) %>%
-  select(function(attr) movies[attr["movie"]]) %>%
+  select(function() movies[get_attribute(env, "movie")]) %>%
   # set reneging condition
-  renege_if(function(attr) paste0(movies[attr["movie"]], " sold out")) %>%
+  renege_if(function() paste0(movies[get_attribute(env, "movie")], " sold out")) %>%
   # leave immediately if the movie was already sold out
-  leave(function(attr) get_capacity(env, movies[attr["movie"]]) == 0) %>%
+  leave(function() get_capacity(env, movies[get_attribute(env, "movie")]) == 0) %>%
   # wait for my turn
   seize("counter", 1) %>%
   # buy tickets
@@ -249,12 +249,12 @@ moviegoer <- trajectory() %>%
   # abort reneging condition
   renege_abort() %>%
   # check the tickets available
-  branch(function(attr) get_server_count(env, movies[attr["movie"]]) > (TICKETS - 2),
+  branch(function() get_server_count(env, movies[get_attribute(env, "movie")]) > (TICKETS - 2),
          continue = TRUE,
          # trigger the "sold out" event for the movie
          trajectory() %>%
            set_capacity_selected(0) %>%
-           send(function(attr) paste0(movies[attr["movie"]], " sold out"))
+           send(function() paste0(movies[get_attribute(env, "movie")], " sold out"))
   ) %>%
   timeout(1) %>%
   release("counter", 1) %>%
@@ -367,7 +367,7 @@ signal <- "gas station refilled"
 
 refuelling <- trajectory() %>%
   # check if there is enough fuel available
-  branch(function(attr) FUEL_TANK_SIZE - attr["level"] > GAS_STATION_LEVEL, 
+  branch(function() FUEL_TANK_SIZE - get_attribute(env, "level") > GAS_STATION_LEVEL, 
          continue = TRUE,
          # if not, block until the signal "gas station refilled" is received
          trajectory() %>%
@@ -376,8 +376,8 @@ refuelling <- trajectory() %>%
            untrap(signal)
   ) %>%
   # refuel
-  timeout(function(attr) {
-    liters_required <- FUEL_TANK_SIZE - attr["level"]
+  timeout(function() {
+    liters_required <- FUEL_TANK_SIZE - get_attribute(env, "level")
     GAS_STATION_LEVEL <<- GAS_STATION_LEVEL - liters_required
     return(liters_required / REFUELING_SPEED)
   })
@@ -395,8 +395,8 @@ car <- trajectory() %>%
   # 'join()' concatenates the refuelling trajectory here
   join(refuelling) %>%
   release("pump", 1) %>%
-  log_(function(attr) 
-    paste0("finished refuelling in ", now(env) - attr["start"], " seconds"))
+  log_(function() 
+    paste0("finished refuelling in ", now(env) - get_attribute(env, "start"), " seconds"))
 ```
 
 The tank truck takes some time to arrive. Then, the gas station is completely refilled and the signal "gas station refilled" is sent to the blocked cars.

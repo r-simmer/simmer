@@ -267,18 +267,18 @@ option.2 <- function(t) {
 }
 ```
 
-We may also avoid messing up things with branches and subtrajectories. We can decide the type of vehicle and set it as an attribute of the arrival with `set_attribute`. Then, every activity's function is able to retrieve those attributes as a named list. Although the branch option is a little bit faster, this one is nicer, because there are no subtrajectories involved.
+We may also avoid messing up things with branches and subtrajectories. We can decide the type of vehicle and set it as an attribute of the arrival with `set_attribute()`. Then, those attributes can be retrieved using `get_attribute()`. Although the branch option is a little bit faster, this one is nicer, because there are no subtrajectories involved.
 
 ```{r}
 option.3 <- function(t) {
   vehicle <- trajectory("car") %>%
     set_attribute("vehicle", function() sample(c(1, 2), 1, prob=c(p, 1-p))) %>%
-    seize("pump", amount=function(attrs) {
-      if (attrs["vehicle"] == 1 &&
+    seize("pump", amount=function() {
+      if (get_attribute(env, "vehicle") == 1 &&
           env %>% get_server_count("pump")) 2    # car rejection
       else 1                                     # serve
     }) %>%
-    timeout(function(attrs) rexp(1, mu[attrs["vehicle"]])) %>%
+    timeout(function() rexp(1, mu[get_attribute(env, "vehicle")])) %>%
     release("pump", amount=1)                    # always 1
   
   env <- simmer() %>%

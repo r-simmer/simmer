@@ -48,6 +48,17 @@ test_that("preemptible < priority shows a warning", {
   expect_warning(simmer(verbose = TRUE) %>% add_generator("dummy", t, at(0), priority = 3, preemptible = 1))
 })
 
+test_that("arrival names are correctly retrieved", {
+  t <- trajectory() %>%
+    log_(function() get_name(env))
+
+  env <- simmer() %>%
+    add_generator("dummy", t, at(0))
+
+  expect_output(run(env), "0: dummy0: dummy0")
+  expect_error(get_name(env))
+})
+
 test_that("arrivals are correctly monitored", {
   a <- trajectory() %>%
     seize("res2", 1) %>%

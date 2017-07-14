@@ -132,6 +132,10 @@ Simmer <- R6Class("simmer",
 
     get_n_generated = function(name) get_n_generated_(private$sim_obj, name),
 
+    get_name = function() get_name_(private$sim_obj),
+
+    get_attribute = function(key, global=FALSE) get_attribute_(private$sim_obj, key, global),
+
     get_capacity = function(name) {
       ret <- get_capacity_(private$sim_obj, name)
       if (ret < 0) ret <- Inf

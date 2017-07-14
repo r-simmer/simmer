@@ -197,7 +197,7 @@ set_msg_size <- function(.)
 # seize an M/D/1 queue by id; the timeout is function of the message size
 md1 <- function(., id)
   seize(., paste0("md1_", id), 1) %>%
-  timeout(function(attrs) attrs[["size"]] / rate) %>%
+  timeout(function() get_attribute(env, "size") / rate) %>%
   release(paste0("md1_", id), 1)
 ```
 

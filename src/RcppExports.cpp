@@ -192,6 +192,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_name_
+std::string get_name_(SEXP sim_);
+RcppExport SEXP _simmer_get_name_(SEXP sim_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    rcpp_result_gen = Rcpp::wrap(get_name_(sim_));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_attribute_
+double get_attribute_(SEXP sim_, std::string key, bool global);
+RcppExport SEXP _simmer_get_attribute_(SEXP sim_SEXP, SEXP keySEXP, SEXP globalSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< std::string >::type key(keySEXP);
+    Rcpp::traits::input_parameter< bool >::type global(globalSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_attribute_(sim_, key, global));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_capacity_
 int get_capacity_(SEXP sim_, std::string name);
 RcppExport SEXP _simmer_get_capacity_(SEXP sim_SEXP, SEXP nameSEXP) {
@@ -1096,6 +1120,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_get_mon_resources_counts_", (DL_FUNC) &_simmer_get_mon_resources_counts_, 1},
     {"_simmer_get_mon_resources_limits_", (DL_FUNC) &_simmer_get_mon_resources_limits_, 1},
     {"_simmer_get_n_generated_", (DL_FUNC) &_simmer_get_n_generated_, 2},
+    {"_simmer_get_name_", (DL_FUNC) &_simmer_get_name_, 1},
+    {"_simmer_get_attribute_", (DL_FUNC) &_simmer_get_attribute_, 3},
     {"_simmer_get_capacity_", (DL_FUNC) &_simmer_get_capacity_, 2},
     {"_simmer_get_queue_size_", (DL_FUNC) &_simmer_get_queue_size_, 2},
     {"_simmer_get_server_count_", (DL_FUNC) &_simmer_get_server_count_, 2},

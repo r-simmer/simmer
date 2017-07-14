@@ -4,29 +4,25 @@ library(simmer.plot)
 t0 <- trajectory() %>%
   set_attribute("health", function() sample(40:80,1)) %>%
   set_attribute("nurses_to_seize",
-                function(attrs){
-                  if(attrs[["health"]]<50) 2
+                function(){
+                  if(get_attribute(env, "health")<50) 2
                   else 1
                 }) %>%
   seize("nurse",
-        function(attrs){attrs[["nurses_to_seize"]]}) %>%
-  timeout(function(attrs){(100 - attrs[["health"]])}) %>%
+        function(){get_attribute(env, "nurses_to_seize")}) %>%
+  timeout(function(){(100 - get_attribute(env, "health"))}) %>%
   set_attribute("health",
-                function(attrs){
-                  min(attrs[["health"]] + sample(attrs[["health"]]:100, 1), 100)}) %>%
+                function(){
+                  min(get_attribute(env, "health") + sample(get_attribute(env, "health"):100, 1), 100)}) %>%
   release("nurse",
-          function(attrs){attrs[["nurses_to_seize"]]}) %>%
-
-  ## some other functionality
-  ## simply print the attrs using a 0 timeout
-  timeout(function(attrs){print(attrs); 0})
+          function(){get_attribute(env, "nurses_to_seize")})
 
 env<-simmer() %>%
   add_generator("test", t0, at(seq(0,1000,200)), mon=2) %>%
-  add_resource("nurse", 2) %>%
-  run()
+  add_resource("nurse", 2)
+env %>% run()
 
-attributes <- env %>% get_mon_attributes()
+env %>% get_mon_attributes()
 
 plot(env, "res", "usage", "nurse", items="server", steps=T)
 plot(env, "attr")

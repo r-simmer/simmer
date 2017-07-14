@@ -104,6 +104,19 @@ int get_n_generated_(SEXP sim_, std::string name) {
 }
 
 //[[Rcpp::export]]
+std::string get_name_(SEXP sim_) {
+  XPtr<Simulator> sim(sim_);
+  return sim->get_running_arrival()->name;
+}
+
+//[[Rcpp::export]]
+double get_attribute_(SEXP sim_, std::string key, bool global) {
+  XPtr<Simulator> sim(sim_);
+  if (global) return sim->get_attribute(key);
+  else return sim->get_running_arrival()->get_attribute(key);
+}
+
+//[[Rcpp::export]]
 int get_capacity_(SEXP sim_, std::string name) {
   XPtr<Simulator> sim(sim_);
   return sim->get_resource(name)->get_capacity();

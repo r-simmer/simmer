@@ -5,7 +5,7 @@
 \alias{get_queue_size}
 \alias{get_server_count}
 \alias{get_queue_count}
-\title{Get a resource's parameter}
+\title{Get resource parameters}
 \usage{
 get_capacity(.env, resource)
 
@@ -21,8 +21,11 @@ get_queue_count(.env, resource)
 \item{resource}{the name of the resource.}
 }
 \value{
-Returns a numeric value.
+Return a numeric value.
 }
 \description{
-Getters for a resource's server capacity/count and queue size/count.
+Getters for resources: server capacity/count and queue size/count.
+}
+\seealso{
+\code{\link{set_capacity}}, \code{\link{set_queue_size}}.
 }

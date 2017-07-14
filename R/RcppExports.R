@@ -61,6 +61,14 @@ get_n_generated_ <- function(sim_, name) {
     .Call(`_simmer_get_n_generated_`, sim_, name)
 }
 
+get_name_ <- function(sim_) {
+    .Call(`_simmer_get_name_`, sim_)
+}
+
+get_attribute_ <- function(sim_, key, global) {
+    .Call(`_simmer_get_attribute_`, sim_, key, global)
+}
+
 get_capacity_ <- function(sim_, name) {
     .Call(`_simmer_get_capacity_`, sim_, name)
 }

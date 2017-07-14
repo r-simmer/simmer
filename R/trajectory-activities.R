@@ -58,7 +58,8 @@ release_selected.trajectory <- function(.trj, amount=1, id=0) .trj$release(NA, a
 #'
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{select}}, \code{\link{seize}}, \code{\link{release}},
-#' \code{\link{seize_selected}}, \code{\link{release_selected}}.
+#' \code{\link{seize_selected}}, \code{\link{release_selected}},
+#' \code{\link{get_capacity}}, \code{\link{get_queue_size}}..
 #' @export
 set_capacity <- function(.trj, resource, value) UseMethod("set_capacity")
 
@@ -134,12 +135,13 @@ timeout.trajectory <- function(.trj, task) .trj$timeout(task)
 #' Modify an attribute in the form of a key/value pair.
 #'
 #' @inheritParams seize
-#' @param key the attribute key (coerced to a string).
+#' @param key the attribute name.
 #' @param value the value to set, accepts either a numeric or a callable object
 #' (a function) which must return a numeric.
 #' @param global if \code{TRUE}, the attribute will be global instead of per-arrival.
 #'
 #' @return Returns the trajectory object.
+#' @seealso \code{\link{get_attribute}}.
 #' @export
 set_attribute <- function(.trj, key, value, global=FALSE) UseMethod("set_attribute")
 

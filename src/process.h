@@ -195,11 +195,17 @@ public:
   virtual void set_attribute(std::string key, double value);
   double get_start(std::string name);
 
-  Attr* get_attributes() { return &attributes; }
   double get_remaining() const { return status.remaining; }
   void set_activity(Activity* ptr) { activity = ptr; }
   double get_start() const { return lifetime.start; }
   Activity* get_activity() const { return activity; }
+  Attr* get_attributes() { return &attributes; }
+  double get_attribute(std::string key) const {
+    Attr::const_iterator search = attributes.find(key);
+    if (search == attributes.end())
+      return NA_REAL;
+    return (*search).second;
+  }
 
   void set_resource_selected(int id, Resource* res) { selected[id] = res; }
   Resource* get_resource_selected(int id) const {

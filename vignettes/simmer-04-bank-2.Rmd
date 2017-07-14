@@ -73,7 +73,7 @@ customer <-
          paste("Queue is", get_queue_count(bank, "counter"), "on arrival")
          }) %>%
   seize("counter") %>%
-  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  log_(function() {paste("Waited", now(bank) - get_attribute(bank, "start_time"))}) %>%
   timeout(12) %>%
   release("counter") %>%
   log_("Completed")
@@ -120,7 +120,7 @@ customer <-
          paste("Queue is", get_queue_count(bank, "counter"), "on arrival")
          }) %>%
   seize("counter") %>%
-  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  log_(function() {paste("Waited", now(bank) - get_attribute(bank, "start_time"))}) %>%
   timeout(12) %>%
   release("counter") %>%
   log_("Completed")
@@ -191,7 +191,7 @@ customer <-
         reject =
           trajectory("Balked customer") %>%
           log_("BALKING")) %>%
-  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  log_(function() {paste("Waited", now(bank) - get_attribute(bank, "start_time"))}) %>%
   timeout(function() {rexp(1, 1/timeInBank)}) %>%
   release("counter") %>%
   log_("Finished")
@@ -247,12 +247,12 @@ customer <-
   set_attribute("start_time", function() {now(bank)}) %>%
   renege_in(maxWaitTime,
             out = trajectory("Reneging customer") %>%
-              log_(function(attr) {
-                     paste("Waited", now(bank) - attr["start_time"], "I am off")
+              log_(function() {
+                     paste("Waited", now(bank) - get_attribute(bank, "start_time"), "I am off")
                    })) %>%
   seize("counter") %>%
   renege_abort() %>% # Stay if I'm being attended within maxWaitTime
-  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  log_(function() {paste("Waited", now(bank) - get_attribute(bank, "start_time"))}) %>%
   timeout(function() {rexp(1, 1/timeInBank)}) %>%
   release("counter") %>%
   log_("Completed")
@@ -318,16 +318,16 @@ customer <-
   trap("phonecall",
        handler = trajectory() %>%
          log_("Excuse me") %>%
-         set_attribute("timeleft",
-                       function(attr) {
-                         attr["timeleft"] - (now(bank) - attr["start"])
-                       }) %>%
+         set_attribute(
+           "timeleft", function() {
+             get_attribute(bank, "timeleft") - (now(bank) - get_attribute(bank, "start"))
+         }) %>%
          log_("Hello! I'll call back") %>%
          timeout(onphone) %>%
          log_("Sorry, where were we?") %>%
          set_attribute("start", function() {now(bank)}) %>%
-         log_(function(attr) {paste("Time left:", attr["timeleft"])}) %>%
-         timeout(function(attr) {attr["timeleft"]})
+         log_(function() {paste("Time left:", get_attribute(bank, "timeleft"))}) %>%
+         timeout(function() {get_attribute(bank, "timeleft")})
        ) %>%
   log_("Here I am") %>%
   set_attribute("timeleft", timeInBank) %>%
@@ -457,7 +457,7 @@ customer <-
   set_attribute("start_time", function() {now(bank)}) %>%
   seize("door") %>%
   log_("The door is open!") %>%
-  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  log_(function() {paste("Waited", now(bank) - get_attribute(bank, "start_time"))}) %>%
   release("door") %>%
   seize("counter") %>%
   timeout(function() {rexp(1, 1/10)}) %>%
@@ -513,7 +513,7 @@ customer <-
   batch(n = Inf, timeout = 30) %>%
   separate() %>%
   log_("The door is open!") %>%
-  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  log_(function() {paste("Waited", now(bank) - get_attribute(bank, "start_time"))}) %>%
   seize("counter") %>%
   timeout(function() {rexp(1, 1/10)}) %>%
   release("counter") %>%
@@ -630,7 +630,7 @@ customer <-
   set_attribute("start_time", function() {now(bank)}) %>%
   seize("counter") %>%
   log_("Got counter") %>%
-  log_(function(attr) {paste("Waited", now(bank) - attr["start_time"])}) %>%
+  log_(function() {paste("Waited", now(bank) - get_attribute(bank, "start_time"))}) %>%
   timeout(12) %>%
   release("counter") %>%
   log_("Finished")

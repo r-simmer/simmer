@@ -64,9 +64,11 @@ check_args <- function(..., types, n=1, env=parent.frame()) {
 }
 
 needs_attrs <- function(variable) {
-  if (is.function(variable))
-    length(formals(variable))
-  else 0
+  if (is.function(variable)) {
+    args <- length(formals(variable))
+    if (args) .Deprecated(msg="Attribute retrieval through function arguments is deprecated.\nUse 'get_attribute' instead.")
+    args
+  } else 0
 }
 
 envs_apply <- function(envs, method, ...) {

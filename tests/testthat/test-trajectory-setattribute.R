@@ -11,16 +11,17 @@ test_that("an arrival attribute is correctly set and returned to a function", {
   t0 <- trajectory() %>%
     set_attribute("test", 123) %>%
     set_attribute("test", 456, global = TRUE) %>%
-    log_(function(attrs) paste0(attrs["test"])) %>%
-    log_(function(attrs, glb) paste0(attrs["test"], glb["test"]))
+    log_(function() paste0(get_attribute(env, "test"))) %>%
+    log_(function()
+      paste0(get_attribute(env, "test"),
+             get_attribute(env, "asdf"),
+             get_attribute(env, "test", global = TRUE),
+             get_attribute(env, "asdf", global = TRUE)))
 
-  expect_output({
-    simmer(verbose = TRUE) %>%
-      add_generator("entity", t0, at(0)) %>%
-      run()
-    },
-    ".*123.*123456"
-  )
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("entity", t0, at(0))
+
+  expect_output(run(env), ".*123.*123NA456NA")
 })
 
 test_that("attributes can be correctly retrieved using get_mon_attributes()", {

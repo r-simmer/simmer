@@ -75,26 +75,24 @@ get_mon_attributes(env)
 
 Above, a trajectory which _only_ sets attribute `my_key` to value `123` is launched once by an arrival generated at time 0 (check `?at`). The `mon=2` of `add_generator()` makes the simulation environment monitor the attributes' evolution (disabled by default). Using `get_mon_attributes()`, we can look at the evolution of the value of `my_key`.
 
-If you want to set an attribute that depends on another attribute, or on the current value of the attribute to be set, this is also possible. In fact, if, instead of a numeric value, you supply a function with one parameter, the current set of attributes is passed as a list to that function. Whatever (numeric value) your function returns is set as the value of the specified attribute key. If the supplied function has no parameters, it is evaluated in the same way, but the attribute list is not accesible in the function body. This means that, if you supply a function to the `value` parameter, it has to be in the form of either `function(attrs){}` (first case) or `function(){}` (second case). Below, you can see an example of this in practice.
+If you want to set an attribute that depends on another attribute, or on the current value of the attribute to be set, this is also possible. Attributes can be retrieved inside user-supplied functions using `get_attribute()`. Below, you can see an example of this in practice.
 
 ```{r}
 patient_traj <- trajectory(name = "patient_trajectory") %>%
   set_attribute("my_key", 123) %>%
   timeout(5) %>%
-  set_attribute("my_key", function(attrs) attrs[["my_key"]] + 1) %>%
+  set_attribute("my_key", function() get_attribute(env, "my_key") + 1) %>%
   timeout(5) %>%
-  set_attribute("dependent_key", function(attrs) ifelse(attrs[["my_key"]]<=123, 1, 0)) %>%
+  set_attribute("dependent_key", function() ifelse(get_attribute(env, "my_key")<=123, 1, 0)) %>%
   timeout(5) %>%
   set_attribute("independent_key", function() runif(1))
 
 env<- simmer() %>%
-  add_generator("patient", patient_traj, at(0), mon = 2) %>%
-  run()
+  add_generator("patient", patient_traj, at(0), mon = 2)
+env %>% run()
 
 get_mon_attributes(env)
 ```
-
-In general, whenever an activity accepts a function as a parameter, the rule above applies, and you can obtain the current set of attributes as the first argument of that function.
 
 Attributes are _per arrival_ by default (`global=FALSE`), meaning that each arrival has its own set of attributes, not visible by anyone else:
 
@@ -103,29 +101,29 @@ writer <- trajectory() %>%
   set_attribute(key = "my_key", value = 123)
 
 reader <- trajectory() %>%
-  log_(function(attr) paste0(attr["my_key"]))
+  log_(function() paste0(get_attribute(env, "my_key")))
 
 env <- simmer() %>%
   add_generator("writer", writer, at(0), mon = 2) %>%
-  add_generator("reader", reader, at(1), mon = 2) %>%
-  run()
+  add_generator("reader", reader, at(1), mon = 2)
+env %>% run()
 
 get_mon_attributes(env)
 ```
 
-Thus, the reader in the example above returns `NA`, missing. However, attributes can also be global with `global=TRUE`. To retrieve the global set of attributes in any activity that accepts a function as a parameter, you need to specify a second argument:
+Thus, the reader in the example above returns `NA`, missing. However, attributes can also be global with `global=TRUE`:
 
 ```{r}
 writer <- trajectory() %>%
   set_attribute(key = "my_key", value = 123, global = TRUE)
 
 reader <- trajectory() %>%
-  log_(function(attr, glb) paste0(attr["my_key"], ", ", glb["my_key"]))
+  log_(function() paste0(get_attribute(env, "my_key"), ", ", get_attribute(env, "my_key", global = TRUE)))
 
 env <- simmer() %>%
   add_generator("writer", writer, at(0), mon = 2) %>%
-  add_generator("reader", reader, at(1), mon = 2) %>%
-  run()
+  add_generator("reader", reader, at(1), mon = 2)
+env %>% run()
 
 get_mon_attributes(env)
 ```
@@ -147,7 +145,7 @@ env <- simmer() %>%
 get_mon_arrivals(env)
 ```
 
-Often, however, you want a timeout to be dependent on a distribution or, for example, an earlier set attribute. This is achieved by passing a function in to form of either `function(){}` or `function(attrs){}` to the `task` parameter, as we explained before. In the following example, this functionality is demonstrated:
+Often, however, you want a timeout to be dependent on a distribution or, for example, an earlier set attribute. This is achieved by passing a function to the `task` parameter, as we explained before, and using `get_attribute()`. In the following example, this functionality is demonstrated:
 
 ```{r}
 patient_traj <- trajectory(name = "patient_trajectory") %>%
@@ -155,11 +153,11 @@ patient_traj <- trajectory(name = "patient_trajectory") %>%
   # distribution-based timeout
   timeout(function() rexp(1, 10)) %>%
   # attribute-dependent timeout
-  timeout(function(attrs) (100 - attrs[["health"]]) * 2)
+  timeout(function() (100 - get_attribute(env, "health")) * 2)
 
 env <- simmer() %>%
-  add_generator("patient", patient_traj, at(0), mon = 2) %>%
-  run()
+  add_generator("patient", patient_traj, at(0), mon = 2)
+env %>% run()
 
 get_mon_arrivals(env)
 get_mon_attributes(env)
@@ -191,20 +189,20 @@ get_mon_resources(env)
 
 Here the `mon=1` argument (=default) of `add_resource()` makes the simulation environment monitor the resource usage. Using the `get_mon_resources(env)` method you can get access to the log of the usage evolution of resources.
 
-There are situations where you want to let the amount of resources seized/released be dependent on a specific function or on a previously set attribute. To achieve this, you can pass a function in the form of either `function(){}` or `function(attrs){}` to the `amount` parameter instead of a numeric value. If going for the latter, the current state of the arrival's attributes will be passed to `attrs` as a list which you can inspect. This allows for the following:
+There are situations where you want to let the amount of resources seized/released be dependent on a specific function or on a previously set attribute. To achieve this, you can pass a function to the `amount` parameter instead of a numeric value and use `get_attribute()`:
 
 ```{r}
 patient_traj <- trajectory(name = "patient_trajectory") %>%
   set_attribute("health", function() sample(20:80, 1)) %>%
-  set_attribute("docs_to_seize", function(attrs) ifelse(attrs[["health"]]<50, 1, 2)) %>%
-  seize("doctor", function(attrs) attrs[["docs_to_seize"]]) %>%
+  set_attribute("docs_to_seize", function() ifelse(get_attribute(env, "health")<50, 1, 2)) %>%
+  seize("doctor", function() get_attribute(env, "docs_to_seize")) %>%
   timeout(3) %>%
-  release("doctor", function(attrs) attrs[["docs_to_seize"]])
+  release("doctor", function() get_attribute(env, "docs_to_seize"))
 
 env <- simmer() %>%
   add_resource("doctor", capacity = 2, mon = 1) %>%
-  add_generator("patient", patient_traj, at(0), mon = 2) %>%
-  run()
+  add_generator("patient", patient_traj, at(0), mon = 2)
+env %>% run()
 
 get_mon_resources(env)
 get_mon_attributes(env)
@@ -317,7 +315,7 @@ get_mon_resources(env)
 
 ### `set_capacity()`, `set_queue_size()`
 
-The `set_capacity(., resource, value)` method modifies the capacity of the specified resource by name, and the `set_queue_size(., resource, value)` method modifies its queue size. Be aware that, in order to use these functions in relation to a specific resource, you have to create it in your definition of the simulation environment (check `?add_resource`). You can supply the `value` parameter either as a numeric value or as a function, in the form of either `function(){}` or `function(attrs){}`, which must return a numeric value.
+The `set_capacity(., resource, value)` method modifies the capacity of the specified resource by name, and the `set_queue_size(., resource, value)` method modifies its queue size. Be aware that, in order to use these functions in relation to a specific resource, you have to create it in your definition of the simulation environment (check `?add_resource`). You can supply the `value` parameter either as a numeric value or as a function which must return a numeric value.
 
 These activities are interesting to introduce dynamical changes in the resources. For instance, consider the following example in which two trajectories fight for the capacity of their resource:
 
@@ -388,7 +386,7 @@ If you provide `select()` with `resources` as a vector of names, you can use one
 ```{r}
 patient_traj <- trajectory(name = "patient_trajectory") %>%
   set_attribute("resource", function() sample(1:3, 1)) %>%
-  select(resources = function(attrs) paste0("doctor", attrs["resource"])) %>%
+  select(resources = function() paste0("doctor", get_attribute(env, "resource"))) %>%
   seize_selected(amount = 1) %>%
   timeout(5) %>%
   release_selected(amount = 1)
@@ -397,8 +395,8 @@ env <- simmer() %>%
   add_resource("doctor1", capacity = 1) %>%
   add_resource("doctor2", capacity = 1) %>%
   add_resource("doctor3", capacity = 1) %>%
-  add_generator("patient", patient_traj, at(0, 1, 2), mon = 2) %>%
-  run()
+  add_generator("patient", patient_traj, at(0, 1, 2), mon = 2)
+env %>% run()
 
 get_mon_attributes(env)
 get_mon_arrivals(env)
@@ -454,7 +452,7 @@ patient_traj <- trajectory(name = "patient_trajectory") %>%
   # static values
   set_prioritization(values = c(3, 7, TRUE)) %>%
   # dynamically with a function
-  set_prioritization(values = function(attrs) c(attrs["priority"], 7, TRUE))
+  set_prioritization(values = function() c(get_attribute(env, "priority"), 7, TRUE))
 ```
 
 More details on prioritization in the _Advanced Resource Usage_ vignette (pending).
@@ -533,19 +531,20 @@ The `rollback()` method also accepts an optional `check` parameter which overrid
 ```{r}
 t0 <- trajectory() %>%
   set_attribute("happiness", 0) %>%
-  log_(function(attrs) {
-    paste0(">> Happiness level is at: ", attrs[["happiness"]], " -- ", 
-           ifelse(attrs[["happiness"]]<25,"PETE: I'm feeling crappy...",
-                  ifelse(attrs[["happiness"]]<50,"PETE: Feelin' a bit moody",
-                         ifelse(attrs[["happiness"]]<75,"PETE: Just had a good espresso",
+  log_(function() {
+    level <- get_attribute(env, "happiness")
+    paste0(">> Happiness level is at: ", level, " -- ", 
+           ifelse(level<25,"PETE: I'm feeling crappy...",
+                  ifelse(level<50,"PETE: Feelin' a bit moody",
+                         ifelse(level<75,"PETE: Just had a good espresso",
                                 "PETE: Let's do this! (and stop this loop...)"))))
   }) %>%
-  set_attribute("happiness", function(attrs) attrs[["happiness"]] + 25) %>%
-  rollback(amount = 2, check = function(attrs) attrs[["happiness"]] < 100)
+  set_attribute("happiness", function() get_attribute(env, "happiness") + 25) %>%
+  rollback(amount = 2, check = function() get_attribute(env, "happiness") < 100)
 
-simmer() %>%
-  add_generator("mood_swinger", t0, at(0)) %>% 
-  run() %>% invisible
+env <- simmer() %>%
+  add_generator("mood_swinger", t0, at(0))
+env %>% run() %>% invisible()
 ```
 
 ### `leave()`
