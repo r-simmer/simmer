@@ -3,7 +3,7 @@
 \name{set_trajectory}
 \alias{set_trajectory}
 \alias{set_distribution}
-\title{Add a set trajectory/distribution activity}
+\title{Set Generator Parameters}
 \usage{
 set_trajectory(.trj, generator, trajectory)
 
@@ -23,7 +23,7 @@ negative value stops the generator).}
 Returns the trajectory object.
 }
 \description{
-Modify a generator's trajectory or distribution by name.
+Activities for modifying a generator's trajectory or distribution by name.
 }
 \seealso{
 \code{\link{activate}}, \code{\link{deactivate}}.

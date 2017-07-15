@@ -5,7 +5,7 @@
 \alias{trap}
 \alias{untrap}
 \alias{wait}
-\title{Add an inter-arrival communication activity}
+\title{Inter-arrival Communication}
 \usage{
 send(.trj, signals, delay = 0)
 

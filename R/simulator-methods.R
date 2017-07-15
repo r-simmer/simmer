@@ -1,4 +1,4 @@
-#' Create a simulator
+#' Create a Simulator
 #'
 #' This method initialises a simulation environment.
 #'
@@ -38,7 +38,7 @@
 #'
 simmer <- function(name="anonymous", verbose=FALSE) Simmer$new(name, verbose)
 
-#' Reset a simulator
+#' Reset a Simulator
 #'
 #' Reset the following components of a simulation environment:
 #' time, event queue, resources, generators and statistics.
@@ -53,9 +53,9 @@ reset <- function(.env) UseMethod("reset")
 #' @export
 reset.simmer <- function(.env) .env$reset()
 
-#' Run the simulation
+#' Run a Simulation
 #'
-#' Execute steps until the given criterion.
+#' Execute steps until a given criterion.
 #'
 #' @inheritParams reset
 #' @param until stop time.
@@ -89,7 +89,7 @@ onestep <- function(.env) UseMethod("onestep")
 #' @export
 onestep.simmer <- function(.env) .env$step()
 
-#' Get current time
+#' Simulation Time
 #'
 #' Get the current simulation time.
 #'
@@ -103,7 +103,7 @@ now <- function(.env) UseMethod("now")
 #' @export
 now.simmer <- function(.env) .env$now()
 
-#' Peek next events
+#' Peek Next Events
 #'
 #' Look for future events in the event queue and (optionally) obtain info about them.
 #'
@@ -119,7 +119,7 @@ peek <- function(.env, steps=1, verbose=FALSE) UseMethod("peek")
 #' @export
 peek.simmer <- function(.env, steps=1, verbose=FALSE) .env$peek(steps, verbose)
 
-#' Add a resource
+#' Add a Resource
 #'
 #' Define a new resource in a simulation environment.
 #'
@@ -153,7 +153,7 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
                                 preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE)
   .env$add_resource(name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict)
 
-#' Add a generator
+#' Add a Generator
 #'
 #' Define a new generator of arrivals in a simulation environment.
 #'
@@ -188,9 +188,9 @@ add_generator.simmer <- function(.env, name_prefix, trajectory, distribution, mo
                                  priority=0, preemptible=priority, restart=FALSE)
   .env$add_generator(name_prefix, trajectory, distribution, mon, priority, preemptible, restart)
 
-#' Get statistics
+#' Monitoring Statistics
 #'
-#' Simulator getters for obtaining monitored data (if any) about arrivals, attributes and resources.
+#' Getters for obtaining monitored data (if any) about arrivals, attributes and resources.
 #'
 #' @param .envs the simulation environment (or a list of environments).
 #' @param per_resource if \code{TRUE}, statistics will be reported on a per-resource basis.
@@ -224,7 +224,7 @@ get_mon_resources <- function(.envs, data=c("counts", "limits"))
 get_mon_resources.simmer <- function(.envs, data=c("counts", "limits"))
   envs_apply(.envs, "get_mon_resources", data)
 
-#' Get process parameters
+#' Get Process Parameters
 #'
 #' Getters for processes (generators and arrivals) number of arrivals generated
 #' by a generator, the name of the active arrival, an attribute from the active
@@ -275,7 +275,7 @@ get_prioritization <- function(.env) UseMethod("get_prioritization")
 #' @export
 get_prioritization.simmer <- function(.env) .env$get_prioritization()
 
-#' Get resource parameters
+#' Get Resource Parameters
 #'
 #' Getters for resources: server capacity/count and queue size/count.
 #'

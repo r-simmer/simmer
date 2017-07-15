@@ -6,7 +6,7 @@
 \alias{[[.trajectory}
 \alias{[<-.trajectory}
 \alias{[[<-.trajectory}
-\title{Extract or replace parts of a trajectory}
+\title{Extract or Replace Parts of a Trajectory}
 \usage{
 \method{[}{trajectory}(x, i)
 

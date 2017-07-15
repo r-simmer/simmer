@@ -2,18 +2,49 @@
 % Please edit documentation in R/generators.R
 \name{at}
 \alias{at}
-\title{Arrivals at specific times}
+\alias{from}
+\alias{to}
+\alias{from_to}
+\title{Convenience Functions for Generators}
 \usage{
 at(...)
+
+from(start_time, dist, arrive = TRUE)
+
+to(stop_time, dist)
+
+from_to(start_time, stop_time, dist, arrive = TRUE, every = NULL)
 }
 \arguments{
 \item{...}{a vector or multiple parameters of times at which to initiate an arrival.}
+
+\item{start_time}{the time at which to launch the initial arrival.}
+
+\item{dist}{a function modelling the interarrival times.}
+
+\item{arrive}{if set to \code{TRUE} (default) the first arrival will be
+generated at \code{start_time} and will follow \code{dist} from then on.
+If set to \code{FALSE}, will initiate \code{dist} at \code{start_time}
+(and the first arrival will most likely start at a time later than
+\code{start_time}).}
+
+\item{stop_time}{the time at which to stop the generator.}
+
+\item{every}{repeat with this time cycle.}
 }
 \value{
 Returns a generator function.
 }
 \description{
-Generator convenience function to generate arrivals at specific times.
+These convenience functions facilitate the definition of generators of arrivals
+for some common cases.
+}
+\details{
+\code{\link{at}} generates arrivals at specific absolute times.
+\code{\link{from}} generates inter-arrivals following a given distribution
+with a specified start time. \code{\link{to}} generates inter-arrivals following
+a given distribution with a specified stop time. \code{\link{from_to}} is the
+union of the last two.
 }
 \examples{
 t0 <- trajectory() \%>\%
@@ -22,6 +53,28 @@ t0 <- trajectory() \%>\%
 simmer() \%>\%
   add_generator("dummy", t0, at(0, c(1,10,30), 40, 43)) \%>\%
   run(100) \%>\%
+  get_mon_arrivals()
+t0 <- trajectory() \%>\%
+  timeout(0)
+
+simmer() \%>\%
+  add_generator("dummy", t0, from(5, function() runif(1, 1, 2))) \%>\%
+  run(10) \%>\%
+  get_mon_arrivals()
+t0 <- trajectory() \%>\%
+  timeout(0)
+
+simmer() \%>\%
+  add_generator("dummy", t0, to(5, function() runif(1, 1, 2))) \%>\%
+  run(10) \%>\%
+  get_mon_arrivals()
+t0 <- trajectory() \%>\%
+  timeout(0)
+
+# from 8 to 16 h every 24 h:
+simmer() \%>\%
+  add_generator("dummy", t0, from_to(8, 16, function() runif(1, 1, 2), every=24)) \%>\%
+  run(48) \%>\%
   get_mon_arrivals()
 }
 \seealso{

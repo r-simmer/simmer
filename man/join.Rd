@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory-methods.R
 \name{join}
 \alias{join}
-\title{Join trajectories}
+\title{Join Trajectories}
 \usage{
 join(...)
 }

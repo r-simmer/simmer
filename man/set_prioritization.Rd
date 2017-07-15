@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory-activities.R
 \name{set_prioritization}
 \alias{set_prioritization}
-\title{Add a set prioritization activity}
+\title{Set Prioritization Values}
 \usage{
 set_prioritization(.trj, values)
 }
@@ -18,7 +18,7 @@ See \code{\link{add_generator}} for more information about these parameters.}
 Returns the trajectory object.
 }
 \description{
-Modify the arrival's prioritization values.
+Activity for modifying an arrival's prioritization values.
 }
 \seealso{
 \code{\link{get_prioritization}}.

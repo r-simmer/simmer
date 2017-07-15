@@ -1,4 +1,4 @@
-#' Create a trajectory
+#' Create a Trajectory
 #'
 #' This method initialises a trajectory object, which comprises a chain of
 #' activities that can be attached to a generator.
@@ -61,7 +61,7 @@ create_trajectory <- function(name="anonymous", verbose=FALSE) { # nocov start
   trajectory(name, verbose)
 } # nocov end
 
-#' Extract or replace parts of a trajectory
+#' Extract or Replace Parts of a Trajectory
 #'
 #' Operators acting on trajectories to extract or replace parts.
 #'
@@ -115,7 +115,7 @@ create_trajectory <- function(name="anonymous", verbose=FALSE) { # nocov start
   x$replace(i, value, double=TRUE)
 }
 
-#' Number of activities in a trajectory
+#' Number of Activities in a Trajectory
 #'
 #' Get the number of activities in a trajectory. \code{length} returns the number
 #' of first-level activities (sub-trajectories not included). \code{get_n_activities}
@@ -136,7 +136,7 @@ get_n_activities <- function(x) UseMethod("get_n_activities")
 #' @export
 get_n_activities.trajectory <- function(x) x$get_n_activities()
 
-#' Join trajectories
+#' Join Trajectories
 #'
 #' Concatenate any number of trajectories in the specified order.
 #'

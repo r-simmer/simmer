@@ -3,7 +3,7 @@
 \name{run}
 \alias{run}
 \alias{onestep}
-\title{Run the simulation}
+\title{Run a Simulation}
 \usage{
 run(.env, until = 1000, progress = NULL, steps = 10)
 
@@ -24,7 +24,7 @@ completed ratio is periodically passed as argument to the callback.}
 Returns the simulation environment.
 }
 \description{
-Execute steps until the given criterion.
+Execute steps until a given criterion.
 }
 \seealso{
 \code{\link{reset}}.

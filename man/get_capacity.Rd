@@ -5,7 +5,7 @@
 \alias{get_queue_size}
 \alias{get_server_count}
 \alias{get_queue_count}
-\title{Get resource parameters}
+\title{Get Resource Parameters}
 \usage{
 get_capacity(.env, resource)
 

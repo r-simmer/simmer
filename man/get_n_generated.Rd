@@ -5,7 +5,7 @@
 \alias{get_name}
 \alias{get_attribute}
 \alias{get_prioritization}
-\title{Get process parameters}
+\title{Get Process Parameters}
 \usage{
 get_n_generated(.env, generator)
 

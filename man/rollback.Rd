@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory-activities.R
 \name{rollback}
 \alias{rollback}
-\title{Add a rollback activity}
+\title{Rollback a Number of Activities}
 \usage{
 rollback(.trj, amount, times = Inf, check = NULL)
 }
@@ -21,5 +21,5 @@ function to check whether the rollback must be done or not.}
 Returns the trajectory object.
 }
 \description{
-Go backwards to a previous point in the trajectory. Useful to implement loops.
+Activity for going backwards to a previous point in the trajectory. Useful to implement loops.
 }

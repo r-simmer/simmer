@@ -5,7 +5,7 @@
 \alias{set_capacity_selected}
 \alias{set_queue_size}
 \alias{set_queue_size_selected}
-\title{Add a set capacity/queue size activity}
+\title{Set Resource Parameters}
 \usage{
 set_capacity(.trj, resource, value)
 
@@ -28,7 +28,8 @@ set_queue_size_selected(.trj, value, id = 0)
 Returns the trajectory object.
 }
 \description{
-Modify a resource's server capacity or queue size, by name or a previously selected one.
+Activities for modifying a resource's server capacity or queue size, by name
+or a previously selected one.
 }
 \seealso{
 \code{\link{select}}, \code{\link{seize}}, \code{\link{release}},

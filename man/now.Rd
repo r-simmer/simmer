@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulator-methods.R
 \name{now}
 \alias{now}
-\title{Get current time}
+\title{Simulation Time}
 \usage{
 now(.env)
 }

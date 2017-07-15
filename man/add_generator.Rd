@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulator-methods.R
 \name{add_generator}
 \alias{add_generator}
-\title{Add a generator}
+\title{Add a Generator}
 \usage{
 add_generator(.env, name_prefix, trajectory, distribution, mon = 1,
   priority = 0, preemptible = priority, restart = FALSE)

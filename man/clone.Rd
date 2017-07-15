@@ -3,7 +3,7 @@
 \name{clone}
 \alias{clone}
 \alias{synchronize}
-\title{Add a clone/synchronize activity}
+\title{Clone/Synchronize Arrivals}
 \usage{
 clone(.trj, n, ...)
 
@@ -28,6 +28,7 @@ line per clone.}
 Returns the trajectory object.
 }
 \description{
-A \code{clone} activity replicates an arrival \code{n} times (the original
-one + \code{n-1} copies). A \code{synchronize} activity removes all but one clone.
+Activities for defining a parallel fork and removing the copies. \code{clone}
+replicates an arrival \code{n} times (the original one + \code{n-1} copies).
+\code{synchronize} removes all but one clone for each set of clones.
 }

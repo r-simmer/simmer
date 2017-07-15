@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulator-methods.R
 \name{reset}
 \alias{reset}
-\title{Reset a simulator}
+\title{Reset a Simulator}
 \usage{
 reset(.env)
 }

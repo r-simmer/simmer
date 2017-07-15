@@ -5,7 +5,7 @@
 \alias{get_mon_arrivals}
 \alias{get_mon_attributes}
 \alias{get_mon_resources}
-\title{Get statistics}
+\title{Monitoring Statistics}
 \usage{
 get_mon_arrivals(.envs, per_resource = FALSE, ongoing = FALSE)
 
@@ -27,5 +27,5 @@ get_mon_resources(.envs, data = c("counts", "limits"))
 Returns a data frame.
 }
 \description{
-Simulator getters for obtaining monitored data (if any) about arrivals, attributes and resources.
+Getters for obtaining monitored data (if any) about arrivals, attributes and resources.
 }

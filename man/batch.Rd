@@ -3,7 +3,7 @@
 \name{batch}
 \alias{batch}
 \alias{separate}
-\title{Add a batch/separate activity}
+\title{Batch/Separate Arrivals}
 \usage{
 batch(.trj, n, timeout = 0, permanent = FALSE, name = "", rule = NULL)
 
@@ -31,6 +31,6 @@ every arrival to determine whether it should be included into the batch, thus}
 Returns the trajectory object.
 }
 \description{
-Collect a number of arrivals before they can continue processing
-or split a previously established batch.
+Activities for collecting a number of arrivals before they can continue processing
+and splitting a previously established batch.
 }

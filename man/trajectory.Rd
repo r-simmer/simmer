@@ -3,7 +3,7 @@
 \name{trajectory}
 \alias{trajectory}
 \alias{create_trajectory}
-\title{Create a trajectory}
+\title{Create a Trajectory}
 \usage{
 trajectory(name = "anonymous", verbose = FALSE)
 

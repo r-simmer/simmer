@@ -3,7 +3,7 @@
 \name{length.trajectory}
 \alias{length.trajectory}
 \alias{get_n_activities}
-\title{Number of activities in a trajectory}
+\title{Number of Activities in a Trajectory}
 \usage{
 \method{length}{trajectory}(x)
 

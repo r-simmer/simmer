@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory-activities.R
 \name{select}
 \alias{select}
-\title{Select a resource}
+\title{Select Resources}
 \usage{
 select(.trj, resources, policy = c("shortest-queue", "round-robin",
   "first-available", "random"), id = 0)
@@ -25,7 +25,8 @@ and 'random' selects one at random.}
 Returns the trajectory object.
 }
 \description{
-Resource selector for a subsequent seize/release.
+Acitivity for selecting a resource for a subsequent seize/release or setting
+its parameters (capacity or queue size).
 }
 \seealso{
 \code{\link{seize_selected}}, \code{\link{release_selected}},

@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulator-methods.R
 \name{add_resource}
 \alias{add_resource}
-\title{Add a resource}
+\title{Add a Resource}
 \usage{
 add_resource(.env, name, capacity = 1, queue_size = Inf, mon = TRUE,
   preemptive = FALSE, preempt_order = c("fifo", "lifo"),

@@ -4,7 +4,7 @@
 \alias{renege_in}
 \alias{renege_if}
 \alias{renege_abort}
-\title{Add a renege activity}
+\title{Renege on some Condition}
 \usage{
 renege_in(.trj, t, out = NULL)
 
@@ -27,7 +27,7 @@ renege_abort(.trj)
 Returns the trajectory object.
 }
 \description{
-Set or unset a timer or a signal after which the arrival will abandon.
+Activities for setting or unsetting a timer or a signal after which the arrival will abandon.
 }
 \seealso{
 \code{\link{send}}

@@ -58,7 +58,7 @@ Schedule <- R6Class("schedule",
   )
 )
 
-#' Generate a scheduling object
+#' Generate a Scheduling Object
 #'
 #' Resource convenience function to generate a scheduling object from a timetable specification.
 #'
@@ -66,7 +66,7 @@ Schedule <- R6Class("schedule",
 #' @param values one value for each point in time.
 #' @param period period of repetition.
 #'
-#' @return Returns a Schedule object.
+#' @return Returns a \code{schedule} object.
 #' @seealso \code{\link{add_resource}}.
 #' @export
 #'

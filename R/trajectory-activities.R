@@ -1,4 +1,4 @@
-#' Add a seize/release activity
+#' Seize/Release Resources
 #'
 #' Activities for seizing/releasing a resource, by name or a previously selected one.
 #'
@@ -47,9 +47,10 @@ release_selected <- function(.trj, amount=1, id=0) UseMethod("release_selected")
 #' @export
 release_selected.trajectory <- function(.trj, amount=1, id=0) .trj$release(NA, amount, id)
 
-#' Add a set capacity/queue size activity
+#' Set Resource Parameters
 #'
-#' Modify a resource's server capacity or queue size, by name or a previously selected one.
+#' Activities for modifying a resource's server capacity or queue size, by name
+#' or a previously selected one.
 #'
 #' @inheritParams seize
 #' @inheritParams select
@@ -87,9 +88,10 @@ set_queue_size_selected <- function(.trj, value, id=0) UseMethod("set_queue_size
 #' @export
 set_queue_size_selected.trajectory <- function(.trj, value, id=0) .trj$set_queue_size(NA, value, id)
 
-#' Select a resource
+#' Select Resources
 #'
-#' Resource selector for a subsequent seize/release.
+#' Acitivity for selecting a resource for a subsequent seize/release or setting
+#' its parameters (capacity or queue size).
 #'
 #' @inheritParams seize
 #' @param resources one or more resource names, or a callable object (a function) which
@@ -114,9 +116,9 @@ select.trajectory <- function(.trj, resources, policy=c("shortest-queue", "round
                                              "first-available", "random"), id=0)
   .trj$select(resources, policy, id)
 
-#' Add a timeout activity
+#' Delay
 #'
-#' Insert delays and execute user-defined tasks.
+#' Activity for inserting delays and execute user-defined tasks.
 #'
 #' @inheritParams seize
 #' @param task the timeout duration supplied by either passing a numeric or a
@@ -130,9 +132,9 @@ timeout <- function(.trj, task) UseMethod("timeout")
 #' @export
 timeout.trajectory <- function(.trj, task) .trj$timeout(task)
 
-#' Add a set attribute activity
+#' Set Attributes
 #'
-#' Modify an attribute in the form of a key/value pair.
+#' Activity for modifying an arrival's attribute in the form of a key/value pair.
 #'
 #' @inheritParams seize
 #' @param key the attribute name.
@@ -148,9 +150,9 @@ set_attribute <- function(.trj, key, value, global=FALSE) UseMethod("set_attribu
 #' @export
 set_attribute.trajectory <- function(.trj, key, value, global=FALSE) .trj$set_attribute(key, value, global)
 
-#' Add a activate/deactivate activity
+#' Activate/Deactivate Generators
 #'
-#' Activate or deactivate the generation of arrivals by name.
+#' Activities for activating or deactivating the generation of arrivals by name.
 #'
 #' @inheritParams seize
 #' @param generator the name of the generator or a function returning a name.
@@ -170,9 +172,9 @@ deactivate <- function(.trj, generator) UseMethod("deactivate")
 #' @export
 deactivate.trajectory <- function(.trj, generator) .trj$deactivate(generator)
 
-#' Add a set trajectory/distribution activity
+#' Set Generator Parameters
 #'
-#' Modify a generator's trajectory or distribution by name.
+#' Activities for modifying a generator's trajectory or distribution by name.
 #'
 #' @inheritParams seize
 #' @inheritParams activate
@@ -197,9 +199,9 @@ set_distribution <- function(.trj, generator, distribution) UseMethod("set_distr
 set_distribution.trajectory <- function(.trj, generator, distribution)
   .trj$set_distribution(generator, distribution)
 
-#' Add a set prioritization activity
+#' Set Prioritization Values
 #'
-#' Modify the arrival's prioritization values.
+#' Activity for modifying an arrival's prioritization values.
 #'
 #' @inheritParams seize
 #' @param values expects either a vector/list or a callable object (a function)
@@ -215,9 +217,9 @@ set_prioritization <- function(.trj, values) UseMethod("set_prioritization")
 #' @export
 set_prioritization.trajectory <- function(.trj, values) .trj$set_prioritization(values)
 
-#' Add a branch activity
+#' Fork the Trajectory Path
 #'
-#' Define a fork with \code{N} alternative sub-trajectories.
+#' Activity for defining a fork with \code{N} alternative sub-trajectories.
 #'
 #' @inheritParams seize
 #' @param option a callable object (a function) which must return an integer between
@@ -235,9 +237,9 @@ branch <- function(.trj, option, continue, ...) UseMethod("branch")
 #' @export
 branch.trajectory <- function(.trj, option, continue, ...) .trj$branch(option, continue, ...)
 
-#' Add a rollback activity
+#' Rollback a Number of Activities
 #'
-#' Go backwards to a previous point in the trajectory. Useful to implement loops.
+#' Activity for going backwards to a previous point in the trajectory. Useful to implement loops.
 #'
 #' @inheritParams seize
 #' @param amount the amount of activities (of the same or parent trajectories) to roll back.
@@ -253,9 +255,9 @@ rollback <- function(.trj, amount, times=Inf, check=NULL) UseMethod("rollback")
 #' @export
 rollback.trajectory <- function(.trj, amount, times=Inf, check=NULL) .trj$rollback(amount, times, check)
 
-#' Add a leave activity
+#' Leave the Trajectory
 #'
-#' Leave the trajectory with some probability.
+#' Activity for leaving the trajectory with some probability.
 #'
 #' @inheritParams seize
 #' @param prob a probability or a function returning a probability.
@@ -267,9 +269,9 @@ leave <- function(.trj, prob) UseMethod("leave")
 #' @export
 leave.trajectory <- function(.trj, prob) .trj$leave(prob)
 
-#' Add a renege activity
+#' Renege on some Condition
 #'
-#' Set or unset a timer or a signal after which the arrival will abandon.
+#' Activities for setting or unsetting a timer or a signal after which the arrival will abandon.
 #'
 #' @inheritParams seize
 #' @param t timeout to trigger reneging, accepts either a numeric or a callable object
@@ -301,10 +303,11 @@ renege_abort <- function(.trj) UseMethod("renege_abort")
 #' @export
 renege_abort.trajectory <- function(.trj) .trj$renege_abort()
 
-#' Add a clone/synchronize activity
+#' Clone/Synchronize Arrivals
 #'
-#' A \code{clone} activity replicates an arrival \code{n} times (the original
-#' one + \code{n-1} copies). A \code{synchronize} activity removes all but one clone.
+#' Activities for defining a parallel fork and removing the copies. \code{clone}
+#' replicates an arrival \code{n} times (the original one + \code{n-1} copies).
+#' \code{synchronize} removes all but one clone for each set of clones.
 #'
 #' @inheritParams seize
 #' @param n number of clones, accepts either a numeric or a callable object
@@ -332,10 +335,10 @@ synchronize <- function(.trj, wait=TRUE, mon_all=FALSE) UseMethod("synchronize")
 #' @export
 synchronize.trajectory <- function(.trj, wait=TRUE, mon_all=FALSE) .trj$synchronize(wait, mon_all)
 
-#' Add a batch/separate activity
+#' Batch/Separate Arrivals
 #'
-#' Collect a number of arrivals before they can continue processing
-#' or split a previously established batch.
+#' Activities for collecting a number of arrivals before they can continue processing
+#' and splitting a previously established batch.
 #'
 #' @inheritParams seize
 #' @param n batch size, accepts a numeric.
@@ -367,7 +370,7 @@ separate <- function(.trj) UseMethod("separate")
 #' @export
 separate.trajectory <- function(.trj) .trj$separate()
 
-#' Add an inter-arrival communication activity
+#' Inter-arrival Communication
 #'
 #' These activities enable asynchronous programming. \code{send()} broadcasts a signal or a list
 #' of signals. Arrivals can subscribe to signals and (optionally) assign a handler with
@@ -416,9 +419,9 @@ wait <- function(.trj) UseMethod("wait")
 #' @export
 wait.trajectory <- function(.trj) .trj$wait()
 
-#' Add a logging activity
+#' Logging
 #'
-#' Display a message preceded by the simulation time and the name of the arrival.
+#' Activity for displaying messages preceded by the simulation time and the name of the arrival.
 #'
 #' @inheritParams seize
 #' @param message the message to display, accepts either a string or a callable object

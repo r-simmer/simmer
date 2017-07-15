@@ -10,7 +10,7 @@ reference:
       - Extract.trajectory
       - join
       - length.trajectory
-  - title: "Add activities"
+  - title: "Add activities to trajectories"
     desc: "Verbs for appending activities to trajectory objects"
     contents:
       - batch
@@ -44,18 +44,15 @@ reference:
       - get_capacity
       - now
       - peek
-  - title: "Statistics"
-    desc: "Methods for getting monitored statistics"
+  - title: "Monitoring"
+    desc: "Methods for getting monitoring statistics"
     contents:
       - starts_with("get_mon")
   - title: "Convenience functions"
     desc: "Helper methods for generators and resources"
     contents:
       - at
-      - from
-      - from_to
       - schedule
-      - to
 
 navbar:
   title: simmer | DES for R
@@ -74,6 +71,8 @@ navbar:
         href: articles/simmer-03-trajectories.html
       - text: "The Bank Tutorial: Part I"
         href: articles/simmer-04-bank-1.html
+      - text: "The Bank Tutorial: Part II"
+        href: articles/simmer-04-bank-2.html
       - text: "Other SimPy Examples"
         href: articles/simmer-05-simpy.html
       - text: "Queueing Systems"

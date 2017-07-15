@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory-activities.R
 \name{log_}
 \alias{log_}
-\title{Add a logging activity}
+\title{Logging}
 \usage{
 log_(.trj, message)
 }
@@ -16,5 +16,5 @@ log_(.trj, message)
 Returns the trajectory object.
 }
 \description{
-Display a message preceded by the simulation time and the name of the arrival.
+Activity for displaying messages preceded by the simulation time and the name of the arrival.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/wrap-methods.R
 \name{wrap}
 \alias{wrap}
-\title{Wrap a simulation environment}
+\title{Wrap a Simulation Environment}
 \usage{
 wrap(.env)
 }

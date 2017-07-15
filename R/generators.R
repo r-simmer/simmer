@@ -1,8 +1,15 @@
-#' Arrivals at specific times
+#' Convenience Functions for Generators
 #'
-#' Generator convenience function to generate arrivals at specific times.
+#' These convenience functions facilitate the definition of generators of arrivals
+#' for some common cases.
 #'
 #' @param ... a vector or multiple parameters of times at which to initiate an arrival.
+#'
+#' @details \code{\link{at}} generates arrivals at specific absolute times.
+#' \code{\link{from}} generates inter-arrivals following a given distribution
+#' with a specified start time. \code{\link{to}} generates inter-arrivals following
+#' a given distribution with a specified stop time. \code{\link{from_to}} is the
+#' union of the last two.
 #'
 #' @return Returns a generator function.
 #' @seealso \code{\link{add_generator}}.
@@ -22,10 +29,7 @@ at <- function(...) {
   function() return(c(time_diffs, -1))
 }
 
-#' Generate arrivals starting at a specified time
-#'
-#' Generator convenience function to generate inter-arrivals with a specified start time.
-#'
+#' @rdname at
 #' @param start_time the time at which to launch the initial arrival.
 #' @param dist a function modelling the interarrival times.
 #' @param arrive if set to \code{TRUE} (default) the first arrival will be
@@ -34,10 +38,7 @@ at <- function(...) {
 #' (and the first arrival will most likely start at a time later than
 #' \code{start_time}).
 #'
-#' @return Returns a generator function.
-#' @seealso \code{\link{add_generator}}.
 #' @export
-#'
 #' @examples
 #' t0 <- trajectory() %>%
 #'   timeout(0)
@@ -62,17 +63,10 @@ from <- function(start_time, dist, arrive=TRUE) {
   }
 }
 
-#' Generate arrivals stopping at a specified time
-#'
-#' Generator convenience function to generate inter-arrivals with a specified stop time.
-#'
+#' @rdname at
 #' @param stop_time the time at which to stop the generator.
-#' @inheritParams from
 #'
-#' @return Returns a generator function.
-#' @seealso \code{\link{add_generator}}.
 #' @export
-#'
 #' @examples
 #' t0 <- trajectory() %>%
 #'   timeout(0)
@@ -93,18 +87,10 @@ to <- function(stop_time, dist) {
   }
 }
 
-#' Generate arrivals starting and stopping at specified times
-#'
-#' Generator convenience function to generate inter-arrivals with specified start and stop times.
-#'
-#' @inheritParams from
-#' @inheritParams to
+#' @rdname at
 #' @param every repeat with this time cycle.
 #'
-#' @return Returns a generator function.
-#' @seealso \code{\link{add_generator}}.
 #' @export
-#'
 #' @examples
 #' t0 <- trajectory() %>%
 #'   timeout(0)

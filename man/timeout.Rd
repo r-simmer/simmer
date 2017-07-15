@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory-activities.R
 \name{timeout}
 \alias{timeout}
-\title{Add a timeout activity}
+\title{Delay}
 \usage{
 timeout(.trj, task)
 }
@@ -17,5 +17,5 @@ automatically coerced to positive).}
 Returns the trajectory object.
 }
 \description{
-Insert delays and execute user-defined tasks.
+Activity for inserting delays and execute user-defined tasks.
 }

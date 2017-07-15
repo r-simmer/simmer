@@ -2,7 +2,7 @@
 % Please edit documentation in R/schedule.R
 \name{schedule}
 \alias{schedule}
-\title{Generate a scheduling object}
+\title{Generate a Scheduling Object}
 \usage{
 schedule(timetable, values, period = Inf)
 }
@@ -14,7 +14,7 @@ schedule(timetable, values, period = Inf)
 \item{period}{period of repetition.}
 }
 \value{
-Returns a Schedule object.
+Returns a \code{schedule} object.
 }
 \description{
 Resource convenience function to generate a scheduling object from a timetable specification.

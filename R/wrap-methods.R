@@ -1,4 +1,4 @@
-#' Wrap a simulation environment
+#' Wrap a Simulation Environment
 #'
 #' This function extracts the monitored data from a simulation environment
 #' making it accessible through the same methods. Only useful if you want

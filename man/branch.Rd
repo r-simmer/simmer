@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory-activities.R
 \name{branch}
 \alias{branch}
-\title{Add a branch activity}
+\title{Fork the Trajectory Path}
 \usage{
 branch(.trj, option, continue, ...)
 }
@@ -23,5 +23,5 @@ continue to the main trajectory after each sub-trajectory or not.}
 Returns the trajectory object.
 }
 \description{
-Define a fork with \code{N} alternative sub-trajectories.
+Activity for defining a fork with \code{N} alternative sub-trajectories.
 }

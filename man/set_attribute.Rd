@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory-activities.R
 \name{set_attribute}
 \alias{set_attribute}
-\title{Add a set attribute activity}
+\title{Set Attributes}
 \usage{
 set_attribute(.trj, key, value, global = FALSE)
 }
@@ -20,7 +20,7 @@ set_attribute(.trj, key, value, global = FALSE)
 Returns the trajectory object.
 }
 \description{
-Modify an attribute in the form of a key/value pair.
+Activity for modifying an arrival's attribute in the form of a key/value pair.
 }
 \seealso{
 \code{\link{get_attribute}}.

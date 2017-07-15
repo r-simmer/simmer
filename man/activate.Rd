@@ -3,7 +3,7 @@
 \name{activate}
 \alias{activate}
 \alias{deactivate}
-\title{Add a activate/deactivate activity}
+\title{Activate/Deactivate Generators}
 \usage{
 activate(.trj, generator)
 
@@ -18,7 +18,7 @@ deactivate(.trj, generator)
 Returns the trajectory object.
 }
 \description{
-Activate or deactivate the generation of arrivals by name.
+Activities for activating or deactivating the generation of arrivals by name.
 }
 \seealso{
 \code{\link{set_trajectory}}, \code{\link{set_distribution}}.

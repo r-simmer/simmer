@@ -5,7 +5,7 @@
 \alias{seize_selected}
 \alias{release}
 \alias{release_selected}
-\title{Add a seize/release activity}
+\title{Seize/Release Resources}
 \usage{
 seize(.trj, resource, amount = 1, continue = NULL, post.seize = NULL,
   reject = NULL)

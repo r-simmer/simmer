@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulator-methods.R
 \name{peek}
 \alias{peek}
-\title{Peek next events}
+\title{Peek Next Events}
 \usage{
 peek(.env, steps = 1, verbose = FALSE)
 }

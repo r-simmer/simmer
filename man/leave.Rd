@@ -2,7 +2,7 @@
 % Please edit documentation in R/trajectory-activities.R
 \name{leave}
 \alias{leave}
-\title{Add a leave activity}
+\title{Leave the Trajectory}
 \usage{
 leave(.trj, prob)
 }
@@ -15,5 +15,5 @@ leave(.trj, prob)
 Returns the trajectory object.
 }
 \description{
-Leave the trajectory with some probability.
+Activity for leaving the trajectory with some probability.
 }
