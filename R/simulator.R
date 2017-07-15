@@ -136,6 +136,8 @@ Simmer <- R6Class("simmer",
 
     get_attribute = function(key, global=FALSE) get_attribute_(private$sim_obj, key, global),
 
+    get_prioritization = function() get_prioritization_(private$sim_obj),
+
     get_capacity = function(name) {
       ret <- get_capacity_(private$sim_obj, name)
       if (ret < 0) ret <- Inf

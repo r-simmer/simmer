@@ -19,7 +19,10 @@ test_that("priority queues are adhered to (2)", {
     timeout(2) %>%
     release("server", 1)
   t1 <- trajectory() %>%
-    set_prioritization(c(1, 0, FALSE)) %>%
+    set_prioritization(function() {
+      prio <- get_prioritization(env)
+      c(prio[[1]] + 1, 0, FALSE)
+    }) %>%
     seize("server", 1) %>%
     timeout(2) %>%
     release("server", 1)
@@ -43,7 +46,10 @@ test_that("priority queues are adhered to (3)", {
     timeout(2) %>%
     release("server", 1)
   t1 <- trajectory() %>%
-    set_prioritization(function() c(1, 0, FALSE)) %>%
+    set_prioritization(function() {
+      prio <- get_prioritization(env)
+      c(prio[[1]] + 1, 0, FALSE)
+    }) %>%
     seize("server", 1) %>%
     timeout(2) %>%
     release("server", 1)

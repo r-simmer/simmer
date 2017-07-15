@@ -59,7 +59,7 @@ release_selected.trajectory <- function(.trj, amount=1, id=0) .trj$release(NA, a
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{select}}, \code{\link{seize}}, \code{\link{release}},
 #' \code{\link{seize_selected}}, \code{\link{release_selected}},
-#' \code{\link{get_capacity}}, \code{\link{get_queue_size}}..
+#' \code{\link{get_capacity}}, \code{\link{get_queue_size}}.
 #' @export
 set_capacity <- function(.trj, resource, value) UseMethod("set_capacity")
 
@@ -208,6 +208,7 @@ set_distribution.trajectory <- function(.trj, generator, distribution)
 #' See \code{\link{add_generator}} for more information about these parameters.
 #'
 #' @return Returns the trajectory object.
+#' @seealso \code{\link{get_prioritization}}.
 #' @export
 set_prioritization <- function(.trj, values) UseMethod("set_prioritization")
 

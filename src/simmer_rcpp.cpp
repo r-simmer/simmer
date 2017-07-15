@@ -117,6 +117,15 @@ double get_attribute_(SEXP sim_, std::string key, bool global) {
 }
 
 //[[Rcpp::export]]
+IntegerVector get_prioritization_(SEXP sim_) {
+  XPtr<Simulator> sim(sim_);
+  Arrival* a = sim->get_running_arrival();
+  return {
+    a->order.get_priority(), a->order.get_preemptible(), (int)a->order.get_restart()
+  };
+}
+
+//[[Rcpp::export]]
 int get_capacity_(SEXP sim_, std::string name) {
   XPtr<Simulator> sim(sim_);
   return sim->get_resource(name)->get_capacity();

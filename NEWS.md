@@ -7,6 +7,7 @@
 * New getters for running arrivals (#109), meant to be used inside trajectories:
     * `get_name()` retrieves the arrival name.
     * `get_attribute()` retrieves an attribute by name. The old method of retrieving them by providing a function with one argument is deprecated in favour of `get_attribute()`, and will be removed in version 3.7.x.
+    * `get_prioritization()` retrieves the three prioritization values (`priority`, `preemptible`, `restart`) of the active arrival.
 
 ## Minor changes and fixes:
 

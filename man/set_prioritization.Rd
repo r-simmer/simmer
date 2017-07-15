@@ -20,3 +20,6 @@ Returns the trajectory object.
 \description{
 Modify the arrival's prioritization values.
 }
+\seealso{
+\code{\link{get_prioritization}}.
+}

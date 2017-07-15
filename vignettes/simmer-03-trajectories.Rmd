@@ -75,7 +75,7 @@ get_mon_attributes(env)
 
 Above, a trajectory which _only_ sets attribute `my_key` to value `123` is launched once by an arrival generated at time 0 (check `?at`). The `mon=2` of `add_generator()` makes the simulation environment monitor the attributes' evolution (disabled by default). Using `get_mon_attributes()`, we can look at the evolution of the value of `my_key`.
 
-If you want to set an attribute that depends on another attribute, or on the current value of the attribute to be set, this is also possible. Attributes can be retrieved inside user-supplied functions using `get_attribute()`. Below, you can see an example of this in practice.
+If you want to set an attribute that depends on another attribute, or on the current value of the attribute to be set, this is also possible. Attributes can be retrieved inside user-supplied functions using `get_attribute(.)`. Below, you can see an example of this in practice.
 
 ```{r}
 patient_traj <- trajectory(name = "patient_trajectory") %>%
@@ -145,7 +145,7 @@ env <- simmer() %>%
 get_mon_arrivals(env)
 ```
 
-Often, however, you want a timeout to be dependent on a distribution or, for example, an earlier set attribute. This is achieved by passing a function to the `task` parameter, as we explained before, and using `get_attribute()`. In the following example, this functionality is demonstrated:
+Often, however, you want a timeout to be dependent on a distribution or, for example, an earlier set attribute. This is achieved by passing a function to the `task` parameter, as we explained before, and using `get_attribute(.)`. In the following example, this functionality is demonstrated:
 
 ```{r}
 patient_traj <- trajectory(name = "patient_trajectory") %>%
@@ -189,7 +189,7 @@ get_mon_resources(env)
 
 Here the `mon=1` argument (=default) of `add_resource()` makes the simulation environment monitor the resource usage. Using the `get_mon_resources(env)` method you can get access to the log of the usage evolution of resources.
 
-There are situations where you want to let the amount of resources seized/released be dependent on a specific function or on a previously set attribute. To achieve this, you can pass a function to the `amount` parameter instead of a numeric value and use `get_attribute()`:
+There are situations where you want to let the amount of resources seized/released be dependent on a specific function or on a previously set attribute. To achieve this, you can pass a function to the `amount` parameter instead of a numeric value and use `get_attribute(.)`:
 
 ```{r}
 patient_traj <- trajectory(name = "patient_trajectory") %>%
@@ -444,7 +444,7 @@ simmer() %>%
 
 ### `set_prioritization()`
 
-The `add_generator()` method assigns a set of prioritization values to each generated arrival: by default, `priority=0`, `preemptible=priority`, `restart=FALSE` (see `?add_generator` for more details). The `set_prioritization(., values)` method can change those values with more granularity at any point in the trajectory:
+The `add_generator()` method assigns a set of prioritization values to each generated arrival: by default, `priority=0`, `preemptible=priority`, `restart=FALSE` (see `?add_generator` for more details). The `set_prioritization(., values)` method can change those values with more granularity at any point in the trajectory, and they can also be retrieved inside the trajectory using `get_prioritization(.)`:
 
 ```{r}
 patient_traj <- trajectory(name = "patient_trajectory") %>%
@@ -452,7 +452,11 @@ patient_traj <- trajectory(name = "patient_trajectory") %>%
   # static values
   set_prioritization(values = c(3, 7, TRUE)) %>%
   # dynamically with a function
-  set_prioritization(values = function() c(get_attribute(env, "priority"), 7, TRUE))
+  set_prioritization(values = function() {
+    prio <- get_prioritization(env)
+    attr <- get_attribute(env, "priority")
+    c(attr, prio[[2]]+1, FALSE)
+  })
 ```
 
 More details on prioritization in the _Advanced Resource Usage_ vignette (pending).
