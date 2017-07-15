@@ -120,9 +120,9 @@ double get_attribute_(SEXP sim_, std::string key, bool global) {
 IntegerVector get_prioritization_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
   Arrival* a = sim->get_running_arrival();
-  return {
+  return IntegerVector::create(
     a->order.get_priority(), a->order.get_preemptible(), (int)a->order.get_restart()
-  };
+  );
 }
 
 //[[Rcpp::export]]
