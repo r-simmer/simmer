@@ -238,11 +238,11 @@ get_mon_resources.simmer <- function(.envs, data=c("counts", "limits"))
 #'
 #' \code{get_name} returns the number of the running arrival. \code{get_attribute}
 #' returns a running arrival's attribute or a global one. If the provided key was
-#' not previously set, it returns a missing value. \code{get_prioritization}
-#' returns a running arrival's prioritization values. \code{get_name},
-#' \code{get_attribute} and \code{get_prioritization} are meant to be used inside
-#' a trajectory; otherwise, there will be no arrival running and these functions
-#' will throw an error.
+#' not previously set, it returns a missing value. \code{get_global} is a shortcut
+#' for \code{get_attribute(global=TRUE)}. \code{get_prioritization} returns a
+#' running arrival's prioritization values. \code{get_name}, \code{get_attribute}
+#' and \code{get_prioritization} are meant to be used inside a trajectory; otherwise,
+#' there will be no arrival running and these functions will throw an error.
 #'
 #' @seealso \code{\link{set_attribute}}, \code{\link{set_prioritization}}.
 #' @export
@@ -267,6 +267,10 @@ get_attribute <- function(.env, key, global=FALSE) UseMethod("get_attribute")
 
 #' @export
 get_attribute.simmer <- function(.env, key, global=FALSE) .env$get_attribute(key, global)
+
+#' @rdname get_n_generated
+#' @export
+get_global <- function(.env, key) get_attribute(.env, key, TRUE)
 
 #' @rdname get_n_generated
 #' @export

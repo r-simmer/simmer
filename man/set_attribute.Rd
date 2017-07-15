@@ -2,9 +2,12 @@
 % Please edit documentation in R/trajectory-activities.R
 \name{set_attribute}
 \alias{set_attribute}
+\alias{set_global}
 \title{Set Attributes}
 \usage{
 set_attribute(.trj, key, value, global = FALSE)
+
+set_global(.trj, key, value)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -21,6 +24,9 @@ Returns the trajectory object.
 }
 \description{
 Activity for modifying an arrival's attribute in the form of a key/value pair.
+}
+\details{
+\code{set_global} is a shortcut for \code{set_attribute(global=TRUE)}.
 }
 \seealso{
 \code{\link{get_attribute}}.

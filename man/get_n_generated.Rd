@@ -4,6 +4,7 @@
 \alias{get_n_generated}
 \alias{get_name}
 \alias{get_attribute}
+\alias{get_global}
 \alias{get_prioritization}
 \title{Get Process Parameters}
 \usage{
@@ -12,6 +13,8 @@ get_n_generated(.env, generator)
 get_name(.env)
 
 get_attribute(.env, key, global = FALSE)
+
+get_global(.env, key)
 
 get_prioritization(.env)
 }
@@ -35,11 +38,11 @@ given generator.
 
 \code{get_name} returns the number of the running arrival. \code{get_attribute}
 returns a running arrival's attribute or a global one. If the provided key was
-not previously set, it returns a missing value. \code{get_prioritization}
-returns a running arrival's prioritization values. \code{get_name},
-\code{get_attribute} and \code{get_prioritization} are meant to be used inside
-a trajectory; otherwise, there will be no arrival running and these functions
-will throw an error.
+not previously set, it returns a missing value. \code{get_global} is a shortcut
+for \code{get_attribute(global=TRUE)}. \code{get_prioritization} returns a
+running arrival's prioritization values. \code{get_name}, \code{get_attribute}
+and \code{get_prioritization} are meant to be used inside a trajectory; otherwise,
+there will be no arrival running and these functions will throw an error.
 }
 \seealso{
 \code{\link{set_attribute}}, \code{\link{set_prioritization}}.

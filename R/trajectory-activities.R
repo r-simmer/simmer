@@ -142,6 +142,8 @@ timeout.trajectory <- function(.trj, task) .trj$timeout(task)
 #' (a function) which must return a numeric.
 #' @param global if \code{TRUE}, the attribute will be global instead of per-arrival.
 #'
+#' @details \code{set_global} is a shortcut for \code{set_attribute(global=TRUE)}.
+#'
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{get_attribute}}.
 #' @export
@@ -149,6 +151,10 @@ set_attribute <- function(.trj, key, value, global=FALSE) UseMethod("set_attribu
 
 #' @export
 set_attribute.trajectory <- function(.trj, key, value, global=FALSE) .trj$set_attribute(key, value, global)
+
+#' @rdname set_attribute
+#' @export
+set_global <- function(.trj, key, value) set_attribute(.trj, key, value, TRUE)
 
 #' Activate/Deactivate Generators
 #'
