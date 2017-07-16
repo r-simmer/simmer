@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // Simulator__new
 SEXP Simulator__new(std::string name, bool verbose);
-RcppExport SEXP simmer_Simulator__new(SEXP nameSEXP, SEXP verboseSEXP) {
+RcppExport SEXP _simmer_Simulator__new(SEXP nameSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -19,7 +19,7 @@ END_RCPP
 }
 // reset_
 void reset_(SEXP sim_);
-RcppExport SEXP simmer_reset_(SEXP sim_SEXP) {
+RcppExport SEXP _simmer_reset_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
@@ -29,7 +29,7 @@ END_RCPP
 }
 // now_
 double now_(SEXP sim_);
-RcppExport SEXP simmer_now_(SEXP sim_SEXP) {
+RcppExport SEXP _simmer_now_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -40,7 +40,7 @@ END_RCPP
 }
 // peek_
 DataFrame peek_(SEXP sim_, int steps);
-RcppExport SEXP simmer_peek_(SEXP sim_SEXP, SEXP stepsSEXP) {
+RcppExport SEXP _simmer_peek_(SEXP sim_SEXP, SEXP stepsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -52,7 +52,7 @@ END_RCPP
 }
 // step_
 void step_(SEXP sim_);
-RcppExport SEXP simmer_step_(SEXP sim_SEXP) {
+RcppExport SEXP _simmer_step_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
@@ -62,7 +62,7 @@ END_RCPP
 }
 // run_
 void run_(SEXP sim_, double until);
-RcppExport SEXP simmer_run_(SEXP sim_SEXP, SEXP untilSEXP) {
+RcppExport SEXP _simmer_run_(SEXP sim_SEXP, SEXP untilSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
@@ -73,7 +73,7 @@ END_RCPP
 }
 // add_generator_
 bool add_generator_(SEXP sim_, std::string name_prefix, Environment trj, Function dist, int mon, int priority, int preemptible, bool restart);
-RcppExport SEXP simmer_add_generator_(SEXP sim_SEXP, SEXP name_prefixSEXP, SEXP trjSEXP, SEXP distSEXP, SEXP monSEXP, SEXP prioritySEXP, SEXP preemptibleSEXP, SEXP restartSEXP) {
+RcppExport SEXP _simmer_add_generator_(SEXP sim_SEXP, SEXP name_prefixSEXP, SEXP trjSEXP, SEXP distSEXP, SEXP monSEXP, SEXP prioritySEXP, SEXP preemptibleSEXP, SEXP restartSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -91,7 +91,7 @@ END_RCPP
 }
 // add_resource_
 bool add_resource_(SEXP sim_, std::string name, int capacity, int queue_size, bool mon, bool preemptive, std::string preempt_order, bool queue_size_strict);
-RcppExport SEXP simmer_add_resource_(SEXP sim_SEXP, SEXP nameSEXP, SEXP capacitySEXP, SEXP queue_sizeSEXP, SEXP monSEXP, SEXP preemptiveSEXP, SEXP preempt_orderSEXP, SEXP queue_size_strictSEXP) {
+RcppExport SEXP _simmer_add_resource_(SEXP sim_SEXP, SEXP nameSEXP, SEXP capacitySEXP, SEXP queue_sizeSEXP, SEXP monSEXP, SEXP preemptiveSEXP, SEXP preempt_orderSEXP, SEXP queue_size_strictSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -109,7 +109,7 @@ END_RCPP
 }
 // add_resource_manager_
 bool add_resource_manager_(SEXP sim_, std::string name, std::string param, std::vector<double> intervals, std::vector<int> values, int period);
-RcppExport SEXP simmer_add_resource_manager_(SEXP sim_SEXP, SEXP nameSEXP, SEXP paramSEXP, SEXP intervalsSEXP, SEXP valuesSEXP, SEXP periodSEXP) {
+RcppExport SEXP _simmer_add_resource_manager_(SEXP sim_SEXP, SEXP nameSEXP, SEXP paramSEXP, SEXP intervalsSEXP, SEXP valuesSEXP, SEXP periodSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -125,7 +125,7 @@ END_RCPP
 }
 // get_mon_arrivals_
 DataFrame get_mon_arrivals_(SEXP sim_, bool per_resource, bool ongoing);
-RcppExport SEXP simmer_get_mon_arrivals_(SEXP sim_SEXP, SEXP per_resourceSEXP, SEXP ongoingSEXP) {
+RcppExport SEXP _simmer_get_mon_arrivals_(SEXP sim_SEXP, SEXP per_resourceSEXP, SEXP ongoingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -138,7 +138,7 @@ END_RCPP
 }
 // get_mon_attributes_
 DataFrame get_mon_attributes_(SEXP sim_);
-RcppExport SEXP simmer_get_mon_attributes_(SEXP sim_SEXP) {
+RcppExport SEXP _simmer_get_mon_attributes_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -149,7 +149,7 @@ END_RCPP
 }
 // get_mon_resources_
 DataFrame get_mon_resources_(SEXP sim_);
-RcppExport SEXP simmer_get_mon_resources_(SEXP sim_SEXP) {
+RcppExport SEXP _simmer_get_mon_resources_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -160,7 +160,7 @@ END_RCPP
 }
 // get_mon_resources_counts_
 DataFrame get_mon_resources_counts_(SEXP sim_);
-RcppExport SEXP simmer_get_mon_resources_counts_(SEXP sim_SEXP) {
+RcppExport SEXP _simmer_get_mon_resources_counts_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -171,7 +171,7 @@ END_RCPP
 }
 // get_mon_resources_limits_
 DataFrame get_mon_resources_limits_(SEXP sim_);
-RcppExport SEXP simmer_get_mon_resources_limits_(SEXP sim_SEXP) {
+RcppExport SEXP _simmer_get_mon_resources_limits_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -182,7 +182,7 @@ END_RCPP
 }
 // get_n_generated_
 int get_n_generated_(SEXP sim_, std::string name);
-RcppExport SEXP simmer_get_n_generated_(SEXP sim_SEXP, SEXP nameSEXP) {
+RcppExport SEXP _simmer_get_n_generated_(SEXP sim_SEXP, SEXP nameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -194,7 +194,7 @@ END_RCPP
 }
 // get_name_
 std::string get_name_(SEXP sim_);
-RcppExport SEXP simmer_get_name_(SEXP sim_SEXP) {
+RcppExport SEXP _simmer_get_name_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -205,7 +205,7 @@ END_RCPP
 }
 // get_attribute_
 double get_attribute_(SEXP sim_, std::string key, bool global);
-RcppExport SEXP simmer_get_attribute_(SEXP sim_SEXP, SEXP keySEXP, SEXP globalSEXP) {
+RcppExport SEXP _simmer_get_attribute_(SEXP sim_SEXP, SEXP keySEXP, SEXP globalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -218,7 +218,7 @@ END_RCPP
 }
 // get_prioritization_
 IntegerVector get_prioritization_(SEXP sim_);
-RcppExport SEXP simmer_get_prioritization_(SEXP sim_SEXP) {
+RcppExport SEXP _simmer_get_prioritization_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -229,7 +229,7 @@ END_RCPP
 }
 // get_capacity_
 int get_capacity_(SEXP sim_, std::string name);
-RcppExport SEXP simmer_get_capacity_(SEXP sim_SEXP, SEXP nameSEXP) {
+RcppExport SEXP _simmer_get_capacity_(SEXP sim_SEXP, SEXP nameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -241,7 +241,7 @@ END_RCPP
 }
 // get_queue_size_
 int get_queue_size_(SEXP sim_, std::string name);
-RcppExport SEXP simmer_get_queue_size_(SEXP sim_SEXP, SEXP nameSEXP) {
+RcppExport SEXP _simmer_get_queue_size_(SEXP sim_SEXP, SEXP nameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -253,7 +253,7 @@ END_RCPP
 }
 // get_server_count_
 int get_server_count_(SEXP sim_, std::string name);
-RcppExport SEXP simmer_get_server_count_(SEXP sim_SEXP, SEXP nameSEXP) {
+RcppExport SEXP _simmer_get_server_count_(SEXP sim_SEXP, SEXP nameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -265,7 +265,7 @@ END_RCPP
 }
 // get_queue_count_
 int get_queue_count_(SEXP sim_, std::string name);
-RcppExport SEXP simmer_get_queue_count_(SEXP sim_SEXP, SEXP nameSEXP) {
+RcppExport SEXP _simmer_get_queue_count_(SEXP sim_SEXP, SEXP nameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -277,7 +277,7 @@ END_RCPP
 }
 // Seize__new
 SEXP Seize__new(std::string resource, int amount, std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask);
-RcppExport SEXP simmer_Seize__new(SEXP resourceSEXP, SEXP amountSEXP, SEXP contSEXP, SEXP trjSEXP, SEXP maskSEXP) {
+RcppExport SEXP _simmer_Seize__new(SEXP resourceSEXP, SEXP amountSEXP, SEXP contSEXP, SEXP trjSEXP, SEXP maskSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -292,7 +292,7 @@ END_RCPP
 }
 // Seize__new_func
 SEXP Seize__new_func(std::string resource, Function amount, int provide_attrs, std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask);
-RcppExport SEXP simmer_Seize__new_func(SEXP resourceSEXP, SEXP amountSEXP, SEXP provide_attrsSEXP, SEXP contSEXP, SEXP trjSEXP, SEXP maskSEXP) {
+RcppExport SEXP _simmer_Seize__new_func(SEXP resourceSEXP, SEXP amountSEXP, SEXP provide_attrsSEXP, SEXP contSEXP, SEXP trjSEXP, SEXP maskSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -308,7 +308,7 @@ END_RCPP
 }
 // SeizeSelected__new
 SEXP SeizeSelected__new(int id, int amount, std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask);
-RcppExport SEXP simmer_SeizeSelected__new(SEXP idSEXP, SEXP amountSEXP, SEXP contSEXP, SEXP trjSEXP, SEXP maskSEXP) {
+RcppExport SEXP _simmer_SeizeSelected__new(SEXP idSEXP, SEXP amountSEXP, SEXP contSEXP, SEXP trjSEXP, SEXP maskSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -323,7 +323,7 @@ END_RCPP
 }
 // SeizeSelected__new_func
 SEXP SeizeSelected__new_func(int id, Function amount, int provide_attrs, std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask);
-RcppExport SEXP simmer_SeizeSelected__new_func(SEXP idSEXP, SEXP amountSEXP, SEXP provide_attrsSEXP, SEXP contSEXP, SEXP trjSEXP, SEXP maskSEXP) {
+RcppExport SEXP _simmer_SeizeSelected__new_func(SEXP idSEXP, SEXP amountSEXP, SEXP provide_attrsSEXP, SEXP contSEXP, SEXP trjSEXP, SEXP maskSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -339,7 +339,7 @@ END_RCPP
 }
 // Release__new
 SEXP Release__new(std::string resource, int amount);
-RcppExport SEXP simmer_Release__new(SEXP resourceSEXP, SEXP amountSEXP) {
+RcppExport SEXP _simmer_Release__new(SEXP resourceSEXP, SEXP amountSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -351,7 +351,7 @@ END_RCPP
 }
 // Release__new_func
 SEXP Release__new_func(std::string resource, Function amount, int provide_attrs);
-RcppExport SEXP simmer_Release__new_func(SEXP resourceSEXP, SEXP amountSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_Release__new_func(SEXP resourceSEXP, SEXP amountSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -364,7 +364,7 @@ END_RCPP
 }
 // ReleaseSelected__new
 SEXP ReleaseSelected__new(int id, int amount);
-RcppExport SEXP simmer_ReleaseSelected__new(SEXP idSEXP, SEXP amountSEXP) {
+RcppExport SEXP _simmer_ReleaseSelected__new(SEXP idSEXP, SEXP amountSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -376,7 +376,7 @@ END_RCPP
 }
 // ReleaseSelected__new_func
 SEXP ReleaseSelected__new_func(int id, Function amount, int provide_attrs);
-RcppExport SEXP simmer_ReleaseSelected__new_func(SEXP idSEXP, SEXP amountSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_ReleaseSelected__new_func(SEXP idSEXP, SEXP amountSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -389,7 +389,7 @@ END_RCPP
 }
 // SetCapacity__new
 SEXP SetCapacity__new(std::string resource, double value);
-RcppExport SEXP simmer_SetCapacity__new(SEXP resourceSEXP, SEXP valueSEXP) {
+RcppExport SEXP _simmer_SetCapacity__new(SEXP resourceSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -401,7 +401,7 @@ END_RCPP
 }
 // SetCapacity__new_func
 SEXP SetCapacity__new_func(std::string resource, Function value, int provide_attrs);
-RcppExport SEXP simmer_SetCapacity__new_func(SEXP resourceSEXP, SEXP valueSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_SetCapacity__new_func(SEXP resourceSEXP, SEXP valueSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -414,7 +414,7 @@ END_RCPP
 }
 // SetCapacitySelected__new
 SEXP SetCapacitySelected__new(int id, double value);
-RcppExport SEXP simmer_SetCapacitySelected__new(SEXP idSEXP, SEXP valueSEXP) {
+RcppExport SEXP _simmer_SetCapacitySelected__new(SEXP idSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -426,7 +426,7 @@ END_RCPP
 }
 // SetCapacitySelected__new_func
 SEXP SetCapacitySelected__new_func(int id, Function value, int provide_attrs);
-RcppExport SEXP simmer_SetCapacitySelected__new_func(SEXP idSEXP, SEXP valueSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_SetCapacitySelected__new_func(SEXP idSEXP, SEXP valueSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -439,7 +439,7 @@ END_RCPP
 }
 // SetQueue__new
 SEXP SetQueue__new(std::string resource, double value);
-RcppExport SEXP simmer_SetQueue__new(SEXP resourceSEXP, SEXP valueSEXP) {
+RcppExport SEXP _simmer_SetQueue__new(SEXP resourceSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -451,7 +451,7 @@ END_RCPP
 }
 // SetQueue__new_func
 SEXP SetQueue__new_func(std::string resource, Function value, int provide_attrs);
-RcppExport SEXP simmer_SetQueue__new_func(SEXP resourceSEXP, SEXP valueSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_SetQueue__new_func(SEXP resourceSEXP, SEXP valueSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -464,7 +464,7 @@ END_RCPP
 }
 // SetQueueSelected__new
 SEXP SetQueueSelected__new(int id, double value);
-RcppExport SEXP simmer_SetQueueSelected__new(SEXP idSEXP, SEXP valueSEXP) {
+RcppExport SEXP _simmer_SetQueueSelected__new(SEXP idSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -476,7 +476,7 @@ END_RCPP
 }
 // SetQueueSelected__new_func
 SEXP SetQueueSelected__new_func(int id, Function value, int provide_attrs);
-RcppExport SEXP simmer_SetQueueSelected__new_func(SEXP idSEXP, SEXP valueSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_SetQueueSelected__new_func(SEXP idSEXP, SEXP valueSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -489,7 +489,7 @@ END_RCPP
 }
 // Select__new
 SEXP Select__new(std::vector<std::string> resources, std::string policy, int id);
-RcppExport SEXP simmer_Select__new(SEXP resourcesSEXP, SEXP policySEXP, SEXP idSEXP) {
+RcppExport SEXP _simmer_Select__new(SEXP resourcesSEXP, SEXP policySEXP, SEXP idSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -502,7 +502,7 @@ END_RCPP
 }
 // Select__new_func
 SEXP Select__new_func(Function resources, int provide_attrs, std::string policy, int id);
-RcppExport SEXP simmer_Select__new_func(SEXP resourcesSEXP, SEXP provide_attrsSEXP, SEXP policySEXP, SEXP idSEXP) {
+RcppExport SEXP _simmer_Select__new_func(SEXP resourcesSEXP, SEXP provide_attrsSEXP, SEXP policySEXP, SEXP idSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -516,7 +516,7 @@ END_RCPP
 }
 // SetAttribute__new
 SEXP SetAttribute__new(std::string key, double value, bool global);
-RcppExport SEXP simmer_SetAttribute__new(SEXP keySEXP, SEXP valueSEXP, SEXP globalSEXP) {
+RcppExport SEXP _simmer_SetAttribute__new(SEXP keySEXP, SEXP valueSEXP, SEXP globalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -529,7 +529,7 @@ END_RCPP
 }
 // SetAttribute__new_func
 SEXP SetAttribute__new_func(std::string key, Function value, int provide_attrs, bool global);
-RcppExport SEXP simmer_SetAttribute__new_func(SEXP keySEXP, SEXP valueSEXP, SEXP provide_attrsSEXP, SEXP globalSEXP) {
+RcppExport SEXP _simmer_SetAttribute__new_func(SEXP keySEXP, SEXP valueSEXP, SEXP provide_attrsSEXP, SEXP globalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -543,7 +543,7 @@ END_RCPP
 }
 // Activate__new
 SEXP Activate__new(std::string generator);
-RcppExport SEXP simmer_Activate__new(SEXP generatorSEXP) {
+RcppExport SEXP _simmer_Activate__new(SEXP generatorSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -554,7 +554,7 @@ END_RCPP
 }
 // Activate__new_func
 SEXP Activate__new_func(Function generator, int provide_attrs);
-RcppExport SEXP simmer_Activate__new_func(SEXP generatorSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_Activate__new_func(SEXP generatorSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -566,7 +566,7 @@ END_RCPP
 }
 // Deactivate__new
 SEXP Deactivate__new(std::string generator);
-RcppExport SEXP simmer_Deactivate__new(SEXP generatorSEXP) {
+RcppExport SEXP _simmer_Deactivate__new(SEXP generatorSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -577,7 +577,7 @@ END_RCPP
 }
 // Deactivate__new_func
 SEXP Deactivate__new_func(Function generator, int provide_attrs);
-RcppExport SEXP simmer_Deactivate__new_func(SEXP generatorSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_Deactivate__new_func(SEXP generatorSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -589,7 +589,7 @@ END_RCPP
 }
 // SetTraj__new
 SEXP SetTraj__new(std::string generator, Environment trj);
-RcppExport SEXP simmer_SetTraj__new(SEXP generatorSEXP, SEXP trjSEXP) {
+RcppExport SEXP _simmer_SetTraj__new(SEXP generatorSEXP, SEXP trjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -601,7 +601,7 @@ END_RCPP
 }
 // SetTraj__new_func
 SEXP SetTraj__new_func(Function generator, int provide_attrs, Environment trj);
-RcppExport SEXP simmer_SetTraj__new_func(SEXP generatorSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP) {
+RcppExport SEXP _simmer_SetTraj__new_func(SEXP generatorSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -614,7 +614,7 @@ END_RCPP
 }
 // SetDist__new
 SEXP SetDist__new(std::string generator, Function dist);
-RcppExport SEXP simmer_SetDist__new(SEXP generatorSEXP, SEXP distSEXP) {
+RcppExport SEXP _simmer_SetDist__new(SEXP generatorSEXP, SEXP distSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -626,7 +626,7 @@ END_RCPP
 }
 // SetDist__new_func
 SEXP SetDist__new_func(Function generator, int provide_attrs, Function dist);
-RcppExport SEXP simmer_SetDist__new_func(SEXP generatorSEXP, SEXP provide_attrsSEXP, SEXP distSEXP) {
+RcppExport SEXP _simmer_SetDist__new_func(SEXP generatorSEXP, SEXP provide_attrsSEXP, SEXP distSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -639,7 +639,7 @@ END_RCPP
 }
 // SetPrior__new
 SEXP SetPrior__new(std::vector<int> values);
-RcppExport SEXP simmer_SetPrior__new(SEXP valuesSEXP) {
+RcppExport SEXP _simmer_SetPrior__new(SEXP valuesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -650,7 +650,7 @@ END_RCPP
 }
 // SetPrior__new_func
 SEXP SetPrior__new_func(Function values, int provide_attrs);
-RcppExport SEXP simmer_SetPrior__new_func(SEXP valuesSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_SetPrior__new_func(SEXP valuesSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -662,7 +662,7 @@ END_RCPP
 }
 // Timeout__new
 SEXP Timeout__new(double delay);
-RcppExport SEXP simmer_Timeout__new(SEXP delaySEXP) {
+RcppExport SEXP _simmer_Timeout__new(SEXP delaySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -673,7 +673,7 @@ END_RCPP
 }
 // Timeout__new_func
 SEXP Timeout__new_func(Function task, int provide_attrs);
-RcppExport SEXP simmer_Timeout__new_func(SEXP taskSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_Timeout__new_func(SEXP taskSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -685,7 +685,7 @@ END_RCPP
 }
 // Branch__new
 SEXP Branch__new(Function option, int provide_attrs, std::vector<bool> cont, std::vector<Environment> trj);
-RcppExport SEXP simmer_Branch__new(SEXP optionSEXP, SEXP provide_attrsSEXP, SEXP contSEXP, SEXP trjSEXP) {
+RcppExport SEXP _simmer_Branch__new(SEXP optionSEXP, SEXP provide_attrsSEXP, SEXP contSEXP, SEXP trjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -699,7 +699,7 @@ END_RCPP
 }
 // Rollback__new
 SEXP Rollback__new(int amount, int times);
-RcppExport SEXP simmer_Rollback__new(SEXP amountSEXP, SEXP timesSEXP) {
+RcppExport SEXP _simmer_Rollback__new(SEXP amountSEXP, SEXP timesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -711,7 +711,7 @@ END_RCPP
 }
 // Rollback__new_func
 SEXP Rollback__new_func(int amount, Function check, int provide_attrs);
-RcppExport SEXP simmer_Rollback__new_func(SEXP amountSEXP, SEXP checkSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_Rollback__new_func(SEXP amountSEXP, SEXP checkSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -724,7 +724,7 @@ END_RCPP
 }
 // Leave__new
 SEXP Leave__new(double prob);
-RcppExport SEXP simmer_Leave__new(SEXP probSEXP) {
+RcppExport SEXP _simmer_Leave__new(SEXP probSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -735,7 +735,7 @@ END_RCPP
 }
 // Leave__new_func
 SEXP Leave__new_func(Function prob, int provide_attrs);
-RcppExport SEXP simmer_Leave__new_func(SEXP probSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_Leave__new_func(SEXP probSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -747,7 +747,7 @@ END_RCPP
 }
 // Clone__new
 SEXP Clone__new(int n, std::vector<Environment> trj);
-RcppExport SEXP simmer_Clone__new(SEXP nSEXP, SEXP trjSEXP) {
+RcppExport SEXP _simmer_Clone__new(SEXP nSEXP, SEXP trjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -759,7 +759,7 @@ END_RCPP
 }
 // Clone__new_func
 SEXP Clone__new_func(Function n, int provide_attrs, std::vector<Environment> trj);
-RcppExport SEXP simmer_Clone__new_func(SEXP nSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP) {
+RcppExport SEXP _simmer_Clone__new_func(SEXP nSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -772,7 +772,7 @@ END_RCPP
 }
 // Synchronize__new
 SEXP Synchronize__new(bool wait, bool terminate);
-RcppExport SEXP simmer_Synchronize__new(SEXP waitSEXP, SEXP terminateSEXP) {
+RcppExport SEXP _simmer_Synchronize__new(SEXP waitSEXP, SEXP terminateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -784,7 +784,7 @@ END_RCPP
 }
 // Batch__new
 SEXP Batch__new(int n, double timeout, bool permanent, std::string name);
-RcppExport SEXP simmer_Batch__new(SEXP nSEXP, SEXP timeoutSEXP, SEXP permanentSEXP, SEXP nameSEXP) {
+RcppExport SEXP _simmer_Batch__new(SEXP nSEXP, SEXP timeoutSEXP, SEXP permanentSEXP, SEXP nameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -798,7 +798,7 @@ END_RCPP
 }
 // Batch__new_func1
 SEXP Batch__new_func1(int n, Function timeout, bool permanent, std::string name, int provide_attrs);
-RcppExport SEXP simmer_Batch__new_func1(SEXP nSEXP, SEXP timeoutSEXP, SEXP permanentSEXP, SEXP nameSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_Batch__new_func1(SEXP nSEXP, SEXP timeoutSEXP, SEXP permanentSEXP, SEXP nameSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -813,7 +813,7 @@ END_RCPP
 }
 // Batch__new_func2
 SEXP Batch__new_func2(int n, double timeout, bool permanent, std::string name, Function rule, int provide_attrs);
-RcppExport SEXP simmer_Batch__new_func2(SEXP nSEXP, SEXP timeoutSEXP, SEXP permanentSEXP, SEXP nameSEXP, SEXP ruleSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_Batch__new_func2(SEXP nSEXP, SEXP timeoutSEXP, SEXP permanentSEXP, SEXP nameSEXP, SEXP ruleSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -829,7 +829,7 @@ END_RCPP
 }
 // Batch__new_func4
 SEXP Batch__new_func4(int n, Function timeout, bool permanent, std::string name, Function rule, std::vector<int> provide_attrs);
-RcppExport SEXP simmer_Batch__new_func4(SEXP nSEXP, SEXP timeoutSEXP, SEXP permanentSEXP, SEXP nameSEXP, SEXP ruleSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_Batch__new_func4(SEXP nSEXP, SEXP timeoutSEXP, SEXP permanentSEXP, SEXP nameSEXP, SEXP ruleSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -845,7 +845,7 @@ END_RCPP
 }
 // Separate__new
 SEXP Separate__new();
-RcppExport SEXP simmer_Separate__new() {
+RcppExport SEXP _simmer_Separate__new() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -855,7 +855,7 @@ END_RCPP
 }
 // RenegeIn__new
 SEXP RenegeIn__new(double t, std::vector<Environment> trj);
-RcppExport SEXP simmer_RenegeIn__new(SEXP tSEXP, SEXP trjSEXP) {
+RcppExport SEXP _simmer_RenegeIn__new(SEXP tSEXP, SEXP trjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -867,7 +867,7 @@ END_RCPP
 }
 // RenegeIn__new_func
 SEXP RenegeIn__new_func(Function t, int provide_attrs, std::vector<Environment> trj);
-RcppExport SEXP simmer_RenegeIn__new_func(SEXP tSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP) {
+RcppExport SEXP _simmer_RenegeIn__new_func(SEXP tSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -880,7 +880,7 @@ END_RCPP
 }
 // RenegeIf__new
 SEXP RenegeIf__new(std::string signal, std::vector<Environment> trj);
-RcppExport SEXP simmer_RenegeIf__new(SEXP signalSEXP, SEXP trjSEXP) {
+RcppExport SEXP _simmer_RenegeIf__new(SEXP signalSEXP, SEXP trjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -892,7 +892,7 @@ END_RCPP
 }
 // RenegeIf__new_func
 SEXP RenegeIf__new_func(Function signal, int provide_attrs, std::vector<Environment> trj);
-RcppExport SEXP simmer_RenegeIf__new_func(SEXP signalSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP) {
+RcppExport SEXP _simmer_RenegeIf__new_func(SEXP signalSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -905,7 +905,7 @@ END_RCPP
 }
 // RenegeAbort__new
 SEXP RenegeAbort__new();
-RcppExport SEXP simmer_RenegeAbort__new() {
+RcppExport SEXP _simmer_RenegeAbort__new() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -915,7 +915,7 @@ END_RCPP
 }
 // Send__new
 SEXP Send__new(std::vector<std::string> signals, double delay);
-RcppExport SEXP simmer_Send__new(SEXP signalsSEXP, SEXP delaySEXP) {
+RcppExport SEXP _simmer_Send__new(SEXP signalsSEXP, SEXP delaySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -927,7 +927,7 @@ END_RCPP
 }
 // Send__new_func1
 SEXP Send__new_func1(Function signals, double delay, int provide_attrs);
-RcppExport SEXP simmer_Send__new_func1(SEXP signalsSEXP, SEXP delaySEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_Send__new_func1(SEXP signalsSEXP, SEXP delaySEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -940,7 +940,7 @@ END_RCPP
 }
 // Send__new_func2
 SEXP Send__new_func2(std::vector<std::string> signals, Function delay, int provide_attrs);
-RcppExport SEXP simmer_Send__new_func2(SEXP signalsSEXP, SEXP delaySEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_Send__new_func2(SEXP signalsSEXP, SEXP delaySEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -953,7 +953,7 @@ END_RCPP
 }
 // Send__new_func4
 SEXP Send__new_func4(Function signals, Function delay, std::vector<int> provide_attrs);
-RcppExport SEXP simmer_Send__new_func4(SEXP signalsSEXP, SEXP delaySEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_Send__new_func4(SEXP signalsSEXP, SEXP delaySEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -966,7 +966,7 @@ END_RCPP
 }
 // Trap__new
 SEXP Trap__new(std::vector<std::string> signals, std::vector<Environment> trj, bool interruptible);
-RcppExport SEXP simmer_Trap__new(SEXP signalsSEXP, SEXP trjSEXP, SEXP interruptibleSEXP) {
+RcppExport SEXP _simmer_Trap__new(SEXP signalsSEXP, SEXP trjSEXP, SEXP interruptibleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -979,7 +979,7 @@ END_RCPP
 }
 // Trap__new_func
 SEXP Trap__new_func(Function signals, int provide_attrs, std::vector<Environment> trj, bool interruptible);
-RcppExport SEXP simmer_Trap__new_func(SEXP signalsSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP, SEXP interruptibleSEXP) {
+RcppExport SEXP _simmer_Trap__new_func(SEXP signalsSEXP, SEXP provide_attrsSEXP, SEXP trjSEXP, SEXP interruptibleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -993,7 +993,7 @@ END_RCPP
 }
 // UnTrap__new
 SEXP UnTrap__new(std::vector<std::string> signals);
-RcppExport SEXP simmer_UnTrap__new(SEXP signalsSEXP) {
+RcppExport SEXP _simmer_UnTrap__new(SEXP signalsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1004,7 +1004,7 @@ END_RCPP
 }
 // UnTrap__new_func
 SEXP UnTrap__new_func(Function signals, int provide_attrs);
-RcppExport SEXP simmer_UnTrap__new_func(SEXP signalsSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_UnTrap__new_func(SEXP signalsSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1016,7 +1016,7 @@ END_RCPP
 }
 // Wait__new
 SEXP Wait__new();
-RcppExport SEXP simmer_Wait__new() {
+RcppExport SEXP _simmer_Wait__new() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1026,7 +1026,7 @@ END_RCPP
 }
 // Log__new
 SEXP Log__new(std::string message);
-RcppExport SEXP simmer_Log__new(SEXP messageSEXP) {
+RcppExport SEXP _simmer_Log__new(SEXP messageSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1037,7 +1037,7 @@ END_RCPP
 }
 // Log__new_func
 SEXP Log__new_func(Function message, int provide_attrs);
-RcppExport SEXP simmer_Log__new_func(SEXP messageSEXP, SEXP provide_attrsSEXP) {
+RcppExport SEXP _simmer_Log__new_func(SEXP messageSEXP, SEXP provide_attrsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1049,7 +1049,7 @@ END_RCPP
 }
 // activity_get_n_
 int activity_get_n_(SEXP activity_);
-RcppExport SEXP simmer_activity_get_n_(SEXP activity_SEXP) {
+RcppExport SEXP _simmer_activity_get_n_(SEXP activity_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1060,7 +1060,7 @@ END_RCPP
 }
 // activity_print_
 void activity_print_(SEXP activity_, int indent, bool verbose);
-RcppExport SEXP simmer_activity_print_(SEXP activity_SEXP, SEXP indentSEXP, SEXP verboseSEXP) {
+RcppExport SEXP _simmer_activity_print_(SEXP activity_SEXP, SEXP indentSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
@@ -1072,7 +1072,7 @@ END_RCPP
 }
 // activity_get_next_
 SEXP activity_get_next_(SEXP activity_);
-RcppExport SEXP simmer_activity_get_next_(SEXP activity_SEXP) {
+RcppExport SEXP _simmer_activity_get_next_(SEXP activity_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1083,7 +1083,7 @@ END_RCPP
 }
 // activity_get_prev_
 SEXP activity_get_prev_(SEXP activity_);
-RcppExport SEXP simmer_activity_get_prev_(SEXP activity_SEXP) {
+RcppExport SEXP _simmer_activity_get_prev_(SEXP activity_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1094,7 +1094,7 @@ END_RCPP
 }
 // activity_chain_
 void activity_chain_(SEXP first_, SEXP second_);
-RcppExport SEXP simmer_activity_chain_(SEXP first_SEXP, SEXP second_SEXP) {
+RcppExport SEXP _simmer_activity_chain_(SEXP first_SEXP, SEXP second_SEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type first_(first_SEXP);
@@ -1105,7 +1105,7 @@ END_RCPP
 }
 // activity_clone_
 SEXP activity_clone_(SEXP activity_);
-RcppExport SEXP simmer_activity_clone_(SEXP activity_SEXP) {
+RcppExport SEXP _simmer_activity_clone_(SEXP activity_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1116,95 +1116,95 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"simmer_Simulator__new", (DL_FUNC) &simmer_Simulator__new, 2},
-    {"simmer_reset_", (DL_FUNC) &simmer_reset_, 1},
-    {"simmer_now_", (DL_FUNC) &simmer_now_, 1},
-    {"simmer_peek_", (DL_FUNC) &simmer_peek_, 2},
-    {"simmer_step_", (DL_FUNC) &simmer_step_, 1},
-    {"simmer_run_", (DL_FUNC) &simmer_run_, 2},
-    {"simmer_add_generator_", (DL_FUNC) &simmer_add_generator_, 8},
-    {"simmer_add_resource_", (DL_FUNC) &simmer_add_resource_, 8},
-    {"simmer_add_resource_manager_", (DL_FUNC) &simmer_add_resource_manager_, 6},
-    {"simmer_get_mon_arrivals_", (DL_FUNC) &simmer_get_mon_arrivals_, 3},
-    {"simmer_get_mon_attributes_", (DL_FUNC) &simmer_get_mon_attributes_, 1},
-    {"simmer_get_mon_resources_", (DL_FUNC) &simmer_get_mon_resources_, 1},
-    {"simmer_get_mon_resources_counts_", (DL_FUNC) &simmer_get_mon_resources_counts_, 1},
-    {"simmer_get_mon_resources_limits_", (DL_FUNC) &simmer_get_mon_resources_limits_, 1},
-    {"simmer_get_n_generated_", (DL_FUNC) &simmer_get_n_generated_, 2},
-    {"simmer_get_name_", (DL_FUNC) &simmer_get_name_, 1},
-    {"simmer_get_attribute_", (DL_FUNC) &simmer_get_attribute_, 3},
-    {"simmer_get_prioritization_", (DL_FUNC) &simmer_get_prioritization_, 1},
-    {"simmer_get_capacity_", (DL_FUNC) &simmer_get_capacity_, 2},
-    {"simmer_get_queue_size_", (DL_FUNC) &simmer_get_queue_size_, 2},
-    {"simmer_get_server_count_", (DL_FUNC) &simmer_get_server_count_, 2},
-    {"simmer_get_queue_count_", (DL_FUNC) &simmer_get_queue_count_, 2},
-    {"simmer_Seize__new", (DL_FUNC) &simmer_Seize__new, 5},
-    {"simmer_Seize__new_func", (DL_FUNC) &simmer_Seize__new_func, 6},
-    {"simmer_SeizeSelected__new", (DL_FUNC) &simmer_SeizeSelected__new, 5},
-    {"simmer_SeizeSelected__new_func", (DL_FUNC) &simmer_SeizeSelected__new_func, 6},
-    {"simmer_Release__new", (DL_FUNC) &simmer_Release__new, 2},
-    {"simmer_Release__new_func", (DL_FUNC) &simmer_Release__new_func, 3},
-    {"simmer_ReleaseSelected__new", (DL_FUNC) &simmer_ReleaseSelected__new, 2},
-    {"simmer_ReleaseSelected__new_func", (DL_FUNC) &simmer_ReleaseSelected__new_func, 3},
-    {"simmer_SetCapacity__new", (DL_FUNC) &simmer_SetCapacity__new, 2},
-    {"simmer_SetCapacity__new_func", (DL_FUNC) &simmer_SetCapacity__new_func, 3},
-    {"simmer_SetCapacitySelected__new", (DL_FUNC) &simmer_SetCapacitySelected__new, 2},
-    {"simmer_SetCapacitySelected__new_func", (DL_FUNC) &simmer_SetCapacitySelected__new_func, 3},
-    {"simmer_SetQueue__new", (DL_FUNC) &simmer_SetQueue__new, 2},
-    {"simmer_SetQueue__new_func", (DL_FUNC) &simmer_SetQueue__new_func, 3},
-    {"simmer_SetQueueSelected__new", (DL_FUNC) &simmer_SetQueueSelected__new, 2},
-    {"simmer_SetQueueSelected__new_func", (DL_FUNC) &simmer_SetQueueSelected__new_func, 3},
-    {"simmer_Select__new", (DL_FUNC) &simmer_Select__new, 3},
-    {"simmer_Select__new_func", (DL_FUNC) &simmer_Select__new_func, 4},
-    {"simmer_SetAttribute__new", (DL_FUNC) &simmer_SetAttribute__new, 3},
-    {"simmer_SetAttribute__new_func", (DL_FUNC) &simmer_SetAttribute__new_func, 4},
-    {"simmer_Activate__new", (DL_FUNC) &simmer_Activate__new, 1},
-    {"simmer_Activate__new_func", (DL_FUNC) &simmer_Activate__new_func, 2},
-    {"simmer_Deactivate__new", (DL_FUNC) &simmer_Deactivate__new, 1},
-    {"simmer_Deactivate__new_func", (DL_FUNC) &simmer_Deactivate__new_func, 2},
-    {"simmer_SetTraj__new", (DL_FUNC) &simmer_SetTraj__new, 2},
-    {"simmer_SetTraj__new_func", (DL_FUNC) &simmer_SetTraj__new_func, 3},
-    {"simmer_SetDist__new", (DL_FUNC) &simmer_SetDist__new, 2},
-    {"simmer_SetDist__new_func", (DL_FUNC) &simmer_SetDist__new_func, 3},
-    {"simmer_SetPrior__new", (DL_FUNC) &simmer_SetPrior__new, 1},
-    {"simmer_SetPrior__new_func", (DL_FUNC) &simmer_SetPrior__new_func, 2},
-    {"simmer_Timeout__new", (DL_FUNC) &simmer_Timeout__new, 1},
-    {"simmer_Timeout__new_func", (DL_FUNC) &simmer_Timeout__new_func, 2},
-    {"simmer_Branch__new", (DL_FUNC) &simmer_Branch__new, 4},
-    {"simmer_Rollback__new", (DL_FUNC) &simmer_Rollback__new, 2},
-    {"simmer_Rollback__new_func", (DL_FUNC) &simmer_Rollback__new_func, 3},
-    {"simmer_Leave__new", (DL_FUNC) &simmer_Leave__new, 1},
-    {"simmer_Leave__new_func", (DL_FUNC) &simmer_Leave__new_func, 2},
-    {"simmer_Clone__new", (DL_FUNC) &simmer_Clone__new, 2},
-    {"simmer_Clone__new_func", (DL_FUNC) &simmer_Clone__new_func, 3},
-    {"simmer_Synchronize__new", (DL_FUNC) &simmer_Synchronize__new, 2},
-    {"simmer_Batch__new", (DL_FUNC) &simmer_Batch__new, 4},
-    {"simmer_Batch__new_func1", (DL_FUNC) &simmer_Batch__new_func1, 5},
-    {"simmer_Batch__new_func2", (DL_FUNC) &simmer_Batch__new_func2, 6},
-    {"simmer_Batch__new_func4", (DL_FUNC) &simmer_Batch__new_func4, 6},
-    {"simmer_Separate__new", (DL_FUNC) &simmer_Separate__new, 0},
-    {"simmer_RenegeIn__new", (DL_FUNC) &simmer_RenegeIn__new, 2},
-    {"simmer_RenegeIn__new_func", (DL_FUNC) &simmer_RenegeIn__new_func, 3},
-    {"simmer_RenegeIf__new", (DL_FUNC) &simmer_RenegeIf__new, 2},
-    {"simmer_RenegeIf__new_func", (DL_FUNC) &simmer_RenegeIf__new_func, 3},
-    {"simmer_RenegeAbort__new", (DL_FUNC) &simmer_RenegeAbort__new, 0},
-    {"simmer_Send__new", (DL_FUNC) &simmer_Send__new, 2},
-    {"simmer_Send__new_func1", (DL_FUNC) &simmer_Send__new_func1, 3},
-    {"simmer_Send__new_func2", (DL_FUNC) &simmer_Send__new_func2, 3},
-    {"simmer_Send__new_func4", (DL_FUNC) &simmer_Send__new_func4, 3},
-    {"simmer_Trap__new", (DL_FUNC) &simmer_Trap__new, 3},
-    {"simmer_Trap__new_func", (DL_FUNC) &simmer_Trap__new_func, 4},
-    {"simmer_UnTrap__new", (DL_FUNC) &simmer_UnTrap__new, 1},
-    {"simmer_UnTrap__new_func", (DL_FUNC) &simmer_UnTrap__new_func, 2},
-    {"simmer_Wait__new", (DL_FUNC) &simmer_Wait__new, 0},
-    {"simmer_Log__new", (DL_FUNC) &simmer_Log__new, 1},
-    {"simmer_Log__new_func", (DL_FUNC) &simmer_Log__new_func, 2},
-    {"simmer_activity_get_n_", (DL_FUNC) &simmer_activity_get_n_, 1},
-    {"simmer_activity_print_", (DL_FUNC) &simmer_activity_print_, 3},
-    {"simmer_activity_get_next_", (DL_FUNC) &simmer_activity_get_next_, 1},
-    {"simmer_activity_get_prev_", (DL_FUNC) &simmer_activity_get_prev_, 1},
-    {"simmer_activity_chain_", (DL_FUNC) &simmer_activity_chain_, 2},
-    {"simmer_activity_clone_", (DL_FUNC) &simmer_activity_clone_, 1},
+    {"_simmer_Simulator__new", (DL_FUNC) &_simmer_Simulator__new, 2},
+    {"_simmer_reset_", (DL_FUNC) &_simmer_reset_, 1},
+    {"_simmer_now_", (DL_FUNC) &_simmer_now_, 1},
+    {"_simmer_peek_", (DL_FUNC) &_simmer_peek_, 2},
+    {"_simmer_step_", (DL_FUNC) &_simmer_step_, 1},
+    {"_simmer_run_", (DL_FUNC) &_simmer_run_, 2},
+    {"_simmer_add_generator_", (DL_FUNC) &_simmer_add_generator_, 8},
+    {"_simmer_add_resource_", (DL_FUNC) &_simmer_add_resource_, 8},
+    {"_simmer_add_resource_manager_", (DL_FUNC) &_simmer_add_resource_manager_, 6},
+    {"_simmer_get_mon_arrivals_", (DL_FUNC) &_simmer_get_mon_arrivals_, 3},
+    {"_simmer_get_mon_attributes_", (DL_FUNC) &_simmer_get_mon_attributes_, 1},
+    {"_simmer_get_mon_resources_", (DL_FUNC) &_simmer_get_mon_resources_, 1},
+    {"_simmer_get_mon_resources_counts_", (DL_FUNC) &_simmer_get_mon_resources_counts_, 1},
+    {"_simmer_get_mon_resources_limits_", (DL_FUNC) &_simmer_get_mon_resources_limits_, 1},
+    {"_simmer_get_n_generated_", (DL_FUNC) &_simmer_get_n_generated_, 2},
+    {"_simmer_get_name_", (DL_FUNC) &_simmer_get_name_, 1},
+    {"_simmer_get_attribute_", (DL_FUNC) &_simmer_get_attribute_, 3},
+    {"_simmer_get_prioritization_", (DL_FUNC) &_simmer_get_prioritization_, 1},
+    {"_simmer_get_capacity_", (DL_FUNC) &_simmer_get_capacity_, 2},
+    {"_simmer_get_queue_size_", (DL_FUNC) &_simmer_get_queue_size_, 2},
+    {"_simmer_get_server_count_", (DL_FUNC) &_simmer_get_server_count_, 2},
+    {"_simmer_get_queue_count_", (DL_FUNC) &_simmer_get_queue_count_, 2},
+    {"_simmer_Seize__new", (DL_FUNC) &_simmer_Seize__new, 5},
+    {"_simmer_Seize__new_func", (DL_FUNC) &_simmer_Seize__new_func, 6},
+    {"_simmer_SeizeSelected__new", (DL_FUNC) &_simmer_SeizeSelected__new, 5},
+    {"_simmer_SeizeSelected__new_func", (DL_FUNC) &_simmer_SeizeSelected__new_func, 6},
+    {"_simmer_Release__new", (DL_FUNC) &_simmer_Release__new, 2},
+    {"_simmer_Release__new_func", (DL_FUNC) &_simmer_Release__new_func, 3},
+    {"_simmer_ReleaseSelected__new", (DL_FUNC) &_simmer_ReleaseSelected__new, 2},
+    {"_simmer_ReleaseSelected__new_func", (DL_FUNC) &_simmer_ReleaseSelected__new_func, 3},
+    {"_simmer_SetCapacity__new", (DL_FUNC) &_simmer_SetCapacity__new, 2},
+    {"_simmer_SetCapacity__new_func", (DL_FUNC) &_simmer_SetCapacity__new_func, 3},
+    {"_simmer_SetCapacitySelected__new", (DL_FUNC) &_simmer_SetCapacitySelected__new, 2},
+    {"_simmer_SetCapacitySelected__new_func", (DL_FUNC) &_simmer_SetCapacitySelected__new_func, 3},
+    {"_simmer_SetQueue__new", (DL_FUNC) &_simmer_SetQueue__new, 2},
+    {"_simmer_SetQueue__new_func", (DL_FUNC) &_simmer_SetQueue__new_func, 3},
+    {"_simmer_SetQueueSelected__new", (DL_FUNC) &_simmer_SetQueueSelected__new, 2},
+    {"_simmer_SetQueueSelected__new_func", (DL_FUNC) &_simmer_SetQueueSelected__new_func, 3},
+    {"_simmer_Select__new", (DL_FUNC) &_simmer_Select__new, 3},
+    {"_simmer_Select__new_func", (DL_FUNC) &_simmer_Select__new_func, 4},
+    {"_simmer_SetAttribute__new", (DL_FUNC) &_simmer_SetAttribute__new, 3},
+    {"_simmer_SetAttribute__new_func", (DL_FUNC) &_simmer_SetAttribute__new_func, 4},
+    {"_simmer_Activate__new", (DL_FUNC) &_simmer_Activate__new, 1},
+    {"_simmer_Activate__new_func", (DL_FUNC) &_simmer_Activate__new_func, 2},
+    {"_simmer_Deactivate__new", (DL_FUNC) &_simmer_Deactivate__new, 1},
+    {"_simmer_Deactivate__new_func", (DL_FUNC) &_simmer_Deactivate__new_func, 2},
+    {"_simmer_SetTraj__new", (DL_FUNC) &_simmer_SetTraj__new, 2},
+    {"_simmer_SetTraj__new_func", (DL_FUNC) &_simmer_SetTraj__new_func, 3},
+    {"_simmer_SetDist__new", (DL_FUNC) &_simmer_SetDist__new, 2},
+    {"_simmer_SetDist__new_func", (DL_FUNC) &_simmer_SetDist__new_func, 3},
+    {"_simmer_SetPrior__new", (DL_FUNC) &_simmer_SetPrior__new, 1},
+    {"_simmer_SetPrior__new_func", (DL_FUNC) &_simmer_SetPrior__new_func, 2},
+    {"_simmer_Timeout__new", (DL_FUNC) &_simmer_Timeout__new, 1},
+    {"_simmer_Timeout__new_func", (DL_FUNC) &_simmer_Timeout__new_func, 2},
+    {"_simmer_Branch__new", (DL_FUNC) &_simmer_Branch__new, 4},
+    {"_simmer_Rollback__new", (DL_FUNC) &_simmer_Rollback__new, 2},
+    {"_simmer_Rollback__new_func", (DL_FUNC) &_simmer_Rollback__new_func, 3},
+    {"_simmer_Leave__new", (DL_FUNC) &_simmer_Leave__new, 1},
+    {"_simmer_Leave__new_func", (DL_FUNC) &_simmer_Leave__new_func, 2},
+    {"_simmer_Clone__new", (DL_FUNC) &_simmer_Clone__new, 2},
+    {"_simmer_Clone__new_func", (DL_FUNC) &_simmer_Clone__new_func, 3},
+    {"_simmer_Synchronize__new", (DL_FUNC) &_simmer_Synchronize__new, 2},
+    {"_simmer_Batch__new", (DL_FUNC) &_simmer_Batch__new, 4},
+    {"_simmer_Batch__new_func1", (DL_FUNC) &_simmer_Batch__new_func1, 5},
+    {"_simmer_Batch__new_func2", (DL_FUNC) &_simmer_Batch__new_func2, 6},
+    {"_simmer_Batch__new_func4", (DL_FUNC) &_simmer_Batch__new_func4, 6},
+    {"_simmer_Separate__new", (DL_FUNC) &_simmer_Separate__new, 0},
+    {"_simmer_RenegeIn__new", (DL_FUNC) &_simmer_RenegeIn__new, 2},
+    {"_simmer_RenegeIn__new_func", (DL_FUNC) &_simmer_RenegeIn__new_func, 3},
+    {"_simmer_RenegeIf__new", (DL_FUNC) &_simmer_RenegeIf__new, 2},
+    {"_simmer_RenegeIf__new_func", (DL_FUNC) &_simmer_RenegeIf__new_func, 3},
+    {"_simmer_RenegeAbort__new", (DL_FUNC) &_simmer_RenegeAbort__new, 0},
+    {"_simmer_Send__new", (DL_FUNC) &_simmer_Send__new, 2},
+    {"_simmer_Send__new_func1", (DL_FUNC) &_simmer_Send__new_func1, 3},
+    {"_simmer_Send__new_func2", (DL_FUNC) &_simmer_Send__new_func2, 3},
+    {"_simmer_Send__new_func4", (DL_FUNC) &_simmer_Send__new_func4, 3},
+    {"_simmer_Trap__new", (DL_FUNC) &_simmer_Trap__new, 3},
+    {"_simmer_Trap__new_func", (DL_FUNC) &_simmer_Trap__new_func, 4},
+    {"_simmer_UnTrap__new", (DL_FUNC) &_simmer_UnTrap__new, 1},
+    {"_simmer_UnTrap__new_func", (DL_FUNC) &_simmer_UnTrap__new_func, 2},
+    {"_simmer_Wait__new", (DL_FUNC) &_simmer_Wait__new, 0},
+    {"_simmer_Log__new", (DL_FUNC) &_simmer_Log__new, 1},
+    {"_simmer_Log__new_func", (DL_FUNC) &_simmer_Log__new_func, 2},
+    {"_simmer_activity_get_n_", (DL_FUNC) &_simmer_activity_get_n_, 1},
+    {"_simmer_activity_print_", (DL_FUNC) &_simmer_activity_print_, 3},
+    {"_simmer_activity_get_next_", (DL_FUNC) &_simmer_activity_get_next_, 1},
+    {"_simmer_activity_get_prev_", (DL_FUNC) &_simmer_activity_get_prev_, 1},
+    {"_simmer_activity_chain_", (DL_FUNC) &_simmer_activity_chain_, 2},
+    {"_simmer_activity_clone_", (DL_FUNC) &_simmer_activity_clone_, 1},
     {NULL, NULL, 0}
 };
 
