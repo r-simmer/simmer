@@ -1,5 +1,5 @@
 language: R
-sudo: false
+sudo: true
 latex: false
 cache: packages
 r:
