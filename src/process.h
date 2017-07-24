@@ -164,7 +164,7 @@ public:
   typedef UMAP<int, Resource*> SelMap;
   typedef MSET<Resource*> ResMSet;
 
-  CLONEABLE_COUNT(Arrival)
+  CLONEABLE(Arrival)
 
   Order order;        /**< priority, preemptible, restart */
 
@@ -178,11 +178,14 @@ public:
   */
   Arrival(Simulator* sim, std::string name, int mon, Order order,
           Activity* first_activity, int priority = 0)
-    : Process(sim, name, mon, priority), clones(new int(1)), order(order),
+    : Process(sim, name, mon, priority), order(order), clones(new int(1)),
       activity(first_activity), timer(NULL), batch(NULL) {}
 
   Arrival(const Arrival& o)
-    : Process(o), clones(o.clones), order(o.order), activity(NULL), timer(NULL), batch(NULL) {}
+    : Process(o), order(o.order), clones(o.clones), activity(NULL), timer(NULL), batch(NULL)
+  {
+    (*clones)++;
+  }
 
   ~Arrival() { reset(); }
 
@@ -195,6 +198,7 @@ public:
   virtual void set_attribute(std::string key, double value);
   double get_start(std::string name);
 
+  int get_clones() const { return *clones; }
   double get_remaining() const { return status.remaining; }
   void set_activity(Activity* ptr) { activity = ptr; }
   double get_start() const { return lifetime.start; }
@@ -230,6 +234,7 @@ public:
   void cancel_renege();
 
 protected:
+  int* clones;          /**< number of active clones */
   ArrStatus status;     /**< arrival timing status */
   ArrTime lifetime;     /**< time spent in the whole trajectory */
   ResTime restime;      /**< time spent in resources */
@@ -278,7 +283,7 @@ protected:
  */
 class Batched : public Arrival {
 public:
-  CLONEABLE_COUNT_DERIVED(Batched)
+  CLONEABLE(Batched)
 
   Batched(Simulator* sim, std::string name, bool permanent, int priority = 0)
     : Arrival(sim, name, true, Order(), NULL, priority), permanent(permanent) {}

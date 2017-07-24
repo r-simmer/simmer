@@ -509,9 +509,9 @@ SEXP Log__new_func(Function message, int provide_attrs) {
 }
 
 //[[Rcpp::export]]
-int activity_get_n_(SEXP activity_) {
+int activity_get_count_(SEXP activity_) {
   XPtr<Activity> activity(activity_);
-  return activity->n;
+  return activity->count;
 }
 
 //[[Rcpp::export]]

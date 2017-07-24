@@ -50,7 +50,7 @@ public:
    * @param verbose verbose flag
    */
   Simulator(std::string name, bool verbose)
-    : name(name), verbose(verbose), now_(0), b_count(0) {}
+    : name(name), verbose(verbose), now_(0), process_(NULL), b_count(0) {}
 
   ~Simulator() {
     foreach_ (EntMap::value_type& itr, resource_map)
@@ -71,14 +71,14 @@ public:
   void reset() {
     now_ = 0;
     foreach_ (EntMap::value_type& itr, resource_map)
-      ((Resource*)itr.second)->reset();
+      static_cast<Resource*>(itr.second)->reset();
     foreach_ (PQueue::value_type& itr, event_queue)
       if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
     event_queue.clear();
     event_map.clear();
     foreach_ (EntMap::value_type& itr, process_map) {
-      ((Process*)itr.second)->reset();
-      ((Process*)itr.second)->activate();
+      static_cast<Process*>(itr.second)->reset();
+      static_cast<Process*>(itr.second)->activate();
     }
     foreach_ (NamBMap::value_type& itr, namedb_map)
       if (itr.second) delete itr.second;
@@ -237,7 +237,7 @@ public:
     EntMap::iterator search = resource_map.find(name);
     if (search == resource_map.end())
       Rcpp::stop("resource '%s' not found (typo?)", name);
-    Resource* res = (Resource*)search->second;
+    Resource* res = static_cast<Resource*>(search->second);
     Manager* manager;
     if (param.compare("capacity") == 0)
       manager = new Manager(this, name, param, duration, value, period,
@@ -257,7 +257,7 @@ public:
     EntMap::const_iterator search = process_map.find(name);
     if (search == process_map.end())
       Rcpp::stop("generator '%s' not found (typo?)", name);
-    return (Generator*)search->second;
+    return static_cast<Generator*>(search->second);
   }
 
   /**
@@ -267,13 +267,14 @@ public:
     EntMap::const_iterator search = resource_map.find(name);
     if (search == resource_map.end())
       Rcpp::stop("resource '%s' not found (typo?)", name);
-    return (Resource*)search->second;
+    return static_cast<Resource*>(search->second);
   }
 
   Arrival* get_running_arrival() const {
-    if (!dynamic_cast<Arrival*>(process_))
+    Arrival* arrival = dynamic_cast<Arrival*>(process_);
+    if (!arrival)
       Rcpp::stop("there is no arrival running");
-    return (Arrival*)process_;
+    return arrival;
   }
 
   Batched** get_batch(Activity* ptr, std::string id) {
