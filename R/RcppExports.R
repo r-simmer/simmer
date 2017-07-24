@@ -333,8 +333,8 @@ Log__new_func <- function(message, provide_attrs) {
     .Call(`_simmer_Log__new_func`, message, provide_attrs)
 }
 
-activity_get_n_ <- function(activity_) {
-    .Call(`_simmer_activity_get_n_`, activity_)
+activity_get_count_ <- function(activity_) {
+    .Call(`_simmer_activity_get_count_`, activity_)
 }
 
 activity_print_ <- function(activity_, indent, verbose) {

@@ -27,7 +27,7 @@ Trajectory <- R6Class("trajectory",
       if (length(parts)) {
         ptrs <- sapply(parts, function(i) {
           new_ptr <- activity_clone_(private$ptrs[[i]])
-          n_activities <<- n_activities + activity_get_n_(new_ptr)
+          n_activities <<- n_activities + activity_get_count_(new_ptr)
           new_ptr
         })
         mapply(function(i, j) activity_chain_(i, j), ptrs[-length(ptrs)], ptrs[-1])
@@ -345,7 +345,7 @@ Trajectory <- R6Class("trajectory",
         activity_chain_(self$tail(), activity)
       private$ptrs <- c(private$ptrs, activity)
       private$names <- c(private$names, caller)
-      private$n_activities <- private$n_activities + activity_get_n_(activity)
+      private$n_activities <- private$n_activities + activity_get_count_(activity)
       self
     },
 

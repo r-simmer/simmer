@@ -20,7 +20,7 @@ public:
 
   std::string name;
   VEC<int> provide_attrs;
-  int n;
+  int count;
   int priority;
 
   /**
@@ -31,11 +31,11 @@ public:
    * @param priority      simulation priority
    */
   Activity(std::string name, VEC<int> provide_attrs = VEC<int>(0), int priority = 0)
-    : name(name), provide_attrs(provide_attrs), n(1),
+    : name(name), provide_attrs(provide_attrs), count(1),
       priority(priority), next(NULL), prev(NULL) {}
 
   Activity(const Activity& o)
-    : name(o.name), provide_attrs(o.provide_attrs), n(o.n),
+    : name(o.name), provide_attrs(o.provide_attrs), count(o.count),
       priority(o.priority), next(NULL), prev(NULL) {}
 
   virtual ~Activity() {}
@@ -108,7 +108,7 @@ public:
       heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(head()));
       tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(tail()));
       Rcpp::Function get_n_activities(itr["get_n_activities"]);
-      n += Rcpp::as<int>(get_n_activities());
+      count += Rcpp::as<int>(get_n_activities());
     }
     foreach_ (const VEC<Activity*>::value_type& itr, heads)
       itr->set_prev(this);
@@ -770,15 +770,15 @@ public:
     if (!wait) {
       UMAP<std::string, int>::iterator search = pending.find(arrival->name);
       if (search == pending.end()) {
-        if (*(arrival->clones) > 1)
-          pending.emplace(arrival->name, *(arrival->clones)-1);
+        if (arrival->get_clones() > 1)
+          pending.emplace(arrival->name, arrival->get_clones()-1);
         return 0;
       } else {
         search->second--;
         if (!search->second)
           pending.erase(search);
       }
-    } else if (*(arrival->clones) == 1)
+    } else if (arrival->get_clones() == 1)
       return 0;
 
     if (!terminate)

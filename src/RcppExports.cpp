@@ -1047,14 +1047,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// activity_get_n_
-int activity_get_n_(SEXP activity_);
-RcppExport SEXP _simmer_activity_get_n_(SEXP activity_SEXP) {
+// activity_get_count_
+int activity_get_count_(SEXP activity_);
+RcppExport SEXP _simmer_activity_get_count_(SEXP activity_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
-    rcpp_result_gen = Rcpp::wrap(activity_get_n_(activity_));
+    rcpp_result_gen = Rcpp::wrap(activity_get_count_(activity_));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1199,7 +1199,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_Wait__new", (DL_FUNC) &_simmer_Wait__new, 0},
     {"_simmer_Log__new", (DL_FUNC) &_simmer_Log__new, 1},
     {"_simmer_Log__new_func", (DL_FUNC) &_simmer_Log__new_func, 2},
-    {"_simmer_activity_get_n_", (DL_FUNC) &_simmer_activity_get_n_, 1},
+    {"_simmer_activity_get_count_", (DL_FUNC) &_simmer_activity_get_count_, 1},
     {"_simmer_activity_print_", (DL_FUNC) &_simmer_activity_print_, 3},
     {"_simmer_activity_get_next_", (DL_FUNC) &_simmer_activity_get_next_, 1},
     {"_simmer_activity_get_prev_", (DL_FUNC) &_simmer_activity_get_prev_, 1},
