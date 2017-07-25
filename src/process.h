@@ -118,9 +118,7 @@ public:
    */
   void reset() {
     count = 0;
-    Rcpp::Environment dist_env(dist.environment());
-    Rcpp::Environment reset_env(dist_env[".reset"]);
-    Rcpp::Function reset_fun(reset_env["reset"]);
+    Rcpp::Function reset_fun(dist.attr("reset"));
     reset_fun();
   }
 

@@ -82,17 +82,33 @@ test_that("envs_apply works", {
 
 test_that("a function can be reset", {
   env <- new.env()
-  env$i <- 0
+  env$.i <- 0
   func <- function() {
-    i <<- i + 1
-    i
+    j <<- 3
+    .i <<- .i + 1
+    .i
   }
   environment(func) <- env
   resetable <- make_resetable(func)
   expect_equal(resetable(), 1)
   expect_equal(resetable(), 2)
   expect_equal(resetable(), 3)
-  environment(resetable)$.reset$reset()
+  attr(resetable, "reset")()
+  expect_equal(resetable(), 1)
+  expect_equal(resetable(), 2)
+  expect_equal(resetable(), 3)
+
+  .i <- 0
+  func <- function() {
+    j <<- 3
+    .i <<- .i + 1
+    .i
+  }
+  resetable <- make_resetable(func)
+  expect_equal(resetable(), 1)
+  expect_equal(resetable(), 2)
+  expect_equal(resetable(), 3)
+  attr(resetable, "reset")()
   expect_equal(resetable(), 1)
   expect_equal(resetable(), 2)
   expect_equal(resetable(), 3)
