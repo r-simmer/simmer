@@ -12,8 +12,10 @@
 
 ## Minor changes and fixes:
 
+* Some code refactoring (2f4b484, ffafe1e, f16912a).
 * Use `Rcpp::DataFrame` instead of `Rcpp::List` (#104).
 * Improve argument parsing and error messages (#107).
+* Improve internal function `make_resetable()` (c596f73).
 
 # simmer 3.6.2
 
