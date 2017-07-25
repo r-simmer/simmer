@@ -30,6 +30,8 @@ system.time({
     add_generator("customer", mm1, function() rexp(100, 60), mon=F) %>%
     run(10000, progress=progress::progress_bar$new()$update)
 })
-# 16 seconds (Simpy: 30 seconds)
+# (Simpy: 30 seconds)
+# 16 seconds with R 3.3.x
+# 19.5 seconds with R 3.4.x (!?)
 
 plot(env, "res", "usage", "server")

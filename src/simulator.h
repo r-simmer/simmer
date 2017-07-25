@@ -390,7 +390,7 @@ public:
       Rcpp::LogicalVector finished      = Rcpp::wrap(mon_arr_traj.get<bool>("finished"));
       if (ongoing) {
         foreach_ (const ArrMap::value_type& itr, arrival_map) {
-          if (!itr.first->is_monitored())
+          if (dynamic_cast<Batched*>(itr.first) || !itr.first->is_monitored())
             continue;
           name.push_back(itr.first->name);
           start_time.push_back(itr.first->get_start());
@@ -415,7 +415,7 @@ public:
       VEC<std::string> resource         = mon_arr_res.get<std::string>("resource");
       if (ongoing) {
         foreach_ (const ArrMap::value_type& itr1, arrival_map) {
-          if (!itr1.first->is_monitored())
+          if (dynamic_cast<Batched*>(itr1.first) || !itr1.first->is_monitored())
             continue;
           foreach_ (const EntMap::value_type& itr2, resource_map) {
             double start = itr1.first->get_start(itr2.second->name);
