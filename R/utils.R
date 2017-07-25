@@ -64,11 +64,10 @@ check_args <- function(..., types, n=1, env=parent.frame()) {
 }
 
 needs_attrs <- function(variable) {
-  if (is.function(variable)) {
-    args <- length(formals(variable))
-    if (args) .Deprecated(msg="Attribute retrieval through function arguments is deprecated.\nUse 'get_attribute' instead.")
-    args
-  } else 0
+  args <- length(formals(variable))
+  if (args)
+    .Deprecated(msg="Attribute retrieval through function arguments is deprecated.\nUse 'get_attribute' instead.") # nocov
+  args
 }
 
 envs_apply <- function(envs, method, ...) {
@@ -85,7 +84,7 @@ envs_apply <- function(envs, method, ...) {
 
 make_resetable <- function(distribution) {
   if (identical(environment(distribution), .GlobalEnv))
-    environment(distribution) <- new.env(parent = environment(distribution))
+    environment(distribution) <- new.env(parent = environment(distribution)) # nocov
   init <- as.list(environment(distribution))
   environment(distribution)$.reset <- new.env(parent = environment(distribution))
   environment(distribution)$.reset$init <- init

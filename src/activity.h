@@ -84,11 +84,11 @@ protected:
   template <typename T>
   T get(Rcpp::Function call, int index, Arrival* arrival) const {
     switch (provide_attrs[index]) {
-    case 1:
+    case 1: // # nocov start
       return Rcpp::as<T>(call(*arrival->get_attributes()));
     case 2:
       return Rcpp::as<T>(call(*arrival->get_attributes(),
-                              *arrival->sim->get_attributes()));
+                              *arrival->sim->get_attributes())); // # nocov end
     default:
       return Rcpp::as<T>(call());
     }

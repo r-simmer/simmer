@@ -211,6 +211,7 @@ test_that("special cases subsetting with [ works as expected", {
   test <- t1[NA]
   expect_equal(length(test), 0)
   expect_equal(get_n_activities(test), 0)
+  expect_error(t1[t1])
 })
 
 test_that("special cases replacing with [ works as expected", {
