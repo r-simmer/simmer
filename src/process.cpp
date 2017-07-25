@@ -45,12 +45,11 @@ void Generator::run() {
       (sim->now() + delay) << std::endl;
 
     // schedule the arrival
-    sim->register_arrival(arrival);
     sim->schedule(delay, arrival,
                   first_activity->priority ? first_activity->priority : count);
   }
   // schedule the generator
-  activate(delay);
+  sim->schedule(delay, this, priority);
 }
 
 void Manager::run() {
@@ -68,7 +67,7 @@ void Manager::run() {
     index = 1;
   }
 
-  activate();
+  sim->schedule(duration[index], this, priority);
 end:
   return;
 }
@@ -81,6 +80,11 @@ void Task::run() {
 
   task();
   delete this;
+}
+
+void Arrival::init() {
+  (*clones)++;
+  sim->register_arrival(this);
 }
 
 void Arrival::reset() {

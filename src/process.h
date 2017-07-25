@@ -178,18 +178,15 @@ public:
   */
   Arrival(Simulator* sim, std::string name, int mon, Order order,
           Activity* first_activity, int priority = 0)
-    : Process(sim, name, mon, priority), order(order), clones(new int(1)),
-      activity(first_activity), timer(NULL), batch(NULL) {}
+    : Process(sim, name, mon, priority), order(order), clones(new int(0)),
+      activity(first_activity), timer(NULL), batch(NULL) { init(); }
 
   Arrival(const Arrival& o)
-    : Process(o), order(o.order), clones(o.clones), activity(NULL), timer(NULL), batch(NULL)
-  {
-    (*clones)++;
-  }
+    : Process(o), order(o.order), clones(o.clones), activity(NULL),
+      timer(NULL), batch(NULL) { init(); }
 
   ~Arrival() { reset(); }
 
-  void reset();
   void run();
   void restart();
   void pause();
@@ -246,6 +243,8 @@ protected:
   Batched* batch;       /**< batch that contains this arrival */
   ResMSet resources;    /**< resources that contain this arrival */
 
+  void init();
+  void reset();
   void renege(Activity* next);
   virtual void report(std::string resource) const;
   virtual void report(std::string resource, double start, double activity) const;
@@ -297,12 +296,6 @@ public:
 
   ~Batched() { reset(); }
 
-  void reset() {
-    foreach_ (Arrival* arrival, arrivals)
-      delete arrival;
-    arrivals.clear();
-  }
-
   void terminate(bool finished);
 
   void pop_all(Activity* next) {
@@ -329,6 +322,12 @@ public:
 protected:
   VEC<Arrival*> arrivals;
   bool permanent;
+
+  void reset() {
+    foreach_ (Arrival* arrival, arrivals)
+      delete arrival;
+    arrivals.clear();
+  }
 
   void report(std::string resource) const {
     foreach_ (const Arrival* arrival, arrivals) {
