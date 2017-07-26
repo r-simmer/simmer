@@ -12,7 +12,7 @@
 
 ## Minor changes and fixes:
 
-* Some code refactoring (2f4b484, ffafe1e, f16912a, fb7941b).
+* Some code refactoring and performance improvements (2f4b484, ffafe1e, f16912a, fb7941b, 2783cd8).
 * Use `Rcpp::DataFrame` instead of `Rcpp::List` (#104).
 * Improve argument parsing and error messages (#107).
 * Improve internal function `make_resetable()` (c596f73).
