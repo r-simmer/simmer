@@ -9,7 +9,7 @@
 using namespace Rcpp;
 
 //[[Rcpp::export]]
-SEXP Simulator__new(std::string name, bool verbose) {
+SEXP Simulator__new(const std::string& name, bool verbose) {
   return XPtr<Simulator>(new Simulator(name, verbose));
 }
 
@@ -44,24 +44,24 @@ void run_(SEXP sim_, double until) {
 }
 
 //[[Rcpp::export]]
-bool add_generator_(SEXP sim_, std::string name_prefix, Environment trj,
-                    Function dist, int mon, int priority, int preemptible, bool restart)
+bool add_generator_(SEXP sim_, const std::string& name_prefix, const Environment& trj,
+                    const Function& dist, int mon, int priority, int preemptible, bool restart)
 {
   XPtr<Simulator> sim(sim_);
   return sim->add_generator(name_prefix, trj, dist, mon, priority, preemptible, restart);
 }
 
 //[[Rcpp::export]]
-bool add_resource_(SEXP sim_, std::string name, int capacity, int queue_size, bool mon,
-                   bool preemptive, std::string preempt_order, bool queue_size_strict)
+bool add_resource_(SEXP sim_, const std::string& name, int capacity, int queue_size, bool mon,
+                   bool preemptive, const std::string& preempt_order, bool queue_size_strict)
 {
   XPtr<Simulator> sim(sim_);
   return sim->add_resource(name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict);
 }
 
 //[[Rcpp::export]]
-bool add_resource_manager_(SEXP sim_, std::string name, std::string param,
-                           std::vector<double> intervals, std::vector<int> values, int period)
+bool add_resource_manager_(SEXP sim_, const std::string& name, const std::string& param,
+                           const std::vector<double>& intervals, const std::vector<int>& values, int period)
 {
   XPtr<Simulator> sim(sim_);
   return sim->add_resource_manager(name, param, intervals, values, period);
@@ -98,7 +98,7 @@ DataFrame get_mon_resources_limits_(SEXP sim_) {
 }
 
 //[[Rcpp::export]]
-int get_n_generated_(SEXP sim_, std::string name) {
+int get_n_generated_(SEXP sim_, const std::string& name) {
   XPtr<Simulator> sim(sim_);
   return sim->get_generator(name)->get_n_generated();
 }
@@ -110,7 +110,7 @@ std::string get_name_(SEXP sim_) {
 }
 
 //[[Rcpp::export]]
-double get_attribute_(SEXP sim_, std::string key, bool global) {
+double get_attribute_(SEXP sim_, const std::string& key, bool global) {
   XPtr<Simulator> sim(sim_);
   if (global) return sim->get_attribute(key);
   else return sim->get_running_arrival()->get_attribute(key);
@@ -126,39 +126,39 @@ IntegerVector get_prioritization_(SEXP sim_) {
 }
 
 //[[Rcpp::export]]
-int get_capacity_(SEXP sim_, std::string name) {
+int get_capacity_(SEXP sim_, const std::string& name) {
   XPtr<Simulator> sim(sim_);
   return sim->get_resource(name)->get_capacity();
 }
 
 //[[Rcpp::export]]
-int get_queue_size_(SEXP sim_, std::string name) {
+int get_queue_size_(SEXP sim_, const std::string& name) {
   XPtr<Simulator> sim(sim_);
   return sim->get_resource(name)->get_queue_size();
 }
 
 //[[Rcpp::export]]
-int get_server_count_(SEXP sim_, std::string name) {
+int get_server_count_(SEXP sim_, const std::string& name) {
   XPtr<Simulator> sim(sim_);
   return sim->get_resource(name)->get_server_count();
 }
 
 //[[Rcpp::export]]
-int get_queue_count_(SEXP sim_, std::string name) {
+int get_queue_count_(SEXP sim_, const std::string& name) {
   XPtr<Simulator> sim(sim_);
   return sim->get_resource(name)->get_queue_count();
 }
 
 //[[Rcpp::export]]
-SEXP Seize__new(std::string resource, int amount,
-                std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask)
+SEXP Seize__new(const std::string& resource, int amount,
+                std::vector<bool> cont, const std::vector<Environment>& trj, unsigned short mask)
 {
   return XPtr<Seize<int> >(new Seize<int>(resource, amount, 0, cont, trj, mask));
 }
 
 //[[Rcpp::export]]
-SEXP Seize__new_func(std::string resource, Function amount, int provide_attrs,
-                     std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask)
+SEXP Seize__new_func(const std::string& resource, const Function& amount, int provide_attrs,
+                     std::vector<bool> cont, const std::vector<Environment>& trj, unsigned short mask)
 {
   return XPtr<Seize<Function> >(
       new Seize<Function>(resource, amount, provide_attrs, cont, trj, mask));
@@ -166,25 +166,25 @@ SEXP Seize__new_func(std::string resource, Function amount, int provide_attrs,
 
 //[[Rcpp::export]]
 SEXP SeizeSelected__new(int id, int amount,
-                        std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask)
+                        std::vector<bool> cont, const std::vector<Environment>& trj, unsigned short mask)
 {
   return XPtr<Seize<int> >(new Seize<int>(id, amount, 0, cont, trj, mask));
 }
 
 //[[Rcpp::export]]
-SEXP SeizeSelected__new_func(int id, Function amount, int provide_attrs,
-                             std::vector<bool> cont, std::vector<Environment> trj, unsigned short mask)
+SEXP SeizeSelected__new_func(int id, const Function& amount, int provide_attrs,
+                             std::vector<bool> cont, const std::vector<Environment>& trj, unsigned short mask)
 {
   return XPtr<Seize<Function> >(new Seize<Function>(id, amount, provide_attrs, cont, trj, mask));
 }
 
 //[[Rcpp::export]]
-SEXP Release__new(std::string resource, int amount) {
+SEXP Release__new(const std::string& resource, int amount) {
   return XPtr<Release<int> >(new Release<int>(resource, amount, 0));
 }
 
 //[[Rcpp::export]]
-SEXP Release__new_func(std::string resource, Function amount, int provide_attrs) {
+SEXP Release__new_func(const std::string& resource, const Function& amount, int provide_attrs) {
   return XPtr<Release<Function> >(new Release<Function>(resource, amount, provide_attrs));
 }
 
@@ -194,17 +194,17 @@ SEXP ReleaseSelected__new(int id, int amount) {
 }
 
 //[[Rcpp::export]]
-SEXP ReleaseSelected__new_func(int id, Function amount, int provide_attrs) {
+SEXP ReleaseSelected__new_func(int id, const Function& amount, int provide_attrs) {
   return XPtr<Release<Function> >(new Release<Function>(id, amount, provide_attrs));
 }
 
 //[[Rcpp::export]]
-SEXP SetCapacity__new(std::string resource, double value) {
+SEXP SetCapacity__new(const std::string& resource, double value) {
   return XPtr<SetCapacity<double> >(new SetCapacity<double>(resource, value, 0));
 }
 
 //[[Rcpp::export]]
-SEXP SetCapacity__new_func(std::string resource, Function value, int provide_attrs) {
+SEXP SetCapacity__new_func(const std::string& resource, const Function& value, int provide_attrs) {
   return XPtr<SetCapacity<Function> >(
       new SetCapacity<Function>(resource, value, provide_attrs));
 }
@@ -215,18 +215,18 @@ SEXP SetCapacitySelected__new(int id, double value) {
 }
 
 //[[Rcpp::export]]
-SEXP SetCapacitySelected__new_func(int id, Function value, int provide_attrs) {
+SEXP SetCapacitySelected__new_func(int id, const Function& value, int provide_attrs) {
   return XPtr<SetCapacity<Function> >(
       new SetCapacity<Function>(id, value, provide_attrs));
 }
 
 //[[Rcpp::export]]
-SEXP SetQueue__new(std::string resource, double value) {
+SEXP SetQueue__new(const std::string& resource, double value) {
   return XPtr<SetQueue<double> >(new SetQueue<double>(resource, value, 0));
 }
 
 //[[Rcpp::export]]
-SEXP SetQueue__new_func(std::string resource, Function value, int provide_attrs) {
+SEXP SetQueue__new_func(const std::string& resource, const Function& value, int provide_attrs) {
   return XPtr<SetQueue<Function> >(
       new SetQueue<Function>(resource, value, provide_attrs));
 }
@@ -237,85 +237,85 @@ SEXP SetQueueSelected__new(int id, double value) {
 }
 
 //[[Rcpp::export]]
-SEXP SetQueueSelected__new_func(int id, Function value, int provide_attrs) {
+SEXP SetQueueSelected__new_func(int id, const Function& value, int provide_attrs) {
   return XPtr<SetQueue<Function> >(new SetQueue<Function>(id, value, provide_attrs));
 }
 
 //[[Rcpp::export]]
-SEXP Select__new(std::vector<std::string> resources, std::string policy, int id) {
+SEXP Select__new(const std::vector<std::string>& resources, const std::string& policy, int id) {
   return XPtr<Select<VEC<std::string> > >(
       new Select<VEC<std::string> >(resources, 0, policy, id));
 }
 
 //[[Rcpp::export]]
-SEXP Select__new_func(Function resources, int provide_attrs, std::string policy, int id) {
+SEXP Select__new_func(const Function& resources, int provide_attrs, const std::string& policy, int id) {
   return XPtr<Select<Function> >(
       new Select<Function>(resources, provide_attrs, policy, id));
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new(std::string key, double value, bool global) {
+SEXP SetAttribute__new(const std::string& key, double value, bool global) {
   return XPtr<SetAttribute<double> >(new SetAttribute<double>(key, value, 0, global));
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new_func(std::string key,
-                            Function value, int provide_attrs, bool global) {
+SEXP SetAttribute__new_func(const std::string& key,
+                            const Function& value, int provide_attrs, bool global) {
   return XPtr<SetAttribute<Function> >(
       new SetAttribute<Function>(key, value, provide_attrs, global));
 }
 
 //[[Rcpp::export]]
-SEXP Activate__new(std::string generator) {
+SEXP Activate__new(const std::string& generator) {
   return XPtr<Activate<std::string> >(new Activate<std::string>(generator, 0));
 }
 
 //[[Rcpp::export]]
-SEXP Activate__new_func(Function generator, int provide_attrs) {
+SEXP Activate__new_func(const Function& generator, int provide_attrs) {
   return XPtr<Activate<Function> >(
       new Activate<Function>(generator, provide_attrs));
 }
 
 //[[Rcpp::export]]
-SEXP Deactivate__new(std::string generator) {
+SEXP Deactivate__new(const std::string& generator) {
   return XPtr<Deactivate<std::string> >(new Deactivate<std::string>(generator, 0));
 }
 
 //[[Rcpp::export]]
-SEXP Deactivate__new_func(Function generator, int provide_attrs) {
+SEXP Deactivate__new_func(const Function& generator, int provide_attrs) {
   return XPtr<Deactivate<Function> >(
       new Deactivate<Function>(generator, provide_attrs));
 }
 
 //[[Rcpp::export]]
-SEXP SetTraj__new(std::string generator, Environment trj) {
+SEXP SetTraj__new(const std::string& generator, const Environment& trj) {
   return XPtr<SetTraj<std::string> >(new SetTraj<std::string>(generator, 0, trj));
 }
 
 //[[Rcpp::export]]
-SEXP SetTraj__new_func(Function generator, int provide_attrs, Environment trj) {
+SEXP SetTraj__new_func(const Function& generator, int provide_attrs, const Environment& trj) {
   return XPtr<SetTraj<Function> >(
       new SetTraj<Function>(generator, provide_attrs, trj));
 }
 
 //[[Rcpp::export]]
-SEXP SetDist__new(std::string generator, Function dist) {
+SEXP SetDist__new(const std::string& generator, const Function& dist) {
   return XPtr<SetDist<std::string> >(new SetDist<std::string>(generator, 0, dist));
 }
 
 //[[Rcpp::export]]
-SEXP SetDist__new_func(Function generator, int provide_attrs, Function dist) {
+SEXP SetDist__new_func(const Function& generator, int provide_attrs, const Function& dist) {
   return XPtr<SetDist<Function> >(
       new SetDist<Function>(generator, provide_attrs, dist));
 }
 
 //[[Rcpp::export]]
-SEXP SetPrior__new(std::vector<int> values) {
+SEXP SetPrior__new(const std::vector<int>& values) {
   return XPtr<SetPrior<VEC<int> > >(new SetPrior<VEC<int> >(values, 0));
 }
 
 //[[Rcpp::export]]
-SEXP SetPrior__new_func(Function values, int provide_attrs) {
+SEXP SetPrior__new_func(const Function& values, int provide_attrs) {
   return XPtr<SetPrior<Function> >(new SetPrior<Function>(values, provide_attrs));
 }
 
@@ -325,13 +325,13 @@ SEXP Timeout__new(double delay) {
 }
 
 //[[Rcpp::export]]
-SEXP Timeout__new_func(Function task, int provide_attrs) {
+SEXP Timeout__new_func(const Function& task, int provide_attrs) {
   return XPtr<Timeout<Function> >(new Timeout<Function>(task, provide_attrs));
 }
 
 //[[Rcpp::export]]
-SEXP Branch__new(Function option, int provide_attrs,
-                 std::vector<bool> cont, std::vector<Environment> trj)
+SEXP Branch__new(const Function& option, int provide_attrs,
+                 std::vector<bool> cont, const std::vector<Environment>& trj)
 {
   return XPtr<Branch>(new Branch(option, provide_attrs, cont, trj));
 }
@@ -342,7 +342,7 @@ SEXP Rollback__new(int amount, int times) {
 }
 
 //[[Rcpp::export]]
-SEXP Rollback__new_func(int amount, Function check, int provide_attrs) {
+SEXP Rollback__new_func(int amount, const Function& check, int provide_attrs) {
   return XPtr<Rollback>(new Rollback(amount, 0, check, provide_attrs));
 }
 
@@ -352,17 +352,17 @@ SEXP Leave__new(double prob) {
 }
 
 //[[Rcpp::export]]
-SEXP Leave__new_func(Function prob, int provide_attrs) {
+SEXP Leave__new_func(const Function& prob, int provide_attrs) {
   return XPtr<Leave<Function> >(new Leave<Function>(prob, provide_attrs));
 }
 
 //[[Rcpp::export]]
-SEXP Clone__new(int n, std::vector<Environment> trj) {
+SEXP Clone__new(int n, const std::vector<Environment>& trj) {
   return XPtr<Clone<int> >(new Clone<int>(n, 0, trj));
 }
 
 //[[Rcpp::export]]
-SEXP Clone__new_func(Function n, int provide_attrs, std::vector<Environment> trj) {
+SEXP Clone__new_func(const Function& n, int provide_attrs, const std::vector<Environment>& trj) {
   return XPtr<Clone<Function> >(new Clone<Function>(n, provide_attrs, trj));
 }
 
@@ -372,13 +372,13 @@ SEXP Synchronize__new(bool wait, bool terminate) {
 }
 
 //[[Rcpp::export]]
-SEXP Batch__new(int n, double timeout, bool permanent, std::string name) {
+SEXP Batch__new(int n, double timeout, bool permanent, const std::string& name) {
   VEC<int> p = VEC<int>(2, 0);
   return XPtr<Batch<double> >(new Batch<double>(n, timeout, p, permanent, name));
 }
 
 //[[Rcpp::export]]
-SEXP Batch__new_func1(int n, Function timeout, bool permanent, std::string name,
+SEXP Batch__new_func1(int n, const Function& timeout, bool permanent, const std::string& name,
                       int provide_attrs)
 {
   VEC<int> p = VEC<int>(2, 0);
@@ -388,7 +388,7 @@ SEXP Batch__new_func1(int n, Function timeout, bool permanent, std::string name,
 
 //[[Rcpp::export]]
 SEXP Batch__new_func2(int n, double timeout, bool permanent,
-                      std::string name, Function rule, int provide_attrs)
+                      const std::string& name, const Function& rule, int provide_attrs)
 {
   VEC<int> p = VEC<int>(2, 0);
   p[1] = provide_attrs;
@@ -396,8 +396,8 @@ SEXP Batch__new_func2(int n, double timeout, bool permanent,
 }
 
 //[[Rcpp::export]]
-SEXP Batch__new_func4(int n, Function timeout, bool permanent, std::string name,
-                      Function rule, std::vector<int> provide_attrs)
+SEXP Batch__new_func4(int n, const Function& timeout, bool permanent, const std::string& name,
+                      const Function& rule, const std::vector<int>& provide_attrs)
 {
   VEC<int> p = provide_attrs;
   return XPtr<Batch<Function> >(new Batch<Function>(n, timeout, p, permanent, name, rule));
@@ -409,22 +409,22 @@ SEXP Separate__new() {
 }
 
 //[[Rcpp::export]]
-SEXP RenegeIn__new(double t, std::vector<Environment> trj) {
+SEXP RenegeIn__new(double t, const std::vector<Environment>& trj) {
   return XPtr<RenegeIn<double> >(new RenegeIn<double>(t, 0, trj));
 }
 
 //[[Rcpp::export]]
-SEXP RenegeIn__new_func(Function t, int provide_attrs, std::vector<Environment> trj) {
+SEXP RenegeIn__new_func(const Function& t, int provide_attrs, const std::vector<Environment>& trj) {
   return XPtr<RenegeIn<Function> >(new RenegeIn<Function>(t, provide_attrs, trj));
 }
 
 //[[Rcpp::export]]
-SEXP RenegeIf__new(std::string signal, std::vector<Environment> trj) {
+SEXP RenegeIf__new(const std::string& signal, const std::vector<Environment>& trj) {
   return XPtr<RenegeIf<std::string> >(new RenegeIf<std::string>(signal, 0, trj));
 }
 
 //[[Rcpp::export]]
-SEXP RenegeIf__new_func(Function signal, int provide_attrs, std::vector<Environment> trj) {
+SEXP RenegeIf__new_func(const Function& signal, int provide_attrs, const std::vector<Environment>& trj) {
   return XPtr<RenegeIf<Function> >(new RenegeIf<Function>(signal, provide_attrs, trj));
 }
 
@@ -434,14 +434,14 @@ SEXP RenegeAbort__new() {
 }
 
 //[[Rcpp::export]]
-SEXP Send__new(std::vector<std::string> signals, double delay) {
+SEXP Send__new(const std::vector<std::string>& signals, double delay) {
   VEC<int> p = VEC<int>(2, 0);
   return XPtr<Send<VEC<std::string>, double> >(
       new Send<VEC<std::string>, double>(signals, delay, p));
 }
 
 //[[Rcpp::export]]
-SEXP Send__new_func1(Function signals,
+SEXP Send__new_func1(const Function& signals,
                      double delay, int provide_attrs)
 {
   VEC<int> p = VEC<int>(2, 0);
@@ -450,8 +450,8 @@ SEXP Send__new_func1(Function signals,
 }
 
 //[[Rcpp::export]]
-SEXP Send__new_func2(std::vector<std::string> signals,
-                     Function delay, int provide_attrs)
+SEXP Send__new_func2(const std::vector<std::string>& signals,
+                     const Function& delay, int provide_attrs)
 {
   VEC<int> p = VEC<int>(2, 0);
   p[1] = provide_attrs;
@@ -460,35 +460,35 @@ SEXP Send__new_func2(std::vector<std::string> signals,
 }
 
 //[[Rcpp::export]]
-SEXP Send__new_func4(Function signals,
-                     Function delay, std::vector<int> provide_attrs)
+SEXP Send__new_func4(const Function& signals,
+                     const Function& delay, const std::vector<int>& provide_attrs)
 {
   VEC<int> p = provide_attrs;
   return XPtr<Send<Function, Function> >(new Send<Function, Function>(signals, delay, p));
 }
 
 //[[Rcpp::export]]
-SEXP Trap__new(std::vector<std::string> signals,
-               std::vector<Environment> trj, bool interruptible)
+SEXP Trap__new(const std::vector<std::string>& signals,
+               const std::vector<Environment>& trj, bool interruptible)
 {
   return XPtr<Trap<VEC<std::string> > >(
       new Trap<VEC<std::string> >(signals, 0, trj, interruptible));
 }
 
 //[[Rcpp::export]]
-SEXP Trap__new_func(Function signals, int provide_attrs,
-                    std::vector<Environment> trj, bool interruptible) {
+SEXP Trap__new_func(const Function& signals, int provide_attrs,
+                    const std::vector<Environment>& trj, bool interruptible) {
   return XPtr<Trap<Function> >(
       new Trap<Function>(signals, provide_attrs, trj, interruptible));
 }
 
 //[[Rcpp::export]]
-SEXP UnTrap__new(std::vector<std::string> signals) {
+SEXP UnTrap__new(const std::vector<std::string>& signals) {
   return XPtr<UnTrap<VEC<std::string> > >(new UnTrap<VEC<std::string> >(signals, 0));
 }
 
 //[[Rcpp::export]]
-SEXP UnTrap__new_func(Function signals, int provide_attrs) {
+SEXP UnTrap__new_func(const Function& signals, int provide_attrs) {
   return XPtr<UnTrap<Function> >(new UnTrap<Function>(signals, provide_attrs));
 }
 
@@ -498,12 +498,12 @@ SEXP Wait__new() {
 }
 
 //[[Rcpp::export]]
-SEXP Log__new(std::string message) {
+SEXP Log__new(const std::string& message) {
   return XPtr<Log<std::string> >(new Log<std::string>(message, 0));
 }
 
 //[[Rcpp::export]]
-SEXP Log__new_func(Function message, int provide_attrs) {
+SEXP Log__new_func(const Function& message, int provide_attrs) {
   return XPtr<Log<Function> >(
       new Log<Function>(message, provide_attrs));
 }

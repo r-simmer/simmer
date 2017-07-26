@@ -14,7 +14,7 @@ public:
   Simulator* sim;
   std::string name;
 
-  Entity(Simulator* sim, std::string name, int mon)
+  Entity(Simulator* sim, const std::string& name, int mon)
     : sim(sim), name(name), mon(std::abs(mon)) {}
   virtual ~Entity() {}
   virtual void reset() = 0;

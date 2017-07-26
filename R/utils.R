@@ -64,11 +64,10 @@ check_args <- function(..., types, n=1, env=parent.frame()) {
 }
 
 needs_attrs <- function(variable) {
-  if (is.function(variable)) {
-    args <- length(formals(variable))
-    if (args) .Deprecated(msg="Attribute retrieval through function arguments is deprecated.\nUse 'get_attribute' instead.")
-    args
-  } else 0
+  args <- length(formals(variable))
+  if (args)
+    .Deprecated(msg="Attribute retrieval through function arguments is deprecated.\nUse 'get_attribute' instead.") # nocov
+  args
 }
 
 envs_apply <- function(envs, method, ...) {
@@ -83,19 +82,16 @@ envs_apply <- function(envs, method, ...) {
   }))
 }
 
-make_resetable <- function(distribution) {
-  if (identical(environment(distribution), .GlobalEnv))
-    environment(distribution) <- new.env(parent = environment(distribution))
-  init <- as.list(environment(distribution))
-  environment(distribution)$.reset <- new.env(parent = environment(distribution))
-  environment(distribution)$.reset$init <- init
-  environment(distribution)$.reset$reset <- function() {
-    lst <- parent.env(environment())$init
-    cls <- parent.env(parent.env(environment()))
-    for (i in ls(lst, all.names = TRUE)) assign(i, get(i, lst), cls)
+make_resetable <- function(func) {
+  g <- codetools::findGlobals(func, merge=FALSE)$variables
+  init <- sapply(g, get0, envir=environment(func), simplify=FALSE)
+  env <- list2env(list(init=init, env=environment(func)))
+  attr(func, "reset") <- function() {
+    for (i in ls(init, all.names = TRUE))
+      assign(i, init[[i]], env, inherits=TRUE)
   }
-  environment(environment(distribution)$.reset$reset) <- environment(distribution)$.reset
-  distribution
+  environment(attr(func, "reset")) <- env
+  func
 }
 
 binarise <- function(...) {

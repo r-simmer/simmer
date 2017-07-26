@@ -1,17 +1,19 @@
 context("basic simmer functionality")
 
 test_that("an empty environment behaves as expected", {
-  env <- simmer(verbose = TRUE)
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("asdf") %>%
+    add_generator("dummy", trajectory() %>% timeout(1), at(0))
 
   expect_output(print(env))
 
   expect_is(env, "simmer")
   expect_equal(env %>% now(), 0)
-  expect_equal(env %>% peek(), numeric(0))
+  expect_equal(env %>% peek(), 0)
 
   env %>% onestep() %>% run()
 
-  expect_equal(env %>% now(), 0)
+  expect_equal(env %>% now(), 1)
   expect_equal(env %>% peek(), numeric(0))
 })
 

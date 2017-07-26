@@ -49,7 +49,7 @@ public:
    * @param name    simulator name
    * @param verbose verbose flag
    */
-  Simulator(std::string name, bool verbose)
+  Simulator(const std::string& name, bool verbose)
     : name(name), verbose(verbose), now_(0), process_(NULL), b_count(0) {}
 
   ~Simulator() {
@@ -174,7 +174,7 @@ public:
    * @param   preemptible     maximum priority that cannot cause preemption (>=priority)
    * @param   restart         whether activity must be restarted after preemption
    */
-  bool add_generator(std::string name_prefix, Rcpp::Environment trj, Rcpp::Function dist,
+  bool add_generator(const std::string& name_prefix, Rcpp::Environment trj, Rcpp::Function dist,
                      int mon, int priority, int preemptible, bool restart)
   {
     if (process_map.find(name_prefix) != process_map.end()) {
@@ -198,8 +198,8 @@ public:
    * @param   preempt_order     fifo or lifo
    * @param   queue_size_strict whether the queue size is a hard limit
    */
-  bool add_resource(std::string name, int capacity, int queue_size, bool mon,
-                    bool preemptive, std::string preempt_order, bool queue_size_strict)
+  bool add_resource(const std::string& name, int capacity, int queue_size, bool mon,
+                    bool preemptive, const std::string& preempt_order, bool queue_size_strict)
   {
     if (resource_map.find(name) != resource_map.end()) {
       Rcpp::warning("resource '%s' already defined", name);
@@ -229,8 +229,8 @@ public:
    * @param   duration  vector of durations until the next value change
    * @param   value     vector of values
    */
-  bool add_resource_manager(std::string name, std::string param,
-                            VEC<double> duration, VEC<int> value, int period)
+  bool add_resource_manager(const std::string& name, const std::string& param,
+                            const VEC<double>& duration, const VEC<int>& value, int period)
   {
     if (process_map.find(name) != process_map.end())
       Rcpp::stop("process '%s' already defined", name);
@@ -253,7 +253,7 @@ public:
   /**
    * Get a generator by name.
    */
-  Generator* get_generator(std::string name) const {
+  Generator* get_generator(const std::string& name) const {
     EntMap::const_iterator search = process_map.find(name);
     if (search == process_map.end())
       Rcpp::stop("generator '%s' not found (typo?)", name);
@@ -263,7 +263,7 @@ public:
   /**
    * Get a resource by name.
    */
-  Resource* get_resource(std::string name) const {
+  Resource* get_resource(const std::string& name) const {
     EntMap::const_iterator search = resource_map.find(name);
     if (search == resource_map.end())
       Rcpp::stop("resource '%s' not found (typo?)", name);
@@ -277,7 +277,7 @@ public:
     return arrival;
   }
 
-  Batched** get_batch(Activity* ptr, std::string id) {
+  Batched** get_batch(Activity* ptr, const std::string& id) {
     if (id.size()) {
       if (namedb_map.find(id) == namedb_map.end())
         namedb_map[id] = NULL;
@@ -291,8 +291,8 @@ public:
 
   size_t get_batch_count() { return b_count++; }
 
-  void broadcast(VEC<std::string> signals) {
-    foreach_ (const std::string signal, signals) {
+  void broadcast(const VEC<std::string>& signals) {
+    foreach_ (const std::string& signal, signals) {
       foreach_ (const HandlerMap::value_type& itr, signal_map[signal]) {
         if (!itr.second.first)
           continue;
@@ -301,46 +301,46 @@ public:
       }
     }
   }
-  void subscribe(std::string signal, Arrival* arrival, BIND(void) handler) {
+  void subscribe(const std::string& signal, Arrival* arrival, BIND(void) handler) {
     signal_map[signal][arrival] = std::make_pair(true, handler);
     arrival_map[arrival].emplace(signal);
   }
-  void subscribe(VEC<std::string> signals, Arrival* arrival, BIND(void) handler) {
-    foreach_ (const std::string signal, signals)
+  void subscribe(const VEC<std::string>& signals, Arrival* arrival, BIND(void) handler) {
+    foreach_ (const std::string& signal, signals)
       subscribe(signal, arrival, handler);
   }
   void subscribe(Arrival* arrival) {
-    foreach_ (const std::string signal, arrival_map[arrival])
+    foreach_ (const std::string& signal, arrival_map[arrival])
       signal_map[signal][arrival].first = true;
   }
-  void unsubscribe(std::string signal, Arrival* arrival) {
+  void unsubscribe(const std::string& signal, Arrival* arrival) {
     signal_map[signal].erase(arrival);
     arrival_map[arrival].erase(signal);
   }
-  void unsubscribe(VEC<std::string> signals, Arrival* arrival) {
-    foreach_ (const std::string signal, signals)
+  void unsubscribe(const VEC<std::string>& signals, Arrival* arrival) {
+    foreach_ (const std::string& signal, signals)
       unsubscribe(signal, arrival);
   }
   void unsubscribe(Arrival* arrival) {
-    foreach_ (const std::string signal, arrival_map[arrival])
+    foreach_ (const std::string& signal, arrival_map[arrival])
       signal_map[signal][arrival].first = false;
   }
 
-  void set_attribute(std::string key, double value) {
+  void set_attribute(const std::string& key, double value) {
     attributes[key] = value;
     record_attribute("", key, value);
   }
-  double get_attribute(std::string key) const {
+  double get_attribute(const std::string& key) const {
     Attr::const_iterator search = attributes.find(key);
     if (search == attributes.end())
       return NA_REAL;
     return search->second;
   }
-  Attr* get_attributes() { return &attributes; }
+  Attr* get_attributes() { return &attributes; } // # nocov
 
   void register_arrival(Arrival* arrival) { arrival_map[arrival]; }
   void unregister_arrival(Arrival* arrival) {
-    foreach_ (const std::string signal, arrival_map[arrival])
+    foreach_ (const std::string& signal, arrival_map[arrival])
       signal_map[signal].erase(arrival);
     arrival_map.erase(arrival);
   }
@@ -348,27 +348,27 @@ public:
   /**
    * Record monitoring data.
    */
-  void record_end(std::string name, double start, double activity, bool finished) {
+  void record_end(const std::string& name, double start, double activity, bool finished) {
     mon_arr_traj.insert("name",           name);
     mon_arr_traj.insert("start_time",     start);
     mon_arr_traj.insert("end_time",       now_);
     mon_arr_traj.insert("activity_time",  activity);
     mon_arr_traj.insert("finished",       finished);
   }
-  void record_release(std::string name, double start, double activity, std::string resource) {
+  void record_release(const std::string& name, double start, double activity, const std::string& resource) {
     mon_arr_res.insert("name",            name);
     mon_arr_res.insert("start_time",      start);
     mon_arr_res.insert("end_time",        now_);
     mon_arr_res.insert("activity_time",   activity);
     mon_arr_res.insert("resource",        resource);
   }
-  void record_attribute(std::string name, std::string key, double value) {
+  void record_attribute(const std::string& name, const std::string& key, double value) {
     mon_attributes.insert("time",         now_);
     mon_attributes.insert("name",         name);
     mon_attributes.insert("key",          key);
     mon_attributes.insert("value",        value);
   }
-  void record_resource(std::string name, int server_count, int queue_count,
+  void record_resource(const std::string& name, int server_count, int queue_count,
                        int capacity, int queue_size) {
     mon_resources.insert("resource",      name);
     mon_resources.insert("time",          now_);

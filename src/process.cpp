@@ -166,13 +166,13 @@ void Arrival::terminate(bool finished) {
   delete this;
 }
 
-void Arrival::set_attribute(std::string key, double value) {
+void Arrival::set_attribute(const std::string& key, double value) {
   attributes[key] = value;
   if (is_monitored() >= 2)
     sim->record_attribute(name, key, value);
 }
 
-double Arrival::get_start(std::string name) {
+double Arrival::get_start(const std::string& name) {
   double start = restime[name].start;
   if (batch) {
     double up = batch->get_start(name);
@@ -196,7 +196,7 @@ void Arrival::unregister_entity(Resource* ptr) {
   resources.erase(resources.find(ptr));
 }
 
-void Arrival::set_renege(std::string sig, Activity* next) {
+void Arrival::set_renege(const std::string& sig, Activity* next) {
   cancel_renege();
   signal = sig;
   sim->subscribe(signal, this,
@@ -230,12 +230,12 @@ void Arrival::renege(Activity* next) {
   } else terminate(false);
 }
 
-void Arrival::report(std::string resource) const {
+void Arrival::report(const std::string& resource) const {
   ArrTime time = restime.find(resource)->second;
   sim->record_release(name, time.start, time.activity, resource);
 }
 
-void Arrival::report(std::string resource, double start, double activity) const {
+void Arrival::report(const std::string& resource, double start, double activity) const {
   sim->record_release(name, start, activity, resource);
 }
 
@@ -255,7 +255,7 @@ void Batched::terminate(bool finished) {
   Arrival::terminate(finished);
 }
 
-void Batched::set_attribute(std::string key, double value) {
+void Batched::set_attribute(const std::string& key, double value) {
   attributes[key] = value;
   foreach_ (Arrival* arrival, arrivals)
     arrival->set_attribute(key, value);

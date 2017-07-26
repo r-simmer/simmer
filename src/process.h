@@ -14,7 +14,7 @@ class Resource;
  */
 class Process : public Entity {
 public:
-  Process(Simulator* sim, std::string name, int mon, int priority = 0)
+  Process(Simulator* sim, const std::string& name, int mon, int priority = 0)
     : Entity(sim, name, mon), active(true), priority(priority) {}
   virtual void run() = 0;
   virtual bool activate(double delay = 0);
@@ -30,8 +30,8 @@ class Manager : public Process {
   typedef boost::function<void (int)> Setter;
 
 public:
-  Manager(Simulator* sim, std::string name, std::string param,
-          VEC<double> duration, VEC<int> value, int period, Setter set)
+  Manager(Simulator* sim, const std::string& name, const std::string& param,
+          const VEC<double>& duration, const VEC<int>& value, int period, const Setter& set)
     : Process(sim, name, false, PRIORITY_MANAGER), param(param),
       duration(duration), value(value), period(period), set(set), index(0) {}
 
@@ -50,7 +50,7 @@ private:
 
 class Task : public Process {
 public:
-  Task(Simulator* sim, std::string name, BIND(void) task, int priority = 0)
+  Task(Simulator* sim, const std::string& name, const BIND(void)& task, int priority = 0)
     : Process(sim, name, false, priority), task(task) {}
   ~Task() { reset(); }
 
@@ -108,8 +108,8 @@ public:
    * @param dist            a user-defined R function that provides random numbers
    * @param order           priority, preemptible, restart
    */
-  Generator(Simulator* sim, std::string name_prefix, int mon,
-            Rcpp::Environment trj, Rcpp::Function dist, Order order)
+  Generator(Simulator* sim, const std::string& name_prefix, int mon,
+            const Rcpp::Environment& trj, const Rcpp::Function& dist, const Order& order)
     : Process(sim, name_prefix, mon, PRIORITY_GENERATOR), count(0), trj(trj),
       dist(dist), order(order), first_activity(NULL) { set_first_activity(); }
 
@@ -118,20 +118,18 @@ public:
    */
   void reset() {
     count = 0;
-    Rcpp::Environment dist_env(dist.environment());
-    Rcpp::Environment reset_env(dist_env[".reset"]);
-    Rcpp::Function reset_fun(reset_env["reset"]);
+    Rcpp::Function reset_fun(dist.attr("reset"));
     reset_fun();
   }
 
   void run();
 
   int get_n_generated() const { return count; }
-  void set_trajectory(Rcpp::Environment new_trj) {
+  void set_trajectory(const Rcpp::Environment& new_trj) {
     trj = new_trj;
     set_first_activity();
   }
-  void set_distribution(Rcpp::Function new_dist) { dist = new_dist; }
+  void set_distribution(const Rcpp::Function& new_dist) { dist = new_dist; }
 
 private:
   int count;                /**< number of arrivals generated */
@@ -176,7 +174,7 @@ public:
   * @param order           priority, preemptible, restart
   * @param first_activity  the first activity of a user-defined R trajectory
   */
-  Arrival(Simulator* sim, std::string name, int mon, Order order,
+  Arrival(Simulator* sim, const std::string& name, int mon, Order order,
           Activity* first_activity, int priority = 0)
     : Process(sim, name, mon, priority), order(order), clones(new int(0)),
       activity(first_activity), timer(NULL), batch(NULL) { init(); }
@@ -192,16 +190,16 @@ public:
   void pause();
   void stop();
   virtual void terminate(bool finished);
-  virtual void set_attribute(std::string key, double value);
-  double get_start(std::string name);
+  virtual void set_attribute(const std::string& key, double value);
+  double get_start(const std::string& name);
 
   int get_clones() const { return *clones; }
   double get_remaining() const { return status.remaining; }
   void set_activity(Activity* ptr) { activity = ptr; }
   double get_start() const { return lifetime.start; }
   Activity* get_activity() const { return activity; }
-  Attr* get_attributes() { return &attributes; }
-  double get_attribute(std::string key) const {
+  Attr* get_attributes() { return &attributes; } // # nocov
+  double get_attribute(const std::string& key) const {
     Attr::const_iterator search = attributes.find(key);
     if (search == attributes.end())
       return NA_REAL;
@@ -227,7 +225,7 @@ public:
                      PRIORITY_MIN);
     timer->activate(timeout);
   }
-  void set_renege(std::string sig, Activity* next);
+  void set_renege(const std::string& sig, Activity* next);
   void cancel_renege();
 
 protected:
@@ -246,8 +244,8 @@ protected:
   void init();
   void reset();
   void renege(Activity* next);
-  virtual void report(std::string resource) const;
-  virtual void report(std::string resource, double start, double activity) const;
+  virtual void report(const std::string& resource) const;
+  virtual void report(const std::string& resource, double start, double activity) const;
   bool leave_resources(bool flag = false);
 
   virtual void update_activity(double value) {
@@ -284,7 +282,7 @@ class Batched : public Arrival {
 public:
   CLONEABLE(Batched)
 
-  Batched(Simulator* sim, std::string name, bool permanent, int priority = 0)
+  Batched(Simulator* sim, const std::string& name, bool permanent, int priority = 0)
     : Arrival(sim, name, true, Order(), NULL, priority), permanent(permanent) {}
 
   Batched(const Batched& o) : Arrival(o), arrivals(o.arrivals), permanent(o.permanent) {
@@ -307,7 +305,7 @@ public:
     arrivals.clear();
   }
 
-  void set_attribute(std::string key, double value);
+  void set_attribute(const std::string& key, double value);
 
   bool is_permanent() const { return permanent; }
   size_t size() const { return arrivals.size(); }
@@ -329,7 +327,7 @@ protected:
     arrivals.clear();
   }
 
-  void report(std::string resource) const {
+  void report(const std::string& resource) const {
     foreach_ (const Arrival* arrival, arrivals) {
       if (arrival->is_monitored()) {
         ArrTime time = restime.find(resource)->second;
@@ -338,7 +336,7 @@ protected:
     }
   }
 
-  void report(std::string resource, double start, double activity) const {
+  void report(const std::string& resource, double start, double activity) const {
     foreach_ (const Arrival* arrival, arrivals) {
       if (arrival->is_monitored())
         arrival->report(resource, start, activity);

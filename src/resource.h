@@ -16,7 +16,7 @@ public:
   * @param capacity    server capacity (-1 means infinity)
   * @param queue_size  room in the queue (-1 means infinity)
   */
-  Resource(Simulator* sim, std::string name, int mon, int capacity,
+  Resource(Simulator* sim, const std::string& name, int mon, int capacity,
            int queue_size, bool queue_size_strict)
     : Entity(sim, name, mon), capacity(capacity), queue_size(queue_size),
       server_count(0), queue_count(0), queue_size_strict(queue_size_strict) {}
@@ -64,7 +64,7 @@ protected:
 
   int post_release();
 
-  void verbose_print(double time, std::string arrival, std::string status) const {
+  void verbose_print(double time, const std::string& arrival, const std::string& status) const {
     Rcpp::Rcout <<
       FMT(10, right) << time << " |" <<
       FMT(12, right) << "resource: " << FMT(15, left) << name << "|" <<
@@ -137,7 +137,7 @@ class PriorityRes : public Resource {
   typedef UMAP<Arrival*, typename T::iterator> ServerMap;
 
 public:
-  PriorityRes(Simulator* sim, std::string name, int mon, int capacity,
+  PriorityRes(Simulator* sim, const std::string& name, int mon, int capacity,
               int queue_size, bool queue_size_strict)
     : Resource(sim, name, mon, capacity, queue_size, queue_size_strict) {}
 
@@ -275,7 +275,7 @@ protected:
 template <typename T>
 class PreemptiveRes : public PriorityRes<T> {
 public:
-  PreemptiveRes(Simulator* sim, std::string name, int mon, int capacity,
+  PreemptiveRes(Simulator* sim, const std::string& name, int mon, int capacity,
                 int queue_size, bool queue_size_strict)
     : PriorityRes<T>(sim, name, mon, capacity, queue_size, queue_size_strict) {}
 
