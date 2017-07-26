@@ -8,7 +8,7 @@ mm1 <- trajectory() %>%
            timeout(function() rexp(1, 2)) %>%
            release("server", 1)
   ) %>%
-  rollback(0)
+  rollback(0, 1)
 
 env <- simmer(verbose=T) %>%
   add_resource("server", 1) %>%

@@ -6,7 +6,7 @@ std::ostream& operator<<(std::ostream& out, const Policy& policy) {
   return out;
 }
 
-Resource* Policy::policy_shortest_queue(Simulator* sim, VEC<std::string> resources) {
+Resource* Policy::policy_shortest_queue(Simulator* sim, const VEC<std::string>& resources) {
   Resource* selected = sim->get_resource(resources[0]);
   size_t n = resources.size();
   for (size_t i = 1; i < n; i++) {
@@ -18,14 +18,14 @@ Resource* Policy::policy_shortest_queue(Simulator* sim, VEC<std::string> resourc
   return selected;
 }
 
-Resource* Policy::policy_round_robin(Simulator* sim, VEC<std::string> resources) {
+Resource* Policy::policy_round_robin(Simulator* sim, const VEC<std::string>& resources) {
   static int i = -1;
   if (++i >= (int)resources.size())
     i = 0;
   return sim->get_resource(resources[i]);
 }
 
-Resource* Policy::policy_first_available(Simulator* sim, VEC<std::string> resources) {
+Resource* Policy::policy_first_available(Simulator* sim, const VEC<std::string>& resources) {
   size_t i, n = resources.size();
   Resource* selected;
   for (i = 0; i < n; i++) {
@@ -43,7 +43,7 @@ select:
   return selected;
 }
 
-Resource* Policy::policy_random(Simulator* sim, VEC<std::string> resources) {
+Resource* Policy::policy_random(Simulator* sim, const VEC<std::string>& resources) {
   int i = Rcpp::sample(resources.size(), 1)[0];
   return sim->get_resource(resources[i-1]);
 }
