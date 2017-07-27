@@ -1,10 +1,10 @@
 ## Maintenance release
 
-Some minor changes and fixes.
+Code refactoring + performance improvements + some minor new features.
 
 ## Test environments
 
-* Fedora 25 + GCC + clang (local), R 3.3.3
+* Fedora 26 + GCC + clang (local), R 3.4.1
 * Rocker image, GCC + SAN + R devel
 * Rocker image, clang + UBSAN + R devel
 * Ubuntu 12.04 + GCC (on travis-ci), R 3.3.3, 3.4.0, devel
@@ -19,15 +19,9 @@ There were 2 NOTEs:
 * checking CRAN incoming feasibility ... NOTE
 Maintainer: ‘Iñaki Ucar <i.ucar86@gmail.com>’
 
-License components with restrictions and base license permitting such:
-  MIT + file LICENSE
-File 'LICENSE':
-  YEAR: 2014-2017
-  COPYRIGHT HOLDER: Bart Smeets, Iñaki Ucar
-
 Possibly mis-spelled words in DESCRIPTION:
-  DES (9:6)
   API (11:74)
+  DES (9:6)
 
 * checking installed package size ... NOTE
   installed size is  11.0Mb
