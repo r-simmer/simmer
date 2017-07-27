@@ -25,7 +25,7 @@ and 'random' selects one at random.}
 Returns the trajectory object.
 }
 \description{
-Acitivity for selecting a resource for a subsequent seize/release or setting
+Activity for selecting a resource for a subsequent seize/release or setting
 its parameters (capacity or queue size).
 }
 \seealso{
