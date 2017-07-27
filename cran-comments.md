@@ -2,6 +2,8 @@
 
 Code refactoring + performance improvements + some minor new features.
 
+Note: CRAN checks show a gcc-UBSAN issue that is not yet resolved because it's a (minor, with no practical consequences) bug in Boost. More info: https://github.com/eddelbuettel/bh/issues/37
+
 ## Test environments
 
 * Fedora 26 + GCC + clang (local), R 3.4.1
