@@ -47,4 +47,6 @@ Please note that the package contains some C++ code and thus you need a developm
 
 Do you want to get your own simmer hexagon sticker? Just fill in [this form](https://docs.google.com/forms/d/19mrtbQAuCODcKMWpubreSGboF4Dyi2HSEnV545AXqLM/) and get one send to you for free.
 
-<img src="http://r-simmer.org/images/simmer-hex-01.svg" alt="design1" style="width:150px;margin-right:20px"/><img src="http://r-simmer.org/images/simmer-hex-02.svg" alt="design2" style="width:150px"/></div>
+<img src="http://r-simmer.org/images/simmer-hex-01.svg" alt="design1" width="150" />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="http://r-simmer.org/images/simmer-hex-02.svg" alt="design2" width="150" />
