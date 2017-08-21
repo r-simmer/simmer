@@ -21,7 +21,11 @@ For bugs and/or issues, create a new issue on GitHub. For other questions or com
 
 ## Documentation
 
-Documentation is available at [r-simmer.org/reference](http://r-simmer.org/reference).
+Documentation is available at [r-simmer.org/reference](http://r-simmer.org/reference). To get started, please explore our [vignettes online](http://r-simmer.org/articles/), or in R:
+
+``` r
+vignette(package = "simmer")
+```
 
 ## Installation
 
@@ -39,10 +43,8 @@ devtools::install_github("r-simmer/simmer")
 
 Please note that the package contains some C++ code and thus you need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows).
 
-## Learning simmer
+## Hexagon stickers!
 
-To get started, please explore our [vignettes online](http://r-simmer.org/articles/), or in R:
+Do you want to get your own simmer hexagon sticker? Just fill in [this form](https://docs.google.com/forms/d/19mrtbQAuCODcKMWpubreSGboF4Dyi2HSEnV545AXqLM/) and get one send to you for free.
 
-``` r
-vignette(package = "simmer")
-```
+<img src="http://r-simmer.org/images/simmer-hex-01.svg" alt="design1" style="width:150px;margin-right:20px"/><img src="http://r-simmer.org/images/simmer-hex-02.svg" alt="design2" style="width:150px"/></div>
