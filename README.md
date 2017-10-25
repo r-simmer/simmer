@@ -35,10 +35,10 @@ Install the release version from CRAN:
 install.packages("simmer")
 ```
 
-The installation from GitHub requires the [devtools](https://github.com/hadley/devtools) package.
+The installation from GitHub requires the [remotes](https://cran.r-project.org/package=remotes) package.
 
 ``` r
-devtools::install_github("r-simmer/simmer")
+remotes::install_github("r-simmer/simmer")
 ```
 
 Please note that the package contains some C++ code and thus you need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows).
