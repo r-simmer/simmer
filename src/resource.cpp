@@ -27,8 +27,7 @@ void Resource::set_queue_size(int value) {
   queue_size = value;
   if (queue_size_strict && (last < 0 || (queue_size < last && queue_size >= 0))) {
     while (queue_count > queue_size)
-      if (!try_free_queue(sim->verbose, sim->now()))
-        break;
+      try_free_queue(sim->verbose, sim->now());
   }
   if (is_monitored())
     sim->record_resource(name, server_count, queue_count, capacity, queue_size);
@@ -37,7 +36,9 @@ void Resource::set_queue_size(int value) {
 int Resource::seize(Arrival* arrival, int amount) {
   int status;
   // serve now
-  if (room_in_server(amount, arrival->order.get_priority())) {
+  if (first_in_line(arrival->order.get_priority()) &&
+      room_in_server(amount, arrival->order.get_priority()))
+  {
     insert_in_server(sim->verbose, sim->now(), arrival, amount);
     status = SUCCESS;
   }

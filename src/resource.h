@@ -72,6 +72,7 @@ protected:
       status << std::endl;
   }
 
+  virtual bool first_in_line(int priority) const = 0;
   virtual bool room_in_server(int amount, int priority) const = 0;
   virtual bool room_in_queue(int amount, int priority) const = 0;
   virtual int try_free_server(bool verbose, double time) = 0;
@@ -159,10 +160,14 @@ protected:
   T server;
   ServerMap server_map;
 
-  bool room_in_server(int amount, int priority) const {
-    if (capacity < 0)
+  bool first_in_line(int priority) const {
+    if (queue.empty() || queue.begin()->priority() < priority)
       return true;
-    return server_count + amount <= capacity;
+    return false;
+  }
+
+  bool room_in_server(int amount, int priority) const {
+    return capacity < 0 || server_count + amount <= capacity;
   }
 
   bool room_in_queue(int amount, int priority) const {
@@ -288,8 +293,14 @@ protected:
   RPQueue preempted;
   QueueMap preempted_map;
 
+  bool first_in_line(int priority) const {
+    if (!preempted.empty() && preempted.begin()->priority() >= priority)
+      return false;
+    return PriorityRes<T>::first_in_line(priority);
+  }
+
   bool room_in_server(int amount, int priority) const {
-    if (this->capacity < 0 || this->server_count + amount <= this->capacity)
+    if (PriorityRes<T>::room_in_server(amount, priority))
       return true;
     int count = (this->capacity > 0) ? (this->capacity - this->server_count) : 0;
     foreach_ (const typename T::value_type& itr, this->server) {
