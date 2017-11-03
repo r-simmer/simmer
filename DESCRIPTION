@@ -13,8 +13,7 @@ Description: A process-oriented and trajectory-based Discrete-Event Simulation
     model for entities of the same type.
 License: MIT + file LICENSE
 Encoding: UTF-8
-URL: http://r-simmer.org,
-     https://github.com/r-simmer/simmer
+URL: http://r-simmer.org, https://github.com/r-simmer/simmer
 BugReports: https://github.com/r-simmer/simmer/issues
 Depends:
     R (>= 3.1.2)
