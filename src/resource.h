@@ -296,7 +296,7 @@ protected:
   bool room_in_server(int amount, int priority) const {
     if (this->capacity < 0 || this->server_count + amount <= this->capacity)
       return true;
-    int count = 0;
+    int count = (this->capacity > 0) ? (this->capacity - this->server_count) : 0;
     foreach_ (const typename T::value_type& itr, this->server) {
       if (priority > itr.preemptible())
         count += itr.amount;

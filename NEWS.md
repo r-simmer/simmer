@@ -1,3 +1,9 @@
+# simmer 3.6.4
+
+## Minor changes and fixes:
+
+* Fix preemption in non-saturated multi-server resources (#114).
+
 # simmer 3.6.3
 
 ## New features:
