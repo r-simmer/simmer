@@ -59,3 +59,28 @@ test_that("a lower priority arrival gets rejected before accessing the server", 
   expect_equal(as.character(arrs[!arrs$finished, ]$name), "p0a1")
   expect_equal(arrs_ordered$end_time, c(10, 3, 20, 30))
 })
+
+test_that("priority works in non-saturated finite-queue resources", {
+  low_prio <- trajectory() %>%
+    seize("res", 1) %>%
+    timeout(10) %>%
+    release("res", 1)
+
+  high_prio <- trajectory() %>%
+    seize("res", 7) %>%
+    timeout(10) %>%
+    release("res", 7)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("res", 0, 10) %>%
+    add_generator("low_prio", low_prio, at(rep(0, 5))) %>%
+    add_generator("high_prio", high_prio, at(1), priority = 1) %>%
+    run()
+
+  arr <- get_mon_arrivals(env)
+
+  expect_true(all(grepl("low", arr$name)))
+  expect_equal(arr$start_time, c(0, 0))
+  expect_equal(arr$end_time, c(1, 1))
+  expect_equal(arr$activity_time, c(0, 0))
+})

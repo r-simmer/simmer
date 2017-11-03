@@ -25,7 +25,7 @@ void Resource::set_queue_size(int value) {
     return;
   int last = queue_size;
   queue_size = value;
-  if (last < 0 || (queue_size < last && queue_size >= 0)) {
+  if (queue_size_strict && (last < 0 || (queue_size < last && queue_size >= 0))) {
     while (queue_count > queue_size)
       if (!try_free_queue(sim->verbose, sim->now()))
         break;

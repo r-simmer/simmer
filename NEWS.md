@@ -3,6 +3,7 @@
 ## Minor changes and fixes:
 
 * Fix preemption in non-saturated multi-server resources (#114).
+* Fix queue priority in non-saturated finite-queue resources (#115).
 
 # simmer 3.6.3
 
