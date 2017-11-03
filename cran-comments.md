@@ -1,6 +1,6 @@
 ## Patch release
 
-Important bug fix.
+Several bug fixes.
 
 ## Test environments
 
