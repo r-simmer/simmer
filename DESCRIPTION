@@ -1,7 +1,7 @@
 Package: simmer
 Type: Package
 Title: Discrete-Event Simulation for R
-Version: 3.6.3.9000
+Version: 3.6.4.9000
 Authors@R: c(
     person("Iñaki", "Ucar", email="i.ucar86@gmail.com", role=c("aut", "cph", "cre")),
     person("Bart", "Smeets", email="bartsmeets86@gmail.com", role=c("aut", "cph")))
