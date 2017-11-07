@@ -1,3 +1,9 @@
+# simmer 3.6.4.9000
+
+## Minor changes and fixes:
+
+* Restore `ostream` after formatting (9ff11f8).
+
 # simmer 3.6.4
 
 ## Minor changes and fixes:
