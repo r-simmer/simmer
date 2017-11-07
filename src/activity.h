@@ -46,13 +46,14 @@ public:
    */
   virtual void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     if (!brief) {
-      for (unsigned int i = 0; i < indent; ++i)
-        Rcpp::Rcout << " ";
-      Rcpp::Rcout << "{ Activity: " << FMT(12, left) << name << " | ";
+      std::ios::fmtflags fmt(Rcpp::Rcout.flags());
+      Rcpp::Rcout <<
+        IND(indent) << "{ Activity: " << FMT(12, left) << name << " | ";
       if (verbose) Rcpp::Rcout <<
         FMT(9, right) << prev << " <- " <<
         FMT(9, right) << this << " -> " <<
         FMT(9, left) << next << " | ";
+      Rcpp::Rcout.flags(fmt);
     }
   }
 
@@ -134,8 +135,8 @@ public:
     if (!brief) {
       if (indent > 10) return; // max 6 levels
       for (unsigned int i = 0; i < trj.size(); i++) {
-        for (unsigned int j = 0; j < indent; ++j) Rcpp::Rcout << " ";
-        Rcpp::Rcout << "Fork " << i+1 << (cont[i] ? ", continue," : ", stop,");
+        Rcpp::Rcout <<
+          IND(indent) << "Fork " << i+1 << (cont[i] ? ", continue," : ", stop,");
         Rcpp::Function print(trj[i]["print"]);
         print(indent, verbose);
       }

@@ -43,6 +43,7 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #define BIND(T) boost::function<T ()>
 
 #define FMT(n, justify) std::setw(n) << std::justify
+#define IND(n) std::string(n, ' ')
 
 #define PRIORITY_MAX            std::numeric_limits<int>::min()
 #define PRIORITY_RELEASE        -4
