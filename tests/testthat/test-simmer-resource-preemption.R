@@ -176,3 +176,27 @@ test_that("queue cannot exceed queue_size with hard limit (preempted to queue)",
   expect_equal(arr_ordered$activity_time, c(0, 10, 10))
   expect_equal(arr_ordered$finished, c(FALSE, TRUE, TRUE))
 })
+
+test_that("preemption works in non-saturated multi-server resources", {
+  low_prio <- trajectory() %>%
+    seize("res", 1) %>%
+    timeout(10) %>%
+    release("res", 1)
+
+  high_prio <- trajectory() %>%
+    seize("res", 7) %>%
+    timeout(10) %>%
+    release("res", 7)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("res", 10, preemptive = TRUE) %>%
+    add_generator("low_prio", low_prio, at(rep(0, 5))) %>%
+    add_generator("high_prio", high_prio, at(1), priority = 1) %>%
+    run()
+
+  arr <- get_mon_arrivals(env)
+
+  expect_equal(arr$start_time, c(0, 0, 0, 1, 0, 0))
+  expect_equal(arr$end_time, c(10, 10, 10, 11, 19, 19))
+  expect_equal(arr$activity_time, rep(10, 6))
+})

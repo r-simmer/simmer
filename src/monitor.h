@@ -9,7 +9,7 @@ class Monitor {
 
 public:
   template <typename T>
-  VEC<T> get(std::string key) const {
+  VEC<T> get(const std::string& key) const {
     MonMap::const_iterator search = map.find(key);
     if (search != map.end())
       return boost::get< VEC<T> >(search->second);
@@ -17,7 +17,7 @@ public:
   }
 
   template <typename T>
-  void insert(std::string key, T value) {
+  void insert(const std::string& key, const T& value) {
     if (map.find(key) == map.end())
       map.insert(std::pair< std::string, VEC<T> >(key, VEC<T>()));
     boost::get< VEC<T> >(map[key]).push_back(value);

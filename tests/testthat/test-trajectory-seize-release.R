@@ -173,3 +173,46 @@ test_that("leaving without releasing throws a warning (batches)", {
 
   expect_warning(run(env))
 })
+
+test_that("arrivals don't jump the queue if there is room in the server (1)", {
+  dummy <- function(n)
+    trajectory() %>%
+    seize("res", n) %>%
+    timeout(10) %>%
+    release("res", n)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("res", 10) %>%
+    add_generator("dummy7", dummy(7), at(0, 1)) %>%
+    add_generator("dummy1", dummy(1), at(2)) %>%
+    run()
+
+  arrs <- get_mon_arrivals(env)
+  arrs_ordered <- arrs[order(arrs$start_time),]
+
+  expect_equal(arrs_ordered$start_time, c(0, 1, 2))
+  expect_equal(arrs_ordered$end_time, c(10, 20, 20))
+  expect_equal(arrs_ordered$activity_time, c(10, 10, 10))
+})
+
+test_that("arrivals don't jump the queue if there is room in the server (2)", {
+  dummy <- function(n)
+    trajectory() %>%
+    seize("res", n) %>%
+    timeout(10) %>%
+    release("res", n)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("res", 10, preemptive = TRUE) %>%
+    add_generator("dummy7a", dummy(7), at(0)) %>%
+    add_generator("dummy7b", dummy(7), at(1), priority = 1) %>%
+    add_generator("dummy1", dummy(1), at(2)) %>%
+    run()
+
+  arrs <- get_mon_arrivals(env)
+  arrs_ordered <- arrs[order(arrs$start_time),]
+
+  expect_equal(arrs_ordered$start_time, c(0, 1, 2))
+  expect_equal(arrs_ordered$end_time, c(20, 11, 21))
+  expect_equal(arrs_ordered$activity_time, c(10, 10, 10))
+})

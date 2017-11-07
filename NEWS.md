@@ -1,4 +1,12 @@
-# simmer 3.6.2.9000
+# simmer 3.6.4
+
+## Minor changes and fixes:
+
+* Fix preemption in non-saturated multi-server resources when seizing amounts > 1 (#114).
+* Fix queue priority in non-saturated finite-queue resources when seizing amounts > 1 (#115).
+* Fix resource seizing: avoid jumping the queue when there is room in the server but other arrivals are waiting (#116).
+
+# simmer 3.6.3
 
 ## New features:
 
@@ -12,7 +20,7 @@
 
 ## Minor changes and fixes:
 
-* Some code refactoring (2f4b484, ffafe1e, f16912a, fb7941b).
+* Some code refactoring and performance improvements (2f4b484, ffafe1e, f16912a, fb7941b, 2783cd8).
 * Use `Rcpp::DataFrame` instead of `Rcpp::List` (#104).
 * Improve argument parsing and error messages (#107).
 * Improve internal function `make_resetable()` (c596f73).

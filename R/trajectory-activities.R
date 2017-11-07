@@ -90,7 +90,7 @@ set_queue_size_selected.trajectory <- function(.trj, value, id=0) .trj$set_queue
 
 #' Select Resources
 #'
-#' Acitivity for selecting a resource for a subsequent seize/release or setting
+#' Activity for selecting a resource for a subsequent seize/release or setting
 #' its parameters (capacity or queue size).
 #'
 #' @inheritParams seize

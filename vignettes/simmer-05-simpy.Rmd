@@ -229,32 +229,37 @@ The main actor of this simulation is the _moviegoer_, a process that will try to
 This recipe is directly translated into a `simmer` trajectory as follows:
 
 ```{r, message=FALSE, warning=FALSE}
+get_movie <- function() movies[get_attribute(env, "movie")]
+soldout_signal <- function() paste0(get_movie(), " sold out")
+check_soldout <- function() get_capacity(env, get_movie()) == 0
+check_tickets_available <- function()
+  get_server_count(env, get_movie()) > (TICKETS - 2)
+
 moviegoer <- trajectory() %>%
   # select a movie
   set_attribute("movie", function() sample(3, 1)) %>%
-  select(function() movies[get_attribute(env, "movie")]) %>%
+  select(get_movie) %>%
   # set reneging condition
-  renege_if(function() paste0(movies[get_attribute(env, "movie")], " sold out")) %>%
+  renege_if(soldout_signal) %>%
   # leave immediately if the movie was already sold out
-  leave(function() get_capacity(env, movies[get_attribute(env, "movie")]) == 0) %>%
+  leave(check_soldout) %>%
   # wait for my turn
   seize("counter", 1) %>%
   # buy tickets
-  seize_selected(function() sample(6, 1), continue = FALSE,
-                 reject = trajectory() %>%
-                   # not enough tickets, leave after some discussion
-                   timeout(0.5) %>%
-                   release("counter", 1)
+  seize_selected(
+    function() sample(6, 1), continue = FALSE,
+    reject = trajectory() %>%
+      timeout(0.5) %>%
+      release("counter", 1)
   ) %>%
   # abort reneging condition
   renege_abort() %>%
   # check the tickets available
-  branch(function() get_server_count(env, movies[get_attribute(env, "movie")]) > (TICKETS - 2),
-         continue = TRUE,
-         # trigger the "sold out" event for the movie
-         trajectory() %>%
-           set_capacity_selected(0) %>%
-           send(function() paste0(movies[get_attribute(env, "movie")], " sold out"))
+  branch(
+    check_tickets_available, continue = TRUE,
+    trajectory() %>%
+      set_capacity_selected(0) %>%
+      send(soldout_signal)
   ) %>%
   timeout(1) %>%
   release("counter", 1) %>%
@@ -282,40 +287,29 @@ env %>%
   run(SIM_TIME)
 ```
 
-`simmer` _automagically_ monitors the system status, and this information can be retrieved with three methods:
-
-```{r, message=FALSE, warning=FALSE}
-arrivals <- get_mon_arrivals(env)
-resources <- get_mon_resources(env)
-attributes <- get_mon_attributes(env)
-```
-
 The analysis is performed with the help of `dplyr`:
 
 ```{r, message=FALSE, warning=FALSE}
 # get the three rows with the sold out instants
-sold_time <- resources %>%
+sold_time <- get_mon_resources(env) %>%
   dplyr::filter(resource != "counter" & capacity == 0)
 
 # get the arrivals that left at the sold out instants
 # count the number of arrivals per movie
 n_reneges <- dplyr::left_join(
-    arrivals %>% 
-      dplyr::filter(finished == FALSE & end_time %in% sold_time$time),
-    attributes
-  ) %>%
+  get_mon_arrivals(env) %>%
+    dplyr::filter(finished == FALSE & end_time %in% sold_time$time),
+  get_mon_attributes(env)
+) %>%
   dplyr::mutate(resource = movies[value]) %>%
   dplyr::group_by(resource) %>%
   dplyr::count()
 
-# merge the info
-result <- dplyr::left_join(sold_time, n_reneges)
-# and print
-apply(result, 1, function(i) {
-  cat("Movie '", i["resource"], "' sold out ", i["time"], 
-      " minutes after ticket counter opening.\n",
-      "  Number of people leaving queue when film sold out: ", i["n"], "\n", sep="")
-}) %>% invisible
+# merge the info  and print
+invisible(apply(dplyr::left_join(sold_time, n_reneges), 1, function(i) {
+  cat("Movie '", i["resource"], "' was sold out in ", i["time"], " minutes.\n", 
+      "  Number of people that left the queue: ", i["n"], "\n", sep="")
+}))
 ```
 
 ## Gas Station Refuelling

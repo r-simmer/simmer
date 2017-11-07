@@ -38,7 +38,7 @@ void Generator::run() {
     Arrival* arrival = new Arrival(sim, arr_name, is_monitored(),
                                    order, first_activity, count);
 
-    if (sim->verbose)Rcpp::Rcout <<
+    if (sim->verbose) Rcpp::Rcout <<
       FMT(10, right) << sim->now() << " |" <<
       FMT(12, right) << "generator: " << FMT(15, left) << name << "|" <<
       FMT(12, right) << "new: " << FMT(15, left) << arr_name << "| " <<
@@ -76,7 +76,7 @@ void Task::run() {
   if (sim->verbose) Rcpp::Rcout <<
     FMT(10, right) << sim->now() << " |" <<
     FMT(12, right) << "task: " << FMT(15, left) << name << "|" <<
-    FMT(12, right) << " " << FMT(15, left) << " " << "| " << std::endl;
+    FMT(12, right) << " " << FMT(15, left) << " | " << std::endl;
 
   task();
   delete this;

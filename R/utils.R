@@ -82,9 +82,10 @@ envs_apply <- function(envs, method, ...) {
   }))
 }
 
+#' @importFrom codetools findGlobals
 make_resetable <- function(func) {
-  g <- codetools::findGlobals(func, merge=FALSE)$variables
-  init <- sapply(g, get0, envir=environment(func), simplify=FALSE)
+  init <- sapply(findGlobals(func, merge=FALSE)$variables,
+                 get0, envir=environment(func), simplify=FALSE)
   env <- list2env(list(init=init, env=environment(func)))
   attr(func, "reset") <- function() {
     for (i in ls(init, all.names = TRUE))

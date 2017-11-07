@@ -72,15 +72,16 @@ protected:
       status << std::endl;
   }
 
+  virtual bool first_in_line(int priority) const = 0;
   virtual bool room_in_server(int amount, int priority) const = 0;
   virtual bool room_in_queue(int amount, int priority) const = 0;
-  virtual bool try_free_server(bool verbose, double time) = 0;
-  virtual bool try_free_queue(bool verbose, double time) = 0;
-  virtual bool try_serve_from_queue(bool verbose, double time) = 0;
+  virtual int try_free_server(bool verbose, double time) = 0;
+  virtual int try_free_queue(bool verbose, double time) = 0;
+  virtual int try_serve_from_queue(bool verbose, double time) = 0;
   virtual void insert_in_server(bool verbose, double time, Arrival* arrival, int amount) = 0;
   virtual void insert_in_queue(bool verbose, double time, Arrival* arrival, int amount) = 0;
   virtual int remove_from_server(bool verbose, double time, Arrival* arrival, int amount) = 0;
-  virtual bool remove_from_queue(bool verbose, double time, Arrival* arrival) = 0;
+  virtual int remove_from_queue(bool verbose, double time, Arrival* arrival) = 0;
 };
 
 struct RSeize {
@@ -159,16 +160,20 @@ protected:
   T server;
   ServerMap server_map;
 
-  bool room_in_server(int amount, int priority) const {
-    if (capacity < 0)
+  bool first_in_line(int priority) const {
+    if (queue.empty() || queue.begin()->priority() < priority)
       return true;
-    return server_count + amount <= capacity;
+    return false;
+  }
+
+  bool room_in_server(int amount, int priority) const {
+    return capacity < 0 || server_count + amount <= capacity;
   }
 
   bool room_in_queue(int amount, int priority) const {
     if (queue_size < 0 || queue_count + amount <= queue_size)
       return true;
-    int count = 0;
+    int count = (this->queue_size > 0) ? (this->queue_size - this->queue_count) : 0;
     foreach_r_ (const RPQueue::value_type& itr, queue) {
       if (priority > itr.priority())
         count += itr.amount;
@@ -180,31 +185,33 @@ protected:
     return false;
   }
 
-  bool try_free_server(bool verbose, double time) { return false; }
+  int try_free_server(bool verbose, double time) { return 0; }
 
-  bool try_free_queue(bool verbose, double time) {
-    if (!queue_size_strict)
-      return false;
+  int try_free_queue(bool verbose, double time) {
+    int count = 0;
     RPQueue::iterator last = --queue.end();
     if (verbose) verbose_print(time, last->arrival->name, "REJECT");
+    count += last->amount;
     queue_count -= last->amount;
     queue_map.erase(last->arrival);
     last->arrival->unregister_entity(this);
     last->arrival->terminate(false);
     queue.erase(last);
-    return true;
+    return count;
   }
 
-  bool try_serve_from_queue(bool verbose, double time) {
+  int try_serve_from_queue(bool verbose, double time) {
+    int count = 0;
     RPQueue::iterator next = queue.begin();
     if (!room_in_server(next->amount, next->priority()))
-      return false;
+      return count;
     next->arrival->restart();
     insert_in_server(verbose, time, next->arrival, next->amount);
+    count += next->amount;
     queue_count -= next->amount;
     queue_map.erase(next->arrival);
     queue.erase(next);
-    return true;
+    return count;
   }
 
   void insert_in_server(bool verbose, double time, Arrival* arrival, int amount) {
@@ -220,17 +227,8 @@ protected:
   }
 
   void insert_in_queue(bool verbose, double time, Arrival* arrival, int amount) {
-    int count = 0;
-    if (queue_size > 0) while (queue_count + amount > queue_size && amount > count) {
-      RPQueue::iterator last = --queue.end();
-      if (verbose) verbose_print(time, last->arrival->name, "REJECT");
-      queue_count -= last->amount;
-      count += last->amount;
-      queue_map.erase(last->arrival);
-      last->arrival->unregister_entity(this);
-      last->arrival->terminate(false);
-      queue.erase(last);
-    }
+    if (queue_size > 0) while (queue_count + amount > queue_size)
+      try_free_queue(verbose, time);
     if (verbose) verbose_print(time, arrival->name, "ENQUEUE");
     queue_count += amount;
     queue_map[arrival] = queue.emplace(time, arrival, amount);
@@ -256,16 +254,18 @@ protected:
     return amount;
   }
 
-  bool remove_from_queue(bool verbose, double time, Arrival* arrival) {
+  int remove_from_queue(bool verbose, double time, Arrival* arrival) {
+    int count = 0;
     QueueMap::iterator search = queue_map.find(arrival);
     if (search == queue_map.end())
-      return false;
+      return count;
     if (verbose) verbose_print(time, arrival->name, "DEPART");
+    count += search->second->amount;
     queue_count -= search->second->amount;
     search->second->arrival->unregister_entity(this);
     queue.erase(search->second);
     queue_map.erase(search);
-    return true;
+    return count;
   }
 };
 
@@ -293,10 +293,16 @@ protected:
   RPQueue preempted;
   QueueMap preempted_map;
 
+  bool first_in_line(int priority) const {
+    if (!preempted.empty() && preempted.begin()->priority() >= priority)
+      return false;
+    return PriorityRes<T>::first_in_line(priority);
+  }
+
   bool room_in_server(int amount, int priority) const {
-    if (this->capacity < 0 || this->server_count + amount <= this->capacity)
+    if (PriorityRes<T>::room_in_server(amount, priority))
       return true;
-    int count = 0;
+    int count = (this->capacity > 0) ? (this->capacity - this->server_count) : 0;
     foreach_ (const typename T::value_type& itr, this->server) {
       if (priority > itr.preemptible())
         count += itr.amount;
@@ -308,12 +314,14 @@ protected:
     return false;
   }
 
-  bool try_free_server(bool verbose, double time) {
+  int try_free_server(bool verbose, double time) {
+    int count = 0;
     typename T::iterator first = this->server.begin();
     if (first == this->server.end())
-      return false;
+      return count;
     first->arrival->pause();
     if (verbose) this->verbose_print(time, first->arrival->name, "PREEMPT");
+    count += first->amount;
     this->server_count -= first->amount;
     this->server_map.erase(first->arrival);
     if (this->queue_size_strict) {
@@ -327,35 +335,37 @@ protected:
       this->queue_count += first->amount;
     }
     this->server.erase(first);
-    return true;
+    return count;
   }
 
-  bool try_serve_from_queue(bool verbose, double time) {
+  int try_serve_from_queue(bool verbose, double time) {
+    int count = 0;
     RPQueue::iterator next = preempted.begin();
     if (next == preempted.end())
       return PriorityRes<T>::try_serve_from_queue(verbose, time);
     if (!room_in_server(next->amount, next->priority()))
-      return false;
+      return count;
     next->arrival->restart();
     this->insert_in_server(verbose, time, next->arrival, next->amount);
+    count += next->amount;
     this->queue_count -= next->amount;
     preempted_map.erase(next->arrival);
     preempted.erase(next);
-    return true;
+    return count;
   }
 
-  bool remove_from_queue(bool verbose, double time, Arrival* arrival) {
-    if (PriorityRes<T>::remove_from_queue(verbose, time, arrival))
-      return true;
+  int remove_from_queue(bool verbose, double time, Arrival* arrival) {
+    int count = PriorityRes<T>::remove_from_queue(verbose, time, arrival);
     QueueMap::iterator search = preempted_map.find(arrival);
-    if (search == preempted_map.end())
-      return false;
+    if (count || search == preempted_map.end())
+      return count;
     if (verbose) this->verbose_print(time, arrival->name, "DEPART");
+    count += search->second->amount;
     this->queue_count -= search->second->amount;
     search->second->arrival->unregister_entity(this);
     preempted.erase(search->second);
     preempted_map.erase(search);
-    return true;
+    return count;
   }
 };
 

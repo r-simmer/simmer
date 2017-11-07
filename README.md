@@ -2,8 +2,8 @@
 
 [![Build Status](https://travis-ci.org/r-simmer/simmer.svg?branch=master)](https://travis-ci.org/r-simmer/simmer)
 [![Coverage Status](https://codecov.io/gh/r-simmer/simmer/branch/master/graph/badge.svg)](https://codecov.io/gh/r-simmer/simmer)
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/simmer)](http://cran.r-project.org/package=simmer)
-[![Downloads](http://cranlogs.r-pkg.org/badges/simmer)](http://cran.rstudio.com/package=simmer)
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/simmer)](https://cran.r-project.org/package=simmer)
+[![Downloads](https://cranlogs.r-pkg.org/badges/simmer)](https://cran.r-project.org/package=simmer)
 
 **simmer** is a process-oriented and trajectory-based Discrete-Event Simulation (DES) package for R. Designed to be a generic framework like [SimPy](https://simpy.readthedocs.org) or [SimJulia](http://simjuliajl.readthedocs.org), it leverages the power of [Rcpp](http://www.rcpp.org/) to boost the performance and turning DES in R feasible. As a noteworthy characteristic, simmer exploits the concept of _trajectory_: a common path in the simulation model for entities of the same type. It is pretty flexible and simple to use, and leverages the chaining/piping workflow introduced by the [magrittr](https://github.com/smbache/magrittr) package.
 
@@ -21,7 +21,11 @@ For bugs and/or issues, create a new issue on GitHub. For other questions or com
 
 ## Documentation
 
-Documentation is available at [r-simmer.org/reference](http://r-simmer.org/reference).
+Documentation is available at [r-simmer.org/reference](http://r-simmer.org/reference). To get started, please explore our [vignettes online](http://r-simmer.org/articles/), or in R:
+
+``` r
+vignette(package = "simmer")
+```
 
 ## Installation
 
@@ -31,18 +35,14 @@ Install the release version from CRAN:
 install.packages("simmer")
 ```
 
-The installation from GitHub requires the [devtools](https://github.com/hadley/devtools) package.
+The installation from GitHub requires the [remotes](https://cran.r-project.org/package=remotes) package.
 
 ``` r
-devtools::install_github("r-simmer/simmer")
+remotes::install_github("r-simmer/simmer")
 ```
 
 Please note that the package contains some C++ code and thus you need a development environment to build the package (e.g. [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for Windows).
 
-## Learning simmer
+## Hexagon stickers!
 
-To get started, please explore our [vignettes online](http://r-simmer.org/articles/), or in R:
-
-``` r
-vignette(package = "simmer")
-```
+<img src="http://r-simmer.org/images/simmer-hex-01.svg" alt="design1" width="150" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="http://r-simmer.org/images/simmer-hex-02.svg" alt="design2" width="150" />

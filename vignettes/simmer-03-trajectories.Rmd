@@ -1138,7 +1138,7 @@ For instance, let's suppose we just want to print the simulation time at a given
 remove(env)
 
 t <- trajectory() %>%
-  timeout(function() print(env %>% now()))
+  log_(function() paste(now(env)))
 
 env <- simmer() %>%
   add_generator("dummy", t, function() 1) %>%
@@ -1149,7 +1149,7 @@ Because the global `env` is not available at runtime: the simulation runs _and t
 
 ```{r}
 t <- trajectory() %>%
-  timeout(function() print(env %>% now()))
+  log_(function() paste(now(env)))
 
 env <- simmer() %>%
   add_generator("dummy", t, function() 1)
@@ -1165,7 +1165,7 @@ env <- simmer()
 
 # Here I'm using it
 t <- trajectory() %>%
-  timeout(function() print(env %>% now()))
+  log_(function() paste(now(env)))
 
 # And finally, run it
 env %>%
