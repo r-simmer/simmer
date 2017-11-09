@@ -3,6 +3,7 @@
 ## Minor changes and fixes:
 
 * Restore `ostream` after formatting (9ff11f8).
+* Fix arrival cloning to copy attributes over to the clone (#118).
 
 # simmer 3.6.4
 

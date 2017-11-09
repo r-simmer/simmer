@@ -181,7 +181,7 @@ public:
 
   Arrival(const Arrival& o)
     : Process(o), order(o.order), clones(o.clones), activity(NULL),
-      timer(NULL), batch(NULL) { init(); }
+      attributes(o.attributes), timer(NULL), batch(NULL) { init(); }
 
   ~Arrival() { reset(); }
 
