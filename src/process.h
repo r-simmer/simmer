@@ -231,8 +231,6 @@ public:
 
 private:
   bool paused;
-
-protected:
   int* clones;          /**< number of active clones */
   ArrStatus status;     /**< arrival timing status */
   ArrTime lifetime;     /**< time spent in the whole trajectory */
@@ -321,7 +319,7 @@ public:
   }
   void erase(Arrival* arrival);
 
-protected:
+private:
   VEC<Arrival*> arrivals;
   bool permanent;
 
