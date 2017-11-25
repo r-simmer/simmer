@@ -4,14 +4,13 @@
 
 bool Process::activate(double delay) {
   sim->schedule(delay, this, priority);
-  active = true;
   return true;
 }
 
 bool Process::deactivate() {
-  if (!active) return false;
+  if (!sim->is_scheduled(this))
+    return false;
   sim->unschedule(this);
-  active = false;
   return true;
 }
 
@@ -27,10 +26,8 @@ void Generator::run() {
   double delay = 0;
 
   for (size_t i = 0; i < n; ++i) {
-    if (delays[i] < 0) {
-      active = false;
+    if (delays[i] < 0)
       return;
-    }
     delay += delays[i];
 
     // format the name and create the next arrival
@@ -110,32 +107,30 @@ void Arrival::run() {
     activity->print(0, false, true);
   }
 
-  active = false;
   delay = activity->run(this);
   if (delay == REJECT)
     goto end;
   activity = activity->get_next();
   if (delay == ENQUEUE)
     goto end;
-  active = true;
 
   if (delay != BLOCK) {
     set_busy(sim->now() + delay);
     update_activity(delay);
   }
   sim->schedule(delay, this, activity ? activity->priority : priority);
-  goto end;
 
-finish:
-  terminate(true);
 end:
   return;
+finish:
+  terminate(true);
 }
 
 void Arrival::restart() {
   set_busy(sim->now() + status.remaining);
   activate(status.remaining);
   set_remaining(0);
+  paused = false;
 }
 
 void Arrival::pause() {
@@ -145,6 +140,7 @@ void Arrival::pause() {
     unset_remaining();
     activity = activity->get_prev();
   }
+  paused = true;
 }
 
 void Arrival::stop() {

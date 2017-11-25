@@ -302,7 +302,7 @@ public:
     double ret = std::abs(get<double>(value, 0, arrival));
     if (ret == R_PosInf) ret = -1;
     get_resource(arrival)->set_capacity((int)ret);
-    if (!arrival->is_active())
+    if (arrival->is_paused())
       return ENQUEUE;
     return 0;
   }
@@ -1060,7 +1060,7 @@ protected:
   UMAP<Arrival*, Activity*> pending;
 
   void launch_handler(Arrival* arrival) {
-    if (!arrival->is_active())
+    if (!arrival->sim->is_scheduled(arrival))
       return;
     arrival->stop();
     if (heads.size()) {

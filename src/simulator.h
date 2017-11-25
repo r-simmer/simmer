@@ -113,6 +113,12 @@ public:
     event_map.erase(process);
   }
 
+  bool is_scheduled(Process* process) {
+    if (event_map.find(process) != event_map.end())
+      return true;
+    return false;
+  }
+
   /**
    * Look for future events.
    */
