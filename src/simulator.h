@@ -153,10 +153,10 @@ public:
     }
     now_ = ev->time;
     process_ = ev->process;
-    event_map.erase(ev->process);
+    event_map.erase(process_);
+    event_queue.erase(ev);
     process_->run();
     process_ = NULL;
-    event_queue.erase(ev);
     return true;
   }
 
