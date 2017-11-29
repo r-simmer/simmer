@@ -173,7 +173,7 @@ protected:
   bool room_in_queue(int amount, int priority) const {
     if (queue_size < 0 || queue_count + amount <= queue_size)
       return true;
-    int count = (this->queue_size > 0) ? (this->queue_size - this->queue_count) : 0;
+    int count = (queue_size > 0) ? (queue_size - queue_count) : 0;
     foreach_r_ (const RPQueue::value_type& itr, queue) {
       if (priority > itr.priority())
         count += itr.amount;
