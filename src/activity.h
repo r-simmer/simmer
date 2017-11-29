@@ -735,7 +735,7 @@ public:
       if (i < heads.size())
         selected = heads[i];
       Arrival* new_arrival = arrival->clone();
-      new_arrival->set_activity(this->get_next());
+      new_arrival->set_activity(get_next());
       new_arrival->activate();
     }
     if (heads.size())
@@ -862,7 +862,7 @@ protected:
     if (!(*ptr) || *ptr != target)
       return;
     if ((*ptr)->size()) {
-      (*ptr)->set_activity(this->get_next());
+      (*ptr)->set_activity(get_next());
       (*ptr)->activate();
       *ptr = init(*ptr);
     } else {
@@ -891,7 +891,7 @@ public:
     Batched* batched = dynamic_cast<Batched*>(arrival);
     if (!batched || batched->is_permanent())
       return 0;
-    batched->pop_all(this->get_next());
+    batched->pop_all(get_next());
     delete batched;
     return REJECT;
   }
