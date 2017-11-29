@@ -175,3 +175,25 @@ test_that("synchronize does not affect other arrivals", {
   expect_equal(arrivals$activity_time, c(1, 1))
   expect_equal(arrivals$finished, rep(TRUE, 2))
 })
+
+test_that("attributes are copied over", {
+  increment <- function(attr, env)
+    trajectory() %>%
+      set_attribute(attr, function() get_attribute(env, attr) + 1)
+
+  t <- trajectory() %>%
+    set_attribute("index", 1) %>%
+    clone(
+      n = 2,
+      increment("index", env),
+      increment("index", env)
+    )
+
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("dummy", t, at(0), mon=2)
+  run(env)
+
+  attr <- get_mon_attributes(env)
+
+  expect_equal(attr$value, c(1, 2, 2))
+})

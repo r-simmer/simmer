@@ -1,3 +1,11 @@
+# simmer 3.6.4.9000
+
+## Minor changes and fixes:
+
+* Restore `ostream` after formatting (9ff11f8).
+* Fix arrival cloning to copy attributes over to the clone (#118).
+* Fix self-induced preemption through `set_capacity()` (#125).
+
 # simmer 3.6.4
 
 ## Minor changes and fixes:

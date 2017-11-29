@@ -15,14 +15,12 @@ class Resource;
 class Process : public Entity {
 public:
   Process(Simulator* sim, const std::string& name, int mon, int priority = 0)
-    : Entity(sim, name, mon), active(true), priority(priority) {}
+    : Entity(sim, name, mon), priority(priority) {}
   virtual void run() = 0;
   virtual bool activate(double delay = 0);
   virtual bool deactivate();
-  bool is_active() const { return active; }
 
 protected:
-  bool active;
   int priority;
 };
 
@@ -176,12 +174,14 @@ public:
   */
   Arrival(Simulator* sim, const std::string& name, int mon, Order order,
           Activity* first_activity, int priority = 0)
-    : Process(sim, name, mon, priority), order(order), clones(new int(0)),
-      activity(first_activity), timer(NULL), batch(NULL) { init(); }
+    : Process(sim, name, mon, priority), order(order), paused(false),
+      clones(new int(0)), activity(first_activity), timer(NULL), batch(NULL)
+      { init(); }
 
   Arrival(const Arrival& o)
-    : Process(o), order(o.order), clones(o.clones), activity(NULL),
-      timer(NULL), batch(NULL) { init(); }
+    : Process(o), order(o.order), paused(o.paused), clones(o.clones),
+      activity(NULL), attributes(o.attributes), timer(NULL), batch(NULL)
+      { init(); }
 
   ~Arrival() { reset(); }
 
@@ -193,6 +193,7 @@ public:
   virtual void set_attribute(const std::string& key, double value);
   double get_start(const std::string& name);
 
+  bool is_paused() const { return paused; }
   int get_clones() const { return *clones; }
   double get_remaining() const { return status.remaining; }
   void set_activity(Activity* ptr) { activity = ptr; }
@@ -228,7 +229,8 @@ public:
   void set_renege(const std::string& sig, Activity* next);
   void cancel_renege();
 
-protected:
+private:
+  bool paused;
   int* clones;          /**< number of active clones */
   ArrStatus status;     /**< arrival timing status */
   ArrTime lifetime;     /**< time spent in the whole trajectory */
@@ -317,7 +319,7 @@ public:
   }
   void erase(Arrival* arrival);
 
-protected:
+private:
   VEC<Arrival*> arrivals;
   bool permanent;
 

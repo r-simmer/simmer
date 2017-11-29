@@ -1,4 +1,0 @@
- - split resource into queue and server
- - add_container (see simpy.resources.container)
- - add_store (see simpy.resources.store)
- - monitor to disk
