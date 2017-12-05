@@ -204,7 +204,7 @@ public:
     Attr::const_iterator search = attributes.find(key);
     if (search == attributes.end())
       return NA_REAL;
-    return (*search).second;
+    return search->second;
   }
 
   void set_resource_selected(int id, Resource* res) { selected[id] = res; }
@@ -254,7 +254,7 @@ private:
     lifetime.activity += value;
     if (is_monitored()) {
       foreach_ (ResTime::value_type& itr, restime)
-      itr.second.activity += value;
+        itr.second.activity += value;
     }
   }
 
