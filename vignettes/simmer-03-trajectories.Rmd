@@ -26,6 +26,49 @@ library(simmer)
 library(simmer.plot)
 ```
 
+## Interaction with the environment
+
+Many activities accept functions as arguments to be evaluated dynamically during the simulation. Those functions may interact with the environment to extract parameters of interest such as the current simulation time (see `?now`), status of resources (see `?get_capacity`), status of generators (see `?get_n_generated`), or directly to gather the history of monitored values (see `?get_mon`). The only requirement is that the simulation environment must be in the scope of the trajectory.
+
+Therefore, this will not work:
+
+```{r, error = TRUE}
+t <- trajectory() %>%
+  log_(function() as.character(now(env)))
+
+env <- simmer() %>%
+  add_generator("dummy", t, function() 1) %>%
+  run(4)
+```
+
+because the global `env` is not available at runtime: the simulation runs _and then_ the resulting object is assigned to `env`. For `env` to be in the scope of `t` during this simulation, it is enough to detach the `run()` method from the definition pipe:
+
+```{r}
+t <- trajectory() %>%
+  log_(function() as.character(now(env)))
+
+env <- simmer() %>%
+  add_generator("dummy", t, function() 1)
+
+env %>% run(4) %>% invisible
+```
+
+And we get the expected output. However, as a general rule of good practice, __it is recommended to instantiate the environment always in the first place__ to avoid possible mistakes, and because the code becomes more readable:
+
+```{r}
+# First, instantiate the environment
+env <- simmer()
+
+# Here I'm using it
+t <- trajectory() %>%
+  log_(function() as.character(now(env)))
+
+# And finally, run it
+env %>%
+  add_generator("dummy", t, function() 1) %>%
+  run(4) %>% invisible
+```
+
 ## Available set of activities
 
 When a generator creates an arrival, it couples the arrival to a given trajectory. A trajectory is defined as an interlinkage of activities which together form the arrivals' lifetime in the system. Once an arrival is coupled to the trajectory, it will (in general) start processing the activities in the trajectory in the specified order and, eventually, leave the system. Consider the following:
@@ -1041,7 +1084,7 @@ simmer() %>%
 
 Note that, in contrast to `trap()`, reneging is triggered even if the arrival is in a queue or is part of a non-permanent batch.
 
-## Manipulating trajectories: joining and subsetting
+## Trajectory toolbox: joining and subsetting
 
 ### `join()`
 
@@ -1126,49 +1169,4 @@ which is equivalent to `t0[2]`. If a string is provided, it ensures that only th
 ```{r}
 join(t0, t0)["timeout"]
 join(t0, t0)[["timeout"]]
-```
-
-## Interacting with the environment from within a trajectory
-
-It is possible to interact with the simulation environment in order to extract parameters of interest such as the current simulation time (`now()`), status of resources (`get_capacity()`, `get_queue_size()`, `get_server_count()`, `get_queue_count`()), status of generators (`get_n_generated()`) or directly to gather the history of monitored values (`get_mon_*()`). You may also want (or in other words, your model may need) to check and use all this information to take decisions inside a given trajectory.
-
-For instance, let's suppose we just want to print the simulation time at a given point in a trajectory. The only requirement is that you must define the simulation environment __before__ running the simulation. This won't work:
-
-```{r, error = TRUE}
-remove(env)
-
-t <- trajectory() %>%
-  log_(function() paste(now(env)))
-
-env <- simmer() %>%
-  add_generator("dummy", t, function() 1) %>%
-  run(4)
-```
-
-Because the global `env` is not available at runtime: the simulation runs _and then_ the resulting object is assigned to `env`. We need to assign first, then run. So this will work:
-
-```{r}
-t <- trajectory() %>%
-  log_(function() paste(now(env)))
-
-env <- simmer() %>%
-  add_generator("dummy", t, function() 1)
-
-env %>% run(4) %>% invisible
-```
-
-And we get the expected output. However, as a general rule of good practice, __it is recommended to instantiate the environment always in the first place__, to avoid possible mistakes and because the code becomes more readable:
-
-```{r}
-# First, instantiate the environment
-env <- simmer()
-
-# Here I'm using it
-t <- trajectory() %>%
-  log_(function() paste(now(env)))
-
-# And finally, run it
-env %>%
-  add_generator("dummy", t, function() 1) %>%
-  run(4) %>% invisible
 ```
