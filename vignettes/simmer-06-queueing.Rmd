@@ -117,11 +117,11 @@ to_queue_1 <- trajectory() %>%
   md1(1) %>%
   leave(0.25) %>%
   md1(2) %>%
-  branch(function() (runif(1) > 0.65) + 1, c(F, F),
-         trajectory() %>%
-           md1(3),
-         trajectory() %>%
-           md1(4))
+  branch(
+    function() (runif(1) > 0.65) + 1, continue=c(F, F),
+    trajectory() %>% md1(3),
+    trajectory() %>% md1(4)
+  )
 
 to_queue_3 <- trajectory() %>%
   set_msg_size() %>%
