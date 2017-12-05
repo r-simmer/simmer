@@ -17,7 +17,7 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
 
 required <- c("simmer.plot", "dplyr")
 
-if (!all(unlist(lapply(required, function(pkg) requireNamespace(pkg, quietly = TRUE)))))
+if (!all(sapply(required, requireNamespace, quietly = TRUE)))
   knitr::opts_chunk$set(eval = FALSE)
 ```
 
