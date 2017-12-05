@@ -85,7 +85,7 @@ plot(mm23.env, "resources", "usage", "server", items="system") +
 
 Let us consider the following network of queues (example taken from [Grotto Networking](http://www.grotto-networking.com/DiscreteEventPython.html#NetQueues)):
 
-![A network of queues.](includes/queue-network.svg)
+![A network of queues.](includes/queueing-network.svg)
 
 There are three exponential generators ($\lambda_1$, $\lambda_2$, $\lambda_4$) that inject messages with exponential size of mean 100 bytes. There are four M/D/1 queues with a deterministic rate equal to 220 bytes/s. There is a 25\% probability that messages from $\lambda_1$ are dropped before the second queue, and a fork 35/65\% for the output of the second queue to reach queues 3 and 4. We are interested, for instance, in the accumulated waiting time for messages entering queue 1 and exiting queue 3 or 4.
 

@@ -174,7 +174,7 @@ autoplot(tm) +
   ylab("Time [milliseconds]")
 ```
 
-<div style="text-align:center">![](includes/ctmc_1.png)</div>
+<div style="text-align:center">![](includes/ctmc-1.png)</div>
 
 ## Example 2
 
@@ -393,4 +393,4 @@ autoplot(tm) +
   ylab("Time [milliseconds]")
 ```
 
-<div style="text-align:center">![](includes/ctmc_2.png)</div>
+<div style="text-align:center">![](includes/ctmc-2.png)</div>
