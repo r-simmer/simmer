@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/r-simmer/simmer.svg?branch=master)](https://travis-ci.org/r-simmer/simmer)
 [![Coverage Status](https://codecov.io/gh/r-simmer/simmer/branch/master/graph/badge.svg)](https://codecov.io/gh/r-simmer/simmer)
+[![Coverity Status](https://scan.coverity.com/projects/13226/badge.svg?flat=1)](https://scan.coverity.com/projects/r-simmer-simmer)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/simmer)](https://cran.r-project.org/package=simmer)
 [![Downloads](https://cranlogs.r-pkg.org/badges/simmer)](https://cran.r-project.org/package=simmer)
 
