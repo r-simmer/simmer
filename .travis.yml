@@ -1,7 +1,6 @@
 language: R
 sudo: true
 latex: false
-cache: packages
 r:
   - devel
 
