@@ -1,10 +1,16 @@
 # simmer 3.6.4.9000
 
+## New features:
+
+* `set_attribute()` (and `set_global()` by extension) can set multiple attributes at once by providing vectors of `keys` and `values` (or functions returning such `keys` and/or `values`). `get_attribute()` (and `get_global()` by extension) can retrieve multiple `keys` (#122).
+
 ## Minor changes and fixes:
 
 * Restore `ostream` after formatting (9ff11f8).
 * Fix arrival cloning to copy attributes over to the clone (#118).
 * Fix self-induced preemption through `set_capacity()` (#125).
+* Update "Queueing Systems" vignette (a0409a0, 8f03f4f).
+* Update "Advanced Trajectory Usage" vignette (4501927).
 
 # simmer 3.6.4
 

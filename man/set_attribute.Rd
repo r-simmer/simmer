@@ -5,17 +5,18 @@
 \alias{set_global}
 \title{Set Attributes}
 \usage{
-set_attribute(.trj, key, value, global = FALSE)
+set_attribute(.trj, keys, values, global = FALSE)
 
-set_global(.trj, key, value)
+set_global(.trj, keys, values)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
 
-\item{key}{the attribute name.}
+\item{keys}{the attribute name(s), or a callable object (a function) which
+must return attribute name(s).}
 
-\item{value}{the value to set, accepts either a numeric or a callable object
-(a function) which must return a numeric.}
+\item{values}{numeric value(s) to set, or a callable object (a function) which
+must return numeric value(s).}
 
 \item{global}{if \code{TRUE}, the attribute will be global instead of per-arrival.}
 }
@@ -23,7 +24,7 @@ set_global(.trj, key, value)
 Returns the trajectory object.
 }
 \description{
-Activity for modifying an arrival's attribute in the form of a key/value pair.
+Activity for modifying an arrival's attributes.
 }
 \details{
 \code{set_global} is a shortcut for \code{set_attribute(global=TRUE)}.

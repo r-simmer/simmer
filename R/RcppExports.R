@@ -65,8 +65,8 @@ get_name_ <- function(sim_) {
     .Call(`_simmer_get_name_`, sim_)
 }
 
-get_attribute_ <- function(sim_, key, global) {
-    .Call(`_simmer_get_attribute_`, sim_, key, global)
+get_attribute_ <- function(sim_, keys, global) {
+    .Call(`_simmer_get_attribute_`, sim_, keys, global)
 }
 
 get_prioritization_ <- function(sim_) {
@@ -161,12 +161,20 @@ Select__new_func <- function(resources, provide_attrs, policy, id) {
     .Call(`_simmer_Select__new_func`, resources, provide_attrs, policy, id)
 }
 
-SetAttribute__new <- function(key, value, global) {
-    .Call(`_simmer_SetAttribute__new`, key, value, global)
+SetAttribute__new <- function(keys, values, global) {
+    .Call(`_simmer_SetAttribute__new`, keys, values, global)
 }
 
-SetAttribute__new_func <- function(key, value, provide_attrs, global) {
-    .Call(`_simmer_SetAttribute__new_func`, key, value, provide_attrs, global)
+SetAttribute__new_func1 <- function(keys, values, global, provide_attrs) {
+    .Call(`_simmer_SetAttribute__new_func1`, keys, values, global, provide_attrs)
+}
+
+SetAttribute__new_func2 <- function(keys, values, global, provide_attrs) {
+    .Call(`_simmer_SetAttribute__new_func2`, keys, values, global, provide_attrs)
+}
+
+SetAttribute__new_func3 <- function(keys, values, global, provide_attrs) {
+    .Call(`_simmer_SetAttribute__new_func3`, keys, values, global, provide_attrs)
 }
 
 Activate__new <- function(generator) {
@@ -261,8 +269,8 @@ Batch__new_func2 <- function(n, timeout, permanent, name, rule, provide_attrs) {
     .Call(`_simmer_Batch__new_func2`, n, timeout, permanent, name, rule, provide_attrs)
 }
 
-Batch__new_func4 <- function(n, timeout, permanent, name, rule, provide_attrs) {
-    .Call(`_simmer_Batch__new_func4`, n, timeout, permanent, name, rule, provide_attrs)
+Batch__new_func3 <- function(n, timeout, permanent, name, rule, provide_attrs) {
+    .Call(`_simmer_Batch__new_func3`, n, timeout, permanent, name, rule, provide_attrs)
 }
 
 Separate__new <- function() {
@@ -301,8 +309,8 @@ Send__new_func2 <- function(signals, delay, provide_attrs) {
     .Call(`_simmer_Send__new_func2`, signals, delay, provide_attrs)
 }
 
-Send__new_func4 <- function(signals, delay, provide_attrs) {
-    .Call(`_simmer_Send__new_func4`, signals, delay, provide_attrs)
+Send__new_func3 <- function(signals, delay, provide_attrs) {
+    .Call(`_simmer_Send__new_func3`, signals, delay, provide_attrs)
 }
 
 Trap__new <- function(signals, trj, interruptible) {

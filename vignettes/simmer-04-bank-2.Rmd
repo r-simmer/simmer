@@ -17,7 +17,7 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
 
 required <- c("simmer.plot", "dplyr")
 
-if (!all(unlist(lapply(required, function(pkg) requireNamespace(pkg, quietly = TRUE)))))
+if (!all(sapply(required, requireNamespace, quietly = TRUE)))
   knitr::opts_chunk$set(eval = FALSE)
 ```
 
@@ -320,7 +320,7 @@ customer <-
          log_("Excuse me") %>%
          set_attribute(
            "timeleft", function() {
-             get_attribute(bank, "timeleft") - (now(bank) - get_attribute(bank, "start"))
+             sum(get_attribute(bank, c("timeleft", "start"))) - now(bank)
          }) %>%
          log_("Hello! I'll call back") %>%
          timeout(onphone) %>%

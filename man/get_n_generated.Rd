@@ -12,9 +12,9 @@ get_n_generated(.env, generator)
 
 get_name(.env)
 
-get_attribute(.env, key, global = FALSE)
+get_attribute(.env, keys, global = FALSE)
 
-get_global(.env, key)
+get_global(.env, keys)
 
 get_prioritization(.env)
 }
@@ -23,7 +23,7 @@ get_prioritization(.env)
 
 \item{generator}{the name of the generator.}
 
-\item{key}{the attribute name.}
+\item{keys}{the attribute name(s).}
 
 \item{global}{if \code{TRUE}, the attribute will be global instead of per-arrival.}
 }
@@ -37,7 +37,7 @@ arrival or a global one, and prioritization values.
 given generator.
 
 \code{get_name} returns the number of the running arrival. \code{get_attribute}
-returns a running arrival's attribute or a global one. If the provided key was
+returns a running arrival's attributes or global ones. If a provided key was
 not previously set, it returns a missing value. \code{get_global} is a shortcut
 for \code{get_attribute(global=TRUE)}. \code{get_prioritization} returns a
 running arrival's prioritization values. \code{get_name}, \code{get_attribute}

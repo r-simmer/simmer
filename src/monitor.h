@@ -19,7 +19,7 @@ public:
   template <typename T>
   void insert(const std::string& key, const T& value) {
     if (map.find(key) == map.end())
-      map.insert(std::pair< std::string, VEC<T> >(key, VEC<T>()));
+      map[key] = VEC<T>();
     boost::get< VEC<T> >(map[key]).push_back(value);
   }
 

@@ -134,12 +134,13 @@ timeout.trajectory <- function(.trj, task) .trj$timeout(task)
 
 #' Set Attributes
 #'
-#' Activity for modifying an arrival's attribute in the form of a key/value pair.
+#' Activity for modifying an arrival's attributes.
 #'
 #' @inheritParams seize
-#' @param key the attribute name.
-#' @param value the value to set, accepts either a numeric or a callable object
-#' (a function) which must return a numeric.
+#' @param keys the attribute name(s), or a callable object (a function) which
+#' must return attribute name(s).
+#' @param values numeric value(s) to set, or a callable object (a function) which
+#' must return numeric value(s).
 #' @param global if \code{TRUE}, the attribute will be global instead of per-arrival.
 #'
 #' @details \code{set_global} is a shortcut for \code{set_attribute(global=TRUE)}.
@@ -147,14 +148,15 @@ timeout.trajectory <- function(.trj, task) .trj$timeout(task)
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{get_attribute}}.
 #' @export
-set_attribute <- function(.trj, key, value, global=FALSE) UseMethod("set_attribute")
+set_attribute <- function(.trj, keys, values, global=FALSE) UseMethod("set_attribute")
 
 #' @export
-set_attribute.trajectory <- function(.trj, key, value, global=FALSE) .trj$set_attribute(key, value, global)
+set_attribute.trajectory <- function(.trj, keys, values, global=FALSE)
+  .trj$set_attribute(keys, values, global)
 
 #' @rdname set_attribute
 #' @export
-set_global <- function(.trj, key, value) set_attribute(.trj, key, value, TRUE)
+set_global <- function(.trj, keys, values) set_attribute(.trj, keys, values, TRUE)
 
 #' Activate/Deactivate Generators
 #'

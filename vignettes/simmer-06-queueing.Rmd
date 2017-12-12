@@ -1,0 +1,163 @@
+---
+title: "Queueing Systems"
+author: "Iñaki Ucar"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Queueing Systems}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, cache = FALSE, include=FALSE}
+knitr::opts_chunk$set(collapse = T, comment = "#>", 
+                      fig.width = 6, fig.height = 4, fig.align = "center")
+
+required <- c("simmer.plot", "dplyr")
+
+if (!all(sapply(required, requireNamespace, quietly = TRUE)))
+  knitr::opts_chunk$set(eval = FALSE)
+```
+
+```{r, message=FALSE}
+library(simmer)
+library(simmer.plot)
+set.seed(1234)
+```
+
+## M/M/c/k systems
+
+In Kendall's notation, an M/M/c/k system has exponential arrivals (__M__/M/c/k), a $c$ servers (M/M/__c__/k) with exponential service time (M/__M__/c/k) and an $k-c$ positions in queue (M/M/c/__k__). For instance, a router may have several processors to handle packets, and the in/out queues are necessarily finite.
+
+This is the simulation of an M/M/2/3 system (2 server, 1 position in queue). Note that the trajectory is identical to an M/M/1 system (one server, infinite queue).
+
+```{r}
+lambda <- 3
+mu <- 4
+
+mm23.trajectory <- trajectory() %>%
+  seize("server", amount=1) %>%
+  timeout(function() rexp(1, mu)) %>%
+  release("server", amount=1)
+
+mm23.env <- simmer() %>%
+  add_resource("server", capacity=2, queue_size=1) %>%
+  add_generator("arrival", mm23.trajectory, function() rexp(1, lambda)) %>%
+  run(until=2000)
+```
+
+There are rejections when the queue is full.
+
+```{r}
+mm23.arrivals <- get_mon_arrivals(mm23.env)
+
+rejection_rate <- mm23.arrivals %>%
+  dplyr::summarise(rejection_rate = sum(!finished)/length(finished)) %>%
+  dplyr::pull(rejection_rate)
+rejection_rate
+```
+
+By solving the balance equations for this system, we obtain the following:
+
+$$
+\begin{aligned}
+p_0 &= \left[ \sum_{n=0}^{c-1}\frac{r^n}{n!} + \sum_{n=c}^{k}\frac{r^n}{c!c^{n-c}} \right]^{-1}\\
+N &= \sum_{n=0}^{\infty}nP_n = p_0\left(\sum_{n=0}^{c-n}\frac{nr^n}{n!} + \sum_{n=c}^{k}\frac{nr^n}{c!c^{n-c}}\right)
+\end{aligned}
+$$
+
+where $r=\lambda/\mu$. Finally, we can see how the simulation quickly converges to the theoretical average number of customers in the system $N$:
+
+```{r}
+# Theoretical value
+rho <- lambda/mu
+div <- 1 / c(1, 1, factorial(2) * 2^(2:3-2))
+mm23.N <- sum(0:3 * rho^(0:3) * div) / sum(rho^(0:3) * div)
+
+# Evolution of the average number of customers in the system
+plot(mm23.env, "resources", "usage", "server", items="system") +
+  geom_hline(yintercept=mm23.N)
+```
+
+## Queueing Networks
+
+Let us consider the following network of queues (example taken from [Grotto Networking](http://www.grotto-networking.com/DiscreteEventPython.html#NetQueues)):
+
+![A network of queues.](includes/queueing-network.svg)
+
+There are three exponential generators ($\lambda_1$, $\lambda_2$, $\lambda_4$) that inject messages with exponential size of mean 100 bytes. There are four M/D/1 queues with a deterministic rate equal to 220 bytes/s. There is a 25\% probability that messages from $\lambda_1$ are dropped before the second queue, and a fork 35/65\% for the output of the second queue to reach queues 3 and 4. We are interested, for instance, in the accumulated waiting time for messages entering queue 1 and exiting queue 3 or 4.
+
+The original author of this example, Greg M. Bernstein, simulated this problem with [this Python code](http://www.grotto-networking.com/files/DESPython/QueueNet2.py). We'll start by setting up the main constants and a couple of functions to set the message size and seize an M/D/1 queue:
+
+```{r}
+mean_pkt_size <- 100        # bytes
+lambda1 <- 2                # pkts/s
+lambda3 <- 0.5              # pkts/s
+lambda4 <- 0.6              # pkts/s
+rate <- 2.2 * mean_pkt_size # bytes/s
+
+# set an exponential message size of mean mean_pkt_size
+set_msg_size <- function(.)
+  set_attribute(., "size", function() rexp(1, 1/mean_pkt_size))
+
+# seize an M/D/1 queue by id; the timeout is function of the message size
+md1 <- function(., id)
+  seize(., paste0("md1_", id), 1) %>%
+  timeout(function() get_attribute(env, "size") / rate) %>%
+  release(paste0("md1_", id), 1)
+```
+
+The next step is to set up the three points of attachment for our generators:
+
+```{r}
+to_queue_1 <- trajectory() %>%
+  set_msg_size() %>%
+  md1(1) %>%
+  leave(0.25) %>%
+  md1(2) %>%
+  branch(
+    function() (runif(1) > 0.65) + 1, continue=c(F, F),
+    trajectory() %>% md1(3),
+    trajectory() %>% md1(4)
+  )
+
+to_queue_3 <- trajectory() %>%
+  set_msg_size() %>%
+  md1(3)
+
+to_queue_4 <- trajectory() %>%
+  set_msg_size() %>%
+  md1(4)
+```
+
+Finally, we prepare and run the simulation environment with the resources and generators required:
+
+```{r}
+env <- simmer()
+for (i in 1:4) env %>% 
+  add_resource(paste0("md1_", i))
+env %>%
+  add_generator("arrival1_", to_queue_1, function() rexp(1, lambda1), mon=2) %>%
+  add_generator("arrival3_", to_queue_3, function() rexp(1, lambda3), mon=2) %>%
+  add_generator("arrival4_", to_queue_4, function() rexp(1, lambda4), mon=2) %>%
+  run(4000)
+```
+
+In the analysis, we filter arrivals from generator 1 that reach queues 3 and 4, and we examine the average waiting time and the total number of messages:
+
+```{r}
+res <- get_mon_arrivals(env, per_resource = TRUE) %>%
+  dplyr::select(name, resource) %>%
+  dplyr::filter(resource %in% c("md1_3", "md1_4"))
+arr <- get_mon_arrivals(env) %>%
+  dplyr::mutate(waiting_time = end_time - (start_time + activity_time),
+                generator = regmatches(name, regexpr("arrival[[:digit:]]", name))) %>%
+  dplyr::left_join(res) %>%
+  dplyr::group_by(generator, resource)
+
+dplyr::summarise(arr, average = sum(waiting_time) / n())
+get_n_generated(env, "arrival1_") + get_n_generated(env, "arrival4_")
+dplyr::count(arr)
+```

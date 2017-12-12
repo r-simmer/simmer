@@ -17,13 +17,56 @@ knitr::opts_chunk$set(collapse = T, comment = "#>",
 
 required <- c("simmer.plot")
 
-if (!all(unlist(lapply(required, function(pkg) requireNamespace(pkg, quietly = TRUE)))))
+if (!all(sapply(required, requireNamespace, quietly = TRUE)))
   knitr::opts_chunk$set(eval = FALSE)
 ```
 
 ```{r, message=FALSE}
 library(simmer)
 library(simmer.plot)
+```
+
+## Interaction with the environment
+
+Many activities accept functions as arguments to be evaluated dynamically during the simulation. Those functions may interact with the environment to extract parameters of interest such as the current simulation time (see `?now`), status of resources (see `?get_capacity`), status of generators (see `?get_n_generated`), or directly to gather the history of monitored values (see `?get_mon`). The only requirement is that the simulation environment must be in the scope of the trajectory.
+
+Therefore, this will not work:
+
+```{r, error = TRUE}
+t <- trajectory() %>%
+  log_(function() as.character(now(env)))
+
+env <- simmer() %>%
+  add_generator("dummy", t, function() 1) %>%
+  run(4)
+```
+
+because the global `env` is not available at runtime: the simulation runs _and then_ the resulting object is assigned to `env`. For `env` to be in the scope of `t` during this simulation, it is enough to detach the `run()` method from the definition pipe:
+
+```{r}
+t <- trajectory() %>%
+  log_(function() as.character(now(env)))
+
+env <- simmer() %>%
+  add_generator("dummy", t, function() 1)
+
+env %>% run(4) %>% invisible
+```
+
+And we get the expected output. However, as a general rule of good practice, __it is recommended to instantiate the environment always in the first place__ to avoid possible mistakes, and because the code becomes more readable:
+
+```{r}
+# First, instantiate the environment
+env <- simmer()
+
+# Here I'm using it
+t <- trajectory() %>%
+  log_(function() as.character(now(env)))
+
+# And finally, run it
+env %>%
+  add_generator("dummy", t, function() 1) %>%
+  run(4) %>% invisible
 ```
 
 ## Available set of activities
@@ -58,13 +101,13 @@ simmer() %>%
 
 ### `set_attribute()`
 
-The `set_attribute(., key, value, global)` method sets the `value` of an arrival's attribute `key`. Be aware that `value` can only be numeric.
+The `set_attribute(., keys, values, global)` method sets the `values` of an arrival's attributes `keys`. Both `keys` and `values` can be vectors (and their lengths must match) or functions returning vectors. But either way, the `values` stored can only be numeric.
 
 ```{r}
 patient_traj <- trajectory(name = "patient_trajectory") %>%
-  set_attribute(key = "my_key", value = 123) %>%
+  set_attribute(keys = "my_key", values = 123) %>%
   timeout(5) %>%
-  set_attribute(key = "my_key", value = 456)
+  set_attribute(keys = "my_key", values = 456)
 
 env <- simmer() %>%
   add_generator("patient", patient_traj, at(0), mon = 2) %>%
@@ -75,7 +118,7 @@ get_mon_attributes(env)
 
 Above, a trajectory which _only_ sets attribute `my_key` to value `123` is launched once by an arrival generated at time 0 (check `?at`). The `mon=2` of `add_generator()` makes the simulation environment monitor the attributes' evolution (disabled by default). Using `get_mon_attributes()`, we can look at the evolution of the value of `my_key`.
 
-If you want to set an attribute that depends on another attribute, or on the current value of the attribute to be set, this is also possible. Attributes can be retrieved inside user-supplied functions using `get_attribute(.)`. Below, you can see an example of this in practice.
+If you want to set an attribute that depends on another attribute, or on the current value of the attribute to be set, this is also possible. Attributes can be retrieved inside user-supplied functions using `get_attribute(., keys)`. Below, you can see an example of this in practice.
 
 ```{r}
 patient_traj <- trajectory(name = "patient_trajectory") %>%
@@ -98,7 +141,7 @@ Attributes are _per arrival_ by default (`global=FALSE`), meaning that each arri
 
 ```{r}
 writer <- trajectory() %>%
-  set_attribute(key = "my_key", value = 123)
+  set_attribute(keys = "my_key", values = 123)
 
 reader <- trajectory() %>%
   log_(function() paste0(get_attribute(env, "my_key")))
@@ -111,14 +154,15 @@ env %>% run()
 get_mon_attributes(env)
 ```
 
-Thus, the reader in the example above returns `NA`, missing. However, attributes can also be global with `global=TRUE`:
+Thus, the reader in the example above returns `NA`, missing. However, attributes can also be global with `global=TRUE` or `set_global(., keys, values)`, a shortcut for `set_attributes(..., global=TRUE)`:
 
 ```{r}
 writer <- trajectory() %>%
-  set_attribute(key = "my_key", value = 123, global = TRUE)
+  set_global(keys = "my_key", values = 123) 
 
 reader <- trajectory() %>%
-  log_(function() paste0(get_attribute(env, "my_key"), ", ", get_attribute(env, "my_key", global = TRUE)))
+  log_(function() paste0(get_attribute(env, "my_key"), ", ", 
+                         get_attribute(env, "my_key", global = TRUE)))
 
 env <- simmer() %>%
   add_generator("writer", writer, at(0), mon = 2) %>%
@@ -1041,7 +1085,7 @@ simmer() %>%
 
 Note that, in contrast to `trap()`, reneging is triggered even if the arrival is in a queue or is part of a non-permanent batch.
 
-## Manipulating trajectories: joining and subsetting
+## Trajectory toolbox: joining and subsetting
 
 ### `join()`
 
@@ -1126,49 +1170,4 @@ which is equivalent to `t0[2]`. If a string is provided, it ensures that only th
 ```{r}
 join(t0, t0)["timeout"]
 join(t0, t0)[["timeout"]]
-```
-
-## Interacting with the environment from within a trajectory
-
-It is possible to interact with the simulation environment in order to extract parameters of interest such as the current simulation time (`now()`), status of resources (`get_capacity()`, `get_queue_size()`, `get_server_count()`, `get_queue_count`()), status of generators (`get_n_generated()`) or directly to gather the history of monitored values (`get_mon_*()`). You may also want (or in other words, your model may need) to check and use all this information to take decisions inside a given trajectory.
-
-For instance, let's suppose we just want to print the simulation time at a given point in a trajectory. The only requirement is that you must define the simulation environment __before__ running the simulation. This won't work:
-
-```{r, error = TRUE}
-remove(env)
-
-t <- trajectory() %>%
-  log_(function() paste(now(env)))
-
-env <- simmer() %>%
-  add_generator("dummy", t, function() 1) %>%
-  run(4)
-```
-
-Because the global `env` is not available at runtime: the simulation runs _and then_ the resulting object is assigned to `env`. We need to assign first, then run. So this will work:
-
-```{r}
-t <- trajectory() %>%
-  log_(function() paste(now(env)))
-
-env <- simmer() %>%
-  add_generator("dummy", t, function() 1)
-
-env %>% run(4) %>% invisible
-```
-
-And we get the expected output. However, as a general rule of good practice, __it is recommended to instantiate the environment always in the first place__, to avoid possible mistakes and because the code becomes more readable:
-
-```{r}
-# First, instantiate the environment
-env <- simmer()
-
-# Here I'm using it
-t <- trajectory() %>%
-  log_(function() paste(now(env)))
-
-# And finally, run it
-env %>%
-  add_generator("dummy", t, function() 1) %>%
-  run(4) %>% invisible
 ```

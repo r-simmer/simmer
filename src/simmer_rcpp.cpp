@@ -110,10 +110,18 @@ std::string get_name_(SEXP sim_) {
 }
 
 //[[Rcpp::export]]
-double get_attribute_(SEXP sim_, const std::string& key, bool global) {
+NumericVector get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bool global) {
   XPtr<Simulator> sim(sim_);
-  if (global) return sim->get_attribute(key);
-  else return sim->get_running_arrival()->get_attribute(key);
+  boost::function<double (const std::string&)> getter;
+  NumericVector attrs;
+
+  if (global) getter = boost::bind(&Simulator::get_attribute, sim.get(), _1);
+  else getter = boost::bind(&Arrival::get_attribute, sim->get_running_arrival(), _1);
+
+  foreach_ (const std::string& key, keys)
+    attrs.push_back(getter(key));
+
+  return attrs;
 }
 
 //[[Rcpp::export]]
@@ -254,15 +262,41 @@ SEXP Select__new_func(const Function& resources, int provide_attrs, const std::s
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new(const std::string& key, double value, bool global) {
-  return XPtr<SetAttribute<double> >(new SetAttribute<double>(key, value, 0, global));
+SEXP SetAttribute__new(const std::vector<std::string>& keys,
+                       const std::vector<double>& values, bool global)
+{
+  VEC<int> p = VEC<int>(2, 0);
+  return XPtr<SetAttribute<VEC<std::string>, VEC<double> > >(
+      new SetAttribute<VEC<std::string>, VEC<double> >(keys, values, global, p));
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new_func(const std::string& key,
-                            const Function& value, int provide_attrs, bool global) {
-  return XPtr<SetAttribute<Function> >(
-      new SetAttribute<Function>(key, value, provide_attrs, global));
+SEXP SetAttribute__new_func1(const Function& keys, const std::vector<double>& values,
+                             bool global, int provide_attrs)
+{
+  VEC<int> p = VEC<int>(2, 0);
+  p[0] = provide_attrs;
+  return XPtr<SetAttribute<Function, VEC<double> > >(
+      new SetAttribute<Function, VEC<double> >(keys, values, global, p));
+}
+
+//[[Rcpp::export]]
+SEXP SetAttribute__new_func2(const std::vector<std::string>& keys, const Function& values,
+                             bool global, int provide_attrs)
+{
+  VEC<int> p = VEC<int>(2, 0);
+  p[1] = provide_attrs;
+  return XPtr<SetAttribute<VEC<std::string>, Function> >(
+      new SetAttribute<VEC<std::string>, Function>(keys, values, global, p));
+}
+
+//[[Rcpp::export]]
+SEXP SetAttribute__new_func3(const Function& keys, const Function& values,
+                             bool global, const std::vector<int>& provide_attrs)
+{
+  VEC<int> p = provide_attrs;
+  return XPtr<SetAttribute<Function, Function> >(
+      new SetAttribute<Function, Function>(keys, values, global, p));
 }
 
 //[[Rcpp::export]]
@@ -396,7 +430,7 @@ SEXP Batch__new_func2(int n, double timeout, bool permanent,
 }
 
 //[[Rcpp::export]]
-SEXP Batch__new_func4(int n, const Function& timeout, bool permanent, const std::string& name,
+SEXP Batch__new_func3(int n, const Function& timeout, bool permanent, const std::string& name,
                       const Function& rule, const std::vector<int>& provide_attrs)
 {
   VEC<int> p = provide_attrs;
@@ -460,7 +494,7 @@ SEXP Send__new_func2(const std::vector<std::string>& signals,
 }
 
 //[[Rcpp::export]]
-SEXP Send__new_func4(const Function& signals,
+SEXP Send__new_func3(const Function& signals,
                      const Function& delay, const std::vector<int>& provide_attrs)
 {
   VEC<int> p = provide_attrs;
