@@ -2,7 +2,7 @@ language: R
 sudo: true
 latex: false
 r:
-  - devel
+  - release
 
 git:
   submodules: false
