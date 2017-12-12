@@ -134,7 +134,7 @@ Simmer <- R6Class("simmer",
 
     get_name = function() get_name_(private$sim_obj),
 
-    get_attribute = function(key, global=FALSE) get_attribute_(private$sim_obj, key, global),
+    get_attribute = function(keys, global=FALSE) get_attribute_(private$sim_obj, keys, global),
 
     get_prioritization = function() get_prioritization_(private$sim_obj),
 

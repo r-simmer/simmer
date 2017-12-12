@@ -153,12 +153,16 @@ Trajectory <- R6Class("trajectory",
       )
     },
 
-    set_attribute = function(key, value, global=FALSE) {
-      check_args(key, value, global, types=c("string", "numeric or function", "flag"))
+    set_attribute = function(keys, values, global=FALSE) {
+      check_args(keys, values, global,
+                 types=c("string vector or function", "numeric or function", "flag"))
       switch(
-        binarise(is.function(value)),
-        private$add_activity(SetAttribute__new(key, value, global)),
-        private$add_activity(SetAttribute__new_func(key, value, needs_attrs(value), global))
+        binarise(is.function(keys), is.function(values)),
+        private$add_activity(SetAttribute__new(keys, values, global)),
+        private$add_activity(SetAttribute__new_func1(keys, values, global, needs_attrs(keys))),
+        private$add_activity(SetAttribute__new_func2(keys, values, global, needs_attrs(values))),
+        private$add_activity(SetAttribute__new_func3(keys, values, global,
+                                                     c(needs_attrs(keys), needs_attrs(values))))
       )
     },
 
@@ -281,7 +285,7 @@ Trajectory <- R6Class("trajectory",
                                               needs_attrs(timeout))),
         private$add_activity(Batch__new_func2(n, timeout, permanent, name, rule,
                                               needs_attrs(rule))),
-        private$add_activity(Batch__new_func4(n, timeout, permanent, name, rule,
+        private$add_activity(Batch__new_func3(n, timeout, permanent, name, rule,
                                               c(needs_attrs(timeout), needs_attrs(rule))))
       )
     },
@@ -295,7 +299,7 @@ Trajectory <- R6Class("trajectory",
         private$add_activity(Send__new(signals, delay)),
         private$add_activity(Send__new_func1(signals, delay, needs_attrs(signals))),
         private$add_activity(Send__new_func2(signals, delay, needs_attrs(delay))),
-        private$add_activity(Send__new_func4(signals, delay,
+        private$add_activity(Send__new_func3(signals, delay,
                                              c(needs_attrs(signals), needs_attrs(delay))))
       )
     },

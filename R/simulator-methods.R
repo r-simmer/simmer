@@ -237,7 +237,7 @@ get_mon_resources.simmer <- function(.envs, data=c("counts", "limits"))
 #' given generator.
 #'
 #' \code{get_name} returns the number of the running arrival. \code{get_attribute}
-#' returns a running arrival's attribute or a global one. If the provided key was
+#' returns a running arrival's attributes or global ones. If a provided key was
 #' not previously set, it returns a missing value. \code{get_global} is a shortcut
 #' for \code{get_attribute(global=TRUE)}. \code{get_prioritization} returns a
 #' running arrival's prioritization values. \code{get_name}, \code{get_attribute}
@@ -258,19 +258,19 @@ get_name <- function(.env) UseMethod("get_name")
 #' @export
 get_name.simmer <- function(.env) .env$get_name()
 
-#' @param key the attribute name.
+#' @param keys the attribute name(s).
 #' @param global if \code{TRUE}, the attribute will be global instead of per-arrival.
 #'
 #' @rdname get_n_generated
 #' @export
-get_attribute <- function(.env, key, global=FALSE) UseMethod("get_attribute")
+get_attribute <- function(.env, keys, global=FALSE) UseMethod("get_attribute")
 
 #' @export
-get_attribute.simmer <- function(.env, key, global=FALSE) .env$get_attribute(key, global)
+get_attribute.simmer <- function(.env, keys, global=FALSE) .env$get_attribute(keys, global)
 
 #' @rdname get_n_generated
 #' @export
-get_global <- function(.env, key) get_attribute(.env, key, TRUE)
+get_global <- function(.env, keys) get_attribute(.env, keys, TRUE)
 
 #' @rdname get_n_generated
 #' @export

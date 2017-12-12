@@ -381,9 +381,8 @@ Now a car's trajectory is straightforward. First, the starting time is saved as 
 
 ```{r, message=FALSE, warning=FALSE}
 car <- trajectory() %>%
-  set_attribute("start", function() now(env)) %>%
-  set_attribute("level", function() 
-    sample(FUEL_TANK_LEVEL[1]:FUEL_TANK_LEVEL[2], 1)) %>%
+  set_attribute(c("start", "level"), function() 
+    c(now(env), sample(FUEL_TANK_LEVEL[1]:FUEL_TANK_LEVEL[2], 1))) %>%
   log_("arriving at gas station") %>%
   seize("pump", 1) %>%
   # 'join()' concatenates the refuelling trajectory here

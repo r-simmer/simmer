@@ -377,32 +377,40 @@ protected:
 /**
  * Set attributes.
  */
-template <typename T>
+template <typename T, typename U>
 class SetAttribute : public Activity {
 public:
-  CLONEABLE(SetAttribute<T>)
+  CLONEABLE(SetAttribute<T COMMA U>)
 
-  SetAttribute(const std::string& key, const T& value, int provide_attrs, bool global)
-    : Activity("SetAttribute", VEC<int>(1, provide_attrs)),
-      key(key), value(value), global(global) {}
+  SetAttribute(const T& keys, const U& values, bool global, const VEC<int>& provide_attrs)
+    : Activity("SetAttribute", provide_attrs), keys(keys), values(values), global(global) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELC(key) << LABELC(value) << LABELE(global);
-    else Rcpp::Rcout << C(key) << C(value) << E(global);
+    if (!brief) Rcpp::Rcout << LABELC(keys) << LABELC(values) << LABELE(global);
+    else Rcpp::Rcout << C(keys) << C(values) << E(global);
   }
 
   double run(Arrival* arrival) {
-    double ret = get<double>(value, 0, arrival);
-    if (global)
-      arrival->sim->set_attribute(key, ret);
-    else arrival->set_attribute(key, ret);
+    VEC<std::string> ks = get<VEC<std::string> >(keys, 0, arrival);
+    VEC<double> vals = get<VEC<double> >(values, 1, arrival);
+
+    if (ks.size() != vals.size())
+      Rcpp::stop("%s: number of keys and values don't match", name);
+
+    boost::function<void (const std::string&, double)> setter;
+    if (global) setter = boost::bind(&Simulator::set_attribute, arrival->sim, _1, _2);
+    else setter = boost::bind(&Arrival::set_attribute, arrival, _1, _2);
+
+    for (unsigned int i = 0; i < ks.size(); i++)
+      setter(ks[i], vals[i]);
+
     return 0;
   }
 
 protected:
-  std::string key;
-  T value;
+  T keys;
+  U values;
   bool global;
 };
 
@@ -990,7 +998,7 @@ class Send : public Activity {
 public:
   CLONEABLE(Send<T COMMA U>)
 
-  Send(const T& signals,const U& delay, const VEC<int>& provide_attrs)
+  Send(const T& signals, const U& delay, const VEC<int>& provide_attrs)
     : Activity("Send", provide_attrs), signals(signals), delay(delay) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {

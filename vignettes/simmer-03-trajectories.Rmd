@@ -101,13 +101,13 @@ simmer() %>%
 
 ### `set_attribute()`
 
-The `set_attribute(., key, value, global)` method sets the `value` of an arrival's attribute `key`. Be aware that `value` can only be numeric.
+The `set_attribute(., keys, values, global)` method sets the `values` of an arrival's attributes `keys`. Both `keys` and `values` can be vectors (and their lengths must match) or functions returning vectors. But either way, the `values` stored can only be numeric.
 
 ```{r}
 patient_traj <- trajectory(name = "patient_trajectory") %>%
-  set_attribute(key = "my_key", value = 123) %>%
+  set_attribute(keys = "my_key", values = 123) %>%
   timeout(5) %>%
-  set_attribute(key = "my_key", value = 456)
+  set_attribute(keys = "my_key", values = 456)
 
 env <- simmer() %>%
   add_generator("patient", patient_traj, at(0), mon = 2) %>%
@@ -118,7 +118,7 @@ get_mon_attributes(env)
 
 Above, a trajectory which _only_ sets attribute `my_key` to value `123` is launched once by an arrival generated at time 0 (check `?at`). The `mon=2` of `add_generator()` makes the simulation environment monitor the attributes' evolution (disabled by default). Using `get_mon_attributes()`, we can look at the evolution of the value of `my_key`.
 
-If you want to set an attribute that depends on another attribute, or on the current value of the attribute to be set, this is also possible. Attributes can be retrieved inside user-supplied functions using `get_attribute(.)`. Below, you can see an example of this in practice.
+If you want to set an attribute that depends on another attribute, or on the current value of the attribute to be set, this is also possible. Attributes can be retrieved inside user-supplied functions using `get_attribute(., keys)`. Below, you can see an example of this in practice.
 
 ```{r}
 patient_traj <- trajectory(name = "patient_trajectory") %>%
@@ -141,7 +141,7 @@ Attributes are _per arrival_ by default (`global=FALSE`), meaning that each arri
 
 ```{r}
 writer <- trajectory() %>%
-  set_attribute(key = "my_key", value = 123)
+  set_attribute(keys = "my_key", values = 123)
 
 reader <- trajectory() %>%
   log_(function() paste0(get_attribute(env, "my_key")))
@@ -154,14 +154,15 @@ env %>% run()
 get_mon_attributes(env)
 ```
 
-Thus, the reader in the example above returns `NA`, missing. However, attributes can also be global with `global=TRUE`:
+Thus, the reader in the example above returns `NA`, missing. However, attributes can also be global with `global=TRUE` or `set_global(., keys, values)`, a shortcut for `set_attributes(..., global=TRUE)`:
 
 ```{r}
 writer <- trajectory() %>%
-  set_attribute(key = "my_key", value = 123, global = TRUE)
+  set_global(keys = "my_key", values = 123) 
 
 reader <- trajectory() %>%
-  log_(function() paste0(get_attribute(env, "my_key"), ", ", get_attribute(env, "my_key", global = TRUE)))
+  log_(function() paste0(get_attribute(env, "my_key"), ", ", 
+                         get_attribute(env, "my_key", global = TRUE)))
 
 env <- simmer() %>%
   add_generator("writer", writer, at(0), mon = 2) %>%
