@@ -199,7 +199,6 @@ public:
   void set_activity(Activity* ptr) { activity = ptr; }
   double get_start() const { return lifetime.start; }
   Activity* get_activity() const { return activity; }
-  Attr* get_attributes() { return &attributes; } // # nocov
   double get_attribute(const std::string& key) const {
     Attr::const_iterator search = attributes.find(key);
     if (search == attributes.end())

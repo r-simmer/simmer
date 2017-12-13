@@ -342,7 +342,6 @@ public:
       return NA_REAL;
     return search->second;
   }
-  Attr* get_attributes() { return &attributes; } // # nocov
 
   void register_arrival(Arrival* arrival) { arrival_map[arrival]; }
   void unregister_arrival(Arrival* arrival) {

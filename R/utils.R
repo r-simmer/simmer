@@ -63,13 +63,6 @@ check_args <- function(..., types, n=1, env=parent.frame()) {
     stop(paste0(caller, ": ", paste0(msg, collapse=", ")), call. = FALSE)
 }
 
-needs_attrs <- function(variable) {
-  args <- length(formals(variable))
-  if (args)
-    .Deprecated(msg="Attribute retrieval through function arguments is deprecated.\nUse 'get_attribute' instead.") # nocov
-  args
-}
-
 envs_apply <- function(envs, method, ...) {
   if (!is.list(envs)) envs <- list(envs)
   args <- list(...)

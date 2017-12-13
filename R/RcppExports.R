@@ -93,164 +93,164 @@ Seize__new <- function(resource, amount, cont, trj, mask) {
     .Call(`_simmer_Seize__new`, resource, amount, cont, trj, mask)
 }
 
-Seize__new_func <- function(resource, amount, provide_attrs, cont, trj, mask) {
-    .Call(`_simmer_Seize__new_func`, resource, amount, provide_attrs, cont, trj, mask)
+Seize__new_func <- function(resource, amount, cont, trj, mask) {
+    .Call(`_simmer_Seize__new_func`, resource, amount, cont, trj, mask)
 }
 
 SeizeSelected__new <- function(id, amount, cont, trj, mask) {
     .Call(`_simmer_SeizeSelected__new`, id, amount, cont, trj, mask)
 }
 
-SeizeSelected__new_func <- function(id, amount, provide_attrs, cont, trj, mask) {
-    .Call(`_simmer_SeizeSelected__new_func`, id, amount, provide_attrs, cont, trj, mask)
+SeizeSelected__new_func <- function(id, amount, cont, trj, mask) {
+    .Call(`_simmer_SeizeSelected__new_func`, id, amount, cont, trj, mask)
 }
 
 Release__new <- function(resource, amount) {
     .Call(`_simmer_Release__new`, resource, amount)
 }
 
-Release__new_func <- function(resource, amount, provide_attrs) {
-    .Call(`_simmer_Release__new_func`, resource, amount, provide_attrs)
+Release__new_func <- function(resource, amount) {
+    .Call(`_simmer_Release__new_func`, resource, amount)
 }
 
 ReleaseSelected__new <- function(id, amount) {
     .Call(`_simmer_ReleaseSelected__new`, id, amount)
 }
 
-ReleaseSelected__new_func <- function(id, amount, provide_attrs) {
-    .Call(`_simmer_ReleaseSelected__new_func`, id, amount, provide_attrs)
+ReleaseSelected__new_func <- function(id, amount) {
+    .Call(`_simmer_ReleaseSelected__new_func`, id, amount)
 }
 
 SetCapacity__new <- function(resource, value) {
     .Call(`_simmer_SetCapacity__new`, resource, value)
 }
 
-SetCapacity__new_func <- function(resource, value, provide_attrs) {
-    .Call(`_simmer_SetCapacity__new_func`, resource, value, provide_attrs)
+SetCapacity__new_func <- function(resource, value) {
+    .Call(`_simmer_SetCapacity__new_func`, resource, value)
 }
 
 SetCapacitySelected__new <- function(id, value) {
     .Call(`_simmer_SetCapacitySelected__new`, id, value)
 }
 
-SetCapacitySelected__new_func <- function(id, value, provide_attrs) {
-    .Call(`_simmer_SetCapacitySelected__new_func`, id, value, provide_attrs)
+SetCapacitySelected__new_func <- function(id, value) {
+    .Call(`_simmer_SetCapacitySelected__new_func`, id, value)
 }
 
 SetQueue__new <- function(resource, value) {
     .Call(`_simmer_SetQueue__new`, resource, value)
 }
 
-SetQueue__new_func <- function(resource, value, provide_attrs) {
-    .Call(`_simmer_SetQueue__new_func`, resource, value, provide_attrs)
+SetQueue__new_func <- function(resource, value) {
+    .Call(`_simmer_SetQueue__new_func`, resource, value)
 }
 
 SetQueueSelected__new <- function(id, value) {
     .Call(`_simmer_SetQueueSelected__new`, id, value)
 }
 
-SetQueueSelected__new_func <- function(id, value, provide_attrs) {
-    .Call(`_simmer_SetQueueSelected__new_func`, id, value, provide_attrs)
+SetQueueSelected__new_func <- function(id, value) {
+    .Call(`_simmer_SetQueueSelected__new_func`, id, value)
 }
 
 Select__new <- function(resources, policy, id) {
     .Call(`_simmer_Select__new`, resources, policy, id)
 }
 
-Select__new_func <- function(resources, provide_attrs, policy, id) {
-    .Call(`_simmer_Select__new_func`, resources, provide_attrs, policy, id)
+Select__new_func <- function(resources, policy, id) {
+    .Call(`_simmer_Select__new_func`, resources, policy, id)
 }
 
 SetAttribute__new <- function(keys, values, global) {
     .Call(`_simmer_SetAttribute__new`, keys, values, global)
 }
 
-SetAttribute__new_func1 <- function(keys, values, global, provide_attrs) {
-    .Call(`_simmer_SetAttribute__new_func1`, keys, values, global, provide_attrs)
+SetAttribute__new_func1 <- function(keys, values, global) {
+    .Call(`_simmer_SetAttribute__new_func1`, keys, values, global)
 }
 
-SetAttribute__new_func2 <- function(keys, values, global, provide_attrs) {
-    .Call(`_simmer_SetAttribute__new_func2`, keys, values, global, provide_attrs)
+SetAttribute__new_func2 <- function(keys, values, global) {
+    .Call(`_simmer_SetAttribute__new_func2`, keys, values, global)
 }
 
-SetAttribute__new_func3 <- function(keys, values, global, provide_attrs) {
-    .Call(`_simmer_SetAttribute__new_func3`, keys, values, global, provide_attrs)
+SetAttribute__new_func3 <- function(keys, values, global) {
+    .Call(`_simmer_SetAttribute__new_func3`, keys, values, global)
 }
 
 Activate__new <- function(generator) {
     .Call(`_simmer_Activate__new`, generator)
 }
 
-Activate__new_func <- function(generator, provide_attrs) {
-    .Call(`_simmer_Activate__new_func`, generator, provide_attrs)
+Activate__new_func <- function(generator) {
+    .Call(`_simmer_Activate__new_func`, generator)
 }
 
 Deactivate__new <- function(generator) {
     .Call(`_simmer_Deactivate__new`, generator)
 }
 
-Deactivate__new_func <- function(generator, provide_attrs) {
-    .Call(`_simmer_Deactivate__new_func`, generator, provide_attrs)
+Deactivate__new_func <- function(generator) {
+    .Call(`_simmer_Deactivate__new_func`, generator)
 }
 
 SetTraj__new <- function(generator, trj) {
     .Call(`_simmer_SetTraj__new`, generator, trj)
 }
 
-SetTraj__new_func <- function(generator, provide_attrs, trj) {
-    .Call(`_simmer_SetTraj__new_func`, generator, provide_attrs, trj)
+SetTraj__new_func <- function(generator, trj) {
+    .Call(`_simmer_SetTraj__new_func`, generator, trj)
 }
 
 SetDist__new <- function(generator, dist) {
     .Call(`_simmer_SetDist__new`, generator, dist)
 }
 
-SetDist__new_func <- function(generator, provide_attrs, dist) {
-    .Call(`_simmer_SetDist__new_func`, generator, provide_attrs, dist)
+SetDist__new_func <- function(generator, dist) {
+    .Call(`_simmer_SetDist__new_func`, generator, dist)
 }
 
 SetPrior__new <- function(values) {
     .Call(`_simmer_SetPrior__new`, values)
 }
 
-SetPrior__new_func <- function(values, provide_attrs) {
-    .Call(`_simmer_SetPrior__new_func`, values, provide_attrs)
+SetPrior__new_func <- function(values) {
+    .Call(`_simmer_SetPrior__new_func`, values)
 }
 
 Timeout__new <- function(delay) {
     .Call(`_simmer_Timeout__new`, delay)
 }
 
-Timeout__new_func <- function(task, provide_attrs) {
-    .Call(`_simmer_Timeout__new_func`, task, provide_attrs)
+Timeout__new_func <- function(task) {
+    .Call(`_simmer_Timeout__new_func`, task)
 }
 
-Branch__new <- function(option, provide_attrs, cont, trj) {
-    .Call(`_simmer_Branch__new`, option, provide_attrs, cont, trj)
+Branch__new <- function(option, cont, trj) {
+    .Call(`_simmer_Branch__new`, option, cont, trj)
 }
 
 Rollback__new <- function(amount, times) {
     .Call(`_simmer_Rollback__new`, amount, times)
 }
 
-Rollback__new_func <- function(amount, check, provide_attrs) {
-    .Call(`_simmer_Rollback__new_func`, amount, check, provide_attrs)
+Rollback__new_func <- function(amount, check) {
+    .Call(`_simmer_Rollback__new_func`, amount, check)
 }
 
 Leave__new <- function(prob) {
     .Call(`_simmer_Leave__new`, prob)
 }
 
-Leave__new_func <- function(prob, provide_attrs) {
-    .Call(`_simmer_Leave__new_func`, prob, provide_attrs)
+Leave__new_func <- function(prob) {
+    .Call(`_simmer_Leave__new_func`, prob)
 }
 
 Clone__new <- function(n, trj) {
     .Call(`_simmer_Clone__new`, n, trj)
 }
 
-Clone__new_func <- function(n, provide_attrs, trj) {
-    .Call(`_simmer_Clone__new_func`, n, provide_attrs, trj)
+Clone__new_func <- function(n, trj) {
+    .Call(`_simmer_Clone__new_func`, n, trj)
 }
 
 Synchronize__new <- function(wait, terminate) {
@@ -261,16 +261,16 @@ Batch__new <- function(n, timeout, permanent, name) {
     .Call(`_simmer_Batch__new`, n, timeout, permanent, name)
 }
 
-Batch__new_func1 <- function(n, timeout, permanent, name, provide_attrs) {
-    .Call(`_simmer_Batch__new_func1`, n, timeout, permanent, name, provide_attrs)
+Batch__new_func1 <- function(n, timeout, permanent, name) {
+    .Call(`_simmer_Batch__new_func1`, n, timeout, permanent, name)
 }
 
-Batch__new_func2 <- function(n, timeout, permanent, name, rule, provide_attrs) {
-    .Call(`_simmer_Batch__new_func2`, n, timeout, permanent, name, rule, provide_attrs)
+Batch__new_func2 <- function(n, timeout, permanent, name, rule) {
+    .Call(`_simmer_Batch__new_func2`, n, timeout, permanent, name, rule)
 }
 
-Batch__new_func3 <- function(n, timeout, permanent, name, rule, provide_attrs) {
-    .Call(`_simmer_Batch__new_func3`, n, timeout, permanent, name, rule, provide_attrs)
+Batch__new_func3 <- function(n, timeout, permanent, name, rule) {
+    .Call(`_simmer_Batch__new_func3`, n, timeout, permanent, name, rule)
 }
 
 Separate__new <- function() {
@@ -281,16 +281,16 @@ RenegeIn__new <- function(t, trj) {
     .Call(`_simmer_RenegeIn__new`, t, trj)
 }
 
-RenegeIn__new_func <- function(t, provide_attrs, trj) {
-    .Call(`_simmer_RenegeIn__new_func`, t, provide_attrs, trj)
+RenegeIn__new_func <- function(t, trj) {
+    .Call(`_simmer_RenegeIn__new_func`, t, trj)
 }
 
 RenegeIf__new <- function(signal, trj) {
     .Call(`_simmer_RenegeIf__new`, signal, trj)
 }
 
-RenegeIf__new_func <- function(signal, provide_attrs, trj) {
-    .Call(`_simmer_RenegeIf__new_func`, signal, provide_attrs, trj)
+RenegeIf__new_func <- function(signal, trj) {
+    .Call(`_simmer_RenegeIf__new_func`, signal, trj)
 }
 
 RenegeAbort__new <- function() {
@@ -301,32 +301,32 @@ Send__new <- function(signals, delay) {
     .Call(`_simmer_Send__new`, signals, delay)
 }
 
-Send__new_func1 <- function(signals, delay, provide_attrs) {
-    .Call(`_simmer_Send__new_func1`, signals, delay, provide_attrs)
+Send__new_func1 <- function(signals, delay) {
+    .Call(`_simmer_Send__new_func1`, signals, delay)
 }
 
-Send__new_func2 <- function(signals, delay, provide_attrs) {
-    .Call(`_simmer_Send__new_func2`, signals, delay, provide_attrs)
+Send__new_func2 <- function(signals, delay) {
+    .Call(`_simmer_Send__new_func2`, signals, delay)
 }
 
-Send__new_func3 <- function(signals, delay, provide_attrs) {
-    .Call(`_simmer_Send__new_func3`, signals, delay, provide_attrs)
+Send__new_func3 <- function(signals, delay) {
+    .Call(`_simmer_Send__new_func3`, signals, delay)
 }
 
 Trap__new <- function(signals, trj, interruptible) {
     .Call(`_simmer_Trap__new`, signals, trj, interruptible)
 }
 
-Trap__new_func <- function(signals, provide_attrs, trj, interruptible) {
-    .Call(`_simmer_Trap__new_func`, signals, provide_attrs, trj, interruptible)
+Trap__new_func <- function(signals, trj, interruptible) {
+    .Call(`_simmer_Trap__new_func`, signals, trj, interruptible)
 }
 
 UnTrap__new <- function(signals) {
     .Call(`_simmer_UnTrap__new`, signals)
 }
 
-UnTrap__new_func <- function(signals, provide_attrs) {
-    .Call(`_simmer_UnTrap__new_func`, signals, provide_attrs)
+UnTrap__new_func <- function(signals) {
+    .Call(`_simmer_UnTrap__new_func`, signals)
 }
 
 Wait__new <- function() {
@@ -337,8 +337,8 @@ Log__new <- function(message) {
     .Call(`_simmer_Log__new`, message)
 }
 
-Log__new_func <- function(message, provide_attrs) {
-    .Call(`_simmer_Log__new_func`, message, provide_attrs)
+Log__new_func <- function(message) {
+    .Call(`_simmer_Log__new_func`, message)
 }
 
 activity_get_count_ <- function(activity_) {
