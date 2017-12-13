@@ -47,6 +47,7 @@ Wrap <- R6Class("wrap",
           " | monitored: ", private$gen[[name]],
           " | n_generated: ", self$get_n_generated(name), " }\n"
         ))
+      invisible(self)
     },
 
     now = function() private$now_val,

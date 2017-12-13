@@ -29,6 +29,7 @@ Simmer <- R6Class("simmer",
           " | monitored: ", private$gen[[name]],
           " | n_generated: ", self$get_n_generated(name), " }\n"
         ))
+      invisible(self)
     },
 
     reset = function() {
