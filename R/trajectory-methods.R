@@ -54,13 +54,6 @@
 #' t1
 trajectory <- function(name="anonymous", verbose=FALSE) Trajectory$new(name, verbose)
 
-#' @rdname trajectory
-#' @export
-create_trajectory <- function(name="anonymous", verbose=FALSE) { # nocov start
-  .Deprecated("trajectory")
-  trajectory(name, verbose)
-} # nocov end
-
 #' Extract or Replace Parts of a Trajectory
 #'
 #' Operators acting on trajectories to extract or replace parts.
