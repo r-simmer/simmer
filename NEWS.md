@@ -3,6 +3,7 @@
 ## New features:
 
 * `set_attribute()` (and `set_global()` by extension) can set multiple attributes at once by providing vectors of `keys` and `values` (or functions returning such `keys` and/or `values`). `get_attribute()` (and `get_global()` by extension) can retrieve multiple `keys` (#122).
+* New `is_preemptive()` method to check whether a resource is preemptive by name (1a366e9).
 
 ## Minor changes and fixes:
 
