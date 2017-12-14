@@ -17,7 +17,7 @@ Simmer <- R6Class("simmer",
       for (name in names(private$res))
         cat(paste0(
           "{ Resource: ", name,
-          " | monitored: ", private$res[[name]],
+          " | monitored: ", private$res[[name]][["mon"]],
           " | server status: ", self$get_server_count(name),
           "(", self$get_capacity(name), ")",
           " | queue status: ", self$get_queue_count(name),
@@ -74,7 +74,7 @@ Simmer <- R6Class("simmer",
 
       ret <- add_resource_(private$sim_obj, name, capacity, queue_size, mon,
                            preemptive, preempt_order, queue_size_strict)
-      if (ret) private$res[[name]] <- mon
+      if (ret) private$res[[name]] <- c(mon=mon, preemptive=preemptive)
 
       if (inherits(capacity_schedule, "schedule"))
         add_resource_manager_(private$sim_obj, name, "capacity",
@@ -154,6 +154,8 @@ Simmer <- R6Class("simmer",
     get_server_count = function(name) get_server_count_(private$sim_obj, name),
 
     get_queue_count = function(name) get_queue_count_(private$sim_obj, name),
+
+    is_preemptive = function(name) private$res[[name]][["preemptive"]],
 
     # not exposed, internal use
     get_generators = function() { private$gen },

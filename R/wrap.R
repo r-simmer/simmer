@@ -35,7 +35,7 @@ Wrap <- R6Class("wrap",
       for (name in names(private$res))
         cat(paste0(
           "{ Resource: ", name,
-          " | monitored: ", private$res[[name]],
+          " | monitored: ", private$res[[name]][["mon"]],
           " | server status: ", self$get_server_count(name),
           "(", self$get_capacity(name), ")",
           " | queue status: ", self$get_queue_count(name),
@@ -104,7 +104,8 @@ Wrap <- R6Class("wrap",
       if (!(name %in% names(private$res)))
         stop("resource not found")
       private$queue_count[[name]]
-    }
+    },
+    is_preemptive = function(name) private$res[[name]][["preemptive"]]
   ),
 
   private = list(
