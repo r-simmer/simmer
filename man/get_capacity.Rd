@@ -5,6 +5,7 @@
 \alias{get_queue_size}
 \alias{get_server_count}
 \alias{get_queue_count}
+\alias{is_preemptive}
 \title{Get Resource Parameters}
 \usage{
 get_capacity(.env, resource)
@@ -14,6 +15,8 @@ get_queue_size(.env, resource)
 get_server_count(.env, resource)
 
 get_queue_count(.env, resource)
+
+is_preemptive(.env, resource)
 }
 \arguments{
 \item{.env}{the simulation environment.}
@@ -21,10 +24,10 @@ get_queue_count(.env, resource)
 \item{resource}{the name of the resource.}
 }
 \value{
-Return a numeric value.
+Return a numeric value. \code{is_preemptive} returns a boolean.
 }
 \description{
-Getters for resources: server capacity/count and queue size/count.
+Getters for resources: server capacity/count/preemptiveness and queue size/count.
 }
 \seealso{
 \code{\link{set_capacity}}, \code{\link{set_queue_size}}.

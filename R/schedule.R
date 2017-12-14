@@ -19,10 +19,13 @@ Schedule <- R6Class("schedule",
     },
 
     print = function() {
-      cat(paste0("schedule\n",
-                 "{ timetable: ", paste(private$timetable, collapse = " "),
-                 " | period: ", ifelse(private$period > 0, private$period, Inf), " }\n",
-                 "{ values: ", paste(private$values, collapse = " "), " }\n"))
+      cat(paste0(
+        "schedule\n",
+        "{ timetable: ", paste(private$timetable, collapse = " "),
+        " | period: ", ifelse(private$period > 0, private$period, Inf), " }\n",
+        "{ values: ", paste(private$values, collapse = " "), " }\n"
+      ))
+      invisible(self)
     },
 
     get_schedule = function() { private$schedule }

@@ -10,9 +10,11 @@ git:
 warnings_are_errors: true
 env:
   global:
-    - PKG_CXXFLAGS="-Wall -Wno-unused -pedantic"
     - _R_CHECK_CRAN_INCOMING_=FALSE
     - secure: "y6dn6JypVJq42dKJLqBT5WGiezaLjx27REgEECM1+pGzxmhAzmHDQtlHXYTIMZeqjV7eyDJm1FTEct/DPvuuO5okk9IqWPtM0NDkhaDhC27y5+BhE1VubAq0HkXAK4kwJ61jGY2hi+6YTasmwOyYA9bdSMfh9giFQVFGCqSUW4Q="
+
+r_github_packages:
+  - r-lib/covr
 
 before_install:
   - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-

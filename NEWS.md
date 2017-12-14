@@ -3,6 +3,7 @@
 ## New features:
 
 * `set_attribute()` (and `set_global()` by extension) can set multiple attributes at once by providing vectors of `keys` and `values` (or functions returning such `keys` and/or `values`). `get_attribute()` (and `get_global()` by extension) can retrieve multiple `keys` (#122).
+* New `is_preemptive()` method to check whether a resource is preemptive by name (1a366e9).
 
 ## Minor changes and fixes:
 
@@ -11,6 +12,7 @@
 * Fix self-induced preemption through `set_capacity()` (#125).
 * Update "Queueing Systems" vignette (a0409a0, 8f03f4f).
 * Update "Advanced Trajectory Usage" vignette (4501927).
+* Fix print methods to return the object invisibly (#128).
 
 # simmer 3.6.4
 
