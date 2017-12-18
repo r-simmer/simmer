@@ -104,8 +104,7 @@ Wrap <- R6Class("wrap",
       if (!(name %in% names(private$res)))
         stop("resource not found")
       private$queue_count[[name]]
-    },
-    is_preemptive = function(name) private$res[[name]][["preemptive"]]
+    }
   ),
 
   private = list(

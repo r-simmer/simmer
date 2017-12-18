@@ -15,7 +15,6 @@ test_that("the wrapper behaves as expected", {
 
   env <- simmer(verbose = TRUE) %>%
     add_resource("server", 1, 0) %>%
-    add_resource("server_preemptive", 1, 0, preemptive=TRUE) %>%
     add_generator("dummy", t0, at(1:10), mon = 2) %>%
     add_generator("rollback", t1, at(11)) %>%
     run(11.5) %>%
@@ -52,6 +51,4 @@ test_that("the wrapper behaves as expected", {
   expect_equal(env %>% get_server_count("server"), 1)
   expect_error(env %>% get_queue_count("asdf"))
   expect_equal(env %>% get_queue_count("server"), 0)
-  expect_false(env %>% is_preemptive("server"))
-  expect_true(env %>% is_preemptive("server_preemptive"))
 })

@@ -281,12 +281,12 @@ get_prioritization.simmer <- function(.env) .env$get_prioritization()
 
 #' Get Resource Parameters
 #'
-#' Getters for resources: server capacity/count/preemptiveness and queue size/count.
+#' Getters for resources: server capacity/count and queue size/count.
 #'
 #' @inheritParams reset
 #' @param resource the name of the resource.
 #'
-#' @return Return a numeric value. \code{is_preemptive} returns a boolean.
+#' @return Return a numeric value.
 #' @seealso \code{\link{set_capacity}}, \code{\link{set_queue_size}}.
 #' @export
 get_capacity <- function(.env, resource) UseMethod("get_capacity")
@@ -314,10 +314,3 @@ get_queue_count <- function(.env, resource) UseMethod("get_queue_count")
 
 #' @export
 get_queue_count.simmer <- function(.env, resource) .env$get_queue_count(resource)
-
-#' @rdname get_capacity
-#' @export
-is_preemptive <- function(.env, resource) UseMethod("is_preemptive")
-
-#' @export
-is_preemptive.simmer <- function(.env, resource) .env$is_preemptive(resource)

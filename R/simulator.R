@@ -155,8 +155,6 @@ Simmer <- R6Class("simmer",
 
     get_queue_count = function(name) get_queue_count_(private$sim_obj, name),
 
-    is_preemptive = function(name) private$res[[name]][["preemptive"]],
-
     # not exposed, internal use
     get_generators = function() { private$gen },
     get_resources = function() { private$res }

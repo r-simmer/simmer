@@ -2,8 +2,7 @@ context("resource")
 
 test_that("resources are correctly created", {
   env <- simmer(verbose = TRUE) %>%
-    add_resource("dummy", 5, Inf) %>%
-    add_resource("dummy_preemptive", 5, Inf, preemptive=TRUE)
+    add_resource("dummy", 5, Inf)
 
   expect_warning(env %>% add_resource("dummy"))
   expect_error(env %>% get_capacity("asdf"))
@@ -14,8 +13,6 @@ test_that("resources are correctly created", {
   expect_equal(env %>% get_server_count("dummy"), 0)
   expect_error(env %>% get_queue_count("asdf"))
   expect_equal(env %>% get_queue_count("dummy"), 0)
-  expect_false(env %>% is_preemptive("dummy"))
-  expect_true(env %>% is_preemptive("dummy_preemptive"))
 })
 
 test_that("a negative capacity or queue_size is converted to positive", {
