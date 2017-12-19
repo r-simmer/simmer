@@ -23,9 +23,9 @@ test_that("a rollback points to the correct activity", {
 
   env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 2, 0) %>%
-    add_generator("one", t0, at(0)) %>%
-    run()
+    add_generator("one", t0, at(0))
 
+  expect_warning(run(env))
   expect_equal(env %>% get_server_count("dummy"), 2)
 })
 
