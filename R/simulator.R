@@ -26,7 +26,7 @@ Simmer <- R6Class("simmer",
       for (name in names(private$gen))
         cat(paste0(
           "{ Generator: ", name,
-          " | monitored: ", private$gen[[name]],
+          " | monitored: ", private$gen[[name]][["mon"]],
           " | n_generated: ", self$get_n_generated(name), " }\n"
         ))
       invisible(self)
@@ -95,7 +95,7 @@ Simmer <- R6Class("simmer",
             types=c("string", "trajectory", "function", "flag", rep("number", 2), "flag"))
       ret <- add_generator_(private$sim_obj, name_prefix, trajectory[],
                             make_resetable(distribution), mon, priority, preemptible, restart)
-      if (ret) private$gen[[name_prefix]] <- mon
+      if (ret) private$gen[[name_prefix]] <- c(mon=mon)
       self
     },
 
@@ -162,7 +162,7 @@ Simmer <- R6Class("simmer",
 
   private = list(
     sim_obj = NULL,
-    res = NULL,
-    gen = NULL
+    res = list(),
+    gen = list()
   )
 )

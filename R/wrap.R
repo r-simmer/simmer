@@ -44,7 +44,7 @@ Wrap <- R6Class("wrap",
       for (name in names(private$gen))
         cat(paste0(
           "{ Generator: ", name,
-          " | monitored: ", private$gen[[name]],
+          " | monitored: ", private$gen[[name]][["mon"]],
           " | n_generated: ", self$get_n_generated(name), " }\n"
         ))
       invisible(self)
