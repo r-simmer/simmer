@@ -13,7 +13,6 @@ git:
 warnings_are_errors: true
 env:
   global:
-    - PKG_CXXFLAGS="-Wall -Wno-unused -pedantic"
     - _R_CHECK_CRAN_INCOMING_=FALSE
 
 r_github_packages:
