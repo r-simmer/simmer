@@ -25,11 +25,9 @@ if (!all(sapply(required, requireNamespace, quietly = TRUE)))
 
 This tutorial is adapted from a tutorial for the Python 2 package 'SimPy',
 [here](https://pythonhosted.org/SimPy/Tutorials/TheBank2.html).  Users familiar
-with SimPy may find this tutorial helpful for transitioning to simmer.  Some
-very basic material is not covered.  Beginners should first read the vignettes
-[_Introduction to simmer_](simmer-01-introduction.html),
-[_Terminology_](simmer-02-terminology.html), [_Advanced Trajectory
-Usage_](simmer-03-trajectories.html) and [_The Bank Tutorial: Part I_](simmer-04-bank-1.html).
+with SimPy may find this tutorial helpful for transitioning to `simmer`. Some
+very basic material is not covered. Beginners should first read 
+[_The Bank Tutorial: Part I_](simmer-04-bank-1.html).
 
 ## Priority customers
 
