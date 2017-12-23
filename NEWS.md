@@ -3,6 +3,7 @@
 ## New features:
 
 * `set_attribute()` (and `set_global()` by extension) can set multiple attributes at once by providing vectors of `keys` and `values` (or functions returning such `keys` and/or `values`). `get_attribute()` (and `get_global()` by extension) can retrieve multiple `keys` (#122).
+* New `stepn()` method deprecates `onestep()` (e452975).
 
 ## Minor changes and fixes:
 
