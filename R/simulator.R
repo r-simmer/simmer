@@ -46,8 +46,8 @@ Simmer <- R6Class("simmer",
       else ret # nocov
     },
 
-    step = function() {
-      step_(private$sim_obj)
+    stepn = function(n=1) {
+      stepn_(private$sim_obj, n)
       self
     },
 

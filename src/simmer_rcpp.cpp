@@ -32,9 +32,9 @@ DataFrame peek_(SEXP sim_, int steps) {
 }
 
 //[[Rcpp::export]]
-void step_(SEXP sim_) {
+void stepn_(SEXP sim_, unsigned int n) {
   XPtr<Simulator> sim(sim_);
-  sim->step();
+  while (n--) sim->step();
 }
 
 //[[Rcpp::export]]

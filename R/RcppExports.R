@@ -17,8 +17,8 @@ peek_ <- function(sim_, steps) {
     .Call(`_simmer_peek_`, sim_, steps)
 }
 
-step_ <- function(sim_) {
-    invisible(.Call(`_simmer_step_`, sim_))
+stepn_ <- function(sim_, n) {
+    invisible(.Call(`_simmer_stepn_`, sim_, n))
 }
 
 run_ <- function(sim_, until) {

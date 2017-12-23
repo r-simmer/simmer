@@ -71,12 +71,10 @@ env %>% peek(3)
 It is possible to run the simulation step by step, and such a method is chainable too.
 
 ```{r, message=FALSE}
-env %>% 
-  onestep() %>%
+env %>%
+  stepn() %>% # 1 step
   print() %>%
-  onestep() %>%
-  onestep() %>%
-  onestep()
+  stepn(3)    # 3 steps
 env %>% peek(Inf, verbose=TRUE)
 ```
 
