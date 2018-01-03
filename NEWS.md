@@ -1,4 +1,4 @@
-# simmer 3.6.4.9000
+# simmer 3.6.5
 
 ## New features:
 
@@ -13,6 +13,7 @@
 * Update "Queueing Systems" vignette (a0409a0, 8f03f4f).
 * Update "Advanced Trajectory Usage" vignette (4501927).
 * Fix print methods to return the object invisibly (#128).
+* New `Dining Philosophers Problem` vignette (ff6137e).
 
 # simmer 3.6.4
 

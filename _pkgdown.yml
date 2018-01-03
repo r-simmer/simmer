@@ -79,6 +79,8 @@ navbar:
         href: articles/simmer-06-queueing-systems.html
       - text: "Continuous-Time Markov Chains"
         href: articles/simmer-07-ctmc.html
+      - text: "Dining Philosophers Problem"
+        href: articles/simmer-08-philosophers.html
   - text: "News"
     icon: fa-newspaper-o
     href: news/index.html
