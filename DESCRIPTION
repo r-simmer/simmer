@@ -1,14 +1,14 @@
 Package: simmer
 Type: Package
 Title: Discrete-Event Simulation for R
-Version: 3.6.4.9000
+Version: 3.6.5.9000
 Authors@R: c(
     person("Iñaki", "Ucar", email="i.ucar86@gmail.com", 
       role=c("aut", "cph", "cre"), comment=c(ORCID="0000-0001-6403-5550")),
     person("Bart", "Smeets", email="bartsmeets86@gmail.com", role=c("aut", "cph")))
 Description: A process-oriented and trajectory-based Discrete-Event Simulation
     (DES) package for R. It is designed as a generic yet powerful framework. The
-    architecture encloses a robust and fast simulation core written in C++ with
+    architecture encloses a robust and fast simulation core written in 'C++' with
     automatic monitoring capabilities. It provides a rich and flexible R API that
     revolves around the concept of trajectory, a common path in the simulation
     model for entities of the same type.
