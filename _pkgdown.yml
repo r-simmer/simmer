@@ -76,7 +76,7 @@ navbar:
       - text: "Other SimPy Examples"
         href: articles/simmer-05-simpy.html
       - text: "Queueing Systems"
-        href: articles/simmer-06-queueing-systems.html
+        href: articles/simmer-06-queueing.html
       - text: "Continuous-Time Markov Chains"
         href: articles/simmer-07-ctmc.html
       - text: "Dining Philosophers Problem"
