@@ -50,13 +50,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// step_
-void step_(SEXP sim_);
-RcppExport SEXP _simmer_step_(SEXP sim_SEXP) {
+// stepn_
+void stepn_(SEXP sim_, unsigned int n);
+RcppExport SEXP _simmer_stepn_(SEXP sim_SEXP, SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    step_(sim_);
+    Rcpp::traits::input_parameter< unsigned int >::type n(nSEXP);
+    stepn_(sim_, n);
     return R_NilValue;
 END_RCPP
 }
@@ -1115,7 +1116,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_reset_", (DL_FUNC) &_simmer_reset_, 1},
     {"_simmer_now_", (DL_FUNC) &_simmer_now_, 1},
     {"_simmer_peek_", (DL_FUNC) &_simmer_peek_, 2},
-    {"_simmer_step_", (DL_FUNC) &_simmer_step_, 1},
+    {"_simmer_stepn_", (DL_FUNC) &_simmer_stepn_, 2},
     {"_simmer_run_", (DL_FUNC) &_simmer_run_, 2},
     {"_simmer_add_generator_", (DL_FUNC) &_simmer_add_generator_, 8},
     {"_simmer_add_resource_", (DL_FUNC) &_simmer_add_resource_, 8},

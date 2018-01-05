@@ -17,5 +17,5 @@ Reset the following components of a simulation environment:
 time, event queue, resources, generators and statistics.
 }
 \seealso{
-\code{\link{onestep}}, \code{\link{run}}.
+\code{\link{stepn}}, \code{\link{run}}.
 }

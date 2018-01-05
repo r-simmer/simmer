@@ -17,7 +17,7 @@ Simmer <- R6Class("simmer",
       for (name in names(private$res))
         cat(paste0(
           "{ Resource: ", name,
-          " | monitored: ", private$res[[name]],
+          " | monitored: ", private$res[[name]][["mon"]],
           " | server status: ", self$get_server_count(name),
           "(", self$get_capacity(name), ")",
           " | queue status: ", self$get_queue_count(name),
@@ -26,9 +26,10 @@ Simmer <- R6Class("simmer",
       for (name in names(private$gen))
         cat(paste0(
           "{ Generator: ", name,
-          " | monitored: ", private$gen[[name]],
+          " | monitored: ", private$gen[[name]][["mon"]],
           " | n_generated: ", self$get_n_generated(name), " }\n"
         ))
+      invisible(self)
     },
 
     reset = function() {
@@ -45,8 +46,8 @@ Simmer <- R6Class("simmer",
       else ret # nocov
     },
 
-    step = function() {
-      step_(private$sim_obj)
+    stepn = function(n=1) {
+      stepn_(private$sim_obj, n)
       self
     },
 
@@ -73,7 +74,7 @@ Simmer <- R6Class("simmer",
 
       ret <- add_resource_(private$sim_obj, name, capacity, queue_size, mon,
                            preemptive, preempt_order, queue_size_strict)
-      if (ret) private$res[[name]] <- mon
+      if (ret) private$res[[name]] <- c(mon=mon, preemptive=preemptive)
 
       if (inherits(capacity_schedule, "schedule"))
         add_resource_manager_(private$sim_obj, name, "capacity",
@@ -94,7 +95,7 @@ Simmer <- R6Class("simmer",
             types=c("string", "trajectory", "function", "flag", rep("number", 2), "flag"))
       ret <- add_generator_(private$sim_obj, name_prefix, trajectory[],
                             make_resetable(distribution), mon, priority, preemptible, restart)
-      if (ret) private$gen[[name_prefix]] <- mon
+      if (ret) private$gen[[name_prefix]] <- c(mon=mon)
       self
     },
 
@@ -161,7 +162,7 @@ Simmer <- R6Class("simmer",
 
   private = list(
     sim_obj = NULL,
-    res = NULL,
-    gen = NULL
+    res = list(),
+    gen = list()
   )
 )

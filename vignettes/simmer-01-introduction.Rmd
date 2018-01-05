@@ -23,6 +23,8 @@ First, load the package and instantiate a new simulation environment.
 ```{r, message=FALSE}
 library(simmer)
 
+set.seed(42)
+
 env <- simmer("SuperDuperSim")
 env
 ```
@@ -45,9 +47,9 @@ patient <- trajectory("patients' path") %>%
   release("administration", 1)
 ```
 
-In this case, the argument of the ```timeout``` activity is a function, which is evaluated dynamically to produce an stochastic waiting time, but it could be a constant too. Apart from that, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources' status, make decisions according to the latter...
+In this case, the argument of the `timeout` activity is a function, which is evaluated dynamically to produce an stochastic waiting time, but it could be a constant too. Apart from that, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources' status, make decisions according to the latter...
 
-Once the trajectory is known, you may attach arrivals to it and define the resources needed. In the example below, three types of resources are added: the *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory `patient`. The time between patients is about 10 minutes (a Gaussian of ```mean=10``` and ```sd=2```). (Note: returning a negative interarrival time at some point would stop the generator).
+Once the trajectory is known, you may attach arrivals to it and define the resources needed. In the example below, three types of resources are added: the *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory `patient`. The time between patients is about 10 minutes (a Gaussian of `mean=10` and `sd=2`). (Note: returning a negative interarrival time at some point would stop the generator).
 
 ```{r}
 env %>%
@@ -57,20 +59,22 @@ env %>%
   add_generator("patient", patient, function() rnorm(1, 10, 2))
 ```
 
-The simulation is now ready for a test run; just let it *simmer* for a bit. Below, we specify that we want to limit the runtime to 80 time units using the ```until``` argument. After that, we verify the current simulation time (```now```) and when will be the next 3 events (```peek```).
+The simulation is now ready for a test run; just let it *simmer* for a bit. Below, we specify that we want to limit the runtime to 80 time units using the `until` argument. After that, we verify the current simulation time (`now`) and when will be the next 3 events (`peek`).
 
 ```{r, message=FALSE}
-env %>% run(until=80)
-env %>% now()
+env %>% 
+  run(80) %>% 
+  now()
 env %>% peek(3)
 ```
 
 It is possible to run the simulation step by step, and such a method is chainable too.
 
 ```{r, message=FALSE}
-env %>% onestep()
-env %>% onestep() %>% onestep() %>% onestep()
-env %>% now()
+env %>%
+  stepn() %>% # 1 step
+  print() %>%
+  stepn(3)    # 3 steps
 env %>% peek(Inf, verbose=TRUE)
 ```
 
@@ -78,16 +82,16 @@ Also, it is possible to resume the automatic execution simply by specifying a lo
 
 ```{r, message=FALSE}
 env %>% 
-  run(until=120) %>%
+  run(120) %>%
   now()
 ```
 
-Finally, you can reset the simulation, flush all results, resources and generators, and restart from the beginning.
+You can also reset the simulation, flush all results, resources and generators, and restart from the beginning.
 
 ```{r, message=FALSE}
 env %>% 
   reset() %>% 
-  run(until=80) %>%
+  run(80) %>%
   now()
 ```
 
@@ -106,7 +110,7 @@ envs <- lapply(1:100, function(i) {
 })
 ```
 
-The advantage of the latter approach is that, if the individual replicas are heavy, it is straightforward to parallelize their execution (for instance, in the next example we use the function ```mclapply``` from the package [parallel](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf)). However, the external pointers to the C++ simmer core are no longer valid when the parallelized execution ends. Thus, it is necessary to extract the results for each thread at the end of the execution. This can be done with the helper function ```wrap``` as follows.
+The advantage of the latter approach is that, if the individual replicas are heavy, it is straightforward to parallelise their execution (for instance, in the next example we use the function `mclapply` from the [parallel](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf)) package. However, the external pointers to the C++ simmer core are no longer valid when the parallelised execution ends. Thus, it is necessary to extract the results for each thread at the end of the execution. This can be done with the helper function `wrap` as follows.
 
 ```{r}
 library(parallel)
@@ -122,18 +126,18 @@ envs <- mclapply(1:100, function(i) {
 })
 ```
 
-This helper function brings the simulation data back to R and makes it accessible through the same methods that would ordinarily be used for a ```simmer``` environment.
+This helper function brings the simulation data back to R and makes it accessible through the same methods that would ordinarily be used for a `simmer` environment.
 
 ```{r, message=FALSE}
 envs[[1]] %>% get_n_generated("patient")
-envs[[1]] %>% get_capacity("doctor")
+envs[[1]] %>% get_queue_count("doctor")
 envs[[1]] %>% get_queue_size("doctor")
-head(
-  envs %>% get_mon_resources()
-)
-head(
-  envs %>% get_mon_arrivals()
-)
+envs %>% 
+  get_mon_resources() %>%
+  head()
+envs %>% 
+  get_mon_arrivals() %>%
+  head()
 ```
 
 Unfortunately, as the C++ simulation cores are destroyed, the downside of this kind of parallelization is that one cannot resume execution of the replicas.

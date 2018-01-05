@@ -19,7 +19,7 @@ test_that("simmer's method chaining works", {
   env <- simmer(verbose = TRUE) %>%
     add_resource("server") %>%
     add_generator("customer", t0, function() 1) %>%
-    onestep() %>%
+    stepn() %>%
     run(10) %>%
     reset()
 

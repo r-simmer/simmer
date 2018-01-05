@@ -41,8 +41,9 @@ test_that("resource slots are correctly filled", {
 
   env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 2, 2) %>%
-    add_generator("customer", t0, at(1:5), mon = 2) %>%
-    run()
+    add_generator("customer", t0, at(1:5), mon = 2)
+
+  expect_warning(run(env))
 
   arrivals <- env %>% get_mon_arrivals()
   arrivals_res <- env %>% get_mon_arrivals(TRUE)

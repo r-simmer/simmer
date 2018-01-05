@@ -1,10 +1,10 @@
 ## Patch release
 
-Several bug fixes.
+Several bug fixes, updates and new vignette.
 
 ## Test environments
 
-* Fedora 26 + GCC + clang (local), R 3.4.1
+* Fedora 27 + GCC + clang (local), R 3.4.3
 * Ubuntu 14.04 + GCC (on Travis-CI), R 3.3.3, 3.4.2, devel
 * linux-x86_64-rocker-gcc-san (on r-hub)
 * ubuntu-rchk (on r-hub)

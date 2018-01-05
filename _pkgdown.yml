@@ -76,9 +76,11 @@ navbar:
       - text: "Other SimPy Examples"
         href: articles/simmer-05-simpy.html
       - text: "Queueing Systems"
-        href: articles/simmer-06-queueing-systems.html
+        href: articles/simmer-06-queueing.html
       - text: "Continuous-Time Markov Chains"
         href: articles/simmer-07-ctmc.html
+      - text: "Dining Philosophers Problem"
+        href: articles/simmer-08-philosophers.html
   - text: "News"
     icon: fa-newspaper-o
     href: news/index.html
@@ -87,3 +89,9 @@ navbar:
     menu:
       - text: "simmer.plot"
         href: extensions/plot
+      - text: "simmer.bricks"
+        href: https://github.com/r-simmer/simmer.bricks
+      - text: "simmer.optim"
+        href: https://github.com/r-simmer/simmer.optim
+      - text: "simmer.json"
+        href: https://github.com/r-simmer/simmer.json

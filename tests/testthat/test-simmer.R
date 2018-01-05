@@ -11,7 +11,7 @@ test_that("an empty environment behaves as expected", {
   expect_equal(env %>% now(), 0)
   expect_equal(env %>% peek(), 0)
 
-  env %>% onestep() %>% run()
+  env %>% stepn() %>% run()
 
   expect_equal(env %>% now(), 1)
   expect_equal(env %>% peek(), numeric(0))
@@ -151,7 +151,7 @@ test_that("we can force some errors (just to complete coverage)", {
   expect_error(env %>% reset())
   expect_error(env %>% now())
   expect_error(env %>% peek())
-  expect_error(env %>% onestep())
+  expect_error(env %>% stepn())
   expect_error(env %>% get_mon_arrivals(FALSE))
   expect_error(env %>% get_mon_arrivals(TRUE))
   expect_error(env %>% get_mon_attributes())

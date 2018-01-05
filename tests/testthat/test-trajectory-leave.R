@@ -15,15 +15,19 @@ test_that("an arrival leaves", {
     timeout(1) %>%
     release("dummy", 1)
 
-  arrivals0 <- simmer(verbose = T) %>%
+  env0 <- simmer(verbose = T) %>%
     add_resource("dummy") %>%
-    add_generator("arrival", t0, at(0)) %>%
-    run() %>% get_mon_arrivals()
+    add_generator("arrival", t0, at(0))
 
-  arrivals1 <- simmer(verbose = T) %>%
+  env1 <- simmer(verbose = T) %>%
     add_resource("dummy") %>%
-    add_generator("arrival", t1, at(0)) %>%
-    run() %>% get_mon_arrivals()
+    add_generator("arrival", t1, at(0))
+
+  expect_warning(run(env0))
+  expect_warning(run(env1))
+
+  arrivals0 <- get_mon_arrivals(env0)
+  arrivals1 <- get_mon_arrivals(env1)
 
   expect_false(arrivals0$finished)
   expect_false(arrivals1$finished)

@@ -3,11 +3,14 @@
 \name{run}
 \alias{run}
 \alias{onestep}
+\alias{stepn}
 \title{Run a Simulation}
 \usage{
 run(.env, until = 1000, progress = NULL, steps = 10)
 
 onestep(.env)
+
+stepn(.env, n = 1)
 }
 \arguments{
 \item{.env}{the simulation environment.}
@@ -19,6 +22,8 @@ completed ratio is periodically passed as argument to the callback.}
 
 \item{steps}{number of steps to show as progress (it takes effect only if
 \code{progress} is provided).}
+
+\item{n}{number of events to simulate.}
 }
 \value{
 Returns the simulation environment.

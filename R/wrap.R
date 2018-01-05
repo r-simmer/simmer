@@ -35,7 +35,7 @@ Wrap <- R6Class("wrap",
       for (name in names(private$res))
         cat(paste0(
           "{ Resource: ", name,
-          " | monitored: ", private$res[[name]],
+          " | monitored: ", private$res[[name]][["mon"]],
           " | server status: ", self$get_server_count(name),
           "(", self$get_capacity(name), ")",
           " | queue status: ", self$get_queue_count(name),
@@ -44,9 +44,10 @@ Wrap <- R6Class("wrap",
       for (name in names(private$gen))
         cat(paste0(
           "{ Generator: ", name,
-          " | monitored: ", private$gen[[name]],
+          " | monitored: ", private$gen[[name]][["mon"]],
           " | n_generated: ", self$get_n_generated(name), " }\n"
         ))
+      invisible(self)
     },
 
     now = function() private$now_val,
