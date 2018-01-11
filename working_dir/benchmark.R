@@ -74,7 +74,12 @@ save(benchmark, file=db)
 .libPaths(.libPaths.bkp)
 library(ggplot2)
 
-ggplot(benchmark, aes(date, time/1e9)) +
-  geom_boxplot(aes(group=expr), width=7e5) +
-  stat_summary(fun.y=median, geom="line", aes(group=1)) +
-  stat_summary(fun.y=function(x) median(x) - 0.01, geom="text", aes(label=expr))
+cpu <- readLines("/proc/cpuinfo")
+cpu <- strsplit(cpu[grep("model name", cpu)][[1]], "\t*: ")[[1]][[2]]
+benchmark$minor <- sub("\\.[0-9]$", "\\.x", benchmark$expr)
+
+ggplot(benchmark, aes(date, time/1e9)) + theme_classic() +
+  ggtitle("Historical performance", paste("on", cpu)) + ylab("time [s]") +
+  geom_jitter(alpha=.2) + geom_smooth() +
+  stat_summary(fun.y=mean, geom="point", aes(color=minor), size=3) +
+  stat_summary(fun.y=mean, geom="point", color="grey90", size=1)
