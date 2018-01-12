@@ -30,7 +30,8 @@ Suggests:
     tidyr,
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    rticles
 LinkingTo:
     Rcpp (>= 0.12.9),
     BH (>= 1.62.0-1)
