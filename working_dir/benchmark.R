@@ -8,15 +8,18 @@ if (file.exists(db)) load(db)
 tags <- tags[!(names(tags) %in% benchmark$expr)]
 
 ## install dependencies if necessary
+options(repos=c(CRAN="https://cran.rstudio.com"))
 deps <- file.path(tmp, "deps")
 dir.create(deps, showWarnings=FALSE, recursive=TRUE)
 .libPaths.bkp <- .libPaths()
 .libPaths(c(deps, .Library))
-if (!requireNamespace("Rcpp", quietly=TRUE))
+if (!requireNamespace("Rcpp", quietly=TRUE)) {
+  options(repos=c(CRAN="https://cran.rstudio.com"))
   install.packages(c(
     tools::package_dependencies("simmer")$simmer,
-    "microbenchmark"
-  ))
+    "microbenchmark", "remotes"
+  ), Ncpus=parallel::detectCores(logical=FALSE))
+}
 
 ## resolve tags and create dirs if necessary
 tags <- sapply(names(tags), function(tag) {
@@ -25,7 +28,7 @@ tags <- sapply(names(tags), function(tag) {
   list(
     name = tag,
     hash = tags[[tag]]@sha,
-    date = as(tags[[tag]]@author@when, "POSIXct"),
+    date = methods::as(tags[[tag]]@author@when, "POSIXct"),
     paths = c(path, deps)
   )
 }, simplify=FALSE)
@@ -35,7 +38,7 @@ parallel::mclapply(tags, function(tag) {
   .libPaths(c(tag$paths, .Library))
   if (!requireNamespace("simmer", quietly=TRUE))
     remotes::install_github("r-simmer/simmer", ref=tag$hash)
-}, mc.cores=2L)
+}, mc.cores=parallel::detectCores(logical=FALSE))
 
 ## benchmark
 benchmark <- rbind(do.call(rbind, parallel::mclapply(tags, function(tag) {
