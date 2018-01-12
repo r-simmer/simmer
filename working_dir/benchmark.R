@@ -86,9 +86,10 @@ library(ggplot2)
 cpu <- readLines("/proc/cpuinfo")
 cpu <- strsplit(cpu[grep("model name", cpu)][[1]], "\t*: ")[[1]][[2]]
 benchmark$minor <- sub("\\.[0-9]$", "\\.x", benchmark$expr)
+cooksd <- cooks.distance(lm(time ~ 1, benchmark))
 
-ggplot(benchmark, aes(date, time/1e9)) + theme_classic() +
+ggplot(benchmark[cooksd < 4*mean(cooksd, na.rm=T),], aes(date, time/1e9)) +
   ggtitle("Historical performance", paste("on", cpu)) + ylab("time [s]") +
-  geom_jitter(alpha=.2) + geom_smooth() +
+  theme_classic() + geom_jitter(alpha=.2) + geom_smooth() +
   stat_summary(fun.y=mean, geom="point", aes(color=minor), size=3) +
   stat_summary(fun.y=mean, geom="point", color="grey90", size=1)
