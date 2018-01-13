@@ -1,6 +1,6 @@
 language: R
 sudo: false
-latex: false
+latex: true
 cache: packages
 r:
   - oldrel
