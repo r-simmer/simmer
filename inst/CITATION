@@ -1,0 +1,16 @@
+citHeader("To cite 'simmer' in publications use:")
+
+citEntry(
+  entry        = "Article",
+  title        = "{simmer}: Discrete-Event Simulation for {R}",
+  author       = personList(as.person("Iñaki Ucar"),
+                            as.person("Bart Smeets"),
+                            as.person("Arturo Azcorra")),
+  year         = "2018",
+  journal      = "Journal of Statistical Software",
+  volume       = "accepted for publication",
+
+  textVersion  = paste("Iñaki Ucar, Bart Smeets and Arturo Azcorra (2018).",
+                       "simmer: Discrete-Event Simulation for R.",
+                       "Journal of Statistical Software, accepted for publication.")
+)

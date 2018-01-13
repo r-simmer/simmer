@@ -82,18 +82,6 @@ run.simmer <- function(.env, until=1000, progress=NULL, steps=10) {
   } else .env$run(until=until)
 }
 
-# nocov start
-#' @rdname run
-#' @export
-onestep <- function(.env) {
-  .Deprecated("stepn")
-  UseMethod("onestep")
-}
-
-#' @export
-onestep.simmer <- function(.env) .env$stepn()
-# nocov end
-
 #' @rdname run
 #' @param n number of events to simulate.
 #' @export

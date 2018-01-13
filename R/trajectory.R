@@ -93,10 +93,8 @@ Trajectory <- R6Class("trajectory",
         binarise(is.na(resource), is.function(amount)),
         private$add_activity(Seize__new(resource, amount, continue, trj, mask)),
         private$add_activity(SeizeSelected__new(id, amount, continue, trj, mask)),
-        private$add_activity(Seize__new_func(resource, amount, needs_attrs(amount),
-                                            continue, trj, mask)),
-        private$add_activity(SeizeSelected__new_func(id, amount, needs_attrs(amount),
-                                                     continue, trj, mask))
+        private$add_activity(Seize__new_func(resource, amount, continue, trj, mask)),
+        private$add_activity(SeizeSelected__new_func(id, amount, continue, trj, mask))
       )
     },
 
@@ -106,8 +104,8 @@ Trajectory <- R6Class("trajectory",
         binarise(is.na(resource), is.function(amount)),
         private$add_activity(Release__new(resource, amount)),
         private$add_activity(ReleaseSelected__new(id, amount)),
-        private$add_activity(Release__new_func(resource, amount, needs_attrs(amount))),
-        private$add_activity(ReleaseSelected__new_func(id, amount, needs_attrs(amount)))
+        private$add_activity(Release__new_func(resource, amount)),
+        private$add_activity(ReleaseSelected__new_func(id, amount))
       )
     },
 
@@ -117,8 +115,8 @@ Trajectory <- R6Class("trajectory",
         binarise(is.na(resource), is.function(value)),
         private$add_activity(SetCapacity__new(resource, value)),
         private$add_activity(SetCapacitySelected__new(id, value)),
-        private$add_activity(SetCapacity__new_func(resource, value, needs_attrs(value))),
-        private$add_activity(SetCapacitySelected__new_func(id, value, needs_attrs(value)))
+        private$add_activity(SetCapacity__new_func(resource, value)),
+        private$add_activity(SetCapacitySelected__new_func(id, value))
       )
     },
 
@@ -128,8 +126,8 @@ Trajectory <- R6Class("trajectory",
         binarise(is.na(resource), is.function(value)),
         private$add_activity(SetQueue__new(resource, value)),
         private$add_activity(SetQueueSelected__new(id, value)),
-        private$add_activity(SetQueue__new_func(resource, value, needs_attrs(value))),
-        private$add_activity(SetQueueSelected__new_func(id, value, needs_attrs(value)))
+        private$add_activity(SetQueue__new_func(resource, value)),
+        private$add_activity(SetQueueSelected__new_func(id, value))
       )
     },
 
@@ -140,7 +138,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(resources)),
         private$add_activity(Select__new(resources, policy, id)),
-        private$add_activity(Select__new_func(resources, needs_attrs(resources), policy, id))
+        private$add_activity(Select__new_func(resources, policy, id))
       )
     },
 
@@ -149,7 +147,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(task)),
         private$add_activity(Timeout__new(task)),
-        private$add_activity(Timeout__new_func(task, needs_attrs(task)))
+        private$add_activity(Timeout__new_func(task))
       )
     },
 
@@ -159,10 +157,9 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(keys), is.function(values)),
         private$add_activity(SetAttribute__new(keys, values, global)),
-        private$add_activity(SetAttribute__new_func1(keys, values, global, needs_attrs(keys))),
-        private$add_activity(SetAttribute__new_func2(keys, values, global, needs_attrs(values))),
-        private$add_activity(SetAttribute__new_func3(keys, values, global,
-                                                     c(needs_attrs(keys), needs_attrs(values))))
+        private$add_activity(SetAttribute__new_func1(keys, values, global)),
+        private$add_activity(SetAttribute__new_func2(keys, values, global)),
+        private$add_activity(SetAttribute__new_func3(keys, values, global))
       )
     },
 
@@ -171,7 +168,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(generator)),
         private$add_activity(Activate__new(generator)),
-        private$add_activity(Activate__new_func(generator, needs_attrs(generator)))
+        private$add_activity(Activate__new_func(generator))
       )
     },
 
@@ -180,7 +177,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(generator)),
         private$add_activity(Deactivate__new(generator)),
-        private$add_activity(Deactivate__new_func(generator, needs_attrs(generator)))
+        private$add_activity(Deactivate__new_func(generator))
       )
     },
 
@@ -189,7 +186,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(generator)),
         private$add_activity(SetTraj__new(generator, trajectory[])),
-        private$add_activity(SetTraj__new_func(generator, needs_attrs(generator), trajectory[]))
+        private$add_activity(SetTraj__new_func(generator, trajectory[]))
       )
     },
 
@@ -199,7 +196,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(generator)),
         private$add_activity(SetDist__new(generator, distribution)),
-        private$add_activity(SetDist__new_func(generator, needs_attrs(generator), distribution))
+        private$add_activity(SetDist__new_func(generator, distribution))
       )
     },
 
@@ -208,7 +205,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(values)),
         private$add_activity(SetPrior__new(values)),
-        private$add_activity(SetPrior__new_func(values, needs_attrs(values)))
+        private$add_activity(SetPrior__new_func(values))
       )
     },
 
@@ -217,7 +214,7 @@ Trajectory <- R6Class("trajectory",
             types=c("function", "flag", rep("trajectory", length(c(...)))))
       stopifnot(length(continue) == length(c(...)))
       traj <- sapply(c(...), `[`)
-      private$add_activity(Branch__new(option, needs_attrs(option), continue, traj))
+      private$add_activity(Branch__new(option, continue, traj))
     },
 
     rollback = function(amount, times=Inf, check=NULL) {
@@ -225,7 +222,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(check)),
         private$add_activity(Rollback__new(amount, times)),
-        private$add_activity(Rollback__new_func(amount, check, needs_attrs(check)))
+        private$add_activity(Rollback__new_func(amount, check))
       )
     },
 
@@ -234,7 +231,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(prob)),
         private$add_activity(Leave__new(prob)),
-        private$add_activity(Leave__new_func(prob, needs_attrs(prob)))
+        private$add_activity(Leave__new_func(prob))
       )
     },
 
@@ -244,7 +241,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(t)),
         private$add_activity(RenegeIn__new(t, traj)),
-        private$add_activity(RenegeIn__new_func(t, needs_attrs(t), traj))
+        private$add_activity(RenegeIn__new_func(t, traj))
       )
     },
 
@@ -254,7 +251,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(signal)),
         private$add_activity(RenegeIf__new(signal, traj)),
-        private$add_activity(RenegeIf__new_func(signal, needs_attrs(signal), traj))
+        private$add_activity(RenegeIf__new_func(signal, traj))
       )
     },
 
@@ -266,7 +263,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(n)),
         private$add_activity(Clone__new(n, trj)),
-        private$add_activity(Clone__new_func(n, needs_attrs(n), trj))
+        private$add_activity(Clone__new_func(n, trj))
       )
     },
 
@@ -281,12 +278,9 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(timeout), is.function(rule)),
         private$add_activity(Batch__new(n, timeout, permanent, name)),
-        private$add_activity(Batch__new_func1(n, timeout, permanent, name,
-                                              needs_attrs(timeout))),
-        private$add_activity(Batch__new_func2(n, timeout, permanent, name, rule,
-                                              needs_attrs(rule))),
-        private$add_activity(Batch__new_func3(n, timeout, permanent, name, rule,
-                                              c(needs_attrs(timeout), needs_attrs(rule))))
+        private$add_activity(Batch__new_func1(n, timeout, permanent, name)),
+        private$add_activity(Batch__new_func2(n, timeout, permanent, name, rule)),
+        private$add_activity(Batch__new_func3(n, timeout, permanent, name, rule))
       )
     },
 
@@ -297,10 +291,9 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(signals), is.function(delay)),
         private$add_activity(Send__new(signals, delay)),
-        private$add_activity(Send__new_func1(signals, delay, needs_attrs(signals))),
-        private$add_activity(Send__new_func2(signals, delay, needs_attrs(delay))),
-        private$add_activity(Send__new_func3(signals, delay,
-                                             c(needs_attrs(signals), needs_attrs(delay))))
+        private$add_activity(Send__new_func1(signals, delay)),
+        private$add_activity(Send__new_func2(signals, delay)),
+        private$add_activity(Send__new_func3(signals, delay))
       )
     },
 
@@ -311,7 +304,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(signals)),
         private$add_activity(Trap__new(signals, traj, interruptible)),
-        private$add_activity(Trap__new_func(signals, needs_attrs(signals), traj, interruptible))
+        private$add_activity(Trap__new_func(signals, traj, interruptible))
       )
     },
 
@@ -320,7 +313,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(signals)),
         private$add_activity(UnTrap__new(signals)),
-        private$add_activity(UnTrap__new_func(signals, needs_attrs(signals)))
+        private$add_activity(UnTrap__new_func(signals))
       )
     },
 
@@ -331,7 +324,7 @@ Trajectory <- R6Class("trajectory",
       switch(
         binarise(is.function(message)),
         private$add_activity(Log__new(message)),
-        private$add_activity(Log__new_func(message, needs_attrs(message)))
+        private$add_activity(Log__new_func(message))
       )
     }
   ),

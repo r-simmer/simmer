@@ -2,12 +2,9 @@
 % Please edit documentation in R/trajectory-methods.R
 \name{trajectory}
 \alias{trajectory}
-\alias{create_trajectory}
 \title{Create a Trajectory}
 \usage{
 trajectory(name = "anonymous", verbose = FALSE)
-
-create_trajectory(name = "anonymous", verbose = FALSE)
 }
 \arguments{
 \item{name}{the name of the trajectory.}

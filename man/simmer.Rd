@@ -31,7 +31,10 @@ This method initialises a simulation environment.
 \examples{
 \dontrun{
 # introduction to simmer
-vignette("A-introduction")
+vignette("simmer-01-introduction")
+
+# JSS paper available as vignette
+vignette("simmer-02-jss")
 
 # more vignettes
 vignette(package = "simmer")
@@ -58,6 +61,11 @@ env <- simmer("SuperDuperSim") \%>\%
   add_generator("patient", t0, function() rnorm(1, 10, 2)) \%>\%
   run(until=80)
 
+}
+\references{
+Iñaki Ucar, Bart Smeets and Arturo Azcorra (2018).
+\pkg{simmer}: Discrete-Event Simulation for \R.
+\emph{Journal of Statistical Software}, accepted for publication.
 }
 \seealso{
 \pkg{simmer}'s homepage \url{http://r-simmer.org} and

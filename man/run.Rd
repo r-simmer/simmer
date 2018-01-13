@@ -2,13 +2,10 @@
 % Please edit documentation in R/simulator-methods.R
 \name{run}
 \alias{run}
-\alias{onestep}
 \alias{stepn}
 \title{Run a Simulation}
 \usage{
 run(.env, until = 1000, progress = NULL, steps = 10)
-
-onestep(.env)
 
 stepn(.env, n = 1)
 }
