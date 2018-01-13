@@ -9,6 +9,9 @@
 #' leverages the chaining/piping workflow introduced by the \pkg{magrittr} package.
 #'
 #' @author Iñaki Ucar and Bart Smeets
+#' @references Iñaki Ucar, Bart Smeets and Arturo Azcorra (2018).
+#' \pkg{simmer}: Discrete-Event Simulation for \R.
+#' \emph{Journal of Statistical Software}, accepted for publication.
 #'
 #' @seealso \pkg{simmer}'s homepage \url{http://r-simmer.org} and
 #' GitHub repository \url{https://github.com/r-simmer/simmer}.
@@ -16,7 +19,10 @@
 #' @examples
 #' \dontrun{
 #' # introduction to simmer
-#' vignette("A-introduction")
+#' vignette("simmer-01-introduction")
+#'
+#' # JSS paper available as vignette
+#' vignette("simmer-02-jss")
 #'
 #' # more vignettes
 #' vignette(package = "simmer")
