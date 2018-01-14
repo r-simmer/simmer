@@ -29,7 +29,7 @@
 #' }
 #'
 #' @docType package
-#' @name simmer
+#' @name simmer-package
 #'
 #' @useDynLib simmer, .registration=TRUE
 #' @importFrom Rcpp evalCpp
