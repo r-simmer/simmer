@@ -958,7 +958,7 @@ public:
   CLONEABLE(Send<T COMMA U>)
 
   Send(const T& signals, const U& delay)
-    : Activity("Send"), signals(signals), delay(delay) {}
+    : Activity("Send", PRIORITY_SEND), signals(signals), delay(delay) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -967,12 +967,13 @@ public:
   }
 
   double run(Arrival* arrival) {
+    double lag = std::abs(get<double>(delay));
     Task* task =
       new Task(arrival->sim, "Broadcast",
                boost::bind(&Simulator::broadcast, arrival->sim,
                            get<VEC<std::string> >(signals)),
-               PRIORITY_MIN);
-    task->activate(std::abs(get<double>(delay)));
+               lag ? PRIORITY_MIN : PRIORITY_SIGNAL);
+    task->activate(lag);
     return 0;
   }
 
@@ -990,7 +991,7 @@ public:
   CLONEABLE(Trap<T>)
 
   Trap(const T& signals, const VEC<Rcpp::Environment>& trj, bool interruptible)
-    : Fork("Trap", VEC<bool>(trj.size(), false), trj),
+    : Fork("Trap", VEC<bool>(trj.size(), false), trj, PRIORITY_TRAP),
       signals(signals), interruptible(interruptible) {}
 
   Trap(const Trap& o) : Fork(o), signals(o.signals), interruptible(o.interruptible) {
@@ -1048,7 +1049,7 @@ class UnTrap : public Activity {
 public:
   CLONEABLE(UnTrap<T>)
 
-  UnTrap(const T& signals) : Activity("UnTrap"), signals(signals) {}
+  UnTrap(const T& signals) : Activity("UnTrap", PRIORITY_TRAP), signals(signals) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);

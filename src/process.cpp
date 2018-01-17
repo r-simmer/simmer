@@ -118,7 +118,7 @@ void Arrival::run() {
     set_busy(sim->now() + delay);
     update_activity(delay);
   }
-  sim->schedule(delay, this, activity ? activity->priority : priority);
+  sim->schedule(delay, this, activity ? activity->priority : PRIORITY_MAX);
 
 end:
   return;

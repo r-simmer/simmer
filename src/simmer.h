@@ -46,9 +46,12 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #define IND(n) std::string(n, ' ')
 
 #define PRIORITY_MAX            std::numeric_limits<int>::min()
-#define PRIORITY_RELEASE        -4
-#define PRIORITY_MANAGER        -3
-#define PRIORITY_RELEASE_POST   -2
+#define PRIORITY_RELEASE        -7
+#define PRIORITY_MANAGER        -6
+#define PRIORITY_RELEASE_POST   -5
+#define PRIORITY_SEND           -4
+#define PRIORITY_SIGNAL         -3
+#define PRIORITY_TRAP           -2
 #define PRIORITY_GENERATOR      -1
 #define PRIORITY_MIN            std::numeric_limits<int>::max()
 

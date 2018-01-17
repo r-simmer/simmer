@@ -299,3 +299,38 @@ test_that("launch handler while in a timeout inside a resource", {
   expect_equal(arr_res$end_time, c(5, 7, 18))
   expect_equal(arr_res$activity_time, c(5, 2, 11))
 })
+
+test_that("an arrival cannot trap its own previously broadcasted signal", {
+  t <- trajectory() %>%
+    send("signal") %>%
+    trap("signal") %>%
+    timeout(1)
+
+  env <- simmer(verbose=TRUE) %>%
+    add_generator("dummy", t, at(0, 0, 0)) %>%
+    run()
+  arr <- get_mon_arrivals(env)
+
+  expect_equal(arr$end_time, c(1, 1, 1))
+
+  t <- trajectory() %>%
+    trap("signal") %>%
+    send("signal")
+
+  env <- simmer(verbose=TRUE) %>%
+    add_generator("dummy", t, at(0, 0, 0))
+
+  expect_error(run(env), NA)
+
+  t <- trajectory() %>%
+    trap("signal") %>%
+    send("signal") %>%
+    timeout(1)
+
+  env <- simmer(verbose=TRUE) %>%
+    add_generator("dummy", t, at(0, 0, 0)) %>%
+    run()
+  arr <- get_mon_arrivals(env)
+
+  expect_equal(arr$end_time, c(1, 1, 1))
+})

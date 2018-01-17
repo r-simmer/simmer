@@ -302,7 +302,7 @@ public:
       foreach_ (const HandlerMap::value_type& itr, signal_map[signal]) {
         if (!itr.second.first)
           continue;
-        Task* task = new Task(this, "Handler", itr.second.second);
+        Task* task = new Task(this, "Handler", itr.second.second, PRIORITY_SIGNAL);
         task->activate();
       }
     }

@@ -5,6 +5,7 @@
 * Remove v3.6.x deprecations: the old attribute retrieval system (see notes for v3.6.3), as well as methods `create_trajectory()` and `onestep()` (#117).
 * Remove "Terminology" vignette.
 * New vignette: a paper accepted for publication in the Journal of Statistical Software.
+* Broadcast signals with higher priority to prevent an arrival to catch its own signal with a `trap()` after a `send()` (#135).
 
 # simmer 3.6.5
 
