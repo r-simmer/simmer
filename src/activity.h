@@ -403,7 +403,7 @@ public:
   CLONEABLE(Activate<T>)
 
   Activate(const T& generator)
-    : Activity("Activate", PRIORITY_MAX), generator(generator) {}
+    : Activity("Activate"), generator(generator) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -429,7 +429,7 @@ public:
   CLONEABLE(Deactivate<T>)
 
   Deactivate(const T& generator)
-    : Activity("Deactivate", PRIORITY_MAX), generator(generator) {}
+    : Activity("Deactivate"), generator(generator) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -455,7 +455,7 @@ public:
   CLONEABLE(SetTraj<T>)
 
   SetTraj(const T& generator, const Rcpp::Environment& trajectory)
-    : Activity("SetTraj", PRIORITY_MAX), generator(generator), trajectory(trajectory) {}
+    : Activity("SetTraj"), generator(generator), trajectory(trajectory) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -483,7 +483,7 @@ public:
   CLONEABLE(SetDist<T>)
 
   SetDist(const T& generator, const Rcpp::Function& distribution)
-    : Activity("SetDist", PRIORITY_MAX),
+    : Activity("SetDist"),
       generator(generator), distribution(distribution) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {

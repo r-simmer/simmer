@@ -6,6 +6,7 @@
 * Remove "Terminology" vignette.
 * New vignette: a paper accepted for publication in the Journal of Statistical Software.
 * Broadcast signals with higher priority to prevent an arrival to catch its own signal with a `trap()` after a `send()` (#135).
+* Generate new arrivals with minimum priority to avoid wrong interactions with simultaneous activities (#136).
 
 # simmer 3.6.5
 

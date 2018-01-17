@@ -250,13 +250,12 @@ A further analysis reveals that, in order to preserve correctness and prevent a 
 
 Priority                  Event
 -----------------------   -----------------------------------------------------
-`PRIORITY_MAX`            Modify a generator (e.g., activate or deactivate it)
+`PRIORITY_MAX`            Terminate arrivals
 `PRIORITY_RELEASE`        Resource release
 `PRIORITY_MANAGER`        Manager action (e.g., resource capacity change)
 `PRIORITY_RELEASE_POST`   Resource post-release (i.e., serve from the queue)
-`PRIORITY_GENERATOR`      Generate new arrivals
 ...                       General activities
-`PRIORITY_MIN`            Other tasks (e.g., a timer for reneging)
+`PRIORITY_MIN`            Other tasks (e.g., new arrivals, timers...)
 
   : Priority system (in decreasing order) and events associated.\label{priorities}
 

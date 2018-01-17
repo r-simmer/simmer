@@ -108,7 +108,7 @@ public:
    */
   Generator(Simulator* sim, const std::string& name_prefix, int mon,
             const Rcpp::Environment& trj, const Rcpp::Function& dist, const Order& order)
-    : Process(sim, name_prefix, mon, PRIORITY_GENERATOR), count(0), trj(trj),
+    : Process(sim, name_prefix, mon, PRIORITY_MIN), count(0), trj(trj),
       dist(dist), order(order), first_activity(NULL) { set_first_activity(); }
 
   /**
