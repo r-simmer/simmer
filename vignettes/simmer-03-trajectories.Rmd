@@ -80,9 +80,9 @@ patient_traj <- trajectory(name = "patient_trajectory") %>%
   release(resource = "doctor", amount = 1)
 ```
 
-Here we create a trajectory where a patient _seizes_ a doctor for 3 minutes and then _releases_ him again.
+Here we create a trajectory where a patient _seizes_ a doctor for 3 minutes and then _releases_ him again. This is a very straightforward example, however, most of the trajectory-related functions allow for more advanced usage. The different functions are introduced below.
 
-This is a very straightforward example, however, most of the trajectory-related functions allow for more advanced usage. The different functions are introduced below.
+Additionally, you may want to try the `simmer.bricks` package, a plugin for `simmer` which provides helper methods for trajectories. Each *brick* wraps a common activity pattern that can be used to build trajectories more conveniently (see the [_Introduction to `simmer.bricks`_](http://r-simmer.org/extensions/bricks/articles/introduction.html)).
 
 ### `log_()`
 

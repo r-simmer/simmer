@@ -1,6 +1,6 @@
 language: R
 sudo: true
-latex: false
+latex: true
 r:
   - release
 

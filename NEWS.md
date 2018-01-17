@@ -1,9 +1,19 @@
-# simmer 3.6.4.9000
+# simmer 3.7.0
+
+## Minor changes and fixes:
+
+* Remove v3.6.x deprecations: the old attribute retrieval system (see notes for v3.6.3), as well as methods `create_trajectory()` and `onestep()` (#117).
+* Remove "Terminology" vignette.
+* New vignette: a paper accepted for publication in the Journal of Statistical Software.
+* Broadcast signals with higher priority to prevent an arrival to catch its own signal with a `trap()` after a `send()` (#135).
+* Generate new arrivals with minimum priority to avoid wrong interactions with simultaneous activities (#136).
+
+# simmer 3.6.5
 
 ## New features:
 
 * `set_attribute()` (and `set_global()` by extension) can set multiple attributes at once by providing vectors of `keys` and `values` (or functions returning such `keys` and/or `values`). `get_attribute()` (and `get_global()` by extension) can retrieve multiple `keys` (#122).
-* New `is_preemptive()` method to check whether a resource is preemptive by name (1a366e9).
+* New `stepn()` method deprecates `onestep()` (e452975).
 
 ## Minor changes and fixes:
 
@@ -13,6 +23,7 @@
 * Update "Queueing Systems" vignette (a0409a0, 8f03f4f).
 * Update "Advanced Trajectory Usage" vignette (4501927).
 * Fix print methods to return the object invisibly (#128).
+* New "Dining Philosophers Problem" vignette (ff6137e).
 
 # simmer 3.6.4
 

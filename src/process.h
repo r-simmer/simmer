@@ -108,7 +108,7 @@ public:
    */
   Generator(Simulator* sim, const std::string& name_prefix, int mon,
             const Rcpp::Environment& trj, const Rcpp::Function& dist, const Order& order)
-    : Process(sim, name_prefix, mon, PRIORITY_GENERATOR), count(0), trj(trj),
+    : Process(sim, name_prefix, mon, PRIORITY_MIN), count(0), trj(trj),
       dist(dist), order(order), first_activity(NULL) { set_first_activity(); }
 
   /**
@@ -199,7 +199,6 @@ public:
   void set_activity(Activity* ptr) { activity = ptr; }
   double get_start() const { return lifetime.start; }
   Activity* get_activity() const { return activity; }
-  Attr* get_attributes() { return &attributes; } // # nocov
   double get_attribute(const std::string& key) const {
     Attr::const_iterator search = attributes.find(key);
     if (search == attributes.end())

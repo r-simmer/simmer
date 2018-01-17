@@ -32,6 +32,5 @@ system.time({
 })
 # (Simpy: 30 seconds)
 # 16 seconds with R 3.3.x
-# 19.5 seconds with R 3.4.x (!?)
 
 plot(env, "res", "usage", "server")

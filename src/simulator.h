@@ -302,7 +302,7 @@ public:
       foreach_ (const HandlerMap::value_type& itr, signal_map[signal]) {
         if (!itr.second.first)
           continue;
-        Task* task = new Task(this, "Handler", itr.second.second);
+        Task* task = new Task(this, "Handler", itr.second.second, PRIORITY_SIGNAL);
         task->activate();
       }
     }
@@ -342,7 +342,6 @@ public:
       return NA_REAL;
     return search->second;
   }
-  Attr* get_attributes() { return &attributes; } // # nocov
 
   void register_arrival(Arrival* arrival) { arrival_map[arrival]; }
   void unregister_arrival(Arrival* arrival) {

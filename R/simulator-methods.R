@@ -7,7 +7,7 @@
 #'
 #' @return Returns a simulation environment.
 #' @seealso Methods for dealing with a simulation environment:
-#' \code{\link{reset}}, \code{\link{now}}, \code{\link{peek}}, \code{\link{onestep}}, \code{\link{run}},
+#' \code{\link{reset}}, \code{\link{now}}, \code{\link{peek}}, \code{\link{stepn}}, \code{\link{run}},
 #' \code{\link{add_resource}}, \code{\link{add_generator}}, \code{\link{get_mon_arrivals}},
 #' \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}, \code{\link{get_n_generated}},
 #' \code{\link{get_capacity}}, \code{\link{get_queue_size}},
@@ -46,7 +46,7 @@ simmer <- function(name="anonymous", verbose=FALSE) Simmer$new(name, verbose)
 #' @param .env the simulation environment.
 #'
 #' @return Returns the simulation environment.
-#' @seealso \code{\link{onestep}}, \code{\link{run}}.
+#' @seealso \code{\link{stepn}}, \code{\link{run}}.
 #' @export
 reset <- function(.env) UseMethod("reset")
 
@@ -83,11 +83,12 @@ run.simmer <- function(.env, until=1000, progress=NULL, steps=10) {
 }
 
 #' @rdname run
+#' @param n number of events to simulate.
 #' @export
-onestep <- function(.env) UseMethod("onestep")
+stepn <- function(.env, n=1) UseMethod("stepn")
 
 #' @export
-onestep.simmer <- function(.env) .env$step()
+stepn.simmer <- function(.env, n=1) .env$stepn(n)
 
 #' Simulation Time
 #'
@@ -281,12 +282,12 @@ get_prioritization.simmer <- function(.env) .env$get_prioritization()
 
 #' Get Resource Parameters
 #'
-#' Getters for resources: server capacity/count/preemptiveness and queue size/count.
+#' Getters for resources: server capacity/count and queue size/count.
 #'
 #' @inheritParams reset
 #' @param resource the name of the resource.
 #'
-#' @return Return a numeric value. \code{is_preemptive} returns a boolean.
+#' @return Return a numeric value.
 #' @seealso \code{\link{set_capacity}}, \code{\link{set_queue_size}}.
 #' @export
 get_capacity <- function(.env, resource) UseMethod("get_capacity")
@@ -314,10 +315,3 @@ get_queue_count <- function(.env, resource) UseMethod("get_queue_count")
 
 #' @export
 get_queue_count.simmer <- function(.env, resource) .env$get_queue_count(resource)
-
-#' @rdname get_capacity
-#' @export
-is_preemptive <- function(.env, resource) UseMethod("is_preemptive")
-
-#' @export
-is_preemptive.simmer <- function(.env, resource) .env$is_preemptive(resource)

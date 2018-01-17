@@ -27,3 +27,31 @@ test_that("we can set a new distribution", {
 
   expect_equal(arr$start_time, c(1, 3, 5, 7, 9))
 })
+
+test_that("other activities cannot modify the behaviour", {
+  t1 <- trajectory() %>%
+    timeout(1)
+
+  t2 <- trajectory() %>%
+    set_distribution("dummy", function() 1) %>%
+    set_trajectory("dummy", t1) %>%
+    timeout(2)
+
+  t3 <- trajectory() %>%
+    set_attribute("asdf", 1) %>%
+    set_distribution("dummy", function() 1) %>%
+    set_trajectory("dummy", t1) %>%
+    timeout(2)
+
+  arr2 <- simmer(verbose=TRUE) %>%
+    add_generator("dummy", t2, function() 2) %>%
+    run(10) %>%
+    get_mon_arrivals()
+
+  arr3 <- simmer(verbose=TRUE) %>%
+    add_generator("dummy", t3, function() 2) %>%
+    run(10) %>%
+    get_mon_arrivals()
+
+  expect_true(all(arr2 == arr3))
+})

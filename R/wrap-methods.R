@@ -64,6 +64,3 @@ get_server_count.wrap <- function(.env, resource) get_server_count.simmer(.env, 
 
 #' @export
 get_queue_count.wrap <- function(.env, resource) get_queue_count.simmer(.env, resource)
-
-#' @export
-is_preemptive.wrap <- function(.env, resource) is_preemptive.simmer(.env, resource)
