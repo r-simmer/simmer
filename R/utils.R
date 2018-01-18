@@ -2,61 +2,64 @@
   library.dynam.unload("simmer", libpath)
 }
 
-is_string <- function(x) is.character(x) && length(x) == 1
+is_flag <- function(name, env)
+  is.numeric(env[[name]]) || is.logical(env[[name]])
 
-is_flag <- function(x) is.numeric(x) || is.logical(x)
+is_string <- function(name, env)
+  is.character(env[[name]]) && length(env[[name]]) == 1
 
-is_number <- function(x, env, name) {
-  if (is.numeric(x) && length(x) == 1) {
-    if (is.infinite(x))
+is_string_vector <- function(name, env) is.character(env[[name]])
+
+is_numeric <- function(name, env) is.numeric(env[[name]])
+
+is_number <- function(name, env) {
+  if (is.numeric(env[[name]]) && length(env[[name]]) == 1) {
+    if (is.infinite(env[[name]]))
       env[[name]] <- -1
-    else env[[name]] <- abs(x)
+    else env[[name]] <- abs(env[[name]])
     TRUE
   } else FALSE
 }
 
-is_number_vector <- function(x, env, name) {
-  if (is.numeric(x) && length(x) > 1) {
-    env[[name]] <- abs(x)
+is_number_vector <- function(name, env) {
+  if (is.numeric(env[[name]]) && length(env[[name]]) > 1) {
+    env[[name]] <- abs(env[[name]])
     TRUE
   } else FALSE
 }
 
-is_function <- function(x, env, name) {
-  if (is.function(x)) {
-    env[[name]] <- magrittr_workaround(x)
+is_function <- function(name, env) {
+  if (is.function(env[[name]])) {
+    env[[name]] <- magrittr_workaround(env[[name]])
     TRUE
   } else FALSE
 }
 
-check_args <- function(..., types, n=1, env=parent.frame()) {
-  caller <- match.call(sys.function(sys.parent(n)), sys.call(sys.parent(n)))
+is_trajectory <- function(name, env) {
+  if (name == "dots.")
+    all(sapply(env[[name]], inherits, what="trajectory"))
+  else inherits(env[[name]], "trajectory")
+}
+
+is_simmer <- function(name, env) inherits(env[[name]], "simmer")
+
+is_schedule <- function(name, env) inherits(env[[name]], "schedule")
+
+is_NA <- function(name, env) is.na(env[[name]])
+
+is_NULL <- function(name, env) is.null(env[[name]])
+
+check_args <- function(..., n.=1, env.=parent.frame()) {
+  caller <- match.call(sys.function(sys.parent(n.)), sys.call(sys.parent(n.)))
   caller <- as.character(caller)[[1]]
-  args <- list(...)
-  dots <- match.call(expand.dots = FALSE)$...
-  vars <- sapply(dots, deparse)
-  stopifnot(length(vars) == length(types))
+  types <- list(...)
 
   msg <- NULL
-  for (i in seq_along(args)) {
-    x <- args[[i]]
-    if (!switch(types[[i]],
-      flag                        = is_flag(x),
-      string                      = is_string(x),
-      number                      = is_number(x, env, vars[[i]]),
-      `function`                  = is_function(x, env, vars[[i]]),
-      trajectory                  = inherits(x, "trajectory"),
-      schedule                    = inherits(x, "schedule"),
-      `string or function`        = is_string(x) || is_function(x, env, vars[[i]]),
-      `string or NA`              = is_string(x) || is.na(x),
-      `string vector or function` = is.character(x) || is_function(x, env, vars[[i]]),
-      `number or function`        = is_number(x, env, vars[[i]]) || is_function(x, env, vars[[i]]),
-      `number vector or function` = is_number_vector(x, env, vars[[i]]) || is_function(x, env, vars[[i]]),
-      `numeric or function`       = is.numeric(x) || is_function(x, env, vars[[i]]),
-      `number or schedule`        = is_number(x, env, vars[[i]]) || inherits(x, "schedule"),
-      `function or NULL`          = is_function(x, env, vars[[i]]) || is.null(x),
-      `trajectory or NULL`        = inherits(x, "trajectory") || is.null(x)
-    )) msg <- c(msg, paste0("'", vars[[i]], "' is not a ", types[[i]]))
+  for (var in names(types)) {
+    funcs <- paste0("is_", sub(" ", "_", types[[var]]))
+    if (!any(sapply(funcs, do.call, args=list(var, env.), envir=env.)))
+      msg <- c(msg, paste0(
+        "'", sub("dots.", "...", var), "' is not a ", paste0(types[[var]], collapse=" or ")))
   }
 
   if (length(msg))

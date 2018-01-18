@@ -3,7 +3,7 @@ Simmer <- R6Class("simmer",
     name = NA,
 
     initialize = function(name="anonymous", verbose=FALSE) {
-      check_args(name, verbose, types=c("string", "flag"), n=3)
+      check_args(name="string", verbose="flag", n.=3)
       self$name <- name
       private$sim_obj <- Simulator__new(name, verbose)
       self
@@ -40,7 +40,7 @@ Simmer <- R6Class("simmer",
     now = function() { now_(private$sim_obj) },
 
     peek = function(steps=1, verbose=FALSE) {
-      check_args(steps, verbose, types=c("number", "flag"))
+      check_args(steps="number", verbose="flag")
       ret <- peek_(private$sim_obj, steps)
       if (!verbose) ret$time
       else ret # nocov
@@ -58,8 +58,14 @@ Simmer <- R6Class("simmer",
 
     add_resource = function(name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE,
                             preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE) {
-      check_args(name, capacity, queue_size, mon, preemptive, queue_size_strict,
-            types=c("string", rep("number or schedule", 2), rep("flag", 3)))
+      check_args(
+        name = "string",
+        capacity = c("number", "schedule"),
+        queue_size = c("number", "schedule"),
+        mon = "flag",
+        preemptive = "flag",
+        queue_size_strict = "flag"
+      )
       preempt_order <- match.arg(preempt_order)
 
       if (inherits(capacity, "schedule")) {
@@ -91,8 +97,15 @@ Simmer <- R6Class("simmer",
 
     add_generator = function(name_prefix, trajectory, distribution, mon=1,
                              priority=0, preemptible=priority, restart=FALSE) {
-      check_args(name_prefix, trajectory, distribution, mon, priority, preemptible, restart,
-            types=c("string", "trajectory", "function", "flag", rep("number", 2), "flag"))
+      check_args(
+        name_prefix = "string",
+        trajectory = "trajectory",
+        distribution = "function",
+        mon = "flag",
+        priority = "number",
+        preemptible = "number",
+        restart = "flag"
+      )
       ret <- add_generator_(private$sim_obj, name_prefix, trajectory[],
                             make_resetable(distribution), mon, priority, preemptible, restart)
       if (ret) private$gen[[name_prefix]] <- c(mon=mon)
