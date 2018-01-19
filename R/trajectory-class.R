@@ -4,7 +4,7 @@ Trajectory <- R6Class("trajectory",
     verbose = NA,
 
     initialize = function(name="anonymous", verbose=FALSE) {
-      check_args(name="string", verbose="flag", n.=3)
+      check_args(name="string", verbose="flag")
       self$name <- name
       self$verbose <- verbose
       self
@@ -148,8 +148,10 @@ Trajectory <- R6Class("trajectory",
       )
     },
 
-    timeout = function(task) {
-      check_args(task=c("number", "function"))
+    timeout = function(task, global=FALSE) {
+      check_args(task=c("number", "function", "string"))
+      if (is.character(task))
+        return(private$add_activity(Timeout__new_attr(task, global)))
       switch(
         binarise(is.function(task)),
         private$add_activity(Timeout__new(task)),

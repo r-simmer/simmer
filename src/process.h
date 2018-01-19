@@ -25,7 +25,7 @@ protected:
 };
 
 class Manager : public Process {
-  typedef boost::function<void (int)> Setter;
+  typedef Fn<void(int)> Setter;
 
 public:
   Manager(Simulator* sim, const std::string& name, const std::string& param,
@@ -47,8 +47,10 @@ private:
 };
 
 class Task : public Process {
+  typedef Fn<void()> Callback;
+
 public:
-  Task(Simulator* sim, const std::string& name, const BIND(void)& task, int priority = 0)
+  Task(Simulator* sim, const std::string& name, const Callback& task, int priority = 0)
     : Process(sim, name, false, priority), task(task) {}
   ~Task() { reset(); }
 
@@ -56,7 +58,7 @@ public:
   void run();
 
 private:
-  BIND(void) task;
+  Callback task;
 };
 
 struct Order {
@@ -221,7 +223,7 @@ public:
   void set_renege(double timeout, Activity* next) {
     cancel_renege();
     timer = new Task(sim, "Renege-Timer",
-                     boost::bind(&Arrival::renege, this, next),
+                     BIND(&Arrival::renege, this, next),
                      PRIORITY_MIN);
     timer->activate(timeout);
   }

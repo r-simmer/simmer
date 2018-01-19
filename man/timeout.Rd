@@ -2,9 +2,15 @@
 % Please edit documentation in R/trajectory-activities.R
 \name{timeout}
 \alias{timeout}
+\alias{timeout_from_attribute}
+\alias{timeout_from_global}
 \title{Delay}
 \usage{
 timeout(.trj, task)
+
+timeout_from_attribute(.trj, key, global = FALSE)
+
+timeout_from_global(.trj, key)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -12,10 +18,19 @@ timeout(.trj, task)
 \item{task}{the timeout duration supplied by either passing a numeric or a
 callable object (a function) which must return a numeric (negative values are
 automatically coerced to positive).}
+
+\item{key}{the attribute name, or a callable object (a function) which
+must return the attribute name.}
+
+\item{global}{if \code{TRUE}, the attribute will be global instead of per-arrival.}
 }
 \value{
 Returns the trajectory object.
 }
 \description{
 Activity for inserting delays and execute user-defined tasks.
+}
+\details{
+\code{timeout_from_global} is a shortcut for
+\code{timeout_from_attribute(global=TRUE)}.
 }

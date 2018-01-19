@@ -9,16 +9,6 @@
 #include <boost/unordered_map.hpp>
 
 #define VEC std::vector
-
-template <typename T>
-std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
-  out << "[";
-  if (!v.empty())
-    std::copy(v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
-  out << "\b\b]";
-  return out;
-}
-
 #define MSET boost::container::multiset
 #define USET boost::unordered_set
 #define UMAP boost::unordered_map
@@ -40,7 +30,10 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
-#define BIND(T) boost::function<T ()>
+#define REnv Rcpp::Environment
+#define RFn Rcpp::Function
+#define Fn boost::function
+#define BIND boost::bind
 
 #define FMT(n, justify) std::setw(n) << std::justify
 #define IND(n) std::string(n, ' ')
@@ -61,12 +54,36 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 
 #define COMMA ,
 
-#define BASE_CLONEABLE(Type) \
-  virtual Type* clone() const = 0;
-
-#define CLONEABLE(Type) \
-  virtual Type* clone() const { return new Type(*this); }
+#define BASE_CLONEABLE(Type) virtual Type* clone() const = 0;
+#define CLONEABLE(Type) virtual Type* clone() const { return new Type(*this); }
 
 typedef UMAP<std::string, double> Attr;
+
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
+  out << "[";
+  if (!v.empty())
+    std::copy(v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
+  out << "\b\b]";
+  return out;
+}
+
+template <typename T, typename U, typename V>
+class FnWrap {
+public:
+  V arg;
+
+  FnWrap(const Fn<T(U)>& call, const V& arg) : arg(arg), call(call) {}
+
+  T operator()(U param) { return call(param); }
+
+  friend std::ostream& operator<<(std::ostream& out, const FnWrap<T, U, V>& fn) {
+    out << fn.arg;
+    return out;
+  }
+
+private:
+  Fn<T(U)> call;
+};
 
 #endif

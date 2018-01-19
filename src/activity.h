@@ -76,25 +76,28 @@ protected:
   Activity* prev;
 
   template <typename T>
-  T get(const T& var) const { return var; }
+  T get(const T& var, Arrival* arrival) const { return var; }
 
   template <typename T>
-  T get(const Rcpp::Function& call) const { return Rcpp::as<T>(call()); }
+  T get(const RFn& call, Arrival* arrival) const { return Rcpp::as<T>(call()); }
+
+  template <typename T>
+  T get(const Fn<T(Arrival*)>& call, Arrival* arrival) const { return call(arrival); }
 };
 
 // abstract class for multipath activities
 class Fork : public Activity {
 public:
   Fork(const std::string& name, const VEC<bool>& cont,
-       const VEC<Rcpp::Environment>& trj, int priority = 0)
+       const VEC<REnv>& trj, int priority = 0)
     : Activity(name, priority), cont(cont), trj(trj), selected(NULL)
   {
-    foreach_ (const VEC<Rcpp::Environment>::value_type& itr, trj) {
-      Rcpp::Function head(itr["head"]);
-      Rcpp::Function tail(itr["tail"]);
+    foreach_ (const VEC<REnv>::value_type& itr, trj) {
+      RFn head(itr["head"]);
+      RFn tail(itr["tail"]);
       heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(head()));
       tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(tail()));
-      Rcpp::Function get_n_activities(itr["get_n_activities"]);
+      RFn get_n_activities(itr["get_n_activities"]);
       count += Rcpp::as<int>(get_n_activities());
     }
     foreach_ (const VEC<Activity*>::value_type& itr, heads)
@@ -104,11 +107,11 @@ public:
   Fork(const Fork& o) : Activity(o), cont(o.cont), trj(o.trj), selected(NULL) {
     heads.clear();
     tails.clear();
-    foreach_ (VEC<Rcpp::Environment>::value_type& itr, trj) {
-      Rcpp::Function clone(itr["clone"]);
+    foreach_ (VEC<REnv>::value_type& itr, trj) {
+      RFn clone(itr["clone"]);
       itr = clone();
-      Rcpp::Function head(itr["head"]);
-      Rcpp::Function tail(itr["tail"]);
+      RFn head(itr["head"]);
+      RFn tail(itr["tail"]);
       heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(head()));
       tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(tail()));
     }
@@ -123,7 +126,7 @@ public:
       for (unsigned int i = 0; i < trj.size(); i++) {
         Rcpp::Rcout <<
           IND(indent) << "Fork " << i+1 << (cont[i] ? ", continue," : ", stop,");
-        Rcpp::Function print(trj[i]["print"]);
+        RFn print(trj[i]["print"]);
         print(indent, verbose);
       }
     } else Rcpp::Rcout << trj.size() << " paths" << std::endl;
@@ -147,7 +150,7 @@ public:
 
 protected:
   VEC<bool> cont;
-  VEC<Rcpp::Environment> trj;
+  VEC<REnv> trj;
   Activity* selected;
   VEC<Activity*> heads;
   VEC<Activity*> tails;
@@ -186,12 +189,12 @@ public:
   CLONEABLE(Seize<T>)
 
   Seize(const std::string& resource, const T& amount, const VEC<bool>& cont,
-        const VEC<Rcpp::Environment>& trj, unsigned short mask)
+        const VEC<REnv>& trj, unsigned short mask)
     : Fork("Seize", cont, trj),
       ResGetter("Seize", resource), amount(amount), mask(mask) {}
 
   Seize(int id, const T& amount, const VEC<bool>& cont,
-        const VEC<Rcpp::Environment>& trj, unsigned short mask)
+        const VEC<REnv>& trj, unsigned short mask)
     : Fork("Seize", cont, trj),
       ResGetter("Seize", "[]", id), amount(amount), mask(mask) {}
 
@@ -204,7 +207,7 @@ public:
 
   double run(Arrival* arrival) {
     return select_path(
-      arrival, get_resource(arrival)->seize(arrival, std::abs(get<int>(amount))));
+      arrival, get_resource(arrival)->seize(arrival, std::abs(get<int>(amount, arrival))));
   }
 
 protected:
@@ -254,7 +257,7 @@ public:
   }
 
   double run(Arrival* arrival) {
-    return get_resource(arrival)->release(arrival, std::abs(get<int>(amount)));
+    return get_resource(arrival)->release(arrival, std::abs(get<int>(amount, arrival)));
   }
 
 protected:
@@ -282,7 +285,7 @@ public:
   }
 
   double run(Arrival* arrival) {
-    double ret = std::abs(get<double>(value));
+    double ret = std::abs(get<double>(value, arrival));
     if (ret == R_PosInf) ret = -1;
     get_resource(arrival)->set_capacity((int)ret);
     if (arrival->is_paused())
@@ -315,7 +318,7 @@ public:
   }
 
   double run(Arrival* arrival) {
-    double ret = std::abs(get<double>(value));
+    double ret = std::abs(get<double>(value, arrival));
     if (ret == R_PosInf) ret = -1;
     get_resource(arrival)->set_queue_size((int)ret);
     return 0;
@@ -344,7 +347,7 @@ public:
 
   double run(Arrival* arrival) {
     arrival->set_resource_selected(
-        id, policy.dispatch(arrival->sim, get<VEC<std::string> >(resources)));
+        id, policy.dispatch(arrival->sim, get<VEC<std::string> >(resources, arrival)));
     return 0;
   }
 
@@ -372,15 +375,15 @@ public:
   }
 
   double run(Arrival* arrival) {
-    VEC<std::string> ks = get<VEC<std::string> >(keys);
-    VEC<double> vals = get<VEC<double> >(values);
+    VEC<std::string> ks = get<VEC<std::string> >(keys, arrival);
+    VEC<double> vals = get<VEC<double> >(values, arrival);
 
     if (ks.size() != vals.size())
       Rcpp::stop("%s: number of keys and values don't match", name);
 
-    boost::function<void (const std::string&, double)> setter;
-    if (global) setter = boost::bind(&Simulator::set_attribute, arrival->sim, _1, _2);
-    else setter = boost::bind(&Arrival::set_attribute, arrival, _1, _2);
+    Fn<void(const std::string&, double)> setter;
+    if (global) setter = BIND(&Simulator::set_attribute, arrival->sim, _1, _2);
+    else setter = BIND(&Arrival::set_attribute, arrival, _1, _2);
 
     for (unsigned int i = 0; i < ks.size(); i++)
       setter(ks[i], vals[i]);
@@ -412,7 +415,7 @@ public:
   }
 
   double run(Arrival* arrival) {
-    arrival->sim->get_generator(get<std::string>(generator))->activate();
+    arrival->sim->get_generator(get<std::string>(generator, arrival))->activate();
     return 0;
   }
 
@@ -438,7 +441,7 @@ public:
   }
 
   double run(Arrival* arrival) {
-    arrival->sim->get_generator(get<std::string>(generator))->deactivate();
+    arrival->sim->get_generator(get<std::string>(generator, arrival))->deactivate();
     return 0;
   }
 
@@ -454,7 +457,7 @@ class SetTraj : public Activity {
 public:
   CLONEABLE(SetTraj<T>)
 
-  SetTraj(const T& generator, const Rcpp::Environment& trajectory)
+  SetTraj(const T& generator, const REnv& trajectory)
     : Activity("SetTraj"), generator(generator), trajectory(trajectory) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
@@ -465,13 +468,13 @@ public:
 
   double run(Arrival* arrival) {
     arrival->sim->
-      get_generator(get<std::string>(generator))->set_trajectory(trajectory);
+      get_generator(get<std::string>(generator, arrival))->set_trajectory(trajectory);
     return 0;
   }
 
 protected:
   T generator;
-  Rcpp::Environment trajectory;
+  REnv trajectory;
 };
 
 /**
@@ -482,9 +485,8 @@ class SetDist : public Activity {
 public:
   CLONEABLE(SetDist<T>)
 
-  SetDist(const T& generator, const Rcpp::Function& distribution)
-    : Activity("SetDist"),
-      generator(generator), distribution(distribution) {}
+  SetDist(const T& generator, const RFn& distribution)
+    : Activity("SetDist"), generator(generator), distribution(distribution) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -494,13 +496,13 @@ public:
 
   double run(Arrival* arrival) {
     arrival->sim->
-      get_generator(get<std::string>(generator))->set_distribution(distribution);
+      get_generator(get<std::string>(generator, arrival))->set_distribution(distribution);
     return 0;
   }
 
 protected:
   T generator;
-  Rcpp::Function distribution;
+  RFn distribution;
 };
 
 /**
@@ -520,7 +522,7 @@ public:
   }
 
   double run(Arrival* arrival) {
-    VEC<int> ret = get<VEC<int> >(values);
+    VEC<int> ret = get<VEC<int> >(values, arrival);
     if (ret.size() != 3)
       Rcpp::stop("%s: 3 values needed", name);
     if (ret[0] >= 0) arrival->order.set_priority(ret[0]);
@@ -550,7 +552,7 @@ public:
   }
 
   double run(Arrival* arrival) {
-    double value = get<double>(delay);
+    double value = get<double>(delay, arrival);
     if (ISNAN(value))
       Rcpp::stop("%s: missing value (NA or NaN returned)", name);
     return std::abs(value);
@@ -568,8 +570,7 @@ class Branch : public Fork {
 public:
   CLONEABLE(Branch)
 
-  Branch(const Rcpp::Function& option, const VEC<bool>& cont,
-         const VEC<Rcpp::Environment>& trj)
+  Branch(const RFn& option, const VEC<bool>& cont, const VEC<REnv>& trj)
     : Fork("Branch", cont, trj), option(option) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
@@ -580,7 +581,7 @@ public:
   }
 
   double run(Arrival* arrival) {
-    int ret = get<int>(option);
+    int ret = get<int>(option, arrival);
     if (ret < 0 || ret > (int)heads.size())
       Rcpp::stop("%s: index out of range", name);
     if (ret) selected = heads[ret-1];
@@ -588,7 +589,7 @@ public:
   }
 
 protected:
-  Rcpp::Function option;
+  RFn option;
 };
 
 /**
@@ -598,7 +599,7 @@ class Rollback : public Activity {
 public:
   CLONEABLE(Rollback)
 
-  Rollback(int amount, int times, const OPT<Rcpp::Function>& check = NONE)
+  Rollback(int amount, int times, const OPT<RFn>& check = NONE)
     : Activity("Rollback"), amount(std::abs(amount)),
       times(times), check(check), cached(NULL), selected(NULL) {}
 
@@ -618,7 +619,7 @@ public:
 
   double run(Arrival* arrival) {
     if (check) {
-      if (!get<bool>(*check))
+      if (!get<bool>(*check, arrival))
         return 0;
     } else if (times >= 0) {
       if (pending.find(arrival) == pending.end())
@@ -646,7 +647,7 @@ public:
 protected:
   int amount;
   int times;
-  OPT<Rcpp::Function> check;
+  OPT<RFn> check;
   Activity* cached, *selected;
   UMAP<Arrival*, int> pending;
 
@@ -676,7 +677,7 @@ public:
   }
 
   double run(Arrival* arrival) {
-    if (Rcpp::runif(1)[0] > get<double>(prob))
+    if (Rcpp::runif(1)[0] > get<double>(prob, arrival))
       return 0;
     arrival->terminate(false);
     return REJECT;
@@ -694,7 +695,7 @@ class Clone : public Fork {
 public:
   CLONEABLE(Clone<T>)
 
-  Clone(const T& n, const VEC<Rcpp::Environment>& trj)
+  Clone(const T& n, const VEC<REnv>& trj)
     : Fork("Clone", VEC<bool>(trj.size(), true), trj), n(n) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
@@ -705,7 +706,7 @@ public:
   }
 
   double run(Arrival* arrival) {
-    for (unsigned int i = 1; i < std::abs(get<int>(n)); i++) {
+    for (unsigned int i = 1; i < std::abs(get<int>(n, arrival)); i++) {
       if (i < heads.size())
         selected = heads[i];
       Arrival* new_arrival = arrival->clone();
@@ -777,7 +778,7 @@ public:
   CLONEABLE(Batch<T>)
 
   Batch(int n, const T& timeout, bool permanent,
-        const std::string& id = "", const OPT<Rcpp::Function>& rule = NONE)
+        const std::string& id = "", const OPT<RFn>& rule = NONE)
     : Activity("Batch"),
       n(n), timeout(timeout), permanent(permanent), id(id), rule(rule) {}
 
@@ -789,7 +790,7 @@ public:
   }
 
   double run(Arrival* arrival) {
-    if (rule && !get<bool>(*rule))
+    if (rule && !get<bool>(*rule, arrival))
       return 0;
     Batched** ptr = arrival->sim->get_batch(this, id);
     if (!(*ptr))
@@ -805,7 +806,7 @@ protected:
   T timeout;
   bool permanent;
   std::string id;
-  OPT<Rcpp::Function> rule;
+  OPT<RFn> rule;
 
   Batched* init(Arrival* arrival) {
     std::string str;
@@ -818,10 +819,10 @@ protected:
       str= "batch" + boost::lexical_cast<std::string>(count);
       ptr = new Batched(arrival->sim, str, permanent, count);
     }
-    double dt = std::abs(get<double>(timeout));
+    double dt = std::abs(get<double>(timeout, arrival));
     if (dt) {
       Task* task = new Task(arrival->sim, "Batch-Timer",
-                            boost::bind(&Batch::trigger, this, arrival->sim, ptr),
+                            BIND(&Batch::trigger, this, arrival->sim, ptr),
                             PRIORITY_MIN);
       task->activate(dt);
     }
@@ -876,7 +877,7 @@ class RenegeIn : public Fork {
 public:
   CLONEABLE(RenegeIn<T>)
 
-  RenegeIn(const T& t, const VEC<Rcpp::Environment>& trj)
+  RenegeIn(const T& t, const VEC<REnv>& trj)
     : Fork("RenegeIn", VEC<bool>(trj.size(), false), trj), t(t) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
@@ -890,7 +891,7 @@ public:
     Activity* next = NULL;
     if (heads.size())
       next = heads[0];
-    arrival->set_renege(std::abs(get<double>(t)), next);
+    arrival->set_renege(std::abs(get<double>(t, arrival)), next);
     return 0;
   }
 
@@ -906,7 +907,7 @@ class RenegeIf : public Fork {
 public:
   CLONEABLE(RenegeIf<T>)
 
-  RenegeIf(const T& signal, const VEC<Rcpp::Environment>& trj)
+  RenegeIf(const T& signal, const VEC<REnv>& trj)
     : Fork("RenegeIf", VEC<bool>(trj.size(), false), trj), signal(signal) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
@@ -920,7 +921,7 @@ public:
     Activity* next = NULL;
     if (heads.size())
       next = heads[0];
-    arrival->set_renege(get<std::string>(signal), next);
+    arrival->set_renege(get<std::string>(signal, arrival), next);
     return 0;
   }
 
@@ -967,11 +968,11 @@ public:
   }
 
   double run(Arrival* arrival) {
-    double lag = std::abs(get<double>(delay));
+    double lag = std::abs(get<double>(delay, arrival));
     Task* task =
       new Task(arrival->sim, "Broadcast",
-               boost::bind(&Simulator::broadcast, arrival->sim,
-                           get<VEC<std::string> >(signals)),
+               BIND(&Simulator::broadcast, arrival->sim,
+                    get<VEC<std::string> >(signals, arrival)),
                lag ? PRIORITY_MIN : PRIORITY_SIGNAL);
     task->activate(lag);
     return 0;
@@ -990,7 +991,7 @@ class Trap : public Fork {
 public:
   CLONEABLE(Trap<T>)
 
-  Trap(const T& signals, const VEC<Rcpp::Environment>& trj, bool interruptible)
+  Trap(const T& signals, const VEC<REnv>& trj, bool interruptible)
     : Fork("Trap", VEC<bool>(trj.size(), false), trj, PRIORITY_TRAP),
       signals(signals), interruptible(interruptible) {}
 
@@ -1013,8 +1014,8 @@ public:
       arrival->activate();
       return REJECT;
     }
-    arrival->sim->subscribe(get<VEC<std::string> >(signals), arrival,
-                            boost::bind(&Trap::launch_handler, this, arrival));
+    arrival->sim->subscribe(get<VEC<std::string> >(signals, arrival), arrival,
+                            BIND(&Trap::launch_handler, this, arrival));
     return 0;
   }
 
@@ -1058,7 +1059,7 @@ public:
   }
 
   double run(Arrival* arrival) {
-    arrival->sim->unsubscribe(get<VEC<std::string> >(signals), arrival);
+    arrival->sim->unsubscribe(get<VEC<std::string> >(signals, arrival), arrival);
     return 0;
   }
 
@@ -1102,7 +1103,7 @@ public:
 
   double run(Arrival* arrival) {
     Rcpp::Rcout << arrival->sim->now() << ": " << arrival->name << ": " <<
-      get<std::string>(message) << std::endl;
+      get<std::string>(message, arrival) << std::endl;
     return 0;
   }
 

@@ -49,12 +49,24 @@ is_NA <- function(name, env) is.na(env[[name]])
 
 is_NULL <- function(name, env) is.null(env[[name]])
 
-check_args <- function(..., n.=1, env.=parent.frame()) {
-  caller <- match.call(sys.function(sys.parent(n.)), sys.call(sys.parent(n.)))
-  caller <- as.character(caller)[[1]]
-  types <- list(...)
+get_caller <- function() {
+  n <- 1; repeat {
+    n <- n + 1
+    caller <- try(
+      match.call(sys.function(sys.parent(n)), sys.call(sys.parent(n))),
+      silent = TRUE
+    )
+    if (inherits(caller, "try-error")) next;
+    caller <- as.character(caller)[[1]]
+    if (!grepl("\\$", caller)) break;
+  }
+  sub("\\.[[:alpha:]]+$", "", caller)
+}
 
+check_args <- function(..., env.=parent.frame()) {
+  types <- list(...)
   msg <- NULL
+
   for (var in names(types)) {
     funcs <- paste0("is_", sub(" ", "_", types[[var]]))
     if (!any(sapply(funcs, do.call, args=list(var, env.), envir=env.)))
@@ -63,7 +75,7 @@ check_args <- function(..., n.=1, env.=parent.frame()) {
   }
 
   if (length(msg))
-    stop(paste0(caller, ": ", paste0(msg, collapse=", ")), call. = FALSE)
+    stop(paste0(get_caller(), ": ", paste0(msg, collapse=", ")), call. = FALSE)
 }
 
 envs_apply <- function(envs, method, ...) {

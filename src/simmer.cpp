@@ -112,11 +112,11 @@ std::string get_name_(SEXP sim_) {
 //[[Rcpp::export]]
 NumericVector get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bool global) {
   XPtr<Simulator> sim(sim_);
-  boost::function<double (const std::string&)> getter;
+  Fn<double(const std::string&)> getter;
   NumericVector attrs;
 
-  if (global) getter = boost::bind(&Simulator::get_attribute, sim.get(), _1);
-  else getter = boost::bind(&Arrival::get_attribute, sim->get_running_arrival(), _1);
+  if (global) getter = BIND(&Simulator::get_attribute, sim.get(), _1);
+  else getter = BIND(&Arrival::get_attribute, sim->get_running_arrival(), _1);
 
   foreach_ (const std::string& key, keys)
     attrs.push_back(getter(key));
@@ -343,6 +343,19 @@ SEXP Timeout__new(double delay) {
 //[[Rcpp::export]]
 SEXP Timeout__new_func(const Function& task) {
   return XPtr<Timeout<Function> >(new Timeout<Function>(task));
+}
+
+double getter(const std::string& key, bool global, Arrival* arrival) {
+  if (global)
+    return arrival->sim->get_attribute(key);
+  return arrival->get_attribute(key);
+}
+
+//[[Rcpp::export]]
+SEXP Timeout__new_attr(const std::string& key, bool global) {
+  typedef FnWrap<double, Arrival*, std::string> Callback;
+  Callback call = Callback(BIND(&getter, key, global, _1), key);
+  return XPtr<Timeout<Callback> >(new Timeout<Callback>(call));
 }
 
 //[[Rcpp::export]]

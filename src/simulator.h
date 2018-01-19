@@ -36,7 +36,7 @@ class Simulator {
   typedef UMAP<Arrival*, USET<std::string> > ArrMap;
   typedef UMAP<std::string, Batched*> NamBMap;
   typedef UMAP<Activity*, Batched*> UnnBMap;
-  typedef std::pair<bool, BIND(void)> Handler;
+  typedef std::pair<bool, Fn<void()> > Handler;
   typedef UMAP<Arrival*, Handler> HandlerMap;
   typedef UMAP<std::string, HandlerMap> SigMap;
 
@@ -180,7 +180,7 @@ public:
    * @param   preemptible     maximum priority that cannot cause preemption (>=priority)
    * @param   restart         whether activity must be restarted after preemption
    */
-  bool add_generator(const std::string& name_prefix, Rcpp::Environment trj, Rcpp::Function dist,
+  bool add_generator(const std::string& name_prefix, REnv trj, RFn dist,
                      int mon, int priority, int preemptible, bool restart)
   {
     if (process_map.find(name_prefix) != process_map.end()) {
@@ -247,10 +247,10 @@ public:
     Manager* manager;
     if (param.compare("capacity") == 0)
       manager = new Manager(this, name, param, duration, value, period,
-                            boost::bind(&Resource::set_capacity, res, _1));
+                            BIND(&Resource::set_capacity, res, _1));
     else
       manager = new Manager(this, name, param, duration, value, period,
-                            boost::bind(&Resource::set_queue_size, res, _1));
+                            BIND(&Resource::set_queue_size, res, _1));
     process_map[name + "_" + param] = manager;
     manager->activate();
     return true;
@@ -307,11 +307,11 @@ public:
       }
     }
   }
-  void subscribe(const std::string& signal, Arrival* arrival, BIND(void) handler) {
+  void subscribe(const std::string& signal, Arrival* arrival, Fn<void()> handler) {
     signal_map[signal][arrival] = std::make_pair(true, handler);
     arrival_map[arrival].emplace(signal);
   }
-  void subscribe(const VEC<std::string>& signals, Arrival* arrival, BIND(void) handler) {
+  void subscribe(const VEC<std::string>& signals, Arrival* arrival, Fn<void()> handler) {
     foreach_ (const std::string& signal, signals)
       subscribe(signal, arrival, handler);
   }

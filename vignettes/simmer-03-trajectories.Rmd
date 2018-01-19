@@ -174,7 +174,7 @@ get_mon_attributes(env)
 
 As shown above, global attributes are reported in `get_mon_attributes()` as unnamed key/value pairs.
 
-### `timeout()`
+### `timeout()`, `timeout_from_attribute()`
 
 At its simplest, the `timeout(., task)` method delays the arrival's advance through the trajectory for a specified amount of time. Consider the following minimal example where we simply supply a static value to the timeout's `task` parameter.
 
@@ -210,6 +210,21 @@ get_mon_attributes(env)
 Be aware that if you want the `timeout()`'s `task` parameter to be evaluated dynamically, you should supply a callable function. For example in `timeout(function() rexp(1, 10))`, `rexp(1, 10)` will be evaluated every time the timeout activity is executed. However, if you supply it in the form of `timeout(rexp(1, 10))`, it will only be evaluated at the initalization and will remain static after that.
 
 Of course, this `task`, supplied as a function, may be as complex as you need and, for instance, it may check a resource's status, interact with other entities in your simulation model... The same applies to all the activities when they accept a function as a parameter.
+
+If you simply need a delay previously set as an attribute, you may use `timeout_from_attribute(., key, global=FALSE)`. Thus, the following timeouts are equivalent, but the second one is much simpler and faster:
+
+```{r}
+traj <- trajectory() %>%
+  set_attribute("delay", 2) %>%
+  timeout(function() get_attribute(env, "delay")) %>%
+  log_("first timeout") %>%
+  timeout_from_attribute("delay") %>%
+  log_("second timeout")
+
+env <- simmer() %>%
+  add_generator("dummy", traj, at(0))
+env %>% run() %>% invisible
+```
 
 ### `seize()`, `release()`
 

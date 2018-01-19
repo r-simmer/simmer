@@ -1,5 +1,9 @@
 # simmer 3.7.0
 
+## New features:
+
+New `timeout_from_attribute()` activity makes it easier to set a timeout based on an attribute (#129).
+
 ## Minor changes and fixes:
 
 * Remove v3.6.x deprecations: the old attribute retrieval system (see notes for v3.6.3), as well as methods `create_trajectory()` and `onestep()` (#117).

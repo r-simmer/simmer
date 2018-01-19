@@ -694,6 +694,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Timeout__new_attr
+SEXP Timeout__new_attr(const std::string& key, bool global);
+RcppExport SEXP _simmer_Timeout__new_attr(SEXP keySEXP, SEXP globalSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type key(keySEXP);
+    Rcpp::traits::input_parameter< bool >::type global(globalSEXP);
+    rcpp_result_gen = Rcpp::wrap(Timeout__new_attr(key, global));
+    return rcpp_result_gen;
+END_RCPP
+}
 // Branch__new
 SEXP Branch__new(const Function& option, std::vector<bool> cont, const std::vector<Environment>& trj);
 RcppExport SEXP _simmer_Branch__new(SEXP optionSEXP, SEXP contSEXP, SEXP trjSEXP) {
@@ -1168,6 +1180,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_SetPrior__new_func", (DL_FUNC) &_simmer_SetPrior__new_func, 1},
     {"_simmer_Timeout__new", (DL_FUNC) &_simmer_Timeout__new, 1},
     {"_simmer_Timeout__new_func", (DL_FUNC) &_simmer_Timeout__new_func, 1},
+    {"_simmer_Timeout__new_attr", (DL_FUNC) &_simmer_Timeout__new_attr, 2},
     {"_simmer_Branch__new", (DL_FUNC) &_simmer_Branch__new, 3},
     {"_simmer_Rollback__new", (DL_FUNC) &_simmer_Rollback__new, 2},
     {"_simmer_Rollback__new_func", (DL_FUNC) &_simmer_Rollback__new_func, 2},

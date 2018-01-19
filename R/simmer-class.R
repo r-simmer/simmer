@@ -3,7 +3,7 @@ Simmer <- R6Class("simmer",
     name = NA,
 
     initialize = function(name="anonymous", verbose=FALSE) {
-      check_args(name="string", verbose="flag", n.=3)
+      check_args(name="string", verbose="flag")
       self$name <- name
       private$sim_obj <- Simulator__new(name, verbose)
       self
@@ -40,7 +40,6 @@ Simmer <- R6Class("simmer",
     now = function() { now_(private$sim_obj) },
 
     peek = function(steps=1, verbose=FALSE) {
-      check_args(steps="number", verbose="flag")
       ret <- peek_(private$sim_obj, steps)
       if (!verbose) ret$time
       else ret # nocov

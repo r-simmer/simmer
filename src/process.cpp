@@ -15,7 +15,7 @@ bool Process::deactivate() {
 }
 
 void Generator::set_first_activity() {
-  Rcpp::Function head(trj["head"]);
+  RFn head(trj["head"]);
   first_activity = Rcpp::as<Rcpp::XPtr<Activity> >(head());
 }
 
@@ -195,8 +195,7 @@ void Arrival::unregister_entity(Resource* ptr) {
 void Arrival::set_renege(const std::string& sig, Activity* next) {
   cancel_renege();
   signal = sig;
-  sim->subscribe(signal, this,
-                 boost::bind(&Arrival::renege, this, next));
+  sim->subscribe(signal, this, BIND(&Arrival::renege, this, next));
 }
 
 void Arrival::cancel_renege() {

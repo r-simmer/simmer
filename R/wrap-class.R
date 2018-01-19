@@ -3,7 +3,7 @@ Wrap <- R6Class("wrap",
     name = NA,
 
     initialize = function(env) {
-      check_args(env="simmer", n.=3)
+      check_args(env="simmer")
       self$name <- env$name
       private$now_val <- env$now()
       private$peek_val <- env$peek(Inf, TRUE)
@@ -53,7 +53,6 @@ Wrap <- R6Class("wrap",
     now = function() private$now_val,
 
     peek = function(steps=1, verbose=F) {
-      check_args(steps="number", verbose="flag")
       steps <- min(steps, nrow(private$peek_val))
       ret <- private$peek_val[0:steps, ]
       if (!verbose) ret$time

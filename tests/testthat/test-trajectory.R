@@ -5,6 +5,7 @@ t0 <- trajectory(verbose = TRUE) %>%
   select(c("a", "b")) %>%
   seize_selected(1) %>%
   timeout(function() rnorm(1, 15)) %>%
+  timeout_from_attribute("asdf") %>%
   leave(0) %>%
   branch(function() 1, T, trajectory(verbose = TRUE) %>% timeout(function() 1)) %>%
   set_attribute("dummy", 1) %>%
@@ -33,47 +34,50 @@ t0 <- trajectory(verbose = TRUE) %>%
   release_selected(1) %>%
   release("nurse", 1)
 
-trajs <- c(trajectory(verbose = TRUE) %>% seize("nurse", 1),
-           trajectory(verbose = TRUE) %>% select(c("a", "b")),
-           trajectory(verbose = TRUE) %>% seize_selected(1),
-           trajectory(verbose = TRUE) %>% timeout(function() rnorm(1, 15)),
-           trajectory(verbose = TRUE) %>% leave(0),
-           trajectory(verbose = TRUE) %>% branch(function() 1, T,
-                                                        trajectory(verbose = TRUE) %>%
-                                                          timeout(function() 1)),
-           trajectory(verbose = TRUE) %>% set_attribute("dummy", 1),
-           trajectory(verbose = TRUE) %>% set_prioritization(function() c(0, 0, FALSE)),
-           trajectory(verbose = TRUE) %>% set_capacity("nurse", function() 1),
-           trajectory(verbose = TRUE) %>% set_capacity_selected(function() 1),
-           trajectory(verbose = TRUE) %>% set_queue_size("nurse", function() 1),
-           trajectory(verbose = TRUE) %>% set_queue_size_selected(function() 1),
-           trajectory(verbose = TRUE) %>% activate(function() "dummy"),
-           trajectory(verbose = TRUE) %>% deactivate(function() "dummy"),
-           trajectory(verbose = TRUE) %>% set_trajectory(function() "dummy",
-                                                                trajectory(verbose = TRUE) %>%
-                                                                  timeout(1)),
-           trajectory(verbose = TRUE) %>% set_distribution(function() "dummy", at(0)),
-           trajectory(verbose = TRUE) %>% rollback(1),
-           trajectory(verbose = TRUE) %>% clone(function() 2,
-                                                       trajectory(verbose = TRUE) %>% timeout(1)),
-           trajectory(verbose = TRUE) %>% synchronize(),
-           trajectory(verbose = TRUE) %>% batch(1, rule = function() 0),
-           trajectory(verbose = TRUE) %>% separate(),
-           trajectory(verbose = TRUE) %>% renege_in(function() 1,
-                                                           trajectory(verbose = TRUE) %>% timeout(1)),
-           trajectory(verbose = TRUE) %>% renege_if(function() "1",
-                                                           trajectory(verbose = TRUE) %>% timeout(1)),
-           trajectory(verbose = TRUE) %>% renege_abort(),
-           trajectory(verbose = TRUE) %>% send(function() "asdf", function() 0),
-           trajectory(verbose = TRUE) %>% trap(function() "asdf",
-                                                      trajectory(verbose = TRUE) %>% timeout(1)),
-           trajectory(verbose = TRUE) %>% untrap(function() "asdf"),
-           trajectory(verbose = TRUE) %>% wait(),
-           trajectory(verbose = TRUE) %>% log_(function() "asdf"),
-           trajectory(verbose = TRUE) %>% release_selected(1),
-           trajectory(verbose = TRUE) %>% release("nurse", 1))
+trajs <- c(
+  trajectory(verbose = TRUE) %>% seize("nurse", 1),
+  trajectory(verbose = TRUE) %>% select(c("a", "b")),
+  trajectory(verbose = TRUE) %>% seize_selected(1),
+  trajectory(verbose = TRUE) %>% timeout(function() rnorm(1, 15)),
+  trajectory(verbose = TRUE) %>% timeout_from_attribute("asdf"),
+  trajectory(verbose = TRUE) %>% leave(0),
+  trajectory(verbose = TRUE) %>% branch(function() 1, T,
+                                        trajectory(verbose = TRUE) %>%
+                                          timeout(function() 1)),
+  trajectory(verbose = TRUE) %>% set_attribute("dummy", 1),
+  trajectory(verbose = TRUE) %>% set_prioritization(function() c(0, 0, FALSE)),
+  trajectory(verbose = TRUE) %>% set_capacity("nurse", function() 1),
+  trajectory(verbose = TRUE) %>% set_capacity_selected(function() 1),
+  trajectory(verbose = TRUE) %>% set_queue_size("nurse", function() 1),
+  trajectory(verbose = TRUE) %>% set_queue_size_selected(function() 1),
+  trajectory(verbose = TRUE) %>% activate(function() "dummy"),
+  trajectory(verbose = TRUE) %>% deactivate(function() "dummy"),
+  trajectory(verbose = TRUE) %>% set_trajectory(function() "dummy",
+                                                trajectory(verbose = TRUE) %>%
+                                                  timeout(1)),
+  trajectory(verbose = TRUE) %>% set_distribution(function() "dummy", at(0)),
+  trajectory(verbose = TRUE) %>% rollback(1),
+  trajectory(verbose = TRUE) %>% clone(function() 2,
+                                       trajectory(verbose = TRUE) %>% timeout(1)),
+  trajectory(verbose = TRUE) %>% synchronize(),
+  trajectory(verbose = TRUE) %>% batch(1, rule = function() 0),
+  trajectory(verbose = TRUE) %>% separate(),
+  trajectory(verbose = TRUE) %>% renege_in(function() 1,
+                                           trajectory(verbose = TRUE) %>% timeout(1)),
+  trajectory(verbose = TRUE) %>% renege_if(function() "1",
+                                           trajectory(verbose = TRUE) %>% timeout(1)),
+  trajectory(verbose = TRUE) %>% renege_abort(),
+  trajectory(verbose = TRUE) %>% send(function() "asdf", function() 0),
+  trajectory(verbose = TRUE) %>% trap(function() "asdf",
+                                      trajectory(verbose = TRUE) %>% timeout(1)),
+  trajectory(verbose = TRUE) %>% untrap(function() "asdf"),
+  trajectory(verbose = TRUE) %>% wait(),
+  trajectory(verbose = TRUE) %>% log_(function() "asdf"),
+  trajectory(verbose = TRUE) %>% release_selected(1),
+  trajectory(verbose = TRUE) %>% release("nurse", 1)
+)
 
-N <- 30
+N <- length(t0) - 1
 
 test_that("the activity chain grows as expected", {
   ptr_head <- t0$head()

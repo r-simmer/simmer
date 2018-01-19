@@ -225,6 +225,10 @@ Timeout__new_func <- function(task) {
     .Call(`_simmer_Timeout__new_func`, task)
 }
 
+Timeout__new_attr <- function(key, global) {
+    .Call(`_simmer_Timeout__new_attr`, key, global)
+}
+
 Branch__new <- function(option, cont, trj) {
     .Call(`_simmer_Branch__new`, option, cont, trj)
 }

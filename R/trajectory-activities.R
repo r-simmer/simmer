@@ -130,7 +130,30 @@ select.trajectory <- function(.trj, resources, policy=c("shortest-queue", "round
 timeout <- function(.trj, task) UseMethod("timeout")
 
 #' @export
-timeout.trajectory <- function(.trj, task) .trj$timeout(task)
+timeout.trajectory <- function(.trj, task) {
+  check_args(task=c("number", "function"))
+  .trj$timeout(task)
+}
+
+#' @rdname timeout
+#' @inheritParams set_attribute
+#' @param key the attribute name, or a callable object (a function) which
+#' must return the attribute name.
+#' @export
+timeout_from_attribute <- function(.trj, key, global=FALSE)
+  UseMethod("timeout_from_attribute")
+
+#' @export
+timeout_from_attribute.trajectory <- function(.trj, key, global=FALSE) {
+  check_args(key="string", global="flag")
+  .trj$timeout(key, global)
+}
+
+#' @rdname timeout
+#' @details \code{timeout_from_global} is a shortcut for
+#' \code{timeout_from_attribute(global=TRUE)}.
+#' @export
+timeout_from_global <- function(.trj, key) timeout_from_attribute(.trj, key, TRUE)
 
 #' Set Attributes
 #'
