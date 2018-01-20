@@ -5,11 +5,20 @@
 #include "simulator.h"
 #include "policy.h"
 
-#define LABEL(name) (#name": ") << name
-#define LABELC(name) LABEL(name) << ", "
-#define LABELE(name) LABEL(name) << " }" << std::endl
-#define C(name) name << ", "
-#define E(name) name << std::endl;
+#define SEP ", "
+#define ENDL std::endl
+#define BENDL " }" << ENDL
+
+#define LABEL1(a) (#a": ") << a
+#define LABEL2(a, b) LABEL1(a) << SEP << LABEL1(b)
+#define LABEL3(a, b, c) LABEL1(a) << SEP << LABEL2(b, c)
+#define LABEL4(a, b, c, d) LABEL1(a) << SEP << LABEL3(b, c, d)
+
+#define BARE1(a) a
+#define BARE2(a, b) BARE1(a) << SEP << BARE1(b)
+#define BARE3(a, b, c) BARE1(a) << SEP << BARE2(b, c)
+#define BARE4(a, b, c, d) BARE1(a) << SEP << BARE3(b, c, d)
+
 
 template <typename T, typename U, typename V>
 class FnWrap {
@@ -229,8 +238,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELC(resource) << LABELE(amount);
-    else Rcpp::Rcout << C(resource) << C(amount);
+    if (!brief) Rcpp::Rcout << LABEL2(resource, amount) << BENDL;
+    else Rcpp::Rcout << BARE2(resource, amount) << SEP;
     Fork::print(indent, verbose, brief);
   }
 
@@ -281,8 +290,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELC(resource) << LABELE(amount);
-    else Rcpp::Rcout << C(resource) << E(amount);
+    if (!brief) Rcpp::Rcout << LABEL2(resource, amount) << BENDL;
+    else Rcpp::Rcout << BARE2(resource, amount) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -309,8 +318,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELC(resource) << LABELE(value);
-    else Rcpp::Rcout << C(resource) << E(value);
+    if (!brief) Rcpp::Rcout << LABEL2(resource, value) << BENDL;
+    else Rcpp::Rcout << BARE2(resource, value) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -342,8 +351,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELC(resource) << LABELE(value);
-    else Rcpp::Rcout << C(resource) << E(value);
+    if (!brief) Rcpp::Rcout << LABEL2(resource, value) << BENDL;
+    else Rcpp::Rcout << BARE2(resource, value) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -370,8 +379,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELC(resources) << LABELE(policy);
-    else Rcpp::Rcout << C(resources) << E(policy);
+    if (!brief) Rcpp::Rcout << LABEL2(resources, policy) << BENDL;
+    else Rcpp::Rcout << BARE2(resources, policy) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -400,8 +409,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELC(keys) << LABELC(values) << LABELC(global) << LABELE(mod);
-    else Rcpp::Rcout << C(keys) << C(values) << C(global) << E(mod);
+    if (!brief) Rcpp::Rcout << LABEL4(keys, values, global, mod) << BENDL;
+    else Rcpp::Rcout << BARE4(keys, values, global, mod) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -443,8 +452,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELE(generator);
-    else Rcpp::Rcout << E(generator);
+    if (!brief) Rcpp::Rcout << LABEL1(generator) << BENDL;
+    else Rcpp::Rcout << BARE1(generator) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -469,8 +478,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELE(generator);
-    else Rcpp::Rcout << E(generator);
+    if (!brief) Rcpp::Rcout << LABEL1(generator) << BENDL;
+    else Rcpp::Rcout << BARE1(generator) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -495,8 +504,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELC(generator) << LABELE(trajectory);
-    else Rcpp::Rcout << C(generator) << E(trajectory);
+    if (!brief) Rcpp::Rcout << LABEL2(generator, trajectory) << BENDL;
+    else Rcpp::Rcout << BARE2(generator, trajectory) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -523,8 +532,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELC(generator) << LABELE(distribution);
-    else Rcpp::Rcout << C(generator) << E(distribution);
+    if (!brief) Rcpp::Rcout << LABEL2(generator, distribution) << BENDL;
+    else Rcpp::Rcout << BARE2(generator, distribution) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -550,8 +559,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELE(values);
-    else Rcpp::Rcout << E(values);
+    if (!brief) Rcpp::Rcout << LABEL1(values) << BENDL;
+    else Rcpp::Rcout << BARE1(values) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -580,8 +589,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELE(delay);
-    else Rcpp::Rcout << E(delay);
+    if (!brief) Rcpp::Rcout << LABEL1(delay) << BENDL;
+    else Rcpp::Rcout << BARE1(delay) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -608,8 +617,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELE(option);
-    else Rcpp::Rcout << C(option);
+    if (!brief) Rcpp::Rcout << LABEL1(option) << BENDL;
+    else Rcpp::Rcout << BARE1(option) << SEP;
     Fork::print(indent, verbose, brief);
   }
 
@@ -644,10 +653,10 @@ public:
     if (!cached) cached = goback();
     Activity::print(indent, verbose, brief);
     if (!brief) {
-      Rcpp::Rcout << "amount: " << amount << " (" << cached->name << "), ";
-      if (check) Rcpp::Rcout << LABELE(*check);
-      else Rcpp::Rcout << LABELE(times);
-    } else Rcpp::Rcout << cached->name << std::endl;
+      Rcpp::Rcout << LABEL1(amount) << " (" << cached->name << "), ";
+      if (check) Rcpp::Rcout << LABEL1(*check) << BENDL;
+      else Rcpp::Rcout << LABEL1(times) << BENDL;
+    } else Rcpp::Rcout << BARE1(cached->name) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -705,8 +714,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELE(prob);
-    else Rcpp::Rcout << E(prob);
+    if (!brief) Rcpp::Rcout << LABEL1(prob) << BENDL;
+    else Rcpp::Rcout << BARE1(prob) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -733,8 +742,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELE(n);
-    else Rcpp::Rcout << C(n);
+    if (!brief) Rcpp::Rcout << LABEL1(n) << BENDL;
+    else Rcpp::Rcout << BARE1(n) << SEP;
     Fork::print(indent, verbose, brief);
   }
 
@@ -770,8 +779,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELE(wait);
-    else Rcpp::Rcout << E(wait);
+    if (!brief) Rcpp::Rcout << LABEL1(wait) << BENDL;
+    else Rcpp::Rcout << BARE1(wait) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -818,8 +827,8 @@ public:
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
     if (!brief)
-      Rcpp::Rcout << LABELC(n) << LABELC(timeout) << LABELC(permanent) << LABELE(id);
-    else Rcpp::Rcout << C(n) << C(timeout) << C(permanent) << E(id);
+      Rcpp::Rcout << LABEL4(n, timeout, permanent, id) << BENDL;
+    else Rcpp::Rcout << BARE4(n, timeout, permanent, id) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -888,8 +897,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << " }" << std::endl;
-    else Rcpp::Rcout << std::endl;
+    if (!brief) Rcpp::Rcout << BENDL;
+    else Rcpp::Rcout << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -915,8 +924,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELE(t);
-    else Rcpp::Rcout << C(t);
+    if (!brief) Rcpp::Rcout << LABEL1(t) << BENDL;
+    else Rcpp::Rcout << BARE1(t) << SEP;
     Fork::print(indent, verbose, brief);
   }
 
@@ -945,8 +954,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELE(signal);
-    else Rcpp::Rcout << C(signal);
+    if (!brief) Rcpp::Rcout << LABEL1(signal) << BENDL;
+    else Rcpp::Rcout << BARE1(signal) << SEP;
     Fork::print(indent, verbose, brief);
   }
 
@@ -973,8 +982,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << " }" << std::endl;
-    else Rcpp::Rcout << std::endl;
+    if (!brief) Rcpp::Rcout << BENDL;
+    else Rcpp::Rcout << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -996,8 +1005,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELC(signals) << LABELE(delay);
-    else Rcpp::Rcout << C(signals) << E(delay);
+    if (!brief) Rcpp::Rcout << LABEL2(signals, delay) << BENDL;
+    else Rcpp::Rcout << BARE2(signals, delay) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -1034,8 +1043,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELE(signals);
-    else Rcpp::Rcout << C(signals);
+    if (!brief) Rcpp::Rcout << LABEL1(signals) << BENDL;
+    else Rcpp::Rcout << BARE1(signals) << SEP;
     Fork::print(indent, verbose, brief);
   }
 
@@ -1087,8 +1096,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELE(signals);
-    else Rcpp::Rcout << E(signals);
+    if (!brief) Rcpp::Rcout << LABEL1(signals) << BENDL;
+    else Rcpp::Rcout << BARE1(signals) << ENDL;
   }
 
   double run(Arrival* arrival) {
@@ -1111,8 +1120,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << " }" << std::endl;
-    else Rcpp::Rcout << std::endl;
+    if (!brief) Rcpp::Rcout << BENDL;
+    else Rcpp::Rcout << ENDL;
   }
 
   double run(Arrival* arrival) { return BLOCK; }
@@ -1130,8 +1139,8 @@ public:
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << "message }" << std::endl;
-    else Rcpp::Rcout << "message" << std::endl;
+    if (!brief) Rcpp::Rcout << "message" << BENDL;
+    else Rcpp::Rcout << "message" << ENDL;
   }
 
   double run(Arrival* arrival) {
