@@ -11,6 +11,23 @@
 #define C(name) name << ", "
 #define E(name) name << std::endl;
 
+template <typename T, typename U, typename V>
+class FnWrap {
+public:
+  FnWrap(const Fn<T(U)>& call, const V& arg) : call(call), arg(arg) {}
+
+  T operator()(U param) { return call(param); }
+
+  friend std::ostream& operator<<(std::ostream& out, const FnWrap<T, U, V>& fn) {
+    out << fn.arg;
+    return out;
+  }
+
+private:
+  Fn<T(U)> call;
+  V arg;
+};
+
 /**
  *  Base class.
  */
