@@ -7,13 +7,13 @@
 \alias{set_queue_size_selected}
 \title{Set Resource Parameters}
 \usage{
-set_capacity(.trj, resource, value)
+set_capacity(.trj, resource, value, mod = c(NA, "+", "*"))
 
-set_capacity_selected(.trj, value, id = 0)
+set_capacity_selected(.trj, value, id = 0, mod = c(NA, "+", "*"))
 
-set_queue_size(.trj, resource, value)
+set_queue_size(.trj, resource, value, mod = c(NA, "+", "*"))
 
-set_queue_size_selected(.trj, value, id = 0)
+set_queue_size_selected(.trj, value, id = 0, mod = c(NA, "+", "*"))
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -21,6 +21,8 @@ set_queue_size_selected(.trj, value, id = 0)
 \item{resource}{the name of the resource.}
 
 \item{value}{new value to set.}
+
+\item{mod}{if set, \code{values} modify the attributes rather than substituting them.}
 
 \item{id}{selection identifier for nested usage.}
 }

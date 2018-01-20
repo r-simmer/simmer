@@ -115,25 +115,27 @@ Trajectory <- R6Class("trajectory",
       )
     },
 
-    set_capacity = function(resource, value, id=0) {
+    set_capacity = function(resource, value, id=0, mod=c(NA, "+", "*")) {
       check_args(resource=c("string", "NA"), value=c("numeric", "function"), id="number")
+      mod <- match.arg(mod)
       switch(
         binarise(is.na(resource), is.function(value)),
-        private$add_activity(SetCapacity__new(resource, value)),
-        private$add_activity(SetCapacitySelected__new(id, value)),
-        private$add_activity(SetCapacity__new_func(resource, value)),
-        private$add_activity(SetCapacitySelected__new_func(id, value))
+        private$add_activity(SetCapacity__new(resource, value, mod)),
+        private$add_activity(SetCapacitySelected__new(id, value, mod)),
+        private$add_activity(SetCapacity__new_func(resource, value, mod)),
+        private$add_activity(SetCapacitySelected__new_func(id, value, mod))
       )
     },
 
-    set_queue_size = function(resource, value, id=0) {
+    set_queue_size = function(resource, value, id=0, mod=c(NA, "+", "*")) {
       check_args(resource=c("string", "NA"), value=c("numeric", "function"), id="number")
+      mod <- match.arg(mod)
       switch(
         binarise(is.na(resource), is.function(value)),
-        private$add_activity(SetQueue__new(resource, value)),
-        private$add_activity(SetQueueSelected__new(id, value)),
-        private$add_activity(SetQueue__new_func(resource, value)),
-        private$add_activity(SetQueueSelected__new_func(id, value))
+        private$add_activity(SetQueue__new(resource, value, mod)),
+        private$add_activity(SetQueueSelected__new(id, value, mod)),
+        private$add_activity(SetQueue__new_func(resource, value, mod)),
+        private$add_activity(SetQueueSelected__new_func(id, value, mod))
       )
     },
 
@@ -212,12 +214,13 @@ Trajectory <- R6Class("trajectory",
       )
     },
 
-    set_prioritization = function(values) {
+    set_prioritization = function(values, mod=c(NA, "+", "*")) {
       check_args(values=c("number vector", "function"))
+      mod <- match.arg(mod)
       switch(
         binarise(is.function(values)),
-        private$add_activity(SetPrior__new(values)),
-        private$add_activity(SetPrior__new_func(values))
+        private$add_activity(SetPrior__new(values, mod)),
+        private$add_activity(SetPrior__new_func(values, mod))
       )
     },
 

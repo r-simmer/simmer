@@ -202,43 +202,43 @@ SEXP ReleaseSelected__new_func(int id, const Function& amount) {
 }
 
 //[[Rcpp::export]]
-SEXP SetCapacity__new(const std::string& resource, double value) {
-  return XPtr<SetCapacity<double> >(new SetCapacity<double>(resource, value));
+SEXP SetCapacity__new(const std::string& resource, double value, char mod) {
+  return XPtr<SetCapacity<double> >(new SetCapacity<double>(resource, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetCapacity__new_func(const std::string& resource, const Function& value) {
-  return XPtr<SetCapacity<Function> >(new SetCapacity<Function>(resource, value));
+SEXP SetCapacity__new_func(const std::string& resource, const Function& value, char mod) {
+  return XPtr<SetCapacity<Function> >(new SetCapacity<Function>(resource, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetCapacitySelected__new(int id, double value) {
-  return XPtr<SetCapacity<double> >(new SetCapacity<double>(id, value));
+SEXP SetCapacitySelected__new(int id, double value, char mod) {
+  return XPtr<SetCapacity<double> >(new SetCapacity<double>(id, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetCapacitySelected__new_func(int id, const Function& value) {
-  return XPtr<SetCapacity<Function> >(new SetCapacity<Function>(id, value));
+SEXP SetCapacitySelected__new_func(int id, const Function& value, char mod) {
+  return XPtr<SetCapacity<Function> >(new SetCapacity<Function>(id, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetQueue__new(const std::string& resource, double value) {
-  return XPtr<SetQueue<double> >(new SetQueue<double>(resource, value));
+SEXP SetQueue__new(const std::string& resource, double value, char mod) {
+  return XPtr<SetQueue<double> >(new SetQueue<double>(resource, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetQueue__new_func(const std::string& resource, const Function& value) {
-  return XPtr<SetQueue<Function> >(new SetQueue<Function>(resource, value));
+SEXP SetQueue__new_func(const std::string& resource, const Function& value, char mod) {
+  return XPtr<SetQueue<Function> >(new SetQueue<Function>(resource, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetQueueSelected__new(int id, double value) {
-  return XPtr<SetQueue<double> >(new SetQueue<double>(id, value));
+SEXP SetQueueSelected__new(int id, double value, char mod) {
+  return XPtr<SetQueue<double> >(new SetQueue<double>(id, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetQueueSelected__new_func(int id, const Function& value) {
-  return XPtr<SetQueue<Function> >(new SetQueue<Function>(id, value));
+SEXP SetQueueSelected__new_func(int id, const Function& value, char mod) {
+  return XPtr<SetQueue<Function> >(new SetQueue<Function>(id, value, mod));
 }
 
 //[[Rcpp::export]]
@@ -324,13 +324,13 @@ SEXP SetDist__new_func(const Function& generator, const Function& dist) {
 }
 
 //[[Rcpp::export]]
-SEXP SetPrior__new(const std::vector<int>& values) {
-  return XPtr<SetPrior<VEC<int> > >(new SetPrior<VEC<int> >(values));
+SEXP SetPrior__new(const std::vector<int>& values, char mod) {
+  return XPtr<SetPrior<VEC<int> > >(new SetPrior<VEC<int> >(values, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetPrior__new_func(const Function& values) {
-  return XPtr<SetPrior<Function> >(new SetPrior<Function>(values));
+SEXP SetPrior__new_func(const Function& values, char mod) {
+  return XPtr<SetPrior<Function> >(new SetPrior<Function>(values, mod));
 }
 
 //[[Rcpp::export]]

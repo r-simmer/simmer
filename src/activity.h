@@ -199,11 +199,10 @@ class ResGetter {
 public:
   BASE_CLONEABLE(ResGetter)
 
-  ResGetter(const std::string& name, const std::string& resource, int id = -1)
-    : name(name), resource(resource), id(id) {}
+  ResGetter(const std::string& activity, const std::string& resource, int id = -1)
+    : resource(resource), id(id), activity(activity) {}
 
 protected:
-  std::string name;
   std::string resource;
   int id;
 
@@ -213,9 +212,12 @@ protected:
       selected = arrival->sim->get_resource(resource);
     else selected = arrival->get_resource_selected(id);
     if (!selected)
-      Rcpp::stop("%s: %s(%s, %i): no resource selected", arrival->name, name, resource, id);
+      Rcpp::stop("%s: %s(%s, %i): no resource selected", arrival->name, activity, resource, id);
     return selected;
   }
+
+private:
+  std::string activity;
 };
 
 /**
@@ -310,22 +312,32 @@ class SetCapacity : public Activity, public ResGetter {
 public:
   CLONEABLE(SetCapacity<T>)
 
-  SetCapacity(const std::string& resource, const T& value)
-    : Activity("SetCapacity"), ResGetter("SetCapacity", resource), value(value) {}
+  SetCapacity(const std::string& resource, const T& value, char mod='N')
+    : Activity("SetCapacity"), ResGetter("SetCapacity", resource),
+      value(value), mod(mod), op(get_op<int>(mod)) {}
 
-  SetCapacity(int id, const T& value)
-    : Activity("SetCapacity"), ResGetter("SetCapacity", "[]", id), value(value) {}
+  SetCapacity(int id, const T& value, char mod='N')
+    : Activity("SetCapacity"), ResGetter("SetCapacity", "[]", id),
+      value(value), mod(mod), op(get_op<int>(mod)) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL2(resource, value) << BENDL;
-    else Rcpp::Rcout << BARE2(resource, value) << ENDL;
+    if (!brief) Rcpp::Rcout << LABEL3(resource, value, mod) << BENDL;
+    else Rcpp::Rcout << BARE3(resource, value, mod) << ENDL;
   }
 
   double run(Arrival* arrival) {
     double ret = std::abs(get<double>(value, arrival));
-    if (ret == R_PosInf) ret = -1;
-    get_resource(arrival)->set_capacity((int)ret);
+    int newval = (ret == R_PosInf) ? -1 : (int) ret;
+    int oldval = get_resource(arrival)->get_capacity();
+
+    if (op) {
+      if (newval < 0 || oldval < 0)
+        Rcpp::stop("%s: mod='%s' with an infinite value not allowed", name, mod);
+      newval = op(oldval, newval);
+    }
+    get_resource(arrival)->set_capacity(newval);
+
     if (arrival->is_paused())
       return ENQUEUE;
     return 0;
@@ -333,6 +345,8 @@ public:
 
 protected:
   T value;
+  char mod;
+  Fn<int(int, int)> op;
 };
 
 /**
@@ -343,27 +357,39 @@ class SetQueue : public Activity, public ResGetter {
 public:
   CLONEABLE(SetQueue<T>)
 
-  SetQueue(const std::string& resource, const T& value)
-    : Activity("SetQueue"), ResGetter("SetQueue", resource), value(value) {}
+  SetQueue(const std::string& resource, const T& value, char mod='N')
+    : Activity("SetQueue"), ResGetter("SetQueue", resource),
+      value(value), mod(mod), op(get_op<int>(mod)) {}
 
-  SetQueue(int id, const T& value)
-    : Activity("SetQueue"), ResGetter("SetQueue", "[]", id), value(value) {}
+  SetQueue(int id, const T& value, char mod='N')
+    : Activity("SetQueue"), ResGetter("SetQueue", "[]", id),
+      value(value), mod(mod), op(get_op<int>(mod)) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL2(resource, value) << BENDL;
-    else Rcpp::Rcout << BARE2(resource, value) << ENDL;
+    if (!brief) Rcpp::Rcout << LABEL3(resource, value, mod) << BENDL;
+    else Rcpp::Rcout << BARE3(resource, value, mod) << ENDL;
   }
 
   double run(Arrival* arrival) {
     double ret = std::abs(get<double>(value, arrival));
-    if (ret == R_PosInf) ret = -1;
-    get_resource(arrival)->set_queue_size((int)ret);
+    int newval = (ret == R_PosInf) ? -1 : (int) ret;
+    int oldval = get_resource(arrival)->get_queue_size();
+
+    if (op) {
+      if (newval < 0 || oldval < 0)
+        Rcpp::stop("%s: mod='%s' with an infinite value not allowed", name, mod);
+      newval = op(oldval, newval);
+    }
+    get_resource(arrival)->set_queue_size(newval);
+
     return 0;
   }
 
 protected:
   T value;
+  char mod;
+  Fn<int(int, int)> op;
 };
 
 /**
@@ -403,7 +429,7 @@ class SetAttribute : public Activity {
 public:
   CLONEABLE(SetAttribute<T COMMA U>)
 
-  SetAttribute(const T& keys, const U& values, bool global, char mod)
+  SetAttribute(const T& keys, const U& values, bool global, char mod='N')
     : Activity("SetAttribute"), keys(keys), values(values),
       global(global), mod(mod), op(get_op<double>(mod)) {}
 
@@ -555,26 +581,36 @@ class SetPrior : public Activity {
 public:
   CLONEABLE(SetPrior<T>)
 
-  SetPrior(const T& values) : Activity("SetPrior"), values(values) {}
+  SetPrior(const T& values, char mod='N')
+    : Activity("SetPrior"), values(values), mod(mod), op(get_op<int>(mod)) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL1(values) << BENDL;
-    else Rcpp::Rcout << BARE1(values) << ENDL;
+    if (!brief) Rcpp::Rcout << LABEL2(values, mod) << BENDL;
+    else Rcpp::Rcout << BARE2(values, mod) << ENDL;
   }
 
   double run(Arrival* arrival) {
     VEC<int> ret = get<VEC<int> >(values, arrival);
     if (ret.size() != 3)
       Rcpp::stop("%s: 3 values needed", name);
+
+    if (op) {
+      ret[0] = op(arrival->order.get_priority(), ret[0]);
+      ret[1] = op(arrival->order.get_preemptible(), ret[1]);
+      ret[2] = op((int)arrival->order.get_restart(), ret[2]);
+    }
     if (ret[0] >= 0) arrival->order.set_priority(ret[0]);
     if (ret[1] >= 0) arrival->order.set_preemptible(ret[1]);
     if (ret[2] >= 0) arrival->order.set_restart((bool)ret[2]);
+
     return 0;
   }
 
 protected:
   T values;
+  char mod;
+  Fn<int(int, int)> op;
 };
 
 /**

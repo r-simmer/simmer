@@ -385,98 +385,106 @@ BEGIN_RCPP
 END_RCPP
 }
 // SetCapacity__new
-SEXP SetCapacity__new(const std::string& resource, double value);
-RcppExport SEXP _simmer_SetCapacity__new(SEXP resourceSEXP, SEXP valueSEXP) {
+SEXP SetCapacity__new(const std::string& resource, double value, char mod);
+RcppExport SEXP _simmer_SetCapacity__new(SEXP resourceSEXP, SEXP valueSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type resource(resourceSEXP);
     Rcpp::traits::input_parameter< double >::type value(valueSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetCapacity__new(resource, value));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetCapacity__new(resource, value, mod));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetCapacity__new_func
-SEXP SetCapacity__new_func(const std::string& resource, const Function& value);
-RcppExport SEXP _simmer_SetCapacity__new_func(SEXP resourceSEXP, SEXP valueSEXP) {
+SEXP SetCapacity__new_func(const std::string& resource, const Function& value, char mod);
+RcppExport SEXP _simmer_SetCapacity__new_func(SEXP resourceSEXP, SEXP valueSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type resource(resourceSEXP);
     Rcpp::traits::input_parameter< const Function& >::type value(valueSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetCapacity__new_func(resource, value));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetCapacity__new_func(resource, value, mod));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetCapacitySelected__new
-SEXP SetCapacitySelected__new(int id, double value);
-RcppExport SEXP _simmer_SetCapacitySelected__new(SEXP idSEXP, SEXP valueSEXP) {
+SEXP SetCapacitySelected__new(int id, double value, char mod);
+RcppExport SEXP _simmer_SetCapacitySelected__new(SEXP idSEXP, SEXP valueSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type id(idSEXP);
     Rcpp::traits::input_parameter< double >::type value(valueSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetCapacitySelected__new(id, value));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetCapacitySelected__new(id, value, mod));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetCapacitySelected__new_func
-SEXP SetCapacitySelected__new_func(int id, const Function& value);
-RcppExport SEXP _simmer_SetCapacitySelected__new_func(SEXP idSEXP, SEXP valueSEXP) {
+SEXP SetCapacitySelected__new_func(int id, const Function& value, char mod);
+RcppExport SEXP _simmer_SetCapacitySelected__new_func(SEXP idSEXP, SEXP valueSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type id(idSEXP);
     Rcpp::traits::input_parameter< const Function& >::type value(valueSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetCapacitySelected__new_func(id, value));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetCapacitySelected__new_func(id, value, mod));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetQueue__new
-SEXP SetQueue__new(const std::string& resource, double value);
-RcppExport SEXP _simmer_SetQueue__new(SEXP resourceSEXP, SEXP valueSEXP) {
+SEXP SetQueue__new(const std::string& resource, double value, char mod);
+RcppExport SEXP _simmer_SetQueue__new(SEXP resourceSEXP, SEXP valueSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type resource(resourceSEXP);
     Rcpp::traits::input_parameter< double >::type value(valueSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetQueue__new(resource, value));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetQueue__new(resource, value, mod));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetQueue__new_func
-SEXP SetQueue__new_func(const std::string& resource, const Function& value);
-RcppExport SEXP _simmer_SetQueue__new_func(SEXP resourceSEXP, SEXP valueSEXP) {
+SEXP SetQueue__new_func(const std::string& resource, const Function& value, char mod);
+RcppExport SEXP _simmer_SetQueue__new_func(SEXP resourceSEXP, SEXP valueSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type resource(resourceSEXP);
     Rcpp::traits::input_parameter< const Function& >::type value(valueSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetQueue__new_func(resource, value));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetQueue__new_func(resource, value, mod));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetQueueSelected__new
-SEXP SetQueueSelected__new(int id, double value);
-RcppExport SEXP _simmer_SetQueueSelected__new(SEXP idSEXP, SEXP valueSEXP) {
+SEXP SetQueueSelected__new(int id, double value, char mod);
+RcppExport SEXP _simmer_SetQueueSelected__new(SEXP idSEXP, SEXP valueSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type id(idSEXP);
     Rcpp::traits::input_parameter< double >::type value(valueSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetQueueSelected__new(id, value));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetQueueSelected__new(id, value, mod));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetQueueSelected__new_func
-SEXP SetQueueSelected__new_func(int id, const Function& value);
-RcppExport SEXP _simmer_SetQueueSelected__new_func(SEXP idSEXP, SEXP valueSEXP) {
+SEXP SetQueueSelected__new_func(int id, const Function& value, char mod);
+RcppExport SEXP _simmer_SetQueueSelected__new_func(SEXP idSEXP, SEXP valueSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type id(idSEXP);
     Rcpp::traits::input_parameter< const Function& >::type value(valueSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetQueueSelected__new_func(id, value));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetQueueSelected__new_func(id, value, mod));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -655,24 +663,26 @@ BEGIN_RCPP
 END_RCPP
 }
 // SetPrior__new
-SEXP SetPrior__new(const std::vector<int>& values);
-RcppExport SEXP _simmer_SetPrior__new(SEXP valuesSEXP) {
+SEXP SetPrior__new(const std::vector<int>& values, char mod);
+RcppExport SEXP _simmer_SetPrior__new(SEXP valuesSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::vector<int>& >::type values(valuesSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetPrior__new(values));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetPrior__new(values, mod));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetPrior__new_func
-SEXP SetPrior__new_func(const Function& values);
-RcppExport SEXP _simmer_SetPrior__new_func(SEXP valuesSEXP) {
+SEXP SetPrior__new_func(const Function& values, char mod);
+RcppExport SEXP _simmer_SetPrior__new_func(SEXP valuesSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Function& >::type values(valuesSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetPrior__new_func(values));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetPrior__new_func(values, mod));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1158,14 +1168,14 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_Release__new_func", (DL_FUNC) &_simmer_Release__new_func, 2},
     {"_simmer_ReleaseSelected__new", (DL_FUNC) &_simmer_ReleaseSelected__new, 2},
     {"_simmer_ReleaseSelected__new_func", (DL_FUNC) &_simmer_ReleaseSelected__new_func, 2},
-    {"_simmer_SetCapacity__new", (DL_FUNC) &_simmer_SetCapacity__new, 2},
-    {"_simmer_SetCapacity__new_func", (DL_FUNC) &_simmer_SetCapacity__new_func, 2},
-    {"_simmer_SetCapacitySelected__new", (DL_FUNC) &_simmer_SetCapacitySelected__new, 2},
-    {"_simmer_SetCapacitySelected__new_func", (DL_FUNC) &_simmer_SetCapacitySelected__new_func, 2},
-    {"_simmer_SetQueue__new", (DL_FUNC) &_simmer_SetQueue__new, 2},
-    {"_simmer_SetQueue__new_func", (DL_FUNC) &_simmer_SetQueue__new_func, 2},
-    {"_simmer_SetQueueSelected__new", (DL_FUNC) &_simmer_SetQueueSelected__new, 2},
-    {"_simmer_SetQueueSelected__new_func", (DL_FUNC) &_simmer_SetQueueSelected__new_func, 2},
+    {"_simmer_SetCapacity__new", (DL_FUNC) &_simmer_SetCapacity__new, 3},
+    {"_simmer_SetCapacity__new_func", (DL_FUNC) &_simmer_SetCapacity__new_func, 3},
+    {"_simmer_SetCapacitySelected__new", (DL_FUNC) &_simmer_SetCapacitySelected__new, 3},
+    {"_simmer_SetCapacitySelected__new_func", (DL_FUNC) &_simmer_SetCapacitySelected__new_func, 3},
+    {"_simmer_SetQueue__new", (DL_FUNC) &_simmer_SetQueue__new, 3},
+    {"_simmer_SetQueue__new_func", (DL_FUNC) &_simmer_SetQueue__new_func, 3},
+    {"_simmer_SetQueueSelected__new", (DL_FUNC) &_simmer_SetQueueSelected__new, 3},
+    {"_simmer_SetQueueSelected__new_func", (DL_FUNC) &_simmer_SetQueueSelected__new_func, 3},
     {"_simmer_Select__new", (DL_FUNC) &_simmer_Select__new, 3},
     {"_simmer_Select__new_func", (DL_FUNC) &_simmer_Select__new_func, 3},
     {"_simmer_SetAttribute__new", (DL_FUNC) &_simmer_SetAttribute__new, 4},
@@ -1180,8 +1190,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_SetTraj__new_func", (DL_FUNC) &_simmer_SetTraj__new_func, 2},
     {"_simmer_SetDist__new", (DL_FUNC) &_simmer_SetDist__new, 2},
     {"_simmer_SetDist__new_func", (DL_FUNC) &_simmer_SetDist__new_func, 2},
-    {"_simmer_SetPrior__new", (DL_FUNC) &_simmer_SetPrior__new, 1},
-    {"_simmer_SetPrior__new_func", (DL_FUNC) &_simmer_SetPrior__new_func, 1},
+    {"_simmer_SetPrior__new", (DL_FUNC) &_simmer_SetPrior__new, 2},
+    {"_simmer_SetPrior__new_func", (DL_FUNC) &_simmer_SetPrior__new_func, 2},
     {"_simmer_Timeout__new", (DL_FUNC) &_simmer_Timeout__new, 1},
     {"_simmer_Timeout__new_func", (DL_FUNC) &_simmer_Timeout__new_func, 1},
     {"_simmer_Timeout__new_attr", (DL_FUNC) &_simmer_Timeout__new_attr, 2},
