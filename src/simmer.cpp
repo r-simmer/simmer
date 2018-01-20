@@ -112,14 +112,10 @@ std::string get_name_(SEXP sim_) {
 //[[Rcpp::export]]
 NumericVector get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bool global) {
   XPtr<Simulator> sim(sim_);
-  Fn<double(const std::string&)> getter;
   NumericVector attrs;
 
-  if (global) getter = BIND(&Simulator::get_attribute, sim.get(), _1);
-  else getter = BIND(&Arrival::get_attribute, sim->get_running_arrival(), _1);
-
   foreach_ (const std::string& key, keys)
-    attrs.push_back(getter(key));
+    attrs.push_back(sim->get_running_arrival()->get_attribute(key, global));
 
   return attrs;
 }
@@ -257,32 +253,34 @@ SEXP Select__new_func(const Function& resources, const std::string& policy, int 
 
 //[[Rcpp::export]]
 SEXP SetAttribute__new(const std::vector<std::string>& keys,
-                       const std::vector<double>& values, bool global)
+                       const std::vector<double>& values, bool global, char mod)
 {
   return XPtr<SetAttribute<VEC<std::string>, VEC<double> > >(
-      new SetAttribute<VEC<std::string>, VEC<double> >(keys, values, global));
+      new SetAttribute<VEC<std::string>, VEC<double> >(keys, values, global, mod));
 }
 
 //[[Rcpp::export]]
 SEXP SetAttribute__new_func1(const Function& keys,
-                             const std::vector<double>& values, bool global)
+                             const std::vector<double>& values, bool global, char mod)
 {
   return XPtr<SetAttribute<Function, VEC<double> > >(
-      new SetAttribute<Function, VEC<double> >(keys, values, global));
+      new SetAttribute<Function, VEC<double> >(keys, values, global, mod));
 }
 
 //[[Rcpp::export]]
 SEXP SetAttribute__new_func2(const std::vector<std::string>& keys,
-                             const Function& values, bool global)
+                             const Function& values, bool global, char mod)
 {
   return XPtr<SetAttribute<VEC<std::string>, Function> >(
-      new SetAttribute<VEC<std::string>, Function>(keys, values, global));
+      new SetAttribute<VEC<std::string>, Function>(keys, values, global, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new_func3(const Function& keys, const Function& values, bool global) {
+SEXP SetAttribute__new_func3(const Function& keys,
+                             const Function& values, bool global, char mod)
+{
   return XPtr<SetAttribute<Function, Function> >(
-      new SetAttribute<Function, Function>(keys, values, global));
+      new SetAttribute<Function, Function>(keys, values, global, mod));
 }
 
 //[[Rcpp::export]]
@@ -345,16 +343,10 @@ SEXP Timeout__new_func(const Function& task) {
   return XPtr<Timeout<Function> >(new Timeout<Function>(task));
 }
 
-double getter(const std::string& key, bool global, Arrival* arrival) {
-  if (global)
-    return arrival->sim->get_attribute(key);
-  return arrival->get_attribute(key);
-}
-
 //[[Rcpp::export]]
 SEXP Timeout__new_attr(const std::string& key, bool global) {
   typedef FnWrap<double, Arrival*, std::string> Callback;
-  Callback call = Callback(BIND(&getter, key, global, _1), key);
+  Callback call = Callback(BIND(&Arrival::get_attribute, _1, key, global), key);
   return XPtr<Timeout<Callback> >(new Timeout<Callback>(call));
 }
 

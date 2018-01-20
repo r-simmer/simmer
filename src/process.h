@@ -190,23 +190,21 @@ public:
   void run();
   void restart();
   void pause();
+  bool is_paused() const { return paused; }
   void stop();
   virtual void terminate(bool finished);
-  virtual void set_attribute(const std::string& key, double value);
-  double get_start(const std::string& name);
 
-  bool is_paused() const { return paused; }
   int get_clones() const { return *clones; }
-  double get_remaining() const { return status.remaining; }
-  void set_activity(Activity* ptr) { activity = ptr; }
+
+  virtual void set_attribute(const std::string& key, double value, bool global=false);
+  double get_attribute(const std::string& key, bool global=false) const;
+
+  double get_start(const std::string& name);
   double get_start() const { return lifetime.start; }
+  double get_remaining() const { return status.remaining; }
+
+  void set_activity(Activity* ptr) { activity = ptr; }
   Activity* get_activity() const { return activity; }
-  double get_attribute(const std::string& key) const {
-    Attr::const_iterator search = attributes.find(key);
-    if (search == attributes.end())
-      return NA_REAL;
-    return search->second;
-  }
 
   void set_resource_selected(int id, Resource* res) { selected[id] = res; }
   Resource* get_resource_selected(int id) const {
@@ -308,7 +306,7 @@ public:
     arrivals.clear();
   }
 
-  void set_attribute(const std::string& key, double value);
+  void set_attribute(const std::string& key, double value, bool global=false);
 
   bool is_permanent() const { return permanent; }
   size_t size() const { return arrivals.size(); }

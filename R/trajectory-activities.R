@@ -165,20 +165,23 @@ timeout_from_global <- function(.trj, key) timeout_from_attribute(.trj, key, TRU
 #' @param values numeric value(s) to set, or a callable object (a function) which
 #' must return numeric value(s).
 #' @param global if \code{TRUE}, the attribute will be global instead of per-arrival.
+#' @param mod if set, \code{values} modify the attributes rather than substituting them.
 #'
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{get_attribute}}.
 #' @export
-set_attribute <- function(.trj, keys, values, global=FALSE) UseMethod("set_attribute")
+set_attribute <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"))
+  UseMethod("set_attribute")
 
 #' @export
-set_attribute.trajectory <- function(.trj, keys, values, global=FALSE)
-  .trj$set_attribute(keys, values, global)
+set_attribute.trajectory <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"))
+  .trj$set_attribute(keys, values, global, mod)
 
 #' @rdname set_attribute
 #' @details \code{set_global} is a shortcut for \code{set_attribute(global=TRUE)}.
 #' @export
-set_global <- function(.trj, keys, values) set_attribute(.trj, keys, values, TRUE)
+set_global <- function(.trj, keys, values, mod=c(NA, "+", "*"))
+  set_attribute(.trj, keys, values, TRUE, mod)
 
 #' Activate/Deactivate Generators
 #'

@@ -14,6 +14,7 @@
 template <typename T, typename U, typename V>
 class FnWrap {
 public:
+  FnWrap() {}
   FnWrap(const Fn<T(U)>& call, const V& arg) : call(call), arg(arg) {}
 
   T operator()(U param) { return call(param); }
@@ -27,6 +28,17 @@ private:
   Fn<T(U)> call;
   V arg;
 };
+
+template <typename T>
+Fn<T(T, T)> get_op(char mod) {
+  switch(mod) {
+  case '+':
+    return BIND(std::plus<double>(), _1, _2);
+  case '*':
+    return BIND(std::multiplies<double>(), _1, _2);
+  }
+  return NULL;
+}
 
 /**
  *  Base class.
@@ -382,13 +394,14 @@ class SetAttribute : public Activity {
 public:
   CLONEABLE(SetAttribute<T COMMA U>)
 
-  SetAttribute(const T& keys, const U& values, bool global)
-    : Activity("SetAttribute"), keys(keys), values(values), global(global) {}
+  SetAttribute(const T& keys, const U& values, bool global, char mod)
+    : Activity("SetAttribute"), keys(keys), values(values),
+      global(global), mod(mod), op(get_op<double>(mod)) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABELC(keys) << LABELC(values) << LABELE(global);
-    else Rcpp::Rcout << C(keys) << C(values) << E(global);
+    if (!brief) Rcpp::Rcout << LABELC(keys) << LABELC(values) << LABELC(global) << LABELE(mod);
+    else Rcpp::Rcout << C(keys) << C(values) << C(global) << E(mod);
   }
 
   double run(Arrival* arrival) {
@@ -398,12 +411,13 @@ public:
     if (ks.size() != vals.size())
       Rcpp::stop("%s: number of keys and values don't match", name);
 
-    Fn<void(const std::string&, double)> setter;
-    if (global) setter = BIND(&Simulator::set_attribute, arrival->sim, _1, _2);
-    else setter = BIND(&Arrival::set_attribute, arrival, _1, _2);
-
-    for (unsigned int i = 0; i < ks.size(); i++)
-      setter(ks[i], vals[i]);
+    if (op) {
+      for (unsigned int i = 0; i < ks.size(); i++) {
+        double attr = arrival->get_attribute(ks[i], global);
+        arrival->set_attribute(ks[i], op(attr, vals[i]), global);
+      }
+    } else for (unsigned int i = 0; i < ks.size(); i++)
+      arrival->set_attribute(ks[i], vals[i], global);
 
     return 0;
   }
@@ -412,6 +426,8 @@ protected:
   T keys;
   U values;
   bool global;
+  char mod;
+  Fn<double(double, double)> op;
 };
 
 /**

@@ -161,20 +161,20 @@ Select__new_func <- function(resources, policy, id) {
     .Call(`_simmer_Select__new_func`, resources, policy, id)
 }
 
-SetAttribute__new <- function(keys, values, global) {
-    .Call(`_simmer_SetAttribute__new`, keys, values, global)
+SetAttribute__new <- function(keys, values, global, mod) {
+    .Call(`_simmer_SetAttribute__new`, keys, values, global, mod)
 }
 
-SetAttribute__new_func1 <- function(keys, values, global) {
-    .Call(`_simmer_SetAttribute__new_func1`, keys, values, global)
+SetAttribute__new_func1 <- function(keys, values, global, mod) {
+    .Call(`_simmer_SetAttribute__new_func1`, keys, values, global, mod)
 }
 
-SetAttribute__new_func2 <- function(keys, values, global) {
-    .Call(`_simmer_SetAttribute__new_func2`, keys, values, global)
+SetAttribute__new_func2 <- function(keys, values, global, mod) {
+    .Call(`_simmer_SetAttribute__new_func2`, keys, values, global, mod)
 }
 
-SetAttribute__new_func3 <- function(keys, values, global) {
-    .Call(`_simmer_SetAttribute__new_func3`, keys, values, global)
+SetAttribute__new_func3 <- function(keys, values, global, mod) {
+    .Call(`_simmer_SetAttribute__new_func3`, keys, values, global, mod)
 }
 
 Activate__new <- function(generator) {

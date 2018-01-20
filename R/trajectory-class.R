@@ -159,18 +159,19 @@ Trajectory <- R6Class("trajectory",
       )
     },
 
-    set_attribute = function(keys, values, global=FALSE) {
+    set_attribute = function(keys, values, global=FALSE, mod=c(NA, "+", "*")) {
       check_args(
         keys = c("string vector", "function"),
         values = c("numeric", "function"),
         global = "flag"
       )
+      mod <- match.arg(mod)
       switch(
         binarise(is.function(keys), is.function(values)),
-        private$add_activity(SetAttribute__new(keys, values, global)),
-        private$add_activity(SetAttribute__new_func1(keys, values, global)),
-        private$add_activity(SetAttribute__new_func2(keys, values, global)),
-        private$add_activity(SetAttribute__new_func3(keys, values, global))
+        private$add_activity(SetAttribute__new(keys, values, global, mod)),
+        private$add_activity(SetAttribute__new_func1(keys, values, global, mod)),
+        private$add_activity(SetAttribute__new_func2(keys, values, global, mod)),
+        private$add_activity(SetAttribute__new_func3(keys, values, global, mod))
       )
     },
 

@@ -507,54 +507,58 @@ BEGIN_RCPP
 END_RCPP
 }
 // SetAttribute__new
-SEXP SetAttribute__new(const std::vector<std::string>& keys, const std::vector<double>& values, bool global);
-RcppExport SEXP _simmer_SetAttribute__new(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP) {
+SEXP SetAttribute__new(const std::vector<std::string>& keys, const std::vector<double>& values, bool global, char mod);
+RcppExport SEXP _simmer_SetAttribute__new(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::vector<std::string>& >::type keys(keysSEXP);
     Rcpp::traits::input_parameter< const std::vector<double>& >::type values(valuesSEXP);
     Rcpp::traits::input_parameter< bool >::type global(globalSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetAttribute__new(keys, values, global));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetAttribute__new(keys, values, global, mod));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetAttribute__new_func1
-SEXP SetAttribute__new_func1(const Function& keys, const std::vector<double>& values, bool global);
-RcppExport SEXP _simmer_SetAttribute__new_func1(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP) {
+SEXP SetAttribute__new_func1(const Function& keys, const std::vector<double>& values, bool global, char mod);
+RcppExport SEXP _simmer_SetAttribute__new_func1(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Function& >::type keys(keysSEXP);
     Rcpp::traits::input_parameter< const std::vector<double>& >::type values(valuesSEXP);
     Rcpp::traits::input_parameter< bool >::type global(globalSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetAttribute__new_func1(keys, values, global));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetAttribute__new_func1(keys, values, global, mod));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetAttribute__new_func2
-SEXP SetAttribute__new_func2(const std::vector<std::string>& keys, const Function& values, bool global);
-RcppExport SEXP _simmer_SetAttribute__new_func2(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP) {
+SEXP SetAttribute__new_func2(const std::vector<std::string>& keys, const Function& values, bool global, char mod);
+RcppExport SEXP _simmer_SetAttribute__new_func2(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::vector<std::string>& >::type keys(keysSEXP);
     Rcpp::traits::input_parameter< const Function& >::type values(valuesSEXP);
     Rcpp::traits::input_parameter< bool >::type global(globalSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetAttribute__new_func2(keys, values, global));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetAttribute__new_func2(keys, values, global, mod));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetAttribute__new_func3
-SEXP SetAttribute__new_func3(const Function& keys, const Function& values, bool global);
-RcppExport SEXP _simmer_SetAttribute__new_func3(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP) {
+SEXP SetAttribute__new_func3(const Function& keys, const Function& values, bool global, char mod);
+RcppExport SEXP _simmer_SetAttribute__new_func3(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP, SEXP modSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Function& >::type keys(keysSEXP);
     Rcpp::traits::input_parameter< const Function& >::type values(valuesSEXP);
     Rcpp::traits::input_parameter< bool >::type global(globalSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetAttribute__new_func3(keys, values, global));
+    Rcpp::traits::input_parameter< char >::type mod(modSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetAttribute__new_func3(keys, values, global, mod));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1164,10 +1168,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_SetQueueSelected__new_func", (DL_FUNC) &_simmer_SetQueueSelected__new_func, 2},
     {"_simmer_Select__new", (DL_FUNC) &_simmer_Select__new, 3},
     {"_simmer_Select__new_func", (DL_FUNC) &_simmer_Select__new_func, 3},
-    {"_simmer_SetAttribute__new", (DL_FUNC) &_simmer_SetAttribute__new, 3},
-    {"_simmer_SetAttribute__new_func1", (DL_FUNC) &_simmer_SetAttribute__new_func1, 3},
-    {"_simmer_SetAttribute__new_func2", (DL_FUNC) &_simmer_SetAttribute__new_func2, 3},
-    {"_simmer_SetAttribute__new_func3", (DL_FUNC) &_simmer_SetAttribute__new_func3, 3},
+    {"_simmer_SetAttribute__new", (DL_FUNC) &_simmer_SetAttribute__new, 4},
+    {"_simmer_SetAttribute__new_func1", (DL_FUNC) &_simmer_SetAttribute__new_func1, 4},
+    {"_simmer_SetAttribute__new_func2", (DL_FUNC) &_simmer_SetAttribute__new_func2, 4},
+    {"_simmer_SetAttribute__new_func3", (DL_FUNC) &_simmer_SetAttribute__new_func3, 4},
     {"_simmer_Activate__new", (DL_FUNC) &_simmer_Activate__new, 1},
     {"_simmer_Activate__new_func", (DL_FUNC) &_simmer_Activate__new_func, 1},
     {"_simmer_Deactivate__new", (DL_FUNC) &_simmer_Deactivate__new, 1},
