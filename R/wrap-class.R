@@ -53,6 +53,7 @@ Wrap <- R6Class("wrap",
     now = function() private$now_val,
 
     peek = function(steps=1, verbose=F) {
+      check_args(steps="number", verbose="flag")
       steps <- min(steps, nrow(private$peek_val))
       ret <- private$peek_val[0:steps, ]
       if (!verbose) ret$time

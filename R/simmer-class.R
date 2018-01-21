@@ -40,12 +40,14 @@ Simmer <- R6Class("simmer",
     now = function() { now_(private$sim_obj) },
 
     peek = function(steps=1, verbose=FALSE) {
+      check_args(steps="number", verbose="flag")
       ret <- peek_(private$sim_obj, steps)
       if (!verbose) ret$time
       else ret # nocov
     },
 
     stepn = function(n=1) {
+      check_args(n="number")
       stepn_(private$sim_obj, n)
       self
     },
