@@ -325,7 +325,7 @@ customer <-
          log_("Sorry, where were we?") %>%
          set_attribute("start", function() {now(bank)}) %>%
          log_(function() {paste("Time left:", get_attribute(bank, "timeleft"))}) %>%
-         timeout(function() {get_attribute(bank, "timeleft")})
+         timeout_from_attribute("timeleft")
        ) %>%
   log_("Here I am") %>%
   set_attribute("timeleft", timeInBank) %>%

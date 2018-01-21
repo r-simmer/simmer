@@ -121,7 +121,7 @@ make_parts <- function(machine)
     set_attribute("parts", 0) %>%
     seize(machine, 1) %>%
     timeout(function() rnorm(1, PT_MEAN, PT_SIGMA)) %>%
-    set_attribute("parts", function() get_attribute(env, "parts") + 1) %>%
+    set_attribute("parts", 1, mod="+") %>%
     rollback(2, Inf) # go to 'timeout' over and over
 ```
 

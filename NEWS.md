@@ -2,7 +2,8 @@
 
 ## New features:
 
-New `timeout_from_attribute()` activity makes it easier to set a timeout based on an attribute (#129).
+* New `timeout_from_attribute()` activity makes it easier to set a timeout based on an attribute (#129).
+* The activities `set_attribute()`, `set_prioritization()`, `set_capacity()` and `set_queue_size()` get a new argument `mod` which, if set to `"+"` or `"*"`, modifies the corresponding value instead of substituting it. This makes it easier to increment, decrement or scale one of these values (#130).
 
 ## Minor changes and fixes:
 

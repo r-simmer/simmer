@@ -308,7 +308,7 @@ env <- simmer()
 
 traj <- trajectory() %>%
   set_attribute("weight", 80) %>%
-  set_attribute("weight", function() get_attribute(env, "weight") + 1) %>%
+  set_attribute("weight", 1, mod="+") %>%
   log_(function() paste0("My weight is ", get_attribute(env, "weight")))
 ```
 

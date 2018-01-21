@@ -314,11 +314,11 @@ public:
 
   SetCapacity(const std::string& resource, const T& value, char mod='N')
     : Activity("SetCapacity"), ResGetter("SetCapacity", resource),
-      value(value), mod(mod), op(get_op<int>(mod)) {}
+      value(value), mod(mod), op(get_op<double>(mod)) {}
 
   SetCapacity(int id, const T& value, char mod='N')
     : Activity("SetCapacity"), ResGetter("SetCapacity", "[]", id),
-      value(value), mod(mod), op(get_op<int>(mod)) {}
+      value(value), mod(mod), op(get_op<double>(mod)) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -327,15 +327,12 @@ public:
   }
 
   double run(Arrival* arrival) {
-    double ret = std::abs(get<double>(value, arrival));
-    int newval = (ret == R_PosInf) ? -1 : (int) ret;
-    int oldval = get_resource(arrival)->get_capacity();
+    double ret = get<double>(value, arrival);
+    double oldval = get_resource(arrival)->get_capacity();
+    if (oldval < 0) oldval = R_PosInf;
 
-    if (op && newval >= 0) {
-      if (oldval < 0) newval = oldval;
-      else newval = (op(oldval, newval) >= 0) ? op(oldval, newval) : 0;
-    }
-    get_resource(arrival)->set_capacity(newval);
+    if (op) ret = std::abs(op(oldval, ret));
+    get_resource(arrival)->set_capacity((ret == R_PosInf) ? -1 : (int) ret);
 
     if (arrival->is_paused())
       return ENQUEUE;
@@ -345,7 +342,7 @@ public:
 protected:
   T value;
   char mod;
-  Fn<int(int, int)> op;
+  Fn<double(double, double)> op;
 };
 
 /**
@@ -358,11 +355,11 @@ public:
 
   SetQueue(const std::string& resource, const T& value, char mod='N')
     : Activity("SetQueue"), ResGetter("SetQueue", resource),
-      value(value), mod(mod), op(get_op<int>(mod)) {}
+      value(value), mod(mod), op(get_op<double>(mod)) {}
 
   SetQueue(int id, const T& value, char mod='N')
     : Activity("SetQueue"), ResGetter("SetQueue", "[]", id),
-      value(value), mod(mod), op(get_op<int>(mod)) {}
+      value(value), mod(mod), op(get_op<double>(mod)) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
@@ -371,15 +368,12 @@ public:
   }
 
   double run(Arrival* arrival) {
-    double ret = std::abs(get<double>(value, arrival));
-    int newval = (ret == R_PosInf) ? -1 : (int) ret;
-    int oldval = get_resource(arrival)->get_queue_size();
+    double ret = get<double>(value, arrival);
+    double oldval = get_resource(arrival)->get_queue_size();
+    if (oldval < 0) oldval = R_PosInf;
 
-    if (op && newval >= 0) {
-      if (oldval < 0) newval = oldval;
-      else newval = (op(oldval, newval) >= 0) ? op(oldval, newval) : 0;
-    }
-    get_resource(arrival)->set_queue_size(newval);
+    if (op) ret = std::abs(op(oldval, ret));
+    get_resource(arrival)->set_queue_size((ret == R_PosInf) ? -1 : (int) ret);
 
     return 0;
   }
@@ -387,7 +381,7 @@ public:
 protected:
   T value;
   char mod;
-  Fn<int(int, int)> op;
+  Fn<double(double, double)> op;
 };
 
 /**

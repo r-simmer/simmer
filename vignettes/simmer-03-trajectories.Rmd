@@ -124,7 +124,7 @@ If you want to set an attribute that depends on another attribute, or on the cur
 patient_traj <- trajectory(name = "patient_trajectory") %>%
   set_attribute("my_key", 123) %>%
   timeout(5) %>%
-  set_attribute("my_key", function() get_attribute(env, "my_key") + 1) %>%
+  set_attribute("my_key", 1, mod="+") %>%
   timeout(5) %>%
   set_attribute("dependent_key", function() ifelse(get_attribute(env, "my_key")<=123, 1, 0)) %>%
   timeout(5) %>%
@@ -380,41 +380,29 @@ These activities are interesting to introduce dynamical changes in the resources
 
 ```{r}
 set.seed(12345)
-env <- simmer()
-
-increment <- function(res) {
-  function() get_capacity(env, res) + 1
-}
-decrement <- function(res) {
-  function() {
-    n <- get_capacity(env, res) - 1
-    if (n < 0) 0
-    else n
-  }
-}
 
 t1 <- trajectory() %>%
   seize("res1", 1) %>%
-  set_capacity(resource = "res1", value = increment("res1")) %>%
-  set_capacity(resource = "res2", value = decrement("res2")) %>%
+  set_capacity(resource = "res1", value = 1, mod="+") %>%
+  set_capacity(resource = "res2", value = -1, mod="+") %>%
   timeout(function() rexp(1, 1)) %>%
   release("res1", 1)
 
 t2 <- trajectory() %>%
   seize("res2", 1) %>%
-  set_capacity(resource = "res2", value = increment("res2")) %>%
-  set_capacity(resource = "res1", value = decrement("res1")) %>%
+  set_capacity(resource = "res2", value = 1, mod="+") %>%
+  set_capacity(resource = "res1", value = -1, mod="+") %>%
   timeout(function() rexp(1, 1)) %>%
   release("res2", 1)
 
-env <- env %>%
+env <- simmer() %>%
   add_resource("res1", capacity = 20, queue_size = Inf) %>%
   add_resource("res2", capacity = 20, queue_size = Inf) %>%
   add_generator("t1_", t1, function() rexp(1, 1)) %>%
   add_generator("t2_", t2, function() rexp(1, 1)) %>%
   run(100)
 
-plot(env, "resources", "usage", c("res1", "res2"), steps = TRUE)
+plot(get_mon_resources(env), "usage", c("res1", "res2"), steps = TRUE)
 ```
 
 ### `select()`
@@ -602,7 +590,7 @@ t0 <- trajectory() %>%
                          ifelse(level<75,"PETE: Just had a good espresso",
                                 "PETE: Let's do this! (and stop this loop...)"))))
   }) %>%
-  set_attribute("happiness", function() get_attribute(env, "happiness") + 25) %>%
+  set_attribute("happiness", 25, mod="+") %>%
   rollback(amount = 2, check = function() get_attribute(env, "happiness") < 100)
 
 env <- simmer() %>%
