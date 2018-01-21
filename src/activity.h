@@ -331,8 +331,9 @@ public:
     double oldval = get_resource(arrival)->get_capacity();
     if (oldval < 0) oldval = R_PosInf;
 
-    if (op) ret = std::abs(op(oldval, ret));
-    get_resource(arrival)->set_capacity((ret == R_PosInf) ? -1 : (int) ret);
+    if (op) ret = op(oldval, ret);
+    if (ret >= 0)
+      get_resource(arrival)->set_capacity((ret == R_PosInf) ? -1 : (int) ret);
 
     if (arrival->is_paused())
       return ENQUEUE;
@@ -372,8 +373,9 @@ public:
     double oldval = get_resource(arrival)->get_queue_size();
     if (oldval < 0) oldval = R_PosInf;
 
-    if (op) ret = std::abs(op(oldval, ret));
-    get_resource(arrival)->set_queue_size((ret == R_PosInf) ? -1 : (int) ret);
+    if (op) ret = op(oldval, ret);
+    if (ret >= 0)
+      get_resource(arrival)->set_queue_size((ret == R_PosInf) ? -1 : (int) ret);
 
     return 0;
   }
