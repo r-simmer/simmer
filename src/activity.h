@@ -776,7 +776,8 @@ public:
   }
 
   double run(Arrival* arrival) {
-    for (unsigned int i = 1; i < std::abs(get<int>(n, arrival)); i++) {
+    unsigned int ret = (unsigned int) std::abs(get<int>(n, arrival));
+    for (unsigned int i = 1; i < ret; i++) {
       if (i < heads.size())
         selected = heads[i];
       Arrival* new_arrival = arrival->clone();
