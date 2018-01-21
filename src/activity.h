@@ -331,10 +331,9 @@ public:
     int newval = (ret == R_PosInf) ? -1 : (int) ret;
     int oldval = get_resource(arrival)->get_capacity();
 
-    if (op) {
-      if (newval < 0 || oldval < 0)
-        Rcpp::stop("%s: mod='%s' with an infinite value not allowed", name, mod);
-      newval = op(oldval, newval);
+    if (op && newval >= 0) {
+      if (oldval < 0) newval = oldval;
+      else newval = (op(oldval, newval) >= 0) ? op(oldval, newval) : 0;
     }
     get_resource(arrival)->set_capacity(newval);
 
@@ -376,10 +375,9 @@ public:
     int newval = (ret == R_PosInf) ? -1 : (int) ret;
     int oldval = get_resource(arrival)->get_queue_size();
 
-    if (op) {
-      if (newval < 0 || oldval < 0)
-        Rcpp::stop("%s: mod='%s' with an infinite value not allowed", name, mod);
-      newval = op(oldval, newval);
+    if (op && newval >= 0) {
+      if (oldval < 0) newval = oldval;
+      else newval = (op(oldval, newval) >= 0) ? op(oldval, newval) : 0;
     }
     get_resource(arrival)->set_queue_size(newval);
 

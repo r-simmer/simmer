@@ -3,10 +3,16 @@ context("set_capacity/set_queue_size")
 test_that("capacity and queue size change as expected (1)", {
   t <- trajectory() %>%
     set_capacity("dummy", 0) %>%
+    set_capacity("dummy", 1, mod="+") %>%
+    set_capacity("dummy", 3, mod="*") %>%
     set_capacity("dummy", function() Inf) %>%
+    set_capacity("dummy", 1, mod="+") %>%
     set_queue_size("dummy", Inf) %>%
+    set_queue_size("dummy", 3, mod="*") %>%
     set_queue_size("dummy", function() 5) %>%
     set_queue_size("dummy", 5) %>%
+    set_queue_size("dummy", 1, mod="+") %>%
+    set_queue_size("dummy", 3, mod="*") %>%
     seize("dummy", 1)
 
   env <- simmer(verbose = TRUE) %>%
@@ -18,11 +24,25 @@ test_that("capacity and queue size change as expected (1)", {
   env %>% stepn(2)
   expect_equal(env %>% get_capacity("dummy"), 0)
   env %>% stepn()
+  expect_equal(env %>% get_capacity("dummy"), 1)
+  env %>% stepn()
+  expect_equal(env %>% get_capacity("dummy"), 3)
+  env %>% stepn()
+  expect_equal(env %>% get_capacity("dummy"), Inf)
+  env %>% stepn()
   expect_equal(env %>% get_capacity("dummy"), Inf)
   env %>% stepn()
   expect_equal(env %>% get_queue_size("dummy"), Inf)
   env %>% stepn()
+  expect_equal(env %>% get_queue_size("dummy"), Inf)
+  env %>% stepn()
   expect_equal(env %>% get_queue_size("dummy"), 5)
+  env %>% stepn()
+  expect_equal(env %>% get_queue_size("dummy"), 5)
+  env %>% stepn()
+  expect_equal(env %>% get_queue_size("dummy"), 6)
+  env %>% stepn()
+  expect_equal(env %>% get_queue_size("dummy"), 18)
   expect_warning(env %>% run)
   expect_equal(env %>% get_server_count("dummy"), 10)
 })
