@@ -2,23 +2,37 @@
 % Please edit documentation in R/simmer-methods.R
 \name{get_capacity}
 \alias{get_capacity}
+\alias{get_capacity_selected}
 \alias{get_queue_size}
+\alias{get_queue_size_selected}
 \alias{get_server_count}
+\alias{get_server_count_selected}
 \alias{get_queue_count}
+\alias{get_queue_count_selected}
 \title{Get Resource Parameters}
 \usage{
 get_capacity(.env, resource)
 
+get_capacity_selected(.env, id = 0)
+
 get_queue_size(.env, resource)
+
+get_queue_size_selected(.env, id = 0)
 
 get_server_count(.env, resource)
 
+get_server_count_selected(.env, id = 0)
+
 get_queue_count(.env, resource)
+
+get_queue_count_selected(.env, id = 0)
 }
 \arguments{
 \item{.env}{the simulation environment.}
 
 \item{resource}{the name of the resource.}
+
+\item{id}{selection identifier for nested usage.}
 }
 \value{
 Return a numeric value.

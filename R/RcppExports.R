@@ -77,16 +77,32 @@ get_capacity_ <- function(sim_, name) {
     .Call(`_simmer_get_capacity_`, sim_, name)
 }
 
+get_capacity_selected_ <- function(sim_, id) {
+    .Call(`_simmer_get_capacity_selected_`, sim_, id)
+}
+
 get_queue_size_ <- function(sim_, name) {
     .Call(`_simmer_get_queue_size_`, sim_, name)
+}
+
+get_queue_size_selected_ <- function(sim_, id) {
+    .Call(`_simmer_get_queue_size_selected_`, sim_, id)
 }
 
 get_server_count_ <- function(sim_, name) {
     .Call(`_simmer_get_server_count_`, sim_, name)
 }
 
+get_server_count_selected_ <- function(sim_, id) {
+    .Call(`_simmer_get_server_count_selected_`, sim_, id)
+}
+
 get_queue_count_ <- function(sim_, name) {
     .Call(`_simmer_get_queue_count_`, sim_, name)
+}
+
+get_queue_count_selected_ <- function(sim_, id) {
+    .Call(`_simmer_get_queue_count_selected_`, sim_, id)
 }
 
 Seize__new <- function(resource, amount, cont, trj, mask) {

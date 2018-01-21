@@ -79,30 +79,30 @@ Wrap <- R6Class("wrap",
         private$resources_counts
       else private$resources_limits
     },
-    get_n_generated = function(name) {
-      if (!(name %in% names(private$gen)))
-        stop("generator not found")
-      private$n_generated[[name]]
+    get_n_generated = function(generator) {
+      if (!(generator %in% names(private$gen)))
+        stop("generator '", generator, "' not found")
+      private$n_generated[[generator]]
     },
-    get_capacity = function(name) {
-      if (!(name %in% names(private$res)))
-        stop("resource not found")
-      private$capacity[[name]]
+    get_capacity = function(resource) {
+      if (!(resource %in% names(private$res)))
+        stop("resource '", resource, "' not found")
+      private$capacity[[resource]]
     },
-    get_queue_size = function(name) {
-      if (!(name %in% names(private$res)))
-        stop("resource not found")
-      private$queue_size[[name]]
+    get_queue_size = function(resource) {
+      if (!(resource %in% names(private$res)))
+        stop("resource '", resource, "' not found")
+      private$queue_size[[resource]]
     },
-    get_server_count = function(name) {
-      if (!(name %in% names(private$res)))
-        stop("resource not found")
-      private$server_count[[name]]
+    get_server_count = function(resource) {
+      if (!(resource %in% names(private$res)))
+        stop("resource '", resource, "' not found")
+      private$server_count[[resource]]
     },
-    get_queue_count = function(name) {
-      if (!(name %in% names(private$res)))
-        stop("resource not found")
-      private$queue_count[[name]]
+    get_queue_count = function(resource) {
+      if (!(resource %in% names(private$res)))
+        stop("resource '", resource, "' not found")
+      private$queue_count[[resource]]
     }
   ),
 

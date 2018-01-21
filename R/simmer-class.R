@@ -143,7 +143,7 @@ Simmer <- R6Class("simmer",
       monitor_data
     },
 
-    get_n_generated = function(name) get_n_generated_(private$sim_obj, name),
+    get_n_generated = function(generator) get_n_generated_(private$sim_obj, generator),
 
     get_name = function() get_name_(private$sim_obj),
 
@@ -151,21 +151,45 @@ Simmer <- R6Class("simmer",
 
     get_prioritization = function() get_prioritization_(private$sim_obj),
 
-    get_capacity = function(name) {
-      ret <- get_capacity_(private$sim_obj, name)
+    get_capacity = function(resource, id=0) {
+      check_args(resource=c("string", "NA"), id="number")
+      ret <- switch(
+        binarise(is.na(resource)),
+        get_capacity_(private$sim_obj, resource),
+        get_capacity_selected_(private$sim_obj, id)
+      )
       if (ret < 0) ret <- Inf
       ret
     },
 
-    get_queue_size = function(name) {
-      ret <- get_queue_size_(private$sim_obj, name)
+    get_queue_size = function(resource, id=0) {
+      check_args(resource=c("string", "NA"), id="number")
+      ret <- switch(
+        binarise(is.na(resource)),
+        get_queue_size_(private$sim_obj, resource),
+        get_queue_size_selected_(private$sim_obj, id)
+      )
       if (ret < 0) ret <- Inf
       ret
     },
 
-    get_server_count = function(name) get_server_count_(private$sim_obj, name),
+    get_server_count = function(resource, id=0) {
+      check_args(resource=c("string", "NA"), id="number")
+      switch(
+        binarise(is.na(resource)),
+        get_server_count_(private$sim_obj, resource),
+        get_server_count_selected_(private$sim_obj, id)
+      )
+    },
 
-    get_queue_count = function(name) get_queue_count_(private$sim_obj, name),
+    get_queue_count = function(resource, id=0) {
+      check_args(resource=c("string", "NA"), id="number")
+      ret <- switch(
+        binarise(is.na(resource)),
+        get_queue_count_(private$sim_obj, resource),
+        get_queue_count_selected_(private$sim_obj, id)
+      )
+    },
 
     # not exposed, internal use
     get_generators = function() { private$gen },
