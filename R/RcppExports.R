@@ -49,14 +49,6 @@ get_mon_resources_ <- function(sim_) {
     .Call(`_simmer_get_mon_resources_`, sim_)
 }
 
-get_mon_resources_counts_ <- function(sim_) {
-    .Call(`_simmer_get_mon_resources_counts_`, sim_)
-}
-
-get_mon_resources_limits_ <- function(sim_) {
-    .Call(`_simmer_get_mon_resources_limits_`, sim_)
-}
-
 get_n_generated_ <- function(sim_, name) {
     .Call(`_simmer_get_n_generated_`, sim_, name)
 }

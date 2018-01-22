@@ -155,9 +155,7 @@ test_that("we can force some errors (just to complete coverage)", {
   expect_error(env %>% get_mon_arrivals(FALSE))
   expect_error(env %>% get_mon_arrivals(TRUE))
   expect_error(env %>% get_mon_attributes())
-  expect_error(env %>% get_mon_resources("counts"))
-  expect_error(env %>% get_mon_resources("limits"))
-  expect_error(env %>% get_mon_resources(c("counts", "limits")))
+  expect_error(env %>% get_mon_resources())
 
   sch <- schedule(c(1, 2), c(1, 2), Inf)
   sch$.__enclos_env__$private$schedule$period <- "asdf"
@@ -165,5 +163,4 @@ test_that("we can force some errors (just to complete coverage)", {
 
   env <- simmer(verbose = TRUE)
   expect_equal(env %>% get_mon_resources() %>% nrow(), 0)
-  expect_equal(env %>% get_mon_resources(c("counts", "limits")) %>% nrow(), 0)
 })

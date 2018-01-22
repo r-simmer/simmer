@@ -86,18 +86,6 @@ DataFrame get_mon_resources_(SEXP sim_) {
 }
 
 //[[Rcpp::export]]
-DataFrame get_mon_resources_counts_(SEXP sim_) {
-  XPtr<Simulator> sim(sim_);
-  return sim->get_mon_resources_counts();
-}
-
-//[[Rcpp::export]]
-DataFrame get_mon_resources_limits_(SEXP sim_) {
-  XPtr<Simulator> sim(sim_);
-  return sim->get_mon_resources_limits();
-}
-
-//[[Rcpp::export]]
 int get_n_generated_(SEXP sim_, const std::string& name) {
   XPtr<Simulator> sim(sim_);
   return sim->get_generator(name)->get_n_generated();

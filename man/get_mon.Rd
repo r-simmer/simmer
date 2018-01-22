@@ -11,7 +11,7 @@ get_mon_arrivals(.envs, per_resource = FALSE, ongoing = FALSE)
 
 get_mon_attributes(.envs)
 
-get_mon_resources(.envs, data = c("counts", "limits"))
+get_mon_resources(.envs)
 }
 \arguments{
 \item{.envs}{the simulation environment (or a list of environments).}
@@ -20,8 +20,6 @@ get_mon_resources(.envs, data = c("counts", "limits"))
 
 \item{ongoing}{if \code{TRUE}, ongoing arrivals will be reported. The columns
 \code{end_time} and \code{finished} of these arrivals are reported as \code{NA}s.}
-
-\item{data}{whether to retrieve the "counts", the "limits" or both.}
 }
 \value{
 Returns a data frame.

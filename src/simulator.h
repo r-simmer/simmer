@@ -464,23 +464,6 @@ public:
       Rcpp::Named("stringsAsFactors") = false
     );
   }
-  Rcpp::DataFrame get_mon_resources_counts() const {
-    return Rcpp::DataFrame::create(
-      Rcpp::Named("resource")         = mon_resources.get<std::string>("resource"),
-      Rcpp::Named("time")             = mon_resources.get<double>("time"),
-      Rcpp::Named("server")           = mon_resources.get<int>("server"),
-      Rcpp::Named("queue")            = mon_resources.get<int>("queue"),
-      Rcpp::Named("stringsAsFactors") = false
-    );
-  }
-  Rcpp::DataFrame get_mon_resources_limits() const {
-    return Rcpp::DataFrame::create(
-      Rcpp::Named("resource")         = mon_resources.get<std::string>("resource"),
-      Rcpp::Named("time")             = mon_resources.get<double>("time"),
-      Rcpp::Named("server")           = mon_resources.get<int>("capacity"),
-      Rcpp::Named("queue")            = mon_resources.get<int>("queue_size")
-    );
-  }
 
 private:
   double now_;              /**< simulation time */

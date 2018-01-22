@@ -119,29 +119,14 @@ Simmer <- R6Class("simmer",
 
     get_mon_attributes = function() get_mon_attributes_(private$sim_obj),
 
-    get_mon_resources = function(data=c("counts", "limits")) {
-      data <- match.arg(data, several.ok = TRUE)
-      monitor_data <-
-        if (identical(data, "counts"))
-          get_mon_resources_counts_(private$sim_obj)
-        else if (identical(data, "limits"))
-          get_mon_resources_limits_(private$sim_obj)
-        else
-          get_mon_resources_(private$sim_obj)
-      if (identical(data, "limits")) {
-        monitor_data$server <-
-          replace(monitor_data$server, monitor_data$server == -1, Inf)
-        monitor_data$queue <-
-          replace(monitor_data$queue, monitor_data$queue == -1, Inf)
-        monitor_data$system <- monitor_data$server + monitor_data$queue
-      } else if (all(c("counts", "limits") %in% data)) {
-        monitor_data$capacity <-
-          replace(monitor_data$capacity, monitor_data$capacity == -1, Inf)
-        monitor_data$queue_size <-
-          replace(monitor_data$queue_size, monitor_data$queue_size == -1, Inf)
-        monitor_data$system <- monitor_data$server + monitor_data$queue
-        monitor_data$limit <- monitor_data$capacity + monitor_data$queue_size
-      } else monitor_data$system <- monitor_data$server + monitor_data$queue
+    get_mon_resources = function() {
+      monitor_data <- get_mon_resources_(private$sim_obj)
+      monitor_data$capacity <-
+        replace(monitor_data$capacity, monitor_data$capacity == -1, Inf)
+      monitor_data$queue_size <-
+        replace(monitor_data$queue_size, monitor_data$queue_size == -1, Inf)
+      monitor_data$system <- monitor_data$server + monitor_data$queue
+      monitor_data$limit <- monitor_data$capacity + monitor_data$queue_size
       monitor_data
     },
 

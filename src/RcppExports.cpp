@@ -159,28 +159,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// get_mon_resources_counts_
-DataFrame get_mon_resources_counts_(SEXP sim_);
-RcppExport SEXP _simmer_get_mon_resources_counts_(SEXP sim_SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    rcpp_result_gen = Rcpp::wrap(get_mon_resources_counts_(sim_));
-    return rcpp_result_gen;
-END_RCPP
-}
-// get_mon_resources_limits_
-DataFrame get_mon_resources_limits_(SEXP sim_);
-RcppExport SEXP _simmer_get_mon_resources_limits_(SEXP sim_SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    rcpp_result_gen = Rcpp::wrap(get_mon_resources_limits_(sim_));
-    return rcpp_result_gen;
-END_RCPP
-}
 // get_n_generated_
 int get_n_generated_(SEXP sim_, const std::string& name);
 RcppExport SEXP _simmer_get_n_generated_(SEXP sim_SEXP, SEXP nameSEXP) {
@@ -1198,8 +1176,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_get_mon_arrivals_", (DL_FUNC) &_simmer_get_mon_arrivals_, 3},
     {"_simmer_get_mon_attributes_", (DL_FUNC) &_simmer_get_mon_attributes_, 1},
     {"_simmer_get_mon_resources_", (DL_FUNC) &_simmer_get_mon_resources_, 1},
-    {"_simmer_get_mon_resources_counts_", (DL_FUNC) &_simmer_get_mon_resources_counts_, 1},
-    {"_simmer_get_mon_resources_limits_", (DL_FUNC) &_simmer_get_mon_resources_limits_, 1},
     {"_simmer_get_n_generated_", (DL_FUNC) &_simmer_get_n_generated_, 2},
     {"_simmer_get_name_", (DL_FUNC) &_simmer_get_name_, 1},
     {"_simmer_get_attribute_", (DL_FUNC) &_simmer_get_attribute_, 3},

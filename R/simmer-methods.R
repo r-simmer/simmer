@@ -210,20 +210,20 @@ get_mon_arrivals.simmer <- function(.envs, per_resource=FALSE, ongoing=FALSE)
 
 #' @rdname get_mon
 #' @export
-get_mon_attributes <- function(.envs) UseMethod("get_mon_attributes", unlist(list(.envs))[[1]])
+get_mon_attributes <- function(.envs)
+  UseMethod("get_mon_attributes", unlist(list(.envs))[[1]])
 
 #' @export
 get_mon_attributes.simmer <- function(.envs) envs_apply(.envs, "get_mon_attributes")
 
-#' @param data whether to retrieve the "counts", the "limits" or both.
 #' @rdname get_mon
 #' @export
-get_mon_resources <- function(.envs, data=c("counts", "limits"))
+get_mon_resources <- function(.envs)
   UseMethod("get_mon_resources", unlist(list(.envs))[[1]])
 
 #' @export
-get_mon_resources.simmer <- function(.envs, data=c("counts", "limits"))
-  envs_apply(.envs, "get_mon_resources", data)
+get_mon_resources.simmer <- function(.envs)
+  envs_apply(.envs, "get_mon_resources")
 
 #' Get Process Parameters
 #'

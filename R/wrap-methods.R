@@ -47,8 +47,7 @@ get_mon_arrivals.wrap <- function(.envs, per_resource=FALSE, ongoing=FALSE)
 get_mon_attributes.wrap <- function(.envs) get_mon_attributes.simmer(.envs)
 
 #' @export
-get_mon_resources.wrap <- function(.envs, data=c("counts", "limits"))
-  get_mon_resources.simmer(.envs, data)
+get_mon_resources.wrap <- function(.envs) get_mon_resources.simmer(.envs)
 
 #' @export
 get_n_generated.wrap <- function(.env, generator) get_n_generated.simmer(.env, generator)
