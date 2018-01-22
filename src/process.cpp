@@ -15,7 +15,7 @@ bool Process::deactivate() {
 }
 
 void Generator::set_first_activity() {
-  Rcpp::Function head(trj["head"]);
+  RFn head(trj["head"]);
   first_activity = Rcpp::as<Rcpp::XPtr<Activity> >(head());
 }
 
@@ -162,10 +162,19 @@ void Arrival::terminate(bool finished) {
   delete this;
 }
 
-void Arrival::set_attribute(const std::string& key, double value) {
+void Arrival::set_attribute(const std::string& key, double value, bool global) {
+  if (global) return sim->set_attribute(key, value);
   attributes[key] = value;
   if (is_monitored() >= 2)
     sim->record_attribute(name, key, value);
+}
+
+double Arrival::get_attribute(const std::string& key, bool global) const {
+  if (global) return sim->get_attribute(key);
+  Attr::const_iterator search = attributes.find(key);
+  if (search == attributes.end())
+    return NA_REAL;
+  return search->second;
 }
 
 double Arrival::get_start(const std::string& name) {
@@ -195,8 +204,7 @@ void Arrival::unregister_entity(Resource* ptr) {
 void Arrival::set_renege(const std::string& sig, Activity* next) {
   cancel_renege();
   signal = sig;
-  sim->subscribe(signal, this,
-                 boost::bind(&Arrival::renege, this, next));
+  sim->subscribe(signal, this, BIND(&Arrival::renege, this, next));
 }
 
 void Arrival::cancel_renege() {
@@ -251,7 +259,8 @@ void Batched::terminate(bool finished) {
   Arrival::terminate(finished);
 }
 
-void Batched::set_attribute(const std::string& key, double value) {
+void Batched::set_attribute(const std::string& key, double value, bool global) {
+  if (global) return sim->set_attribute(key, value);
   attributes[key] = value;
   foreach_ (Arrival* arrival, arrivals)
     arrival->set_attribute(key, value);

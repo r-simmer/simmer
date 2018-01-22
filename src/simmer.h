@@ -40,7 +40,10 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
-#define BIND(T) boost::function<T ()>
+#define REnv Rcpp::Environment
+#define RFn Rcpp::Function
+#define Fn boost::function
+#define BIND boost::bind
 
 #define FMT(n, justify) std::setw(n) << std::justify
 #define IND(n) std::string(n, ' ')
@@ -61,11 +64,8 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 
 #define COMMA ,
 
-#define BASE_CLONEABLE(Type) \
-  virtual Type* clone() const = 0;
-
-#define CLONEABLE(Type) \
-  virtual Type* clone() const { return new Type(*this); }
+#define BASE_CLONEABLE(Type) virtual Type* clone() const = 0;
+#define CLONEABLE(Type) virtual Type* clone() const { return new Type(*this); }
 
 typedef UMAP<std::string, double> Attr;
 

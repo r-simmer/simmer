@@ -3,7 +3,7 @@ Simmer <- R6Class("simmer",
     name = NA,
 
     initialize = function(name="anonymous", verbose=FALSE) {
-      check_args(name, verbose, types=c("string", "flag"), n=3)
+      check_args(name="string", verbose="flag")
       self$name <- name
       private$sim_obj <- Simulator__new(name, verbose)
       self
@@ -40,13 +40,14 @@ Simmer <- R6Class("simmer",
     now = function() { now_(private$sim_obj) },
 
     peek = function(steps=1, verbose=FALSE) {
-      check_args(steps, verbose, types=c("number", "flag"))
+      check_args(steps="number", verbose="flag")
       ret <- peek_(private$sim_obj, steps)
       if (!verbose) ret$time
       else ret # nocov
     },
 
     stepn = function(n=1) {
+      check_args(n="number")
       stepn_(private$sim_obj, n)
       self
     },
@@ -58,8 +59,14 @@ Simmer <- R6Class("simmer",
 
     add_resource = function(name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE,
                             preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE) {
-      check_args(name, capacity, queue_size, mon, preemptive, queue_size_strict,
-            types=c("string", rep("number or schedule", 2), rep("flag", 3)))
+      check_args(
+        name = "string",
+        capacity = c("number", "schedule"),
+        queue_size = c("number", "schedule"),
+        mon = "flag",
+        preemptive = "flag",
+        queue_size_strict = "flag"
+      )
       preempt_order <- match.arg(preempt_order)
 
       if (inherits(capacity, "schedule")) {
@@ -91,8 +98,15 @@ Simmer <- R6Class("simmer",
 
     add_generator = function(name_prefix, trajectory, distribution, mon=1,
                              priority=0, preemptible=priority, restart=FALSE) {
-      check_args(name_prefix, trajectory, distribution, mon, priority, preemptible, restart,
-            types=c("string", "trajectory", "function", "flag", rep("number", 2), "flag"))
+      check_args(
+        name_prefix = "string",
+        trajectory = "trajectory",
+        distribution = "function",
+        mon = "flag",
+        priority = "number",
+        preemptible = "number",
+        restart = "flag"
+      )
       ret <- add_generator_(private$sim_obj, name_prefix, trajectory[],
                             make_resetable(distribution), mon, priority, preemptible, restart)
       if (ret) private$gen[[name_prefix]] <- c(mon=mon)
@@ -105,33 +119,18 @@ Simmer <- R6Class("simmer",
 
     get_mon_attributes = function() get_mon_attributes_(private$sim_obj),
 
-    get_mon_resources = function(data=c("counts", "limits")) {
-      data <- match.arg(data, several.ok = TRUE)
-      monitor_data <-
-        if (identical(data, "counts"))
-          get_mon_resources_counts_(private$sim_obj)
-        else if (identical(data, "limits"))
-          get_mon_resources_limits_(private$sim_obj)
-        else
-          get_mon_resources_(private$sim_obj)
-      if (identical(data, "limits")) {
-        monitor_data$server <-
-          replace(monitor_data$server, monitor_data$server == -1, Inf)
-        monitor_data$queue <-
-          replace(monitor_data$queue, monitor_data$queue == -1, Inf)
-        monitor_data$system <- monitor_data$server + monitor_data$queue
-      } else if (all(c("counts", "limits") %in% data)) {
-        monitor_data$capacity <-
-          replace(monitor_data$capacity, monitor_data$capacity == -1, Inf)
-        monitor_data$queue_size <-
-          replace(monitor_data$queue_size, monitor_data$queue_size == -1, Inf)
-        monitor_data$system <- monitor_data$server + monitor_data$queue
-        monitor_data$limit <- monitor_data$capacity + monitor_data$queue_size
-      } else monitor_data$system <- monitor_data$server + monitor_data$queue
+    get_mon_resources = function() {
+      monitor_data <- get_mon_resources_(private$sim_obj)
+      monitor_data$capacity <-
+        replace(monitor_data$capacity, monitor_data$capacity == -1, Inf)
+      monitor_data$queue_size <-
+        replace(monitor_data$queue_size, monitor_data$queue_size == -1, Inf)
+      monitor_data$system <- monitor_data$server + monitor_data$queue
+      monitor_data$limit <- monitor_data$capacity + monitor_data$queue_size
       monitor_data
     },
 
-    get_n_generated = function(name) get_n_generated_(private$sim_obj, name),
+    get_n_generated = function(generator) get_n_generated_(private$sim_obj, generator),
 
     get_name = function() get_name_(private$sim_obj),
 
@@ -139,21 +138,45 @@ Simmer <- R6Class("simmer",
 
     get_prioritization = function() get_prioritization_(private$sim_obj),
 
-    get_capacity = function(name) {
-      ret <- get_capacity_(private$sim_obj, name)
+    get_capacity = function(resource, id=0) {
+      check_args(resource=c("string", "NA"), id="number")
+      ret <- switch(
+        binarise(is.na(resource)),
+        get_capacity_(private$sim_obj, resource),
+        get_capacity_selected_(private$sim_obj, id)
+      )
       if (ret < 0) ret <- Inf
       ret
     },
 
-    get_queue_size = function(name) {
-      ret <- get_queue_size_(private$sim_obj, name)
+    get_queue_size = function(resource, id=0) {
+      check_args(resource=c("string", "NA"), id="number")
+      ret <- switch(
+        binarise(is.na(resource)),
+        get_queue_size_(private$sim_obj, resource),
+        get_queue_size_selected_(private$sim_obj, id)
+      )
       if (ret < 0) ret <- Inf
       ret
     },
 
-    get_server_count = function(name) get_server_count_(private$sim_obj, name),
+    get_server_count = function(resource, id=0) {
+      check_args(resource=c("string", "NA"), id="number")
+      switch(
+        binarise(is.na(resource)),
+        get_server_count_(private$sim_obj, resource),
+        get_server_count_selected_(private$sim_obj, id)
+      )
+    },
 
-    get_queue_count = function(name) get_queue_count_(private$sim_obj, name),
+    get_queue_count = function(resource, id=0) {
+      check_args(resource=c("string", "NA"), id="number")
+      ret <- switch(
+        binarise(is.na(resource)),
+        get_queue_count_(private$sim_obj, resource),
+        get_queue_count_selected_(private$sim_obj, id)
+      )
+    },
 
     # not exposed, internal use
     get_generators = function() { private$gen },

@@ -65,7 +65,7 @@ int Resource::release(Arrival* arrival, int amount) {
 
   // serve another
   Task* task = new Task(sim, "Post-Release",
-                        boost::bind(&Resource::post_release, this),
+                        BIND(&Resource::post_release, this),
                         PRIORITY_RELEASE_POST);
   task->activate();
 

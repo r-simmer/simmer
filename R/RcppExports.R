@@ -49,14 +49,6 @@ get_mon_resources_ <- function(sim_) {
     .Call(`_simmer_get_mon_resources_`, sim_)
 }
 
-get_mon_resources_counts_ <- function(sim_) {
-    .Call(`_simmer_get_mon_resources_counts_`, sim_)
-}
-
-get_mon_resources_limits_ <- function(sim_) {
-    .Call(`_simmer_get_mon_resources_limits_`, sim_)
-}
-
 get_n_generated_ <- function(sim_, name) {
     .Call(`_simmer_get_n_generated_`, sim_, name)
 }
@@ -77,16 +69,32 @@ get_capacity_ <- function(sim_, name) {
     .Call(`_simmer_get_capacity_`, sim_, name)
 }
 
+get_capacity_selected_ <- function(sim_, id) {
+    .Call(`_simmer_get_capacity_selected_`, sim_, id)
+}
+
 get_queue_size_ <- function(sim_, name) {
     .Call(`_simmer_get_queue_size_`, sim_, name)
+}
+
+get_queue_size_selected_ <- function(sim_, id) {
+    .Call(`_simmer_get_queue_size_selected_`, sim_, id)
 }
 
 get_server_count_ <- function(sim_, name) {
     .Call(`_simmer_get_server_count_`, sim_, name)
 }
 
+get_server_count_selected_ <- function(sim_, id) {
+    .Call(`_simmer_get_server_count_selected_`, sim_, id)
+}
+
 get_queue_count_ <- function(sim_, name) {
     .Call(`_simmer_get_queue_count_`, sim_, name)
+}
+
+get_queue_count_selected_ <- function(sim_, id) {
+    .Call(`_simmer_get_queue_count_selected_`, sim_, id)
 }
 
 Seize__new <- function(resource, amount, cont, trj, mask) {
@@ -121,36 +129,36 @@ ReleaseSelected__new_func <- function(id, amount) {
     .Call(`_simmer_ReleaseSelected__new_func`, id, amount)
 }
 
-SetCapacity__new <- function(resource, value) {
-    .Call(`_simmer_SetCapacity__new`, resource, value)
+SetCapacity__new <- function(resource, value, mod) {
+    .Call(`_simmer_SetCapacity__new`, resource, value, mod)
 }
 
-SetCapacity__new_func <- function(resource, value) {
-    .Call(`_simmer_SetCapacity__new_func`, resource, value)
+SetCapacity__new_func <- function(resource, value, mod) {
+    .Call(`_simmer_SetCapacity__new_func`, resource, value, mod)
 }
 
-SetCapacitySelected__new <- function(id, value) {
-    .Call(`_simmer_SetCapacitySelected__new`, id, value)
+SetCapacitySelected__new <- function(id, value, mod) {
+    .Call(`_simmer_SetCapacitySelected__new`, id, value, mod)
 }
 
-SetCapacitySelected__new_func <- function(id, value) {
-    .Call(`_simmer_SetCapacitySelected__new_func`, id, value)
+SetCapacitySelected__new_func <- function(id, value, mod) {
+    .Call(`_simmer_SetCapacitySelected__new_func`, id, value, mod)
 }
 
-SetQueue__new <- function(resource, value) {
-    .Call(`_simmer_SetQueue__new`, resource, value)
+SetQueue__new <- function(resource, value, mod) {
+    .Call(`_simmer_SetQueue__new`, resource, value, mod)
 }
 
-SetQueue__new_func <- function(resource, value) {
-    .Call(`_simmer_SetQueue__new_func`, resource, value)
+SetQueue__new_func <- function(resource, value, mod) {
+    .Call(`_simmer_SetQueue__new_func`, resource, value, mod)
 }
 
-SetQueueSelected__new <- function(id, value) {
-    .Call(`_simmer_SetQueueSelected__new`, id, value)
+SetQueueSelected__new <- function(id, value, mod) {
+    .Call(`_simmer_SetQueueSelected__new`, id, value, mod)
 }
 
-SetQueueSelected__new_func <- function(id, value) {
-    .Call(`_simmer_SetQueueSelected__new_func`, id, value)
+SetQueueSelected__new_func <- function(id, value, mod) {
+    .Call(`_simmer_SetQueueSelected__new_func`, id, value, mod)
 }
 
 Select__new <- function(resources, policy, id) {
@@ -161,20 +169,20 @@ Select__new_func <- function(resources, policy, id) {
     .Call(`_simmer_Select__new_func`, resources, policy, id)
 }
 
-SetAttribute__new <- function(keys, values, global) {
-    .Call(`_simmer_SetAttribute__new`, keys, values, global)
+SetAttribute__new <- function(keys, values, global, mod) {
+    .Call(`_simmer_SetAttribute__new`, keys, values, global, mod)
 }
 
-SetAttribute__new_func1 <- function(keys, values, global) {
-    .Call(`_simmer_SetAttribute__new_func1`, keys, values, global)
+SetAttribute__new_func1 <- function(keys, values, global, mod) {
+    .Call(`_simmer_SetAttribute__new_func1`, keys, values, global, mod)
 }
 
-SetAttribute__new_func2 <- function(keys, values, global) {
-    .Call(`_simmer_SetAttribute__new_func2`, keys, values, global)
+SetAttribute__new_func2 <- function(keys, values, global, mod) {
+    .Call(`_simmer_SetAttribute__new_func2`, keys, values, global, mod)
 }
 
-SetAttribute__new_func3 <- function(keys, values, global) {
-    .Call(`_simmer_SetAttribute__new_func3`, keys, values, global)
+SetAttribute__new_func3 <- function(keys, values, global, mod) {
+    .Call(`_simmer_SetAttribute__new_func3`, keys, values, global, mod)
 }
 
 Activate__new <- function(generator) {
@@ -209,12 +217,12 @@ SetDist__new_func <- function(generator, dist) {
     .Call(`_simmer_SetDist__new_func`, generator, dist)
 }
 
-SetPrior__new <- function(values) {
-    .Call(`_simmer_SetPrior__new`, values)
+SetPrior__new <- function(values, mod) {
+    .Call(`_simmer_SetPrior__new`, values, mod)
 }
 
-SetPrior__new_func <- function(values) {
-    .Call(`_simmer_SetPrior__new_func`, values)
+SetPrior__new_func <- function(values, mod) {
+    .Call(`_simmer_SetPrior__new_func`, values, mod)
 }
 
 Timeout__new <- function(delay) {
@@ -223,6 +231,10 @@ Timeout__new <- function(delay) {
 
 Timeout__new_func <- function(task) {
     .Call(`_simmer_Timeout__new_func`, task)
+}
+
+Timeout__new_attr <- function(key, global) {
+    .Call(`_simmer_Timeout__new_attr`, key, global)
 }
 
 Branch__new <- function(option, cont, trj) {

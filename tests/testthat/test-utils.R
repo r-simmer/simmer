@@ -13,64 +13,80 @@ func <- function() {
   J <- NA
   K <- NULL
   check_args(
-    A, B, C, D, E, F, G, C, E, C, J, H, E, D, E, I, E, D, E, D, G, E, K, F, K,
-    types=c(rep("flag", 2),
-            "string",
-            "number",
-            "function",
-            "trajectory",
-            "schedule",
-            rep("string or function", 2),
-            rep("string or NA", 2),
-            rep("string vector or function", 2),
-            rep("number or function", 2),
-            rep("number vector or function", 2),
-            rep("numeric or function", 2),
-            rep("number or schedule", 2),
-            rep("function or NULL", 2),
-            rep("trajectory or NULL", 2))
+    A = "flag",
+    B = "flag",
+    C = "string",
+    D = "number",
+    E = "function",
+    F = "trajectory",
+    G = "schedule",
+    C = c("string", "function"),
+    E = c("string", "function"),
+    C = c("string", "NA"),
+    J = c("string", "NA"),
+    H = c("string vector", "function"),
+    E = c("string vector", "function"),
+    D = c("number", "function"),
+    E = c("number", "function"),
+    I = c("number vector", "function"),
+    E = c("number vector", "function"),
+    D = c("numeric", "function"),
+    E = c("numeric", "function"),
+    D = c("number", "schedule"),
+    G = c("number", "schedule"),
+    E = c("function", "NULL"),
+    K = c("function", "NULL"),
+    F = c("trajectory", "NULL"),
+    K = c("trajectory", "NULL")
   )
 }
 
 test_that("argument matching work as expected", {
-  expect_true(is_string("asdf"))
-  expect_false(is_string(c("asdf", "asdf")))
+  var <- "asdf"
+  expect_true(is_string("var", environment()))
+  var <- c("asdf", "asdf")
+  expect_false(is_string("var", environment()))
 
-  expect_true(is_flag(TRUE))
-  expect_true(is_flag(2))
-  expect_true(is_flag(c(TRUE, FALSE)))
-  expect_true(is_flag(c(2, 0)))
+  var <- TRUE
+  expect_true(is_flag("var", environment()))
+  var <- 2
+  expect_true(is_flag("var", environment()))
+  var <- c(TRUE, FALSE)
+  expect_true(is_flag("var", environment()))
+  var <- c(2, 0)
+  expect_true(is_flag("var", environment()))
 
-  n <- 1
-  expect_true(is_number(n, environment(), "n"))
-  expect_equal(n, 1)
-  n <- -1
-  expect_true(is_number(n, environment(), "n"))
-  expect_equal(n, 1)
-  n <- Inf
-  expect_true(is_number(n, environment(), "n"))
-  expect_equal(n, -1)
-  n <- c(1, 1)
-  expect_false(is_number(n, environment(), "n"))
+  var <- 1
+  expect_true(is_number("var", environment()))
+  expect_equal(var, 1)
+  var <- -1
+  expect_true(is_number("var", environment()))
+  expect_equal(var, 1)
+  var <- Inf
+  expect_true(is_number("var", environment()))
+  expect_equal(var, -1)
+  var <- c(1, 1)
+  expect_false(is_number("var", environment()))
 
-  n <- c(1, 1)
-  expect_true(is_number_vector(n, environment(), "n"))
-  expect_equal(n, c(1, 1))
-  n <- c(1, -1)
-  expect_true(is_number_vector(n, environment(), "n"))
-  expect_equal(n, c(1, 1))
-  n <- c(1, Inf)
-  expect_true(is_number_vector(n, environment(), "n"))
-  expect_equal(n, c(1, Inf))
-  n <- 1
-  expect_false(is_number_vector(n, environment(), "n"))
+  var <- c(1, 1)
+  expect_true(is_number_vector("var", environment()))
+  expect_equal(var, c(1, 1))
+  var <- c(1, -1)
+  expect_true(is_number_vector("var", environment()))
+  expect_equal(var, c(1, 1))
+  var <- c(1, Inf)
+  expect_true(is_number_vector("var", environment()))
+  expect_equal(var, c(1, Inf))
+  var <- 1
+  expect_false(is_number_vector("var", environment()))
 
-  func <- function() 1
-  expect_true(is_function(func, environment(), "func"))
-  expect_false(is_function(1, environment(), "func"))
+  expect_false(is_function("var", environment()))
+  var <- function() 1
+  expect_true(is_function("var", environment()))
 
   expect_silent(func())
-  expect_error(check_args("asdf", types="flag"))
+  var <- "asdf"
+  expect_error(check_args(var="flag"))
 })
 
 test_that("envs_apply works", {

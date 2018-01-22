@@ -21,18 +21,18 @@ test_that("capacity & queue size change", {
   limits <- simmer(verbose = TRUE) %>%
     add_resource("dummy", inf_sch) %>%
     run(17) %>% reset() %>% run(49) %>%
-    get_mon_resources("limits")
+    get_mon_resources()
 
   expect_equal(limits$time, c(8, 16, 24))
-  expect_equal(limits$server, c(1, 2, 3))
+  expect_equal(limits$capacity, c(1, 2, 3))
 
   limits <- simmer(verbose = TRUE) %>%
     add_resource("dummy", fin_sch) %>%
     run(17) %>% reset() %>% run(49) %>%
-    get_mon_resources("limits")
+    get_mon_resources()
 
   expect_equal(limits$time, c(8, 16, 24, 32, 40, 48))
-  expect_equal(limits$server, c(1, 2, 3, 1, 2, 3))
+  expect_equal(limits$capacity, c(1, 2, 3, 1, 2, 3))
 })
 
 test_that("queue size changes", {
@@ -42,18 +42,18 @@ test_that("queue size changes", {
   limits <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 1, inf_sch) %>%
     run(17) %>% reset() %>% run(49) %>%
-    get_mon_resources("limits")
+    get_mon_resources()
 
   expect_equal(limits$time, c(8, 16, 24))
-  expect_equal(limits$queue, c(1, 2, 3))
+  expect_equal(limits$queue_size, c(1, 2, 3))
 
   limits <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 1, fin_sch) %>%
     run(17) %>% reset() %>% run(49) %>%
-    get_mon_resources("limits")
+    get_mon_resources()
 
   expect_equal(limits$time, c(8, 16, 24, 32, 40, 48))
-  expect_equal(limits$queue, c(1, 2, 3, 1, 2, 3))
+  expect_equal(limits$queue_size, c(1, 2, 3, 1, 2, 3))
 })
 
 test_that("arrivals 1) are dequeued when resource's capacity increases and

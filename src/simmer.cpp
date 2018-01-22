@@ -86,18 +86,6 @@ DataFrame get_mon_resources_(SEXP sim_) {
 }
 
 //[[Rcpp::export]]
-DataFrame get_mon_resources_counts_(SEXP sim_) {
-  XPtr<Simulator> sim(sim_);
-  return sim->get_mon_resources_counts();
-}
-
-//[[Rcpp::export]]
-DataFrame get_mon_resources_limits_(SEXP sim_) {
-  XPtr<Simulator> sim(sim_);
-  return sim->get_mon_resources_limits();
-}
-
-//[[Rcpp::export]]
 int get_n_generated_(SEXP sim_, const std::string& name) {
   XPtr<Simulator> sim(sim_);
   return sim->get_generator(name)->get_n_generated();
@@ -112,14 +100,10 @@ std::string get_name_(SEXP sim_) {
 //[[Rcpp::export]]
 NumericVector get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bool global) {
   XPtr<Simulator> sim(sim_);
-  boost::function<double (const std::string&)> getter;
   NumericVector attrs;
 
-  if (global) getter = boost::bind(&Simulator::get_attribute, sim.get(), _1);
-  else getter = boost::bind(&Arrival::get_attribute, sim->get_running_arrival(), _1);
-
   foreach_ (const std::string& key, keys)
-    attrs.push_back(getter(key));
+    attrs.push_back(sim->get_running_arrival()->get_attribute(key, global));
 
   return attrs;
 }
@@ -140,9 +124,21 @@ int get_capacity_(SEXP sim_, const std::string& name) {
 }
 
 //[[Rcpp::export]]
+int get_capacity_selected_(SEXP sim_, int id) {
+  XPtr<Simulator> sim(sim_);
+  return sim->get_running_arrival()->get_resource_selected(id)->get_capacity();
+}
+
+//[[Rcpp::export]]
 int get_queue_size_(SEXP sim_, const std::string& name) {
   XPtr<Simulator> sim(sim_);
   return sim->get_resource(name)->get_queue_size();
+}
+
+//[[Rcpp::export]]
+int get_queue_size_selected_(SEXP sim_, int id) {
+  XPtr<Simulator> sim(sim_);
+  return sim->get_running_arrival()->get_resource_selected(id)->get_queue_size();
 }
 
 //[[Rcpp::export]]
@@ -152,9 +148,21 @@ int get_server_count_(SEXP sim_, const std::string& name) {
 }
 
 //[[Rcpp::export]]
+int get_server_count_selected_(SEXP sim_, int id) {
+  XPtr<Simulator> sim(sim_);
+  return sim->get_running_arrival()->get_resource_selected(id)->get_server_count();
+}
+
+//[[Rcpp::export]]
 int get_queue_count_(SEXP sim_, const std::string& name) {
   XPtr<Simulator> sim(sim_);
   return sim->get_resource(name)->get_queue_count();
+}
+
+//[[Rcpp::export]]
+int get_queue_count_selected_(SEXP sim_, int id) {
+  XPtr<Simulator> sim(sim_);
+  return sim->get_running_arrival()->get_resource_selected(id)->get_queue_count();
 }
 
 //[[Rcpp::export]]
@@ -206,43 +214,43 @@ SEXP ReleaseSelected__new_func(int id, const Function& amount) {
 }
 
 //[[Rcpp::export]]
-SEXP SetCapacity__new(const std::string& resource, double value) {
-  return XPtr<SetCapacity<double> >(new SetCapacity<double>(resource, value));
+SEXP SetCapacity__new(const std::string& resource, double value, char mod) {
+  return XPtr<SetCapacity<double> >(new SetCapacity<double>(resource, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetCapacity__new_func(const std::string& resource, const Function& value) {
-  return XPtr<SetCapacity<Function> >(new SetCapacity<Function>(resource, value));
+SEXP SetCapacity__new_func(const std::string& resource, const Function& value, char mod) {
+  return XPtr<SetCapacity<Function> >(new SetCapacity<Function>(resource, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetCapacitySelected__new(int id, double value) {
-  return XPtr<SetCapacity<double> >(new SetCapacity<double>(id, value));
+SEXP SetCapacitySelected__new(int id, double value, char mod) {
+  return XPtr<SetCapacity<double> >(new SetCapacity<double>(id, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetCapacitySelected__new_func(int id, const Function& value) {
-  return XPtr<SetCapacity<Function> >(new SetCapacity<Function>(id, value));
+SEXP SetCapacitySelected__new_func(int id, const Function& value, char mod) {
+  return XPtr<SetCapacity<Function> >(new SetCapacity<Function>(id, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetQueue__new(const std::string& resource, double value) {
-  return XPtr<SetQueue<double> >(new SetQueue<double>(resource, value));
+SEXP SetQueue__new(const std::string& resource, double value, char mod) {
+  return XPtr<SetQueue<double> >(new SetQueue<double>(resource, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetQueue__new_func(const std::string& resource, const Function& value) {
-  return XPtr<SetQueue<Function> >(new SetQueue<Function>(resource, value));
+SEXP SetQueue__new_func(const std::string& resource, const Function& value, char mod) {
+  return XPtr<SetQueue<Function> >(new SetQueue<Function>(resource, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetQueueSelected__new(int id, double value) {
-  return XPtr<SetQueue<double> >(new SetQueue<double>(id, value));
+SEXP SetQueueSelected__new(int id, double value, char mod) {
+  return XPtr<SetQueue<double> >(new SetQueue<double>(id, value, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetQueueSelected__new_func(int id, const Function& value) {
-  return XPtr<SetQueue<Function> >(new SetQueue<Function>(id, value));
+SEXP SetQueueSelected__new_func(int id, const Function& value, char mod) {
+  return XPtr<SetQueue<Function> >(new SetQueue<Function>(id, value, mod));
 }
 
 //[[Rcpp::export]]
@@ -257,32 +265,34 @@ SEXP Select__new_func(const Function& resources, const std::string& policy, int 
 
 //[[Rcpp::export]]
 SEXP SetAttribute__new(const std::vector<std::string>& keys,
-                       const std::vector<double>& values, bool global)
+                       const std::vector<double>& values, bool global, char mod)
 {
   return XPtr<SetAttribute<VEC<std::string>, VEC<double> > >(
-      new SetAttribute<VEC<std::string>, VEC<double> >(keys, values, global));
+      new SetAttribute<VEC<std::string>, VEC<double> >(keys, values, global, mod));
 }
 
 //[[Rcpp::export]]
 SEXP SetAttribute__new_func1(const Function& keys,
-                             const std::vector<double>& values, bool global)
+                             const std::vector<double>& values, bool global, char mod)
 {
   return XPtr<SetAttribute<Function, VEC<double> > >(
-      new SetAttribute<Function, VEC<double> >(keys, values, global));
+      new SetAttribute<Function, VEC<double> >(keys, values, global, mod));
 }
 
 //[[Rcpp::export]]
 SEXP SetAttribute__new_func2(const std::vector<std::string>& keys,
-                             const Function& values, bool global)
+                             const Function& values, bool global, char mod)
 {
   return XPtr<SetAttribute<VEC<std::string>, Function> >(
-      new SetAttribute<VEC<std::string>, Function>(keys, values, global));
+      new SetAttribute<VEC<std::string>, Function>(keys, values, global, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new_func3(const Function& keys, const Function& values, bool global) {
+SEXP SetAttribute__new_func3(const Function& keys,
+                             const Function& values, bool global, char mod)
+{
   return XPtr<SetAttribute<Function, Function> >(
-      new SetAttribute<Function, Function>(keys, values, global));
+      new SetAttribute<Function, Function>(keys, values, global, mod));
 }
 
 //[[Rcpp::export]]
@@ -326,13 +336,13 @@ SEXP SetDist__new_func(const Function& generator, const Function& dist) {
 }
 
 //[[Rcpp::export]]
-SEXP SetPrior__new(const std::vector<int>& values) {
-  return XPtr<SetPrior<VEC<int> > >(new SetPrior<VEC<int> >(values));
+SEXP SetPrior__new(const std::vector<int>& values, char mod) {
+  return XPtr<SetPrior<VEC<int> > >(new SetPrior<VEC<int> >(values, mod));
 }
 
 //[[Rcpp::export]]
-SEXP SetPrior__new_func(const Function& values) {
-  return XPtr<SetPrior<Function> >(new SetPrior<Function>(values));
+SEXP SetPrior__new_func(const Function& values, char mod) {
+  return XPtr<SetPrior<Function> >(new SetPrior<Function>(values, mod));
 }
 
 //[[Rcpp::export]]
@@ -343,6 +353,13 @@ SEXP Timeout__new(double delay) {
 //[[Rcpp::export]]
 SEXP Timeout__new_func(const Function& task) {
   return XPtr<Timeout<Function> >(new Timeout<Function>(task));
+}
+
+//[[Rcpp::export]]
+SEXP Timeout__new_attr(const std::string& key, bool global) {
+  typedef FnWrap<double, Arrival*, std::string> Callback;
+  Callback call = Callback(BIND(&Arrival::get_attribute, _1, key, global), key);
+  return XPtr<Timeout<Callback> >(new Timeout<Callback>(call));
 }
 
 //[[Rcpp::export]]

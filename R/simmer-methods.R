@@ -71,7 +71,7 @@ run <- function(.env, until=1000, progress=NULL, steps=10) UseMethod("run")
 
 #' @export
 run.simmer <- function(.env, until=1000, progress=NULL, steps=10) {
-  check_args(until, progress, steps, types=c("number", "function or NULL", "number"))
+  check_args(until="number", progress=c("function", "NULL"), steps="number")
   if (is.function(progress)) {
     progress(0)
     for (i in seq(until/steps, until, until/steps)) {
@@ -210,20 +210,20 @@ get_mon_arrivals.simmer <- function(.envs, per_resource=FALSE, ongoing=FALSE)
 
 #' @rdname get_mon
 #' @export
-get_mon_attributes <- function(.envs) UseMethod("get_mon_attributes", unlist(list(.envs))[[1]])
+get_mon_attributes <- function(.envs)
+  UseMethod("get_mon_attributes", unlist(list(.envs))[[1]])
 
 #' @export
 get_mon_attributes.simmer <- function(.envs) envs_apply(.envs, "get_mon_attributes")
 
-#' @param data whether to retrieve the "counts", the "limits" or both.
 #' @rdname get_mon
 #' @export
-get_mon_resources <- function(.envs, data=c("counts", "limits"))
+get_mon_resources <- function(.envs)
   UseMethod("get_mon_resources", unlist(list(.envs))[[1]])
 
 #' @export
-get_mon_resources.simmer <- function(.envs, data=c("counts", "limits"))
-  envs_apply(.envs, "get_mon_resources", data)
+get_mon_resources.simmer <- function(.envs)
+  envs_apply(.envs, "get_mon_resources")
 
 #' Get Process Parameters
 #'
@@ -285,6 +285,7 @@ get_prioritization.simmer <- function(.env) .env$get_prioritization()
 #' Getters for resources: server capacity/count and queue size/count.
 #'
 #' @inheritParams reset
+#' @inheritParams select
 #' @param resource the name of the resource.
 #'
 #' @return Return a numeric value.
@@ -297,10 +298,24 @@ get_capacity.simmer <- function(.env, resource) .env$get_capacity(resource)
 
 #' @rdname get_capacity
 #' @export
+get_capacity_selected <- function(.env, id=0) UseMethod("get_capacity_selected")
+
+#' @export
+get_capacity_selected.simmer <- function(.env, id=0) .env$get_capacity(NA, id)
+
+#' @rdname get_capacity
+#' @export
 get_queue_size <- function(.env, resource) UseMethod("get_queue_size")
 
 #' @export
 get_queue_size.simmer <- function(.env, resource) .env$get_queue_size(resource)
+
+#' @rdname get_capacity
+#' @export
+get_queue_size_selected <- function(.env, id=0) UseMethod("get_queue_size_selected")
+
+#' @export
+get_queue_size_selected.simmer <- function(.env, id=0) .env$get_queue_size(NA, id)
 
 #' @rdname get_capacity
 #' @export
@@ -311,7 +326,21 @@ get_server_count.simmer <- function(.env, resource) .env$get_server_count(resour
 
 #' @rdname get_capacity
 #' @export
+get_server_count_selected <- function(.env, id=0) UseMethod("get_server_count_selected")
+
+#' @export
+get_server_count_selected.simmer <- function(.env, id=0) .env$get_server_count(NA, id)
+
+#' @rdname get_capacity
+#' @export
 get_queue_count <- function(.env, resource) UseMethod("get_queue_count")
 
 #' @export
 get_queue_count.simmer <- function(.env, resource) .env$get_queue_count(resource)
+
+#' @rdname get_capacity
+#' @export
+get_queue_count_selected <- function(.env, id=0) UseMethod("get_queue_count_selected")
+
+#' @export
+get_queue_count_selected.simmer <- function(.env, id=0) .env$get_queue_count(NA, id)

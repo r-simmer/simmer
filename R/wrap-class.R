@@ -3,7 +3,7 @@ Wrap <- R6Class("wrap",
     name = NA,
 
     initialize = function(env) {
-      stopifnot(inherits(env, "simmer"))
+      check_args(env="simmer")
       self$name <- env$name
       private$now_val <- env$now()
       private$peek_val <- env$peek(Inf, TRUE)
@@ -12,9 +12,7 @@ Wrap <- R6Class("wrap",
       private$arrivals <- env$get_mon_arrivals(ongoing = TRUE)
       private$arrivals_res <- env$get_mon_arrivals(TRUE, ongoing = TRUE)
       private$attributes <- env$get_mon_attributes()
-      private$resources_all <- env$get_mon_resources(data = c("counts", "limits"))
-      private$resources_counts <- env$get_mon_resources(data = "counts")
-      private$resources_limits <- env$get_mon_resources(data = "limits")
+      private$resources <- env$get_mon_resources()
       for (name in names(private$gen)) {
         private$n_generated[[name]] <- env$get_n_generated(name)
       }
@@ -53,7 +51,7 @@ Wrap <- R6Class("wrap",
     now = function() private$now_val,
 
     peek = function(steps=1, verbose=F) {
-      check_args(steps, verbose, types=c("number", "flag"))
+      check_args(steps="number", verbose="flag")
       steps <- min(steps, nrow(private$peek_val))
       ret <- private$peek_val[0:steps, ]
       if (!verbose) ret$time
@@ -72,38 +70,31 @@ Wrap <- R6Class("wrap",
       }
     },
     get_mon_attributes = function() { private$attributes },
-    get_mon_resources = function(data=c("counts", "limits")) {
-      data <- match.arg(data, several.ok = TRUE)
-      if (all(c("counts", "limits") %in% data))
-        private$resources_all
-      else if (identical(data, "counts"))
-        private$resources_counts
-      else private$resources_limits
+    get_mon_resources = function() { private$resources },
+    get_n_generated = function(generator) {
+      if (!(generator %in% names(private$gen)))
+        stop("generator '", generator, "' not found")
+      private$n_generated[[generator]]
     },
-    get_n_generated = function(name) {
-      if (!(name %in% names(private$gen)))
-        stop("generator not found")
-      private$n_generated[[name]]
+    get_capacity = function(resource) {
+      if (!(resource %in% names(private$res)))
+        stop("resource '", resource, "' not found")
+      private$capacity[[resource]]
     },
-    get_capacity = function(name) {
-      if (!(name %in% names(private$res)))
-        stop("resource not found")
-      private$capacity[[name]]
+    get_queue_size = function(resource) {
+      if (!(resource %in% names(private$res)))
+        stop("resource '", resource, "' not found")
+      private$queue_size[[resource]]
     },
-    get_queue_size = function(name) {
-      if (!(name %in% names(private$res)))
-        stop("resource not found")
-      private$queue_size[[name]]
+    get_server_count = function(resource) {
+      if (!(resource %in% names(private$res)))
+        stop("resource '", resource, "' not found")
+      private$server_count[[resource]]
     },
-    get_server_count = function(name) {
-      if (!(name %in% names(private$res)))
-        stop("resource not found")
-      private$server_count[[name]]
-    },
-    get_queue_count = function(name) {
-      if (!(name %in% names(private$res)))
-        stop("resource not found")
-      private$queue_count[[name]]
+    get_queue_count = function(resource) {
+      if (!(resource %in% names(private$res)))
+        stop("resource '", resource, "' not found")
+      private$queue_count[[resource]]
     }
   ),
 
@@ -115,9 +106,7 @@ Wrap <- R6Class("wrap",
     arrivals = NA,
     arrivals_res = NA,
     attributes = NA,
-    resources_all = NA,
-    resources_counts = NA,
-    resources_limits = NA,
+    resources = NA,
     n_generated = list(),
     capacity = list(),
     queue_size = list(),

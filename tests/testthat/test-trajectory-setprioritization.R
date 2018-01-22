@@ -13,6 +13,24 @@ test_that("the wrong number of parameters fails", {
   expect_error(env %>% run)
 })
 
+test_that("prioritization values change", {
+  t0 <- trajectory() %>%
+    set_prioritization(c(1, 2, 0)) %>%
+    set_attribute(c("prio", "pree", "rest"), function() get_prioritization(env)) %>%
+    set_prioritization(c(2, 3, 1), mod="+") %>%
+    set_attribute(c("prio", "pree", "rest"), function() get_prioritization(env)) %>%
+    set_prioritization(c(2, 3, 0), mod="*") %>%
+    set_attribute(c("prio", "pree", "rest"), function() get_prioritization(env))
+
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("dummy", t0, at(0), mon=2)
+
+  attr <- env %>% run() %>% get_mon_attributes()
+
+  expect_equal(attr$key, rep(c("prio", "pree", "rest"), 3))
+  expect_equal(attr$value, c(1, 2, 0, 3, 5, 1, 6, 15, 0))
+})
+
 test_that("priority queues are adhered to (2)", {
   t0 <- trajectory() %>%
     seize("server", 1) %>%

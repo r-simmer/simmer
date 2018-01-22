@@ -33,8 +33,6 @@ test_that("the wrapper behaves as expected", {
   arrivals <- env %>% get_mon_arrivals(ongoing = FALSE)
   arrivals_res <- env %>% get_mon_arrivals(TRUE, ongoing = FALSE)
   attributes <- env %>% get_mon_attributes()
-  resources <- env %>% get_mon_resources("counts")
-  resources <- env %>% get_mon_resources("limits")
   resources <- env %>% get_mon_resources()
 
   expect_equal(nrow(arrivals), 10)

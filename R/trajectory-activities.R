@@ -54,6 +54,7 @@ release_selected.trajectory <- function(.trj, amount=1, id=0) .trj$release(NA, a
 #'
 #' @inheritParams seize
 #' @inheritParams select
+#' @inheritParams set_attribute
 #' @param resource the name of the resource.
 #' @param value new value to set.
 #'
@@ -62,31 +63,39 @@ release_selected.trajectory <- function(.trj, amount=1, id=0) .trj$release(NA, a
 #' \code{\link{seize_selected}}, \code{\link{release_selected}},
 #' \code{\link{get_capacity}}, \code{\link{get_queue_size}}.
 #' @export
-set_capacity <- function(.trj, resource, value) UseMethod("set_capacity")
+set_capacity <- function(.trj, resource, value, mod=c(NA, "+", "*"))
+  UseMethod("set_capacity")
 
 #' @export
-set_capacity.trajectory <- function(.trj, resource, value) .trj$set_capacity(resource, value)
-
-#' @rdname set_capacity
-#' @export
-set_capacity_selected <- function(.trj, value, id=0) UseMethod("set_capacity_selected")
-
-#' @export
-set_capacity_selected.trajectory <- function(.trj, value, id=0) .trj$set_capacity(NA, value, id)
+set_capacity.trajectory <- function(.trj, resource, value, mod=c(NA, "+", "*"))
+  .trj$set_capacity(resource, value, mod=mod)
 
 #' @rdname set_capacity
 #' @export
-set_queue_size <- function(.trj, resource, value) UseMethod("set_queue_size")
+set_capacity_selected <- function(.trj, value, id=0, mod=c(NA, "+", "*"))
+  UseMethod("set_capacity_selected")
 
 #' @export
-set_queue_size.trajectory <- function(.trj, resource, value) .trj$set_queue_size(resource, value)
+set_capacity_selected.trajectory <- function(.trj, value, id=0, mod=c(NA, "+", "*"))
+  .trj$set_capacity(NA, value, id, mod=mod)
 
 #' @rdname set_capacity
 #' @export
-set_queue_size_selected <- function(.trj, value, id=0) UseMethod("set_queue_size_selected")
+set_queue_size <- function(.trj, resource, value, mod=c(NA, "+", "*"))
+  UseMethod("set_queue_size")
 
 #' @export
-set_queue_size_selected.trajectory <- function(.trj, value, id=0) .trj$set_queue_size(NA, value, id)
+set_queue_size.trajectory <- function(.trj, resource, value, mod=c(NA, "+", "*"))
+  .trj$set_queue_size(resource, value, mod=mod)
+
+#' @rdname set_capacity
+#' @export
+set_queue_size_selected <- function(.trj, value, id=0, mod=c(NA, "+", "*"))
+  UseMethod("set_queue_size_selected")
+
+#' @export
+set_queue_size_selected.trajectory <- function(.trj, value, id=0, mod=c(NA, "+", "*"))
+  .trj$set_queue_size(NA, value, id, mod=mod)
 
 #' Select Resources
 #'
@@ -130,7 +139,30 @@ select.trajectory <- function(.trj, resources, policy=c("shortest-queue", "round
 timeout <- function(.trj, task) UseMethod("timeout")
 
 #' @export
-timeout.trajectory <- function(.trj, task) .trj$timeout(task)
+timeout.trajectory <- function(.trj, task) {
+  check_args(task=c("number", "function"))
+  .trj$timeout(task)
+}
+
+#' @rdname timeout
+#' @inheritParams set_attribute
+#' @param key the attribute name, or a callable object (a function) which
+#' must return the attribute name.
+#' @export
+timeout_from_attribute <- function(.trj, key, global=FALSE)
+  UseMethod("timeout_from_attribute")
+
+#' @export
+timeout_from_attribute.trajectory <- function(.trj, key, global=FALSE) {
+  check_args(key="string", global="flag")
+  .trj$timeout(key, global)
+}
+
+#' @rdname timeout
+#' @details \code{timeout_from_global} is a shortcut for
+#' \code{timeout_from_attribute(global=TRUE)}.
+#' @export
+timeout_from_global <- function(.trj, key) timeout_from_attribute(.trj, key, TRUE)
 
 #' Set Attributes
 #'
@@ -142,21 +174,23 @@ timeout.trajectory <- function(.trj, task) .trj$timeout(task)
 #' @param values numeric value(s) to set, or a callable object (a function) which
 #' must return numeric value(s).
 #' @param global if \code{TRUE}, the attribute will be global instead of per-arrival.
-#'
-#' @details \code{set_global} is a shortcut for \code{set_attribute(global=TRUE)}.
+#' @param mod if set, \code{values} modify the attributes rather than substituting them.
 #'
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{get_attribute}}.
 #' @export
-set_attribute <- function(.trj, keys, values, global=FALSE) UseMethod("set_attribute")
+set_attribute <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"))
+  UseMethod("set_attribute")
 
 #' @export
-set_attribute.trajectory <- function(.trj, keys, values, global=FALSE)
-  .trj$set_attribute(keys, values, global)
+set_attribute.trajectory <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"))
+  .trj$set_attribute(keys, values, global, mod=mod)
 
 #' @rdname set_attribute
+#' @details \code{set_global} is a shortcut for \code{set_attribute(global=TRUE)}.
 #' @export
-set_global <- function(.trj, keys, values) set_attribute(.trj, keys, values, TRUE)
+set_global <- function(.trj, keys, values, mod=c(NA, "+", "*"))
+  set_attribute(.trj, keys, values, TRUE, mod=mod)
 
 #' Activate/Deactivate Generators
 #'
@@ -212,6 +246,7 @@ set_distribution.trajectory <- function(.trj, generator, distribution)
 #' Activity for modifying an arrival's prioritization values.
 #'
 #' @inheritParams seize
+#' @inheritParams set_attribute
 #' @param values expects either a vector/list or a callable object (a function)
 #' returning a vector/list of three values \code{c(priority, preemptible, restart)}.
 #' A negative value leaves the corresponding parameter unchanged.
@@ -220,10 +255,12 @@ set_distribution.trajectory <- function(.trj, generator, distribution)
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{get_prioritization}}.
 #' @export
-set_prioritization <- function(.trj, values) UseMethod("set_prioritization")
+set_prioritization <- function(.trj, values, mod=c(NA, "+", "*"))
+  UseMethod("set_prioritization")
 
 #' @export
-set_prioritization.trajectory <- function(.trj, values) .trj$set_prioritization(values)
+set_prioritization.trajectory <- function(.trj, values, mod=c(NA, "+", "*"))
+  .trj$set_prioritization(values, mod=mod)
 
 #' Fork the Trajectory Path
 #'
