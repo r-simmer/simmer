@@ -65,8 +65,8 @@ navbar:
     menu:
       - text: "Introduction to simmer"
         href: articles/simmer-01-introduction.html
-      - text: "Terminology"
-        href: articles/simmer-02-terminology.html
+      - text: "JSS paper"
+        href: articles/simmer-02-jss.html
       - text: "Advanced Trajectory Usage"
         href: articles/simmer-03-trajectories.html
       - text: "The Bank Tutorial: Part I"
@@ -88,9 +88,9 @@ navbar:
     icon: fa-puzzle-piece
     menu:
       - text: "simmer.plot"
-        href: extensions/plot
+        href: /extensions/plot
       - text: "simmer.bricks"
-        href: https://github.com/r-simmer/simmer.bricks
+        href: /extensions/bricks
       - text: "simmer.optim"
         href: https://github.com/r-simmer/simmer.optim
       - text: "simmer.json"
