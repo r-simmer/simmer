@@ -1,0 +1,97 @@
+---
+title: "Design and Analysis of 5G Scenarios"
+author: "Iñaki Ucar, José Alberto Hernández, Pablo Serrano, Arturo Azcorra"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Design and Analysis of 5G Scenarios}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, cache=FALSE, include=FALSE}
+knitr::opts_chunk$set(collapse=TRUE, echo=TRUE, eval=FALSE)
+knitr::read_chunk("includes/5G-1.R")
+knitr::read_chunk("includes/5G-2.R")
+knitr::read_chunk("includes/5G-3.R")
+```
+
+## Crosshauling of FH and BH traffic
+
+<div style="text-align:center">
+![](includes/5G-1-scenario.png)
+</div>
+
+### Configuration
+
+```{r 1.configuration}
+```
+
+### Simulation
+
+```{r 1.simulation}
+```
+
+### Analysis
+
+```{r 1.analysis}
+```
+
+<div style="text-align:center">
+![](includes/5G-1-results-a.png){width=47%} ![](includes/5G-1-results-b.png){width=47%}
+</div>
+
+## Mobile traffic backhauling with FTTx
+
+<div style="text-align:center">
+![](includes/5G-2-scenario.png)
+</div>
+
+### Configuration
+
+```{r 2.configuration}
+```
+
+### Simulation
+
+```{r 2.helpers}
+```
+
+```{r 2.simulation}
+```
+
+### Analysis
+
+```{r 2.analysis}
+```
+
+<div style="text-align:center">
+![](includes/5G-2-results.png)
+</div>
+
+## Energy efficiency for massive IoT
+
+<div style="text-align:center">
+![](includes/5G-3-scenario.png)
+</div>
+
+### Configuration
+
+```{r 3.configuration}
+```
+
+### Simulation
+
+```{r 3.simulation}
+```
+
+### Analysis
+
+```{r 3.analysis}
+```
+
+<div style="text-align:center">
+![](includes/5G-3-results.png)
+</div>
