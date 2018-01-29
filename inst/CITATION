@@ -14,3 +14,19 @@ citEntry(
                        "simmer: Discrete-Event Simulation for R.",
                        "Journal of Statistical Software, accepted for publication.")
 )
+
+citEntry(
+  entry        = "Article",
+  title        = "Design and Analysis of 5G Scenarios with {simmer}: An {R} Package for Fast DES Prototyping",
+  author       = personList(as.person("Iñaki Ucar"),
+                            as.person("José Alberto Hernández"),
+                            as.person("Pablo Serrano"),
+                            as.person("Arturo Azcorra")),
+  year         = "2018",
+  journal      = "IEEE Communications Magazine",
+  volume       = "accepted for publication",
+
+  textVersion  = paste("Iñaki Ucar, José Alberto Hernández, Pablo Serrano and Arturo Azcorra (2018).",
+                       "Design and Analysis of 5G Scenarios with simmer: An R Package for Fast DES Prototyping.",
+                       "IEEE Communications Magazine, accepted for publication.")
+)
