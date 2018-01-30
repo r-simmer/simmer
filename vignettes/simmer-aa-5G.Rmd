@@ -18,23 +18,33 @@ knitr::read_chunk("includes/5G-2.R")
 knitr::read_chunk("includes/5G-3.R")
 ```
 
+## Abstract
+
+> Simulation frameworks are important tools for the analysis and design of communication networks and protocols, but they can result extremely costly and/or complex (for the case of very specialized tools), or too naive and lacking proper features and support (for the case of ad-hoc tools). In this paper, we present an analysis of three 5G scenarios using `simmer`, a recent R package for discrete-event simulation that sits between the above two paradigms. As our results show, it provides a simple yet very powerful syntax, supporting the efficient simulation of relatively complex scenarios at a low implementation cost.
+
+This vignette contains the code associated to the article _Design and Analysis of 5G Scenarios with `simmer`: An R Package for Fast DES Prototyping_ (see the [draft version on arXiv](https://arxiv.org/abs/1801.09664)), published in the IEEE Communications Magazine (see `citation("simmer")`). Refer to the article for a full description and analysis of each scenario.
+
 ## Crosshauling of FH and BH traffic
+
+This scenario is motivated by the Cloud Radio Access Network (C-RAN) paradigm, where the mobile base station functionality is split into simple Remote Radio Heads (RRH), spread across the deployment and connected by fiber to centralized (and possibly virtualized) Base-Band Units (BBU), at the operators' premises.
+
+In this C-RAN paradigm, fronthaul (FH) traffic from the RRH has stringent delay requirements, while backhaul (BH) traffic from the BBU has mild delay requirements. In a general topology, such as the one illustrated in the figure, packet switches will forward both types of traffic. We use `simmer` to simulate the scenario and decide whether introducing service differentiation might improve the ability to fulfil the delivery guarantees of FH traffic.
 
 <div style="text-align:center">
 ![](includes/5G-1-scenario.png)
 </div>
 
-### Configuration
+These are the configuration parameters considered:
 
 ```{r 1.configuration}
 ```
 
-### Simulation
+The model is defined and encapsulated into the `simulate` function. Then, several scenarios with different parameters are defined in `cases`, which can be run in parallel:
 
 ```{r 1.simulation}
 ```
 
-### Analysis
+Finally, the information is extracted, summarised and represented in a few lines of code:
 
 ```{r 1.analysis}
 ```
@@ -45,16 +55,23 @@ knitr::read_chunk("includes/5G-3.R")
 
 ## Mobile traffic backhauling with FTTx
 
+We next consider the case of a residencial area with a Fiber-To-The-Premises (FTTx) infrastructure, that is, an Optical Distribution Network (ODN), composed of the Optical Line Terminal (OLT), splitters, and the Optical Network Unit (ONU) at the users' premises. As the figure illustrates, we assume that an operator is planning to deploy an antenna, carrying the mobile traffic over the ODN, and is considering two implementation options:
+
+- Deployment of a Small Cell, reducing the amount and requirements of the generated traffic.
+- Deployment of an RRH, following the C-RAN paradigm discussed above, which would therefore generate time-sensitive FH traffic.
+
+In both cases, we analyze the upstream channel of a Time-Division Multiplexed Passive Optical Network (TDM-PON) providing broadband access to the residential users and the mobile users.
+
 <div style="text-align:center">
 ![](includes/5G-2-scenario.png)
 </div>
 
-### Configuration
+These are the configuration parameters considered:
 
 ```{r 2.configuration}
 ```
 
-### Simulation
+The model is defined and encapsulated into the `simulate` function. Then, several scenarios with different parameters are defined in `cases`, which can be run in parallel:
 
 ```{r 2.helpers}
 ```
@@ -62,7 +79,7 @@ knitr::read_chunk("includes/5G-3.R")
 ```{r 2.simulation}
 ```
 
-### Analysis
+Finally, the information is extracted, summarised and represented in a few lines of code:
 
 ```{r 2.analysis}
 ```
@@ -73,21 +90,23 @@ knitr::read_chunk("includes/5G-3.R")
 
 ## Energy efficiency for massive IoT
 
+Finally, we consider the case of a massive Internet-of-Things (mIoT) scenario, a use case for Long Term Evolution (LTE) and next-generation 5G networks, as defined by the Third Generation Partnership Project (3GPP). As the figure (left) illustrates, we consider a single LTE macrocell in a dense urban area. The buildings in the cell area are populated with $N$ smart meters (for electricity, gas and water), and each meter operates independently as a Narrowband IoT (NB-IoT) device. The devices' behaviour is modeled following the diagram depicted in the figure (right).
+
 <div style="text-align:center">
 ![](includes/5G-3-scenario.png)
 </div>
 
-### Configuration
+These are the configuration parameters considered:
 
 ```{r 3.configuration}
 ```
 
-### Simulation
+The model is defined and encapsulated into the `simulate` function. Then, several scenarios with different parameters are defined in `cases`, which can be run in parallel:
 
 ```{r 3.simulation}
 ```
 
-### Analysis
+Finally, the information is extracted, summarised and represented in a few lines of code:
 
 ```{r 3.analysis}
 ```

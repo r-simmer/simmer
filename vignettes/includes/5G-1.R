@@ -22,25 +22,25 @@ library(simmer)
 set.seed(1234)
 
 # parametrized simulation function
-# - param[["n_XPFE"]] is the number of XPFEs
+# - param[["n_switch"]] is the number of switches
 # - param[["fh_prio"]] is the priority level for FH traffic
-# - param[["preemptive"]] is the preemptiveness flag for XPFEs
+# - param[["preemptive"]] is the preemptiveness flag for switches
 simulate <- function(param) {
 
-  # single FH traffic trajectory traversing n_XPFE elements sequentially
-  fh_traffic <- lapply(1:param[["n_XPFE"]], function(i) {
+  # single FH traffic trajectory traversing n_switch elements sequentially
+  fh_traffic <- lapply(1:param[["n_switch"]], function(i) {
     trajectory() %>%
-      seize(paste0("XPFE", i)) %>%
+      seize(paste0("switch", i)) %>%
       timeout(FH_EX) %>%
-      release(paste0("XPFE", i))
+      release(paste0("switch", i))
   }) %>% join()
 
-  # list of n_XPFE trajectories, one per element, modeling the interfering BH traffic
-  bh_traffic <- lapply(1:param[["n_XPFE"]], function(i) {
+  # list of n_switch trajectories, one per element, modeling the interfering BH traffic
+  bh_traffic <- lapply(1:param[["n_switch"]], function(i) {
     trajectory() %>%
-      seize(paste0("XPFE", i)) %>%
+      seize(paste0("switch", i)) %>%
       timeout(function() sample(BH_bytes*8/C, size=1, prob=Weights)) %>%
-      release(paste0("XPFE", i))
+      release(paste0("switch", i))
   })
 
   # simulation environment
@@ -48,11 +48,11 @@ simulate <- function(param) {
     # generator of FH traffic
     add_generator("FH_0_", fh_traffic, function() rexp(100, FH_lambda), priority=param[["fh_prio"]])
 
-  for (i in 1:param[["n_XPFE"]])
+  for (i in 1:param[["n_switch"]])
     env %>%
-      # n_XPFE resources, one per XPFE
-      add_resource(paste0("XPFE", i), 1, Inf, mon=FALSE, preemptive=param[["preemptive"]]) %>%
-      # n_XPFE generators of BH traffic
+      # n_switch resources, one per switch
+      add_resource(paste0("switch", i), 1, Inf, mon=FALSE, preemptive=param[["preemptive"]]) %>%
+      # n_switch generators of BH traffic
       add_generator(paste0("BH_", i, "_"), bh_traffic[[i]], function() rexp(100, BH_lambda))
 
   env %>%
@@ -61,7 +61,7 @@ simulate <- function(param) {
 }
 
 # grid of scenarios
-cases <- expand.grid(n_XPFE = c(1, 2, 5),
+cases <- expand.grid(n_switch = c(1, 2, 5),
                      fh_prio = c(0, 1),
                      preemptive = c(TRUE, FALSE))
 
@@ -94,7 +94,7 @@ arrivals <- envs %>%
            "with SP & preemption" = "1.TRUE"))
 
 arrivals %>%
-  filter(n_XPFE == 1) %>%
+  filter(n_switch == 1) %>%
   # plot
   ggplot(aes(Queue, waiting_time*1e9, color=Flow)) + theme_bw() +
   stat_summary(fun.data=bp.vals, geom="boxplot", position="dodge") +
@@ -104,7 +104,7 @@ arrivals %>%
 arrivals %>%
   filter(Flow == "FH") %>%
   # plot
-  ggplot(aes(factor(n_XPFE), waiting_time*1e9, color=Queue)) + theme_bw() +
+  ggplot(aes(factor(n_switch), waiting_time*1e9, color=Queue)) + theme_bw() +
   stat_summary(fun.data=bp.vals, geom="boxplot", position="dodge") +
   theme(legend.justification=c(0, 1), legend.position=c(.02, .98)) +
-  labs(y = "Queueing Delay [ns]", x = "No. of XPFEs")
+  labs(y = "Queueing Delay [ns]", x = "No. of switches")

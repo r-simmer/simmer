@@ -13,6 +13,7 @@
 * Broadcast signals with higher priority to prevent an arrival to catch its own signal with a `trap()` after a `send()` (#135).
 * Generate new arrivals with minimum priority to avoid wrong interactions with simultaneous activities (#136).
 * Remove `get_mon_resources()`'s `data` argument. It was there for historical reasons and probably nobody was using it (851d34b).
+* New vignette: code associated to a paper accepted for publication in the IEEE Communications Magazine (#137).
 
 # simmer 3.6.5
 
