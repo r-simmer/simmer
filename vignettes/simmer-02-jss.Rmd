@@ -43,7 +43,7 @@ classoption: nojss
 citation_package: natbib
 bibliography: jss.bib
 vignette: >
-  %\VignetteIndexEntry{JSS paper}
+  %\VignetteIndexEntry{02. JSS paper}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

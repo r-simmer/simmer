@@ -66,7 +66,7 @@ navbar:
       - text: "Introduction to simmer"
         href: articles/simmer-01-introduction.html
       - text: "JSS paper"
-        href: articles/simmer-02-jss.html
+        href: articles/simmer-02-jss.pdf
       - text: "Advanced Trajectory Usage"
         href: articles/simmer-03-trajectories.html
       - text: "The Bank Tutorial: Part I"
@@ -81,6 +81,8 @@ navbar:
         href: articles/simmer-07-ctmc.html
       - text: "Dining Philosophers Problem"
         href: articles/simmer-08-philosophers.html
+      - text: "Design and Analysis of 5G Scenarios"
+        href: articles/simmer-aa-5G.html
   - text: "News"
     icon: fa-newspaper-o
     href: news/index.html
@@ -88,9 +90,9 @@ navbar:
     icon: fa-puzzle-piece
     menu:
       - text: "simmer.plot"
-        href: /extensions/plot
+        href: extensions/plot
       - text: "simmer.bricks"
-        href: /extensions/bricks
+        href: extensions/bricks
       - text: "simmer.optim"
         href: https://github.com/r-simmer/simmer.optim
       - text: "simmer.json"

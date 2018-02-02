@@ -6,7 +6,7 @@ output:
   rmarkdown::html_vignette:
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{Design and Analysis of 5G Scenarios}
+  %\VignetteIndexEntry{AA. Design and Analysis of 5G Scenarios}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
