@@ -13,7 +13,7 @@
 | Package          | Description                                     | Status
 | ---------------- | ----------------------------------------------- | ------------------
 | [**simmer.plot**](http://r-simmer.org/extensions/plot)  |  Plotting Methods for 'simmer' | [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/simmer.plot)](https://cran.r-project.org/package=simmer.plot)
-| [**simmer.bricks**](http://r-simmer.org/extensions/simmer.bricks)  |  Helper Methods for 'simmer' Trajectories | [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/simmer.bricks)](https://cran.r-project.org/package=simmer.bricks)
+| [**simmer.bricks**](http://r-simmer.org/extensions/bricks)  |  Helper Methods for 'simmer' Trajectories | [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/simmer.bricks)](https://cran.r-project.org/package=simmer.bricks)
 | [**simmer.optim**](https://github.com/r-simmer/simmer.optim) | Parameter Optimization Functions for 'simmer' | [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/simmer.optim)](https://cran.r-project.org/package=simmer.optim)
 | [**simmer.json**](https://github.com/r-simmer/simmer.json)  | Read / Load 'simmer' Definitions in JSON Format | [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/simmer.json)](https://cran.r-project.org/package=simmer.json)
 
