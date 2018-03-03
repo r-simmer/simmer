@@ -8,12 +8,12 @@
 
 ## Minor changes and fixes:
 
-* Remove v3.6.x deprecations: the old attribute retrieval system (see notes for v3.6.3), as well as methods `create_trajectory()` and `onestep()` (#117).
-* New vignette: a paper accepted for publication in the Journal of Statistical Software. Remove "Terminology" vignette (#127).
 * Broadcast signals with higher priority to prevent an arrival to catch its own signal with a `trap()` after a `send()` (#135).
 * Generate new arrivals with minimum priority to avoid wrong interactions with simultaneous activities (#136).
+* Remove v3.6.x deprecations: the old attribute retrieval system (see notes for v3.6.3), as well as methods `create_trajectory()` and `onestep()` (#117).
 * Remove `get_mon_resources()`'s `data` argument. It was there for historical reasons and probably nobody was using it (851d34b).
-* New vignette: code associated to a paper accepted for publication in the IEEE Communications Magazine (#137).
+* New vignette, "simmer: Discrete-Event Simuation for R", paper accepted for publication in the Journal of Statistical Software. Remove "Terminology" vignette (#127).
+* New vignette, "Design and Analysis of 5G Scenarios", supplementary materials for a paper accepted for publication in the IEEE Communications Magazine (#137).
 
 # simmer 3.6.5
 
