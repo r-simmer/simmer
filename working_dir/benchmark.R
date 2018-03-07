@@ -10,7 +10,9 @@ install_required <- function(pkgs) {
 install_required(c("git2r", "ggplot2"))
 
 tmp <- file.path(getwd(), "working_dir/tmp")
-tags <- git2r::tags()[-c(1:7)] # from 3.3.0 on
+tags <- git2r::tags()
+version <- package_version(gsub("v", "", names(tags)))
+tags <- tags[version$major >= 3 & version$minor >= 3] # from 3.3.0 on
 
 ## load saved data and filter out existing tags
 benchmark <- NULL
