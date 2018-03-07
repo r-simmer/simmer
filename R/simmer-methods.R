@@ -6,35 +6,45 @@
 #' @param verbose enable showing activity information.
 #'
 #' @return Returns a simulation environment.
-#' @seealso Methods for dealing with a simulation environment:
-#' \code{\link{reset}}, \code{\link{now}}, \code{\link{peek}}, \code{\link{stepn}}, \code{\link{run}},
-#' \code{\link{add_resource}}, \code{\link{add_generator}}, \code{\link{get_mon_arrivals}},
-#' \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}, \code{\link{get_n_generated}},
-#' \code{\link{get_capacity}}, \code{\link{get_queue_size}},
-#' \code{\link{get_server_count}}, \code{\link{get_queue_count}}.
+#' @seealso
+#' Available methods by category:
+#' \itemize{
+#'
+#' \item Simulation control: \code{\link{stepn}}, \code{\link{run}},
+#' \code{\link{now}}, \code{\link{peek}}, \code{\link{reset}}
+#'
+#' \item Resources: \code{\link{add_resource}}, \code{\link{get_capacity}},
+#' \code{\link{get_queue_size}}, \code{\link{get_server_count}},
+#' \code{\link{get_queue_count}}, \code{\link{get_capacity_selected}},
+#' \code{\link{get_queue_size_selected}}, \code{\link{get_server_count_selected}},
+#' \code{\link{get_queue_count_selected}}
+#'
+#' \item Generators: \code{\link{add_generator}}, \code{\link{get_n_generated}}
+#'
+#' \item Data retrieval: \code{\link{get_mon_arrivals}},
+#' \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}
+#'
+#' }
+#'
 #' @export
 #'
 #' @examples
+#' ## a simple trajectory that prints a message
 #' t0 <- trajectory("my trajectory") %>%
-#'   ## add an intake activity
-#'   seize("nurse", 1) %>%
-#'   timeout(function() rnorm(1, 15)) %>%
-#'   release("nurse", 1) %>%
-#'   ## add a consultation activity
-#'   seize("doctor", 1) %>%
-#'   timeout(function() rnorm(1, 20)) %>%
-#'   release("doctor", 1) %>%
-#'   ## add a planning activity
-#'   seize("administration", 1) %>%
-#'   timeout(function() rnorm(1, 5)) %>%
-#'   release("administration", 1)
+#'   log_("arrival generated")
 #'
-#' env <- simmer("SuperDuperSim") %>%
-#'   add_resource("nurse", 1) %>%
-#'   add_resource("doctor", 2) %>%
-#'   add_resource("administration", 1) %>%
-#'   add_generator("patient", t0, function() rnorm(1, 10, 2)) %>%
-#'   run(until=80)
+#' ## create an empty simulation environment
+#' env <- simmer("SuperDuperSim")
+#' env
+#'
+#' ## add a generator and attach it to the trajectory above
+#' env %>% add_generator("dummy", t0, function() 1)
+#'
+#' ## run for some time
+#' env %>% run(until=4.5)
+#' env %>% now()           # current simulation time
+#' env %>% peek()          # time for the next event
+#' env %>% stepn()         # execute next event
 #'
 simmer <- function(name="anonymous", verbose=FALSE) Simmer$new(name, verbose)
 
