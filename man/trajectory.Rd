@@ -16,51 +16,67 @@ Returns an environment that represents the trajectory.
 }
 \description{
 This method initialises a trajectory object, which comprises a chain of
-activities that can be attached to a generator.
+activities that can be attached to a generator. See below for a complete list
+of available activities by category.
 }
 \examples{
-t0 <- trajectory("my trajectory") \%>\%
-  ## add an intake activity
-  seize("nurse", 1) \%>\%
-  timeout(function() rnorm(1, 15)) \%>\%
-  release("nurse", 1) \%>\%
-  ## add a consultation activity
-  seize("doctor", 1) \%>\%
-  timeout(function() rnorm(1, 20)) \%>\%
-  release("doctor", 1) \%>\%
-  ## add a planning activity
-  seize("administration", 1) \%>\%
-  timeout(function() rnorm(1, 5)) \%>\%
-  release("administration", 1)
+## create an empty trajectory
+x <- trajectory("my trajectory")
+x
 
-t0
+## add some activities by chaining them
+x <- x \%>\%
+  log_("here I am!") \%>\%
+  timeout(5) \%>\%
+  log_("leaving!")
+x
 
-t1 <- trajectory("trajectory with a branch") \%>\%
-  seize("server", 1) \%>\%
-  # 50-50 chance for each branch
-  branch(function() sample(1:2, 1), continue=c(TRUE, FALSE),
-    trajectory("branch1") \%>\%
-      timeout(function() 1),
-    trajectory("branch2") \%>\%
-      timeout(function() rexp(1, 3)) \%>\%
-      release("server", 1)
-  ) \%>\%
-  # only the first branch continues here
-  release("server", 1) \%>\%
-  timeout(function() 2)
+## join trajectories
+x <- join(x, x)
 
-t1
+## extract and replace
+x[c(3, 4)] <- x[2]
+x
+
 }
 \seealso{
-Methods for dealing with trajectories:
-\code{\link{[.trajectory}}, \code{\link{[[.trajectory}}, \code{\link{length.trajectory}},
-\code{\link{get_n_activities}}, \code{\link{join}}, \code{\link{seize}}, \code{\link{release}},
-\code{\link{seize_selected}}, \code{\link{release_selected}}, \code{\link{select}},
+Available activities by category:
+\itemize{
+
+\item Debugging: \code{\link{log_}}
+
+\item Delays: \code{\link{timeout}}, \code{\link{timeout_from_attribute}},
+\code{\link{timeout_from_global}}
+
+\item Arrival properties: \code{\link{set_attribute}}, \code{\link{set_global}},
+\code{\link{set_prioritization}}
+
+\item Interaction with resources: \code{\link{select}}, \code{\link{seize}},
+\code{\link{release}}, \code{\link{seize_selected}}, \code{\link{release_selected}},
 \code{\link{set_capacity}}, \code{\link{set_queue_size}}, \code{\link{set_capacity_selected}},
-\code{\link{set_queue_size_selected}}, \code{\link{set_prioritization}}, \code{\link{activate}},
-\code{\link{deactivate}}, \code{\link{set_trajectory}}, \code{\link{set_distribution}},
-\code{\link{set_attribute}}, \code{\link{timeout}}, \code{\link{branch}}, \code{\link{rollback}},
-\code{\link{leave}}, \code{\link{renege_in}}, \code{\link{renege_if}}, \code{\link{renege_abort}},
-\code{\link{clone}}, \code{\link{synchronize}}, \code{\link{batch}}, \code{\link{separate}},
-\code{\link{send}}, \code{\link{trap}}, \code{\link{untrap}}, \code{\link{wait}}, \code{\link{log_}}.
+\code{\link{set_queue_size_selected}}
+
+\item Interaction with generators: \code{\link{activate}}, \code{\link{deactivate}},
+\code{\link{set_trajectory}}, \code{\link{set_distribution}}
+
+\item Branching: \code{\link{branch}}, \code{\link{clone}}, \code{\link{synchronize}}
+
+\item Loops: \code{\link{rollback}}
+
+\item Batching: \code{\link{batch}}, \code{\link{separate}}
+
+\item Asynchronous programming: \code{\link{send}}, \code{\link{trap}},
+\code{\link{untrap}}, \code{\link{wait}}
+
+\item Reneging: \code{\link{leave}}, \code{\link{renege_in}}, \code{\link{renege_if}},
+\code{\link{renege_abort}}
+
+}
+
+Manage trajectories:
+\itemize{
+\item Extract or Replace Parts of a Trajectory: \code{\link{Extract.trajectory}}
+\item Join Trajectories: \code{\link{join}}
+\item Number of Activities in a Trajectory: \code{\link{length.trajectory}}, \code{\link{get_n_activities}}
+}
 }

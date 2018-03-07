@@ -20,14 +20,17 @@ t1 <- trajectory() \%>\% seize("dummy", 1)
 t2 <- trajectory() \%>\% timeout(1)
 t3 <- trajectory() \%>\% release("dummy", 1)
 
+## join can be used alone
 join(t1, t2, t3)
 
+## or can be chained in a trajectory definition
 trajectory() \%>\%
   join(t1) \%>\%
   timeout(1) \%>\%
   join(t3)
+
 }
 \seealso{
-\code{\link{[.trajectory}}, \code{\link{[[.trajectory}}, \code{\link{length.trajectory}},
+\code{\link{Extract.trajectory}}, \code{\link{length.trajectory}},
 \code{\link{get_n_activities}}.
 }
