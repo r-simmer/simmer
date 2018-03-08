@@ -1,6 +1,7 @@
 template:
   params:
     bootswatch: yeti
+    ganalytics: UA-115358925-1
 
 reference:
   - title: "Build and manage trajectories"
