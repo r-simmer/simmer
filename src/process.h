@@ -109,7 +109,7 @@ public:
    * @param order           priority, preemptible, restart
    */
   Generator(Simulator* sim, const std::string& name_prefix, int mon,
-            const Rcpp::Environment& trj, const Rcpp::Function& dist, const Order& order)
+            const REnv& trj, const RFn& dist, const Order& order)
     : Process(sim, name_prefix, mon, PRIORITY_MIN), count(0), trj(trj),
       dist(dist), order(order), first_activity(NULL) { set_first_activity(); }
 
@@ -118,23 +118,23 @@ public:
    */
   void reset() {
     count = 0;
-    Rcpp::Function reset_fun(dist.attr("reset"));
+    RFn reset_fun(dist.attr("reset"));
     reset_fun();
   }
 
   void run();
 
   int get_n_generated() const { return count; }
-  void set_trajectory(const Rcpp::Environment& new_trj) {
+  void set_trajectory(const REnv& new_trj) {
     trj = new_trj;
     set_first_activity();
   }
-  void set_distribution(const Rcpp::Function& new_dist) { dist = new_dist; }
+  void set_distribution(const RFn& new_dist) { dist = new_dist; }
 
 private:
   int count;                /**< number of arrivals generated */
-  Rcpp::Environment trj;
-  Rcpp::Function dist;
+  REnv trj;
+  RFn dist;
   Order order;
   Activity* first_activity;
 

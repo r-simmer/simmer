@@ -41,6 +41,8 @@ is_trajectory <- function(name, env) {
   else inherits(env[[name]], "trajectory")
 }
 
+is_data.frame <- function(name, env) is.data.frame(env[[name]])
+
 is_simmer <- function(name, env) inherits(env[[name]], "simmer")
 
 is_schedule <- function(name, env) inherits(env[[name]], "schedule")
@@ -75,7 +77,7 @@ check_args <- function(..., env.=parent.frame()) {
   }
 
   if (length(msg))
-    stop(paste0(get_caller(), ": ", paste0(msg, collapse=", ")), call. = FALSE)
+    stop(get_caller(), ": ", paste0(msg, collapse=", "), call.=FALSE)
 }
 
 envs_apply <- function(envs, method, ...) {
