@@ -1,4 +1,4 @@
-context("set_trajectory/set_distribution")
+context("set_trajectory/set_source")
 
 test_that("we can set a new trajectory", {
   t2 <- trajectory() %>%
@@ -18,7 +18,7 @@ test_that("we can set a new trajectory", {
 
 test_that("we can set a new distribution", {
   t <- trajectory() %>%
-    set_distribution("dummy", function() 2)
+    set_source("dummy", function() 2)
 
   env <- simmer(verbose = TRUE) %>%
     add_generator("dummy", t, function() 1) %>%
@@ -33,13 +33,13 @@ test_that("other activities cannot modify the behaviour", {
     timeout(1)
 
   t2 <- trajectory() %>%
-    set_distribution("dummy", function() 1) %>%
+    set_source("dummy", function() 1) %>%
     set_trajectory("dummy", t1) %>%
     timeout(2)
 
   t3 <- trajectory() %>%
     set_attribute("asdf", 1) %>%
-    set_distribution("dummy", function() 1) %>%
+    set_source("dummy", function() 1) %>%
     set_trajectory("dummy", t1) %>%
     timeout(2)
 

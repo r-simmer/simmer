@@ -17,7 +17,7 @@ t0 <- trajectory(verbose = TRUE) %>%
   activate(function() "dummy") %>%
   deactivate(function() "dummy") %>%
   set_trajectory(function() "dummy", trajectory(verbose = TRUE) %>% timeout(1)) %>%
-  set_distribution(function() "dummy", at(0)) %>%
+  set_source(function() "dummy", at(0)) %>%
   rollback(1) %>%
   clone(function() 2, trajectory(verbose = TRUE) %>% timeout(1)) %>%
   synchronize() %>%
@@ -55,7 +55,7 @@ trajs <- c(
   trajectory(verbose = TRUE) %>% set_trajectory(function() "dummy",
                                                 trajectory(verbose = TRUE) %>%
                                                   timeout(1)),
-  trajectory(verbose = TRUE) %>% set_distribution(function() "dummy", at(0)),
+  trajectory(verbose = TRUE) %>% set_source(function() "dummy", at(0)),
   trajectory(verbose = TRUE) %>% rollback(1),
   trajectory(verbose = TRUE) %>% clone(function() 2,
                                        trajectory(verbose = TRUE) %>% timeout(1)),
@@ -157,22 +157,22 @@ test_that("the trajectory stores the right number of activities", {
   output <- paste0(".*(",
     "15 activities",
     ".*Seize.*nurse.*1",
-    ".*Timeout.*0x",
+    ".*Timeout.*function",
     ".*Release.*nurse.*1",
     ".*Branch.*1",
       ".*7 activities",
-      ".*Seize.*doctor.*0x",
-      ".*Timeout.*0x",
-      ".*Release.*doctor.*0x",
+      ".*Seize.*doctor.*function",
+      ".*Timeout.*function",
+      ".*Release.*doctor.*function",
       ".*Branch.*1",
         ".*3 activities",
         ".*Seize.*administration.*1",
         ".*Timeout.*1",
         ".*Release.*administration.*1",
     ".*Rollback.*1.*Branch.*1",
-    ".*Rollback.*1.*Rollback.*0x",
+    ".*Rollback.*1.*Rollback.*function",
     ".*SetAttribute.*1",
-    ".*SetAttribute.*0x",
+    ".*SetAttribute.*function",
   ").*")
 
   expect_output(print(t0), output)
