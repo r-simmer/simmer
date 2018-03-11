@@ -27,10 +27,27 @@ system.time({
 
   env <- simmer(verbose=F) %>%
     add_resource("server", 1) %>%
-    add_generator("customer", mm1, function() rexp(100, 60), mon=F) %>%
+    add_generator("customer", mm1, function() rexp(50, 60), mon=F) %>%
     run(10000, progress=progress::progress_bar$new()$update)
 })
 # (Simpy: 30 seconds)
 # 16 seconds with R 3.3.x
+
+system.time({
+  input <- data.frame(
+    time = rexp(10000*60, 60),
+    service = rexp(10000*60, 66)
+  )
+
+  mm1 <- trajectory() %>%
+    seize("server", 1) %>%
+    timeout_from_attribute("service") %>%
+    release("server", 1)
+
+  env <- simmer(verbose=F) %>%
+    add_resource("server", 1)
+  env $ add_data("customer", mm1, input, mon=F, batch=50)
+  run(env, 10000, progress=progress::progress_bar$new()$update)
+})
 
 plot(env, "res", "usage", "server")
