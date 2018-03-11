@@ -14,10 +14,7 @@ bool Process::deactivate() {
   return true;
 }
 
-void Generator::set_first_activity() {
-  RFn head(trj["head"]);
-  first_activity = Rcpp::as<Rcpp::XPtr<Activity> >(head());
-}
+Activity* trj_head(const REnv& trj) { return trj_get(trj, "head"); }
 
 void Generator::run() {
   // get the delay for the next (n) arrival(s)

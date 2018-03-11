@@ -174,7 +174,7 @@ public:
    * Add a generator of arrivals to the simulator.
    * @param   name_prefix     prefix for the arrival names
    * @param   trj             a user-defined R trajectory
-   * @param   dis             a user-defined R function that provides random numbers
+   * @param   dist            a user-defined R function that provides random numbers
    * @param   mon             monitoring level
    * @param   priority        arrival priority
    * @param   preemptible     maximum priority that cannot cause preemption (>=priority)

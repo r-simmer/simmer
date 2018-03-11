@@ -123,6 +123,11 @@ protected:
   T get(const Fn<T(Arrival*)>& call, Arrival* arrival) const { return call(arrival); }
 };
 
+inline Activity* trj_get(const REnv& trj, const std::string& method) {
+  RFn func(trj[method]);
+  return Rcpp::as<Rcpp::XPtr<Activity> >(func());
+}
+
 // abstract class for multipath activities
 class Fork : public Activity {
 public:
@@ -131,10 +136,8 @@ public:
     : Activity(name, priority), cont(cont), trj(trj), selected(NULL)
   {
     foreach_ (const VEC<REnv>::value_type& itr, trj) {
-      RFn head(itr["head"]);
-      RFn tail(itr["tail"]);
-      heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(head()));
-      tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(tail()));
+      heads.push_back(trj_get(itr, "head"));
+      tails.push_back(trj_get(itr, "tail"));
       RFn get_n_activities(itr["get_n_activities"]);
       count += Rcpp::as<int>(get_n_activities());
     }
@@ -148,10 +151,8 @@ public:
     foreach_ (VEC<REnv>::value_type& itr, trj) {
       RFn clone(itr["clone"]);
       itr = clone();
-      RFn head(itr["head"]);
-      RFn tail(itr["tail"]);
-      heads.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(head()));
-      tails.push_back(Rcpp::as<Rcpp::XPtr<Activity> >(tail()));
+      heads.push_back(trj_get(itr, "head"));
+      tails.push_back(trj_get(itr, "tail"));
     }
     foreach_ (const VEC<Activity*>::value_type& itr, heads)
       itr->set_prev(this);

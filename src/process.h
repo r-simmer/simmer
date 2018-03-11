@@ -94,6 +94,8 @@ private:
   bool restart;       /**< whether activity must be restarted after preemption */
 };
 
+Activity* trj_head(const REnv& trj);
+
 /**
  * Generation process.
  */
@@ -111,7 +113,7 @@ public:
   Generator(Simulator* sim, const std::string& name_prefix, int mon,
             const REnv& trj, const RFn& dist, const Order& order)
     : Process(sim, name_prefix, mon, PRIORITY_MIN), count(0), trj(trj),
-      dist(dist), order(order), first_activity(NULL) { set_first_activity(); }
+      dist(dist), order(order), first_activity(trj_head(trj)) {}
 
   /**
    * Reset the generator: counter, trajectory
@@ -127,7 +129,7 @@ public:
   int get_n_generated() const { return count; }
   void set_trajectory(const REnv& new_trj) {
     trj = new_trj;
-    set_first_activity();
+    first_activity = trj_head(trj);
   }
   void set_distribution(const RFn& new_dist) { dist = new_dist; }
 
@@ -137,8 +139,6 @@ private:
   RFn dist;
   Order order;
   Activity* first_activity;
-
-  void set_first_activity();
 };
 
 /**
