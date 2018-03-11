@@ -559,7 +559,7 @@ public:
 
   double run(Arrival* arrival) {
     arrival->sim->
-      get_generator(get<std::string>(generator, arrival))->set_distribution(distribution);
+      get_generator(get<std::string>(generator, arrival))->set_source(distribution);
     return 0;
   }
 

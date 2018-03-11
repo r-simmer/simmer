@@ -195,6 +195,35 @@ public:
   }
 
   /**
+   * Attach arrivals from a data frame.
+   * @param   name_prefix     prefix for the arrival names
+   * @param   trj             a user-defined R trajectory
+   * @param   data            a user-supplied data frame
+   * @param   mon             monitoring level
+   * @param   priority        column name
+   * @param   preemptible     column name
+   * @param   restart         column name
+   * @param   attrs           column names for attributes
+   */
+  bool attach_data(const std::string& name_prefix, REnv trj, RData data,
+                   int mon, const std::string& time,
+                   const VEC<std::string>& priority,
+                   const VEC<std::string>& preemptible,
+                   const VEC<std::string>& restart,
+                   const VEC<std::string>& attrs)
+  {
+    if (process_map.find(name_prefix) != process_map.end()) {
+      Rcpp::warning("process '%s' already defined", name_prefix);
+      return false;
+    }
+    DataPlug* gen = new DataPlug(this, name_prefix, mon, trj, data, time,
+                                 priority, preemptible, restart, attrs);
+    process_map[name_prefix] = gen;
+    gen->activate();
+    return true;
+  }
+
+  /**
    * Add a resource to the simulator.
    * @param   name              the name
    * @param   capacity          server capacity (-1 means infinity)

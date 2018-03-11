@@ -29,6 +29,10 @@ add_generator_ <- function(sim_, name_prefix, trj, dist, mon, priority, preempti
     .Call(`_simmer_add_generator_`, sim_, name_prefix, trj, dist, mon, priority, preemptible, restart)
 }
 
+attach_data_ <- function(sim_, name_prefix, trj, data, mon, time, priority, preemptible, restart, attrs) {
+    .Call(`_simmer_attach_data_`, sim_, name_prefix, trj, data, mon, time, priority, preemptible, restart, attrs)
+}
+
 add_resource_ <- function(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict) {
     .Call(`_simmer_add_resource_`, sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict)
 }

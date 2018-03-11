@@ -16,9 +16,25 @@ bool Process::deactivate() {
 
 Activity* trj_head(const REnv& trj) { return trj_get(trj, "head"); }
 
+template <typename T>
+Arrival* Source<T>::new_arrival(double delay) {
+  // format the name and create the next arrival
+  std::string arr_name = name + boost::lexical_cast<std::string>(count++);
+  Arrival* arrival = new Arrival(sim, arr_name, is_monitored(),
+                                 order, first_activity, count);
+
+  if (sim->verbose) Rcpp::Rcout <<
+    FMT(10, right) << sim->now() << " |" <<
+    FMT(12, right) << "source: " << FMT(15, left) << name << "|" <<
+    FMT(12, right) << "new: " << FMT(15, left) << arr_name << "| " <<
+    (sim->now() + delay) << std::endl;
+
+  return arrival;
+}
+
 void Generator::run() {
   // get the delay for the next (n) arrival(s)
-  Rcpp::NumericVector delays = dist();
+  Rcpp::NumericVector delays = source();
   size_t n = delays.size();
   double delay = 0;
 
@@ -27,16 +43,43 @@ void Generator::run() {
       return;
     delay += delays[i];
 
-    // format the name and create the next arrival
-    std::string arr_name = name + boost::lexical_cast<std::string>(count++);
-    Arrival* arrival = new Arrival(sim, arr_name, is_monitored(),
-                                   order, first_activity, count);
+    // schedule the arrival
+    sim->schedule(delay, new_arrival(delay),
+                  first_activity->priority ? first_activity->priority : count);
+  }
+  // schedule the generator
+  sim->schedule(delay, this, priority);
+}
 
-    if (sim->verbose) Rcpp::Rcout <<
-      FMT(10, right) << sim->now() << " |" <<
-      FMT(12, right) << "generator: " << FMT(15, left) << name << "|" <<
-      FMT(12, right) << "new: " << FMT(15, left) << arr_name << "| " <<
-      (sim->now() + delay) << std::endl;
+void DataPlug::run() {
+  double delay = 0;
+  Rcpp::NumericVector time = source[col_time];
+  Rcpp::NumericVector col;
+
+  for (size_t i = 0; i < 100; ++i) {
+    if (time.size() <= count)
+      return;
+    delay += time[count];
+
+    Arrival* arrival = new_arrival(delay);
+
+    if (col_priority.size()) {
+      col = source[col_priority[0]];
+      arrival->order.set_priority(col[count-1]);
+    }
+    if (col_preemptible.size()) {
+      col = source[col_preemptible[0]];
+      arrival->order.set_preemptible(col[count-1]);
+    }
+    if (col_restart.size()) {
+      col = source[col_restart[0]];
+      arrival->order.set_restart(col[count-1]);
+    }
+
+    for (size_t j = 0; j < col_attrs.size(); ++i) {
+      col = source[col_attrs[i]];
+      arrival->set_attribute(col_attrs[i], col[count-1]);
+    }
 
     // schedule the arrival
     sim->schedule(delay, arrival,

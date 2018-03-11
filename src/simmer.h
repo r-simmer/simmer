@@ -41,6 +41,7 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #include <boost/bind.hpp>
 
 #define REnv Rcpp::Environment
+#define RData Rcpp::DataFrame
 #define RFn Rcpp::Function
 #define Fn boost::function
 #define BIND boost::bind

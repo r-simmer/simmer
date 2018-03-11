@@ -113,6 +113,59 @@ Simmer <- R6Class("simmer",
       self
     },
 
+    attach_data = function(name_prefix, trajectory, data, mon=1,
+                           col_time="time", time=c("relative", "absolute"),
+                           col_priority=NULL, col_preemptible=col_priority,
+                           col_restart=NULL, col_attributes=NULL) {
+      check_args(
+        name_prefix = "string",
+        trajectory = "trajectory",
+        data = "data.frame",
+        mon = "flag",
+        col_time = "string",
+        col_priority = c("string", "NULL"),
+        col_preemptible = c("string", "NULL"),
+        col_restart = c("string", "NULL"),
+        col_attributes = c("string vector", "NULL")
+      )
+      time <- match.arg(time)
+
+      col_priority = as.character(col_priority)
+      col_preemptible = as.character(col_preemptible)
+      col_restart = as.character(col_restart)
+      col_attributes = as.character(col_attributes)
+      col_names <- c(col_time, col_priority, col_preemptible, col_restart, col_attributes)
+      col_undef <- setdiff(col_names, names(data))
+
+      if (length(col_undef))
+        stop(get_caller(), ": columns '", paste0(col_undef, collapse="', '"),
+             "' are not defined in ", as.character(substitute(data)), call.=FALSE)
+
+      if (any(data[[col_time]] < 0))
+        stop(get_caller(), ": time must be positive", call.=FALSE)
+
+      if (time == "absolute") {
+        if (is.unsorted(data[[col_time]]))
+          stop(get_caller(), ": unsorted absolute time provided", call.=FALSE)
+        data[[col_time]] <- c(data[[col_time]][1], diff(data[[col_time]]))
+      }
+
+      if (is.null(col_attributes)) {
+        col_attributes <- setdiff(names(data), col_names)
+        col_names <- c(col_names, col_attributes)
+      }
+
+      for (col_name in col_names) {
+        if (!(is.numeric(data[[col_name]]) || is.logical(data[[col_name]])))
+          stop(get_caller(), ": column '", col_name, "' is not numeric", call.=FALSE)
+      }
+
+      ret <- attach_data_(private$sim_obj, name_prefix, trajectory[], data, mon,
+                          col_time, col_priority, col_preemptible, col_restart, col_attributes)
+      if (ret) private$gen[[name_prefix]] <- c(mon=mon)
+      self
+    },
+
     get_mon_arrivals = function(per_resource=FALSE, ongoing=FALSE) {
       get_mon_arrivals_(private$sim_obj, per_resource, ongoing)
     },

@@ -90,6 +90,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// attach_data_
+bool attach_data_(SEXP sim_, const std::string& name_prefix, const Environment& trj, const DataFrame& data, int mon, const std::string& time, const StringVector& priority, const StringVector& preemptible, const StringVector& restart, const StringVector& attrs);
+RcppExport SEXP _simmer_attach_data_(SEXP sim_SEXP, SEXP name_prefixSEXP, SEXP trjSEXP, SEXP dataSEXP, SEXP monSEXP, SEXP timeSEXP, SEXP prioritySEXP, SEXP preemptibleSEXP, SEXP restartSEXP, SEXP attrsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type name_prefix(name_prefixSEXP);
+    Rcpp::traits::input_parameter< const Environment& >::type trj(trjSEXP);
+    Rcpp::traits::input_parameter< const DataFrame& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type mon(monSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< const StringVector& >::type priority(prioritySEXP);
+    Rcpp::traits::input_parameter< const StringVector& >::type preemptible(preemptibleSEXP);
+    Rcpp::traits::input_parameter< const StringVector& >::type restart(restartSEXP);
+    Rcpp::traits::input_parameter< const StringVector& >::type attrs(attrsSEXP);
+    rcpp_result_gen = Rcpp::wrap(attach_data_(sim_, name_prefix, trj, data, mon, time, priority, preemptible, restart, attrs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // add_resource_
 bool add_resource_(SEXP sim_, const std::string& name, int capacity, int queue_size, bool mon, bool preemptive, const std::string& preempt_order, bool queue_size_strict);
 RcppExport SEXP _simmer_add_resource_(SEXP sim_SEXP, SEXP nameSEXP, SEXP capacitySEXP, SEXP queue_sizeSEXP, SEXP monSEXP, SEXP preemptiveSEXP, SEXP preempt_orderSEXP, SEXP queue_size_strictSEXP) {
@@ -1171,6 +1191,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_stepn_", (DL_FUNC) &_simmer_stepn_, 2},
     {"_simmer_run_", (DL_FUNC) &_simmer_run_, 2},
     {"_simmer_add_generator_", (DL_FUNC) &_simmer_add_generator_, 8},
+    {"_simmer_attach_data_", (DL_FUNC) &_simmer_attach_data_, 10},
     {"_simmer_add_resource_", (DL_FUNC) &_simmer_add_resource_, 8},
     {"_simmer_add_resource_manager_", (DL_FUNC) &_simmer_add_resource_manager_, 6},
     {"_simmer_get_mon_arrivals_", (DL_FUNC) &_simmer_get_mon_arrivals_, 3},

@@ -52,6 +52,20 @@ bool add_generator_(SEXP sim_, const std::string& name_prefix, const Environment
 }
 
 //[[Rcpp::export]]
+bool attach_data_(SEXP sim_, const std::string& name_prefix, const Environment& trj,
+                  const DataFrame& data, int mon, const std::string& time,
+                  const StringVector& priority, const StringVector& preemptible,
+                  const StringVector& restart, const StringVector& attrs)
+{
+  XPtr<Simulator> sim(sim_);
+  return sim->attach_data(name_prefix, trj, data, mon, time,
+                          as<VEC<std::string> >(priority),
+                          as<VEC<std::string> >(preemptible),
+                          as<VEC<std::string> >(restart),
+                          as<VEC<std::string> >(attrs));
+}
+
+//[[Rcpp::export]]
 bool add_resource_(SEXP sim_, const std::string& name, int capacity, int queue_size, bool mon,
                    bool preemptive, const std::string& preempt_order, bool queue_size_strict)
 {

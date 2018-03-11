@@ -97,48 +97,84 @@ private:
 Activity* trj_head(const REnv& trj);
 
 /**
- * Generation process.
+ * Abstract class for source processes.
  */
-class Generator : public Process {
+template <typename T>
+class Source : public Process {
 public:
   /**
-   * Constructor.
-   * @param sim             a pointer to the simulator
-   * @param name            the name
-   * @param mon             int that indicates whether this entity must be monitored
-   * @param trj             a user-defined R trajectory
-   * @param dist            a user-defined R function that provides random numbers
-   * @param order           priority, preemptible, restart
-   */
-  Generator(Simulator* sim, const std::string& name_prefix, int mon,
-            const REnv& trj, const RFn& dist, const Order& order)
-    : Process(sim, name_prefix, mon, PRIORITY_MIN), count(0), trj(trj),
-      dist(dist), order(order), first_activity(trj_head(trj)) {}
+  * Constructor.
+  * @param sim             a pointer to the simulator
+  * @param name_prefix     name prefix for each new arrival
+  * @param mon             int that indicates whether this entity must be monitored
+  * @param trj             a user-defined R trajectory
+  * @param source          some source for arrivals
+  * @param order           priority, preemptible, restart
+  */
+  Source(Simulator* sim, const std::string& name_prefix, int mon,
+         const REnv& trj, const T& source, const Order& order)
+    : Process(sim, name_prefix, mon, PRIORITY_MIN), count(0), source(source),
+      order(order), first_activity(trj_head(trj)), trj(trj) {}
 
-  /**
-   * Reset the generator: counter, trajectory
-   */
-  void reset() {
-    count = 0;
-    RFn reset_fun(dist.attr("reset"));
-    reset_fun();
-  }
-
-  void run();
+  virtual void reset() { count = 0; }
 
   int get_n_generated() const { return count; }
+
+  void set_source(const T& new_source) { source = new_source; }
+
   void set_trajectory(const REnv& new_trj) {
     trj = new_trj;
     first_activity = trj_head(trj);
   }
-  void set_distribution(const RFn& new_dist) { dist = new_dist; }
 
-private:
+protected:
   int count;                /**< number of arrivals generated */
-  REnv trj;
-  RFn dist;
+  T source;
   Order order;
   Activity* first_activity;
+
+  Arrival* new_arrival(double delay);
+
+private:
+  REnv trj;
+};
+
+/**
+ * Generation process.
+ */
+class Generator : public Source<RFn> {
+public:
+  Generator(Simulator* sim, const std::string& name_prefix, int mon,
+            const REnv& trj, const RFn& dist, const Order& order)
+    : Source<RFn>(sim, name_prefix, mon, trj, dist, order) {}
+
+  void reset() {
+    Source<RFn>::reset();
+    RFn reset_fun(source.attr("reset"));
+    reset_fun();
+  }
+
+  void run();
+};
+
+class DataPlug : public Source<RData> {
+public:
+  DataPlug(Simulator* sim, const std::string& name_prefix, int mon,
+           const REnv& trj, RData data, const std::string& time,
+           const VEC<std::string>& priority, const VEC<std::string>& preemptible,
+           const VEC<std::string>& restart, const VEC<std::string>& attrs)
+    : Source<RData>(sim, name_prefix, mon, trj, data, Order()),
+      col_time(time), col_priority(priority), col_preemptible(preemptible),
+      col_restart(restart), col_attrs(attrs) {}
+
+  void run();
+
+private:
+  std::string col_time;
+  VEC<std::string> col_priority;
+  VEC<std::string> col_preemptible;
+  VEC<std::string> col_restart;
+  VEC<std::string> col_attrs;
 };
 
 /**
