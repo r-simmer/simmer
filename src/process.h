@@ -99,7 +99,6 @@ Activity* trj_head(const REnv& trj);
 /**
  * Abstract class for source processes.
  */
-template <typename T>
 class Source : public Process {
 public:
   /**
@@ -112,15 +111,15 @@ public:
   * @param order           priority, preemptible, restart
   */
   Source(Simulator* sim, const std::string& name_prefix, int mon,
-         const REnv& trj, const T& source, const Order& order)
-    : Process(sim, name_prefix, mon, PRIORITY_MIN), count(0), source(source),
-      order(order), first_activity(trj_head(trj)), trj(trj) {}
+         const REnv& trj, const Order& order)
+    : Process(sim, name_prefix, mon, PRIORITY_MIN), count(0), order(order),
+      first_activity(trj_head(trj)), trj(trj) {}
 
   virtual void reset() { count = 0; }
 
   int get_n_generated() const { return count; }
 
-  void set_source(const T& new_source) { source = new_source; }
+  virtual void set_source(const ANY& new_source) = 0;
 
   void set_trajectory(const REnv& new_trj) {
     trj = new_trj;
@@ -129,7 +128,6 @@ public:
 
 protected:
   int count;                /**< number of arrivals generated */
-  T source;
   Order order;
   Activity* first_activity;
 
@@ -142,34 +140,65 @@ private:
 /**
  * Generation process.
  */
-class Generator : public Source<RFn> {
+class Generator : public Source {
 public:
   Generator(Simulator* sim, const std::string& name_prefix, int mon,
             const REnv& trj, const RFn& dist, const Order& order)
-    : Source<RFn>(sim, name_prefix, mon, trj, dist, order) {}
+    : Source(sim, name_prefix, mon, trj, order), source(dist) {}
 
   void reset() {
-    Source<RFn>::reset();
+    Source::reset();
     RFn reset_fun(source.attr("reset"));
     reset_fun();
   }
 
+  void set_source(const ANY& new_source) {
+    if (new_source.type() != typeid(RFn))
+      Rcpp::stop("source '%s': requires a function", name);
+    source = boost::any_cast<RFn>(new_source);
+  }
+
   void run();
+
+private:
+  RFn source;
 };
 
-class DataPlug : public Source<RData> {
+class DataSrc : public Source {
 public:
-  DataPlug(Simulator* sim, const std::string& name_prefix, int mon,
-           const REnv& trj, RData data, const std::string& time,
-           const VEC<std::string>& attrs, const OPT<std::string>& priority,
-           const OPT<std::string>& preemptible, const OPT<std::string>& restart)
-    : Source<RData>(sim, name_prefix, mon, trj, data, Order()),
+  DataSrc(Simulator* sim, const std::string& name_prefix, int mon,
+          const REnv& trj, RData data, int batch, const std::string& time,
+          const VEC<std::string>& attrs, const OPT<std::string>& priority,
+          const OPT<std::string>& preemptible, const OPT<std::string>& restart)
+    : Source(sim, name_prefix, mon, trj, Order()), source(data), batch(batch),
       col_time(time), col_attrs(attrs), col_priority(priority),
       col_preemptible(preemptible), col_restart(restart) {}
 
   void run();
 
+  void set_source(const ANY& new_source) {
+    if (new_source.type() != typeid(RData))
+      Rcpp::stop("source '%s': requires a data frame", name);
+    source = boost::any_cast<RData>(new_source);
+
+    VEC<std::string> n = source.names();
+    if (std::find(n.begin(), n.end(), col_time) == n.end())
+      Rcpp::stop("source '%s': column '%s' not present", name, col_time);
+    if (col_priority && std::find(n.begin(), n.end(), *col_priority) == n.end())
+      Rcpp::stop("source '%s': column '%s' not present", name, *col_priority);
+    if (col_preemptible && std::find(n.begin(), n.end(), *col_preemptible) == n.end())
+      Rcpp::stop("source '%s': column '%s' not present", name, *col_preemptible);
+    if (col_restart && std::find(n.begin(), n.end(), *col_restart) == n.end())
+      Rcpp::stop("source '%s': column '%s' not present", name, *col_restart);
+    for (size_t i = 0; i < col_attrs.size(); ++i) {
+      if (std::find(n.begin(), n.end(), col_attrs[i]) == n.end())
+        Rcpp::stop("source '%s': column '%s' not present", name, col_attrs[i]);
+    }
+  }
+
 private:
+  RData source;
+  int batch;
   std::string col_time;
   VEC<std::string> col_attrs;
   OPT<std::string> col_priority;

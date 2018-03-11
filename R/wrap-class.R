@@ -8,12 +8,12 @@ Wrap <- R6Class("wrap",
       private$now_val <- env$now()
       private$peek_val <- env$peek(Inf, TRUE)
       private$res <- env$get_resources()
-      private$gen <- env$get_generators()
+      private$src <- env$get_sources()
       private$arrivals <- env$get_mon_arrivals(ongoing = TRUE)
       private$arrivals_res <- env$get_mon_arrivals(TRUE, ongoing = TRUE)
       private$attributes <- env$get_mon_attributes()
       private$resources <- env$get_mon_resources()
-      for (name in names(private$gen)) {
+      for (name in names(private$src)) {
         private$n_generated[[name]] <- env$get_n_generated(name)
       }
       for (name in names(private$res)) {
@@ -39,10 +39,10 @@ Wrap <- R6Class("wrap",
           " | queue status: ", self$get_queue_count(name),
           "(", self$get_queue_size(name), ") }\n"
         ))
-      for (name in names(private$gen))
+      for (name in names(private$src))
         cat(paste0(
-          "{ Generator: ", name,
-          " | monitored: ", private$gen[[name]][["mon"]],
+          "{ Source: ", name,
+          " | monitored: ", private$src[[name]][["mon"]],
           " | n_generated: ", self$get_n_generated(name), " }\n"
         ))
       invisible(self)
@@ -71,10 +71,10 @@ Wrap <- R6Class("wrap",
     },
     get_mon_attributes = function() { private$attributes },
     get_mon_resources = function() { private$resources },
-    get_n_generated = function(generator) {
-      if (!(generator %in% names(private$gen)))
-        stop("generator '", generator, "' not found")
-      private$n_generated[[generator]]
+    get_n_generated = function(source) {
+      if (!(source %in% names(private$src)))
+        stop("source '", source, "' not found")
+      private$n_generated[[source]]
     },
     get_capacity = function(resource) {
       if (!(resource %in% names(private$res)))
@@ -102,7 +102,7 @@ Wrap <- R6Class("wrap",
     now_val = NA,
     peek_val = NA,
     res = NA,
-    gen = NA,
+    src = NA,
     arrivals = NA,
     arrivals_res = NA,
     attributes = NA,

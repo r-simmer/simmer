@@ -26,10 +26,12 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 #include <boost/typeof/typeof.hpp>
+#include <boost/any.hpp>
 
 #define OPT boost::optional
 #define NONE boost::none
 #define AUTO BOOST_AUTO
+#define ANY boost::any
 
 #include <boost/foreach.hpp>
 
@@ -49,6 +51,21 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #define RNum Rcpp::NumericVector
 #define RStr Rcpp::CharacterVector
 #define RBool Rcpp::LogicalVector
+
+inline std::ostream& operator<<(std::ostream& out, const RData& df) {
+  out << "data.frame";
+  return out;
+}
+
+inline std::ostream& operator<<(std::ostream& out, const RFn& fn) {
+  out << "function()";
+  return out;
+}
+
+inline std::ostream& operator<<(std::ostream& out, const REnv& env) {
+  out << "function()";
+  return out;
+}
 
 #define FMT(n, justify) std::setw(n) << std::justify
 #define IND(n) std::string(n, ' ')

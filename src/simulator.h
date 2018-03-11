@@ -206,18 +206,18 @@ public:
    * @param   preemptible     column name
    * @param   restart         column name
    */
-  bool attach_data(const std::string& name_prefix, REnv trj, RData data, int mon,
-                   const std::string& time,  const VEC<std::string>& attrs,
-                   const OPT<std::string>& priority,
-                   const OPT<std::string>& preemptible,
-                   const OPT<std::string>& restart)
+  bool add_data(const std::string& name_prefix, REnv trj, RData data, int mon,
+                int batch, const std::string& time, const VEC<std::string>& attrs,
+                const OPT<std::string>& priority,
+                const OPT<std::string>& preemptible,
+                const OPT<std::string>& restart)
   {
     if (process_map.find(name_prefix) != process_map.end()) {
       Rcpp::warning("process '%s' already defined", name_prefix);
       return false;
     }
-    DataPlug* gen = new DataPlug(this, name_prefix, mon, trj, data, time, attrs,
-                                 priority, preemptible, restart);
+    DataSrc* gen = new DataSrc(this, name_prefix, mon, trj, data, batch, time,
+                               attrs, priority, preemptible, restart);
     process_map[name_prefix] = gen;
     gen->activate();
     return true;
@@ -286,13 +286,13 @@ public:
   }
 
   /**
-   * Get a generator by name.
+   * Get a source by name.
    */
-  Generator* get_generator(const std::string& name) const {
+  Source* get_source(const std::string& name) const {
     EntMap::const_iterator search = process_map.find(name);
     if (search == process_map.end())
-      Rcpp::stop("generator '%s' not found (typo?)", name);
-    return static_cast<Generator*>(search->second);
+      Rcpp::stop("source '%s' not found (typo?)", name);
+    return static_cast<Source*>(search->second);
   }
 
   /**

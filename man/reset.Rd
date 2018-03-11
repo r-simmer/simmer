@@ -14,7 +14,7 @@ Returns the simulation environment.
 }
 \description{
 Reset the following components of a simulation environment:
-time, event queue, resources, generators and statistics.
+time, event queue, resources, sources and statistics.
 }
 \seealso{
 \code{\link{stepn}}, \code{\link{run}}.

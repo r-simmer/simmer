@@ -29,8 +29,8 @@ add_generator_ <- function(sim_, name_prefix, trj, dist, mon, priority, preempti
     .Call(`_simmer_add_generator_`, sim_, name_prefix, trj, dist, mon, priority, preemptible, restart)
 }
 
-attach_data_ <- function(sim_, name_prefix, trj, data, mon, time, attrs, priority, preemptible, restart) {
-    .Call(`_simmer_attach_data_`, sim_, name_prefix, trj, data, mon, time, attrs, priority, preemptible, restart)
+add_data_ <- function(sim_, name_prefix, trj, data, mon, batch, time, attrs, priority, preemptible, restart) {
+    .Call(`_simmer_add_data_`, sim_, name_prefix, trj, data, mon, batch, time, attrs, priority, preemptible, restart)
 }
 
 add_resource_ <- function(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict) {
@@ -189,36 +189,44 @@ SetAttribute__new_func3 <- function(keys, values, global, mod) {
     .Call(`_simmer_SetAttribute__new_func3`, keys, values, global, mod)
 }
 
-Activate__new <- function(generator) {
-    .Call(`_simmer_Activate__new`, generator)
+Activate__new <- function(source) {
+    .Call(`_simmer_Activate__new`, source)
 }
 
-Activate__new_func <- function(generator) {
-    .Call(`_simmer_Activate__new_func`, generator)
+Activate__new_func <- function(source) {
+    .Call(`_simmer_Activate__new_func`, source)
 }
 
-Deactivate__new <- function(generator) {
-    .Call(`_simmer_Deactivate__new`, generator)
+Deactivate__new <- function(source) {
+    .Call(`_simmer_Deactivate__new`, source)
 }
 
-Deactivate__new_func <- function(generator) {
-    .Call(`_simmer_Deactivate__new_func`, generator)
+Deactivate__new_func <- function(source) {
+    .Call(`_simmer_Deactivate__new_func`, source)
 }
 
-SetTraj__new <- function(generator, trj) {
-    .Call(`_simmer_SetTraj__new`, generator, trj)
+SetTraj__new <- function(source, trj) {
+    .Call(`_simmer_SetTraj__new`, source, trj)
 }
 
-SetTraj__new_func <- function(generator, trj) {
-    .Call(`_simmer_SetTraj__new_func`, generator, trj)
+SetTraj__new_func <- function(source, trj) {
+    .Call(`_simmer_SetTraj__new_func`, source, trj)
 }
 
-SetDist__new <- function(generator, dist) {
-    .Call(`_simmer_SetDist__new`, generator, dist)
+SetSourceFn__new <- function(source, dist) {
+    .Call(`_simmer_SetSourceFn__new`, source, dist)
 }
 
-SetDist__new_func <- function(generator, dist) {
-    .Call(`_simmer_SetDist__new_func`, generator, dist)
+SetSourceFn__new_func <- function(source, dist) {
+    .Call(`_simmer_SetSourceFn__new_func`, source, dist)
+}
+
+SetSourceDF__new <- function(source, data) {
+    .Call(`_simmer_SetSourceDF__new`, source, data)
+}
+
+SetSourceDF__new_func <- function(source, data) {
+    .Call(`_simmer_SetSourceDF__new_func`, source, data)
 }
 
 SetPrior__new <- function(values, mod) {

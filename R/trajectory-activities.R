@@ -192,31 +192,31 @@ set_attribute.trajectory <- function(.trj, keys, values, global=FALSE, mod=c(NA,
 set_global <- function(.trj, keys, values, mod=c(NA, "+", "*"))
   set_attribute(.trj, keys, values, TRUE, mod=mod)
 
-#' Activate/Deactivate Generators
+#' Activate/Deactivate Sources
 #'
 #' Activities for activating or deactivating the generation of arrivals by name.
 #'
 #' @inheritParams seize
-#' @param generator the name of the generator or a function returning a name.
+#' @param source the name of the source or a function returning a name.
 #'
 #' @return Returns the trajectory object.
-#' @seealso \code{\link{set_trajectory}}, \code{\link{set_distribution}}.
+#' @seealso \code{\link{set_trajectory}}, \code{\link{set_source}}.
 #' @export
-activate <- function(.trj, generator) UseMethod("activate")
+activate <- function(.trj, source) UseMethod("activate")
 
 #' @export
-activate.trajectory <- function(.trj, generator) .trj$activate(generator)
+activate.trajectory <- function(.trj, source) .trj$activate(source)
 
 #' @rdname activate
 #' @export
-deactivate <- function(.trj, generator) UseMethod("deactivate")
+deactivate <- function(.trj, source) UseMethod("deactivate")
 
 #' @export
-deactivate.trajectory <- function(.trj, generator) .trj$deactivate(generator)
+deactivate.trajectory <- function(.trj, source) .trj$deactivate(source)
 
-#' Set Generator Parameters
+#' Set Source Parameters
 #'
-#' Activities for modifying a generator's trajectory or distribution by name.
+#' Activities for modifying a source's trajectory or source object by name.
 #'
 #' @inheritParams seize
 #' @inheritParams activate
@@ -225,21 +225,30 @@ deactivate.trajectory <- function(.trj, generator) .trj$deactivate(generator)
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{activate}}, \code{\link{deactivate}}.
 #' @export
-set_trajectory <- function(.trj, generator, trajectory) UseMethod("set_trajectory")
+set_trajectory <- function(.trj, source, trajectory) UseMethod("set_trajectory")
 
 #' @export
-set_trajectory.trajectory <- function(.trj, generator, trajectory)
-  .trj$set_trajectory(generator, trajectory)
+set_trajectory.trajectory <- function(.trj, source, trajectory)
+  .trj$set_trajectory(source, trajectory)
 
 #' @rdname set_trajectory
-#' @param distribution a function modelling the interarrival times (returning a
-#' negative value stops the generator).
+#' @param object a function modelling the interarrival times (if the source type
+#' is a generator; returning a negative value stops the generator) or a data frame
+#' (if the source type is a data source).
 #' @export
-set_distribution <- function(.trj, generator, distribution) UseMethod("set_distribution")
+set_source <- function(.trj, source, object) UseMethod("set_source")
 
 #' @export
-set_distribution.trajectory <- function(.trj, generator, distribution)
-  .trj$set_distribution(generator, distribution)
+set_source.trajectory <- function(.trj, source, object)
+  .trj$set_source(source, object)
+
+#' @rdname set_trajectory
+#' @export
+set_distribution <- function(.trj, source, object) UseMethod("set_distribution")
+
+#' @export
+set_distribution.trajectory <- function(.trj, source, object)
+  .Deprecated("set_source")
 
 #' Set Prioritization Values
 #'

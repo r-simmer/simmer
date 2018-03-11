@@ -23,10 +23,10 @@ Simmer <- R6Class("simmer",
           " | queue status: ", self$get_queue_count(name),
           "(", self$get_queue_size(name), ") }\n"
         ))
-      for (name in names(private$gen))
+      for (name in names(private$src))
         cat(paste0(
-          "{ Generator: ", name,
-          " | monitored: ", private$gen[[name]][["mon"]],
+          "{ Source: ", name,
+          " | monitored: ", private$src[[name]][["mon"]],
           " | n_generated: ", self$get_n_generated(name), " }\n"
         ))
       invisible(self)
@@ -111,20 +111,21 @@ Simmer <- R6Class("simmer",
       )
       ret <- add_generator_(private$sim_obj, name_prefix, trajectory[],
                             make_resetable(distribution), mon, priority, preemptible, restart)
-      if (ret) private$gen[[name_prefix]] <- c(mon=mon)
+      if (ret) private$src[[name_prefix]] <- c(mon=mon)
       self
     },
 
-    attach_data = function(name_prefix, trajectory, data, mon=1,
-                           col_time="time", time=c("relative", "absolute"),
-                           col_attributes=NULL, col_priority="priority",
-                           col_preemptible=col_priority, col_restart="restart")
+    add_data = function(name_prefix, trajectory, data, mon=1, batch=50,
+                        col_time="time", time=c("relative", "absolute"),
+                        col_attributes=NULL, col_priority="priority",
+                        col_preemptible=col_priority, col_restart="restart")
     {
       check_args(
         name_prefix = "string",
         trajectory = "trajectory",
         data = "data.frame",
         mon = "flag",
+        batch = "number",
         col_time = "string",
         col_attributes = c("string vector", "NULL"),
         col_priority = c("string", "NULL"),
@@ -163,9 +164,9 @@ Simmer <- R6Class("simmer",
           stop(get_caller(), ": column '", col_name, "' is not numeric", call.=FALSE)
       }
 
-      ret <- attach_data_(private$sim_obj, name_prefix, trajectory[], data, mon, col_time,
-                          col_attributes, col_priority, col_preemptible, col_restart)
-      if (ret) private$gen[[name_prefix]] <- c(mon=mon)
+      ret <- add_data_(private$sim_obj, name_prefix, trajectory[], data, mon, batch,
+                       col_time, col_attributes, col_priority, col_preemptible, col_restart)
+      if (ret) private$src[[name_prefix]] <- c(mon=mon)
       self
     },
 
@@ -186,7 +187,7 @@ Simmer <- R6Class("simmer",
       monitor_data
     },
 
-    get_n_generated = function(generator) get_n_generated_(private$sim_obj, generator),
+    get_n_generated = function(source) get_n_generated_(private$sim_obj, source),
 
     get_name = function() get_name_(private$sim_obj),
 
@@ -235,13 +236,13 @@ Simmer <- R6Class("simmer",
     },
 
     # not exposed, internal use
-    get_generators = function() { private$gen },
+    get_sources = function() { private$src },
     get_resources = function() { private$res }
   ),
 
   private = list(
     sim_obj = NULL,
     res = list(),
-    gen = list()
+    src = list()
   )
 )

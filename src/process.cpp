@@ -16,8 +16,7 @@ bool Process::deactivate() {
 
 Activity* trj_head(const REnv& trj) { return trj_get(trj, "head"); }
 
-template <typename T>
-Arrival* Source<T>::new_arrival(double delay) {
+Arrival* Source::new_arrival(double delay) {
   // format the name and create the next arrival
   std::string arr_name = name + boost::lexical_cast<std::string>(count++);
   Arrival* arrival = new Arrival(sim, arr_name, is_monitored(),
@@ -51,12 +50,12 @@ void Generator::run() {
   sim->schedule(delay, this, priority);
 }
 
-void DataPlug::run() {
+void DataSrc::run() {
   double delay = 0;
-  RNum time = source[col_time];
-  RNum col;
+  RNum col, time = source[col_time];
+  int i = 0;
 
-  for (size_t i = 0; i < 100; ++i) {
+  while (i++ != batch) {
     if (time.size() <= count)
       return;
     delay += time[count];

@@ -52,18 +52,18 @@ bool add_generator_(SEXP sim_, const std::string& name_prefix, const Environment
 }
 
 //[[Rcpp::export]]
-bool attach_data_(SEXP sim_, const std::string& name_prefix, const Environment& trj,
-                  const DataFrame& data, int mon, const std::string& time,
-                  const std::vector<std::string>& attrs,
-                  const std::vector<std::string>& priority,
-                  const std::vector<std::string>& preemptible,
-                  const std::vector<std::string>& restart)
+bool add_data_(SEXP sim_, const std::string& name_prefix, const Environment& trj,
+               const DataFrame& data, int mon, int batch, const std::string& time,
+               const std::vector<std::string>& attrs,
+               const std::vector<std::string>& priority,
+               const std::vector<std::string>& preemptible,
+               const std::vector<std::string>& restart)
 {
   XPtr<Simulator> sim(sim_);
-  return sim->attach_data(name_prefix, trj, data, mon, time, attrs,
-                          priority.empty() ? NONE : boost::make_optional(priority[0]),
-                          preemptible.empty() ? NONE : boost::make_optional(preemptible[0]),
-                          restart.empty() ? NONE : boost::make_optional(restart[0]));
+  return sim->add_data(name_prefix, trj, data, mon, batch, time, attrs,
+                       priority.empty() ? NONE : boost::make_optional(priority[0]),
+                       preemptible.empty() ? NONE : boost::make_optional(preemptible[0]),
+                       restart.empty() ? NONE : boost::make_optional(restart[0]));
 }
 
 //[[Rcpp::export]]
@@ -103,7 +103,7 @@ DataFrame get_mon_resources_(SEXP sim_) {
 //[[Rcpp::export]]
 int get_n_generated_(SEXP sim_, const std::string& name) {
   XPtr<Simulator> sim(sim_);
-  return sim->get_generator(name)->get_n_generated();
+  return sim->get_source(name)->get_n_generated();
 }
 
 //[[Rcpp::export]]
@@ -311,43 +311,57 @@ SEXP SetAttribute__new_func3(const Function& keys,
 }
 
 //[[Rcpp::export]]
-SEXP Activate__new(const std::string& generator) {
-  return XPtr<Activate<std::string> >(new Activate<std::string>(generator));
+SEXP Activate__new(const std::string& source) {
+  return XPtr<Activate<std::string> >(new Activate<std::string>(source));
 }
 
 //[[Rcpp::export]]
-SEXP Activate__new_func(const Function& generator) {
-  return XPtr<Activate<Function> >(new Activate<Function>(generator));
+SEXP Activate__new_func(const Function& source) {
+  return XPtr<Activate<Function> >(new Activate<Function>(source));
 }
 
 //[[Rcpp::export]]
-SEXP Deactivate__new(const std::string& generator) {
-  return XPtr<Deactivate<std::string> >(new Deactivate<std::string>(generator));
+SEXP Deactivate__new(const std::string& source) {
+  return XPtr<Deactivate<std::string> >(new Deactivate<std::string>(source));
 }
 
 //[[Rcpp::export]]
-SEXP Deactivate__new_func(const Function& generator) {
-  return XPtr<Deactivate<Function> >(new Deactivate<Function>(generator));
+SEXP Deactivate__new_func(const Function& source) {
+  return XPtr<Deactivate<Function> >(new Deactivate<Function>(source));
 }
 
 //[[Rcpp::export]]
-SEXP SetTraj__new(const std::string& generator, const Environment& trj) {
-  return XPtr<SetTraj<std::string> >(new SetTraj<std::string>(generator, trj));
+SEXP SetTraj__new(const std::string& source, const Environment& trj) {
+  return XPtr<SetTraj<std::string> >(new SetTraj<std::string>(source, trj));
 }
 
 //[[Rcpp::export]]
-SEXP SetTraj__new_func(const Function& generator, const Environment& trj) {
-  return XPtr<SetTraj<Function> >(new SetTraj<Function>(generator, trj));
+SEXP SetTraj__new_func(const Function& source, const Environment& trj) {
+  return XPtr<SetTraj<Function> >(new SetTraj<Function>(source, trj));
 }
 
 //[[Rcpp::export]]
-SEXP SetDist__new(const std::string& generator, const Function& dist) {
-  return XPtr<SetDist<std::string> >(new SetDist<std::string>(generator, dist));
+SEXP SetSourceFn__new(const std::string& source, const Function& dist) {
+  return XPtr<SetSource<std::string, Function> >(
+      new SetSource<std::string, Function>(source, dist));
 }
 
 //[[Rcpp::export]]
-SEXP SetDist__new_func(const Function& generator, const Function& dist) {
-  return XPtr<SetDist<Function> >(new SetDist<Function>(generator, dist));
+SEXP SetSourceFn__new_func(const Function& source, const Function& dist) {
+  return XPtr<SetSource<Function, Function> >(
+      new SetSource<Function, Function>(source, dist));
+}
+
+//[[Rcpp::export]]
+SEXP SetSourceDF__new(const std::string& source, const DataFrame& data) {
+  return XPtr<SetSource<std::string, DataFrame> >(
+      new SetSource<std::string, DataFrame>(source, data));
+}
+
+//[[Rcpp::export]]
+SEXP SetSourceDF__new_func(const Function& source, const DataFrame& data) {
+  return XPtr<SetSource<Function, DataFrame> >(
+      new SetSource<Function, DataFrame>(source, data));
 }
 
 //[[Rcpp::export]]
