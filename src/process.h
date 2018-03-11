@@ -161,20 +161,20 @@ class DataPlug : public Source<RData> {
 public:
   DataPlug(Simulator* sim, const std::string& name_prefix, int mon,
            const REnv& trj, RData data, const std::string& time,
-           const VEC<std::string>& priority, const VEC<std::string>& preemptible,
-           const VEC<std::string>& restart, const VEC<std::string>& attrs)
+           const VEC<std::string>& attrs, const OPT<std::string>& priority,
+           const OPT<std::string>& preemptible, const OPT<std::string>& restart)
     : Source<RData>(sim, name_prefix, mon, trj, data, Order()),
-      col_time(time), col_priority(priority), col_preemptible(preemptible),
-      col_restart(restart), col_attrs(attrs) {}
+      col_time(time), col_attrs(attrs), col_priority(priority),
+      col_preemptible(preemptible), col_restart(restart) {}
 
   void run();
 
 private:
   std::string col_time;
-  VEC<std::string> col_priority;
-  VEC<std::string> col_preemptible;
-  VEC<std::string> col_restart;
   VEC<std::string> col_attrs;
+  OPT<std::string> col_priority;
+  OPT<std::string> col_preemptible;
+  OPT<std::string> col_restart;
 };
 
 /**

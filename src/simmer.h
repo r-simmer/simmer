@@ -40,11 +40,15 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
-#define REnv Rcpp::Environment
-#define RData Rcpp::DataFrame
-#define RFn Rcpp::Function
 #define Fn boost::function
 #define BIND boost::bind
+
+#define RFn Rcpp::Function
+#define REnv Rcpp::Environment
+#define RData Rcpp::DataFrame
+#define RNum Rcpp::NumericVector
+#define RStr Rcpp::CharacterVector
+#define RBool Rcpp::LogicalVector
 
 #define FMT(n, justify) std::setw(n) << std::justify
 #define IND(n) std::string(n, ' ')

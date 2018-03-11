@@ -58,7 +58,8 @@ Simmer <- R6Class("simmer",
     },
 
     add_resource = function(name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE,
-                            preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE) {
+                            preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE)
+    {
       check_args(
         name = "string",
         capacity = c("number", "schedule"),
@@ -97,7 +98,8 @@ Simmer <- R6Class("simmer",
     },
 
     add_generator = function(name_prefix, trajectory, distribution, mon=1,
-                             priority=0, preemptible=priority, restart=FALSE) {
+                             priority=0, preemptible=priority, restart=FALSE)
+    {
       check_args(
         name_prefix = "string",
         trajectory = "trajectory",
@@ -115,25 +117,26 @@ Simmer <- R6Class("simmer",
 
     attach_data = function(name_prefix, trajectory, data, mon=1,
                            col_time="time", time=c("relative", "absolute"),
-                           col_priority=NULL, col_preemptible=col_priority,
-                           col_restart=NULL, col_attributes=NULL) {
+                           col_attributes=NULL, col_priority="priority",
+                           col_preemptible=col_priority, col_restart="restart")
+    {
       check_args(
         name_prefix = "string",
         trajectory = "trajectory",
         data = "data.frame",
         mon = "flag",
         col_time = "string",
+        col_attributes = c("string vector", "NULL"),
         col_priority = c("string", "NULL"),
         col_preemptible = c("string", "NULL"),
-        col_restart = c("string", "NULL"),
-        col_attributes = c("string vector", "NULL")
+        col_restart = c("string", "NULL")
       )
       time <- match.arg(time)
 
-      col_priority = as.character(col_priority)
-      col_preemptible = as.character(col_preemptible)
-      col_restart = as.character(col_restart)
-      col_attributes = as.character(col_attributes)
+      col_attributes <- as.character(col_attributes)
+      col_priority <- intersect(col_priority, names(data))
+      col_preemptible <- intersect(col_preemptible, names(data))
+      col_restart <- intersect(col_restart, names(data))
       col_names <- c(col_time, col_priority, col_preemptible, col_restart, col_attributes)
       col_undef <- setdiff(col_names, names(data))
 
@@ -150,7 +153,7 @@ Simmer <- R6Class("simmer",
         data[[col_time]] <- c(data[[col_time]][1], diff(data[[col_time]]))
       }
 
-      if (is.null(col_attributes)) {
+      if (!length(col_attributes)) {
         col_attributes <- setdiff(names(data), col_names)
         col_names <- c(col_names, col_attributes)
       }
@@ -160,8 +163,8 @@ Simmer <- R6Class("simmer",
           stop(get_caller(), ": column '", col_name, "' is not numeric", call.=FALSE)
       }
 
-      ret <- attach_data_(private$sim_obj, name_prefix, trajectory[], data, mon,
-                          col_time, col_priority, col_preemptible, col_restart, col_attributes)
+      ret <- attach_data_(private$sim_obj, name_prefix, trajectory[], data, mon, col_time,
+                          col_attributes, col_priority, col_preemptible, col_restart)
       if (ret) private$gen[[name_prefix]] <- c(mon=mon)
       self
     },

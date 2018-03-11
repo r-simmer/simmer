@@ -91,8 +91,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // attach_data_
-bool attach_data_(SEXP sim_, const std::string& name_prefix, const Environment& trj, const DataFrame& data, int mon, const std::string& time, const StringVector& priority, const StringVector& preemptible, const StringVector& restart, const StringVector& attrs);
-RcppExport SEXP _simmer_attach_data_(SEXP sim_SEXP, SEXP name_prefixSEXP, SEXP trjSEXP, SEXP dataSEXP, SEXP monSEXP, SEXP timeSEXP, SEXP prioritySEXP, SEXP preemptibleSEXP, SEXP restartSEXP, SEXP attrsSEXP) {
+bool attach_data_(SEXP sim_, const std::string& name_prefix, const Environment& trj, const DataFrame& data, int mon, const std::string& time, const std::vector<std::string>& attrs, const std::vector<std::string>& priority, const std::vector<std::string>& preemptible, const std::vector<std::string>& restart);
+RcppExport SEXP _simmer_attach_data_(SEXP sim_SEXP, SEXP name_prefixSEXP, SEXP trjSEXP, SEXP dataSEXP, SEXP monSEXP, SEXP timeSEXP, SEXP attrsSEXP, SEXP prioritySEXP, SEXP preemptibleSEXP, SEXP restartSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -102,11 +102,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const DataFrame& >::type data(dataSEXP);
     Rcpp::traits::input_parameter< int >::type mon(monSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type time(timeSEXP);
-    Rcpp::traits::input_parameter< const StringVector& >::type priority(prioritySEXP);
-    Rcpp::traits::input_parameter< const StringVector& >::type preemptible(preemptibleSEXP);
-    Rcpp::traits::input_parameter< const StringVector& >::type restart(restartSEXP);
-    Rcpp::traits::input_parameter< const StringVector& >::type attrs(attrsSEXP);
-    rcpp_result_gen = Rcpp::wrap(attach_data_(sim_, name_prefix, trj, data, mon, time, priority, preemptible, restart, attrs));
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type attrs(attrsSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type priority(prioritySEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type preemptible(preemptibleSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type restart(restartSEXP);
+    rcpp_result_gen = Rcpp::wrap(attach_data_(sim_, name_prefix, trj, data, mon, time, attrs, priority, preemptible, restart));
     return rcpp_result_gen;
 END_RCPP
 }

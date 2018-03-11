@@ -54,15 +54,16 @@ bool add_generator_(SEXP sim_, const std::string& name_prefix, const Environment
 //[[Rcpp::export]]
 bool attach_data_(SEXP sim_, const std::string& name_prefix, const Environment& trj,
                   const DataFrame& data, int mon, const std::string& time,
-                  const StringVector& priority, const StringVector& preemptible,
-                  const StringVector& restart, const StringVector& attrs)
+                  const std::vector<std::string>& attrs,
+                  const std::vector<std::string>& priority,
+                  const std::vector<std::string>& preemptible,
+                  const std::vector<std::string>& restart)
 {
   XPtr<Simulator> sim(sim_);
-  return sim->attach_data(name_prefix, trj, data, mon, time,
-                          as<VEC<std::string> >(priority),
-                          as<VEC<std::string> >(preemptible),
-                          as<VEC<std::string> >(restart),
-                          as<VEC<std::string> >(attrs));
+  return sim->attach_data(name_prefix, trj, data, mon, time, attrs,
+                          priority.empty() ? NONE : boost::make_optional(priority[0]),
+                          preemptible.empty() ? NONE : boost::make_optional(preemptible[0]),
+                          restart.empty() ? NONE : boost::make_optional(restart[0]));
 }
 
 //[[Rcpp::export]]

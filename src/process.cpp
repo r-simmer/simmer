@@ -34,7 +34,7 @@ Arrival* Source<T>::new_arrival(double delay) {
 
 void Generator::run() {
   // get the delay for the next (n) arrival(s)
-  Rcpp::NumericVector delays = source();
+  RNum delays = source();
   size_t n = delays.size();
   double delay = 0;
 
@@ -53,8 +53,8 @@ void Generator::run() {
 
 void DataPlug::run() {
   double delay = 0;
-  Rcpp::NumericVector time = source[col_time];
-  Rcpp::NumericVector col;
+  RNum time = source[col_time];
+  RNum col;
 
   for (size_t i = 0; i < 100; ++i) {
     if (time.size() <= count)
@@ -63,22 +63,22 @@ void DataPlug::run() {
 
     Arrival* arrival = new_arrival(delay);
 
-    if (col_priority.size()) {
-      col = source[col_priority[0]];
-      arrival->order.set_priority(col[count-1]);
-    }
-    if (col_preemptible.size()) {
-      col = source[col_preemptible[0]];
-      arrival->order.set_preemptible(col[count-1]);
-    }
-    if (col_restart.size()) {
-      col = source[col_restart[0]];
-      arrival->order.set_restart(col[count-1]);
+    for (size_t j = 0; j < col_attrs.size(); ++j) {
+      col = source[col_attrs[j]];
+      arrival->set_attribute(col_attrs[j], col[count-1]);
     }
 
-    for (size_t j = 0; j < col_attrs.size(); ++i) {
-      col = source[col_attrs[i]];
-      arrival->set_attribute(col_attrs[i], col[count-1]);
+    if (col_priority) {
+      col = source[*col_priority];
+      arrival->order.set_priority(col[count-1]);
+    }
+    if (col_preemptible) {
+      col = source[*col_preemptible];
+      arrival->order.set_preemptible(col[count-1]);
+    }
+    if (col_restart) {
+      col = source[*col_restart];
+      arrival->order.set_restart(col[count-1]);
     }
 
     // schedule the arrival
