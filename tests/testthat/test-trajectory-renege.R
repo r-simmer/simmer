@@ -27,7 +27,7 @@ test_that("an arrival in a timeout reneges (2)", {
   env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
     add_generator("sig", s, at(1)) %>%
-    run()
+    run(1000)
 
   arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 1)
@@ -58,7 +58,7 @@ test_that("a reneging arrival can follow a secondary sub-trajectory (2)", {
   env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
     add_generator("sig", s, at(1)) %>%
-    run()
+    run(1000)
 
   arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 2)
@@ -93,7 +93,7 @@ test_that("a second renege_if resets the timeout", {
   env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
     add_generator("sig", s, at(5)) %>%
-    run()
+    run(1000)
 
   arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 5)
@@ -111,7 +111,7 @@ test_that("a second renege_in resets the signal", {
   env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
     add_generator("sig", s, at(2)) %>%
-    run()
+    run(1000)
 
   arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 5)
@@ -129,7 +129,7 @@ test_that("a second renege_if resets the signal", {
   env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
     add_generator("sig", s, at(2)) %>%
-    run()
+    run(1000)
 
   arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 10)
@@ -164,7 +164,7 @@ test_that("reneging can be aborted (2)", {
   env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
     add_generator("sig", s, at(2)) %>%
-    run()
+    run(1000)
 
   arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 10)
