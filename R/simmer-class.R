@@ -52,7 +52,7 @@ Simmer <- R6Class("simmer",
       self
     },
 
-    run = function(until=1000) {
+    run = function(until=Inf) {
       run_(private$sim_obj, until)
       self
     },

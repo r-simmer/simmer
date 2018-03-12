@@ -78,10 +78,10 @@ reset.simmer <- function(.env) .env$reset()
 #' @return Returns the simulation environment.
 #' @seealso \code{\link{reset}}.
 #' @export
-run <- function(.env, until=1000, progress=NULL, steps=10) UseMethod("run")
+run <- function(.env, until=Inf, progress=NULL, steps=10) UseMethod("run")
 
 #' @export
-run.simmer <- function(.env, until=1000, progress=NULL, steps=10) {
+run.simmer <- function(.env, until=Inf, progress=NULL, steps=10) {
   check_args(until="number", progress=c("function", "NULL"), steps="number")
   if (is.function(progress)) {
     progress(0)
