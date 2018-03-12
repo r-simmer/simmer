@@ -8,6 +8,7 @@
 ## Minor changes and fixes:
 
 * Some documentation improvements (1e14ed7, 194ed05).
+* New default `until=Inf` for the `run` method (3e6aae9, as part of #140).
 
 # simmer 3.7.0
 
