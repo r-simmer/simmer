@@ -19,7 +19,8 @@
 #' \code{\link{get_queue_size_selected}}, \code{\link{get_server_count_selected}},
 #' \code{\link{get_queue_count_selected}}
 #'
-#' \item Sources: \code{\link{add_generator}}, \code{\link{get_n_generated}}
+#' \item Sources: \code{\link{add_generator}}, \code{\link{add_dataframe}},
+#' \code{\link{get_n_generated}}
 #'
 #' \item Data retrieval: \code{\link{get_mon_arrivals}},
 #' \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}
@@ -166,7 +167,7 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
 
 #' Add a Generator
 #'
-#' Define a new generator of arrivals in a simulation environment.
+#' Attach a new source of arrivals to a trajectory from a generator function.
 #'
 #' @inheritParams reset
 #' @param name_prefix the name prefix of the generated arrivals.
@@ -189,6 +190,8 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \code{\link{at}}, \code{\link{from}},
 #' \code{\link{to}}, \code{\link{from_to}}.
+#'
+#' Other sources: \code{\link{add_dataframe}}.
 #' @export
 add_generator <- function(.env, name_prefix, trajectory, distribution, mon=1,
                           priority=0, preemptible=priority, restart=FALSE)
@@ -198,6 +201,63 @@ add_generator <- function(.env, name_prefix, trajectory, distribution, mon=1,
 add_generator.simmer <- function(.env, name_prefix, trajectory, distribution, mon=1,
                                  priority=0, preemptible=priority, restart=FALSE)
   .env$add_generator(name_prefix, trajectory, distribution, mon, priority, preemptible, restart)
+
+#' Add a Data Frame
+#'
+#' Attach a new source of arrivals to a trajectory from a data frame.
+#'
+#' @inheritParams add_generator
+#' @param data a data frame with, at least, a column of (inter)arrival times (see details).
+#' @param batch number of arrivals generated at a time. Arrivals are read from
+#' the data frame and attached to the trajectory in batches depending on this
+#' value. In general, it should not be changed.
+#' @param col_time name of the time column in the data frame.
+#' @param time type of time column: \emph{interarrival}, if the time column
+#' contains interarrival times, or \emph{absolute}, if the time column contains
+#' absolute arrival times.
+#' @param col_attributes vector of names of the attributes columns (see details).
+#' @param col_priority name of the priority column.
+#' @param col_preemptible name of the preemptible column.
+#' @param col_restart name of the restart column.
+#'
+#' @return Returns the simulation environment.
+#'
+#' @details The data frame provided must have, at least, a column of (inter)arrival
+#' times. This method will look for it under the name \code{"time"} by default,
+#' although this can be changed with the \code{col_time} parameter.
+#'
+#' If there is any column named \code{col_priority="priority"},
+#' \code{col_preemptible=priority} or \code{col_restart="restart"}, they will be
+#' used to set the prioritization values for each arrival (see \code{\link{add_generator}}).
+#'
+#' If there are additional columns (with \code{col_attributes=NULL}, by default),
+#' they will be assigned to arrival attributes named after each column name. All
+#' these columns must be numeric (or logical). Otherwise, if a vector of column
+#' names is specified, only these will be assigned as attributes and the rest of
+#' the columns will be ignored.
+#'
+#' A value of \code{batch=Inf} means that the whole data frame will be attached
+#' at the beginning of the simulation. This is not desirable in general, because
+#' the performance of the event queue is degraded when it is populated with too
+#' many events. On the other hand, a low value results in an increased overhead
+#' due to many function calls. The default value has been tested to provide a
+#' good trade-off.
+#'
+#' @seealso Other sources: \code{\link{add_generator}}.
+#' @export
+add_dataframe <- function(.env, name_prefix, trajectory, data, mon=1, batch=50,
+                          col_time="time", time=c("interarrival", "absolute"),
+                          col_attributes=NULL, col_priority="priority",
+                          col_preemptible=col_priority, col_restart="restart")
+  UseMethod("add_dataframe")
+
+#' @export
+add_dataframe.simmer <- function(.env, name_prefix, trajectory, data, mon=1, batch=50,
+                                 col_time="time", time=c("interarrival", "absolute"),
+                                 col_attributes=NULL, col_priority="priority",
+                                 col_preemptible=col_priority, col_restart="restart")
+  .env$add_dataframe(name_prefix, trajectory, data, mon, batch, col_time, time,
+                     col_attributes, col_priority, col_preemptible, col_restart)
 
 #' Monitoring Statistics
 #'

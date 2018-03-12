@@ -45,9 +45,10 @@ system.time({
     release("server", 1)
 
   env <- simmer(verbose=F) %>%
-    add_resource("server", 1)
-  env $ add_data("customer", mm1, input, mon=F, batch=50)
-  run(env, 10000, progress=progress::progress_bar$new()$update)
+    add_resource("server", 1) %>%
+    add_dataframe("customer", mm1, input, mon=F, batch=50) %>%
+    run(10000, progress=progress::progress_bar$new()$update)
 })
+# 2.1 seconds with R 3.4.3
 
 plot(env, "res", "usage", "server")

@@ -90,9 +90,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// add_data_
-bool add_data_(SEXP sim_, const std::string& name_prefix, const Environment& trj, const DataFrame& data, int mon, int batch, const std::string& time, const std::vector<std::string>& attrs, const std::vector<std::string>& priority, const std::vector<std::string>& preemptible, const std::vector<std::string>& restart);
-RcppExport SEXP _simmer_add_data_(SEXP sim_SEXP, SEXP name_prefixSEXP, SEXP trjSEXP, SEXP dataSEXP, SEXP monSEXP, SEXP batchSEXP, SEXP timeSEXP, SEXP attrsSEXP, SEXP prioritySEXP, SEXP preemptibleSEXP, SEXP restartSEXP) {
+// add_dataframe_
+bool add_dataframe_(SEXP sim_, const std::string& name_prefix, const Environment& trj, const DataFrame& data, int mon, int batch, const std::string& time, const std::vector<std::string>& attrs, const std::vector<std::string>& priority, const std::vector<std::string>& preemptible, const std::vector<std::string>& restart);
+RcppExport SEXP _simmer_add_dataframe_(SEXP sim_SEXP, SEXP name_prefixSEXP, SEXP trjSEXP, SEXP dataSEXP, SEXP monSEXP, SEXP batchSEXP, SEXP timeSEXP, SEXP attrsSEXP, SEXP prioritySEXP, SEXP preemptibleSEXP, SEXP restartSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -107,7 +107,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const std::vector<std::string>& >::type priority(prioritySEXP);
     Rcpp::traits::input_parameter< const std::vector<std::string>& >::type preemptible(preemptibleSEXP);
     Rcpp::traits::input_parameter< const std::vector<std::string>& >::type restart(restartSEXP);
-    rcpp_result_gen = Rcpp::wrap(add_data_(sim_, name_prefix, trj, data, mon, batch, time, attrs, priority, preemptible, restart));
+    rcpp_result_gen = Rcpp::wrap(add_dataframe_(sim_, name_prefix, trj, data, mon, batch, time, attrs, priority, preemptible, restart));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1216,7 +1216,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_stepn_", (DL_FUNC) &_simmer_stepn_, 2},
     {"_simmer_run_", (DL_FUNC) &_simmer_run_, 2},
     {"_simmer_add_generator_", (DL_FUNC) &_simmer_add_generator_, 8},
-    {"_simmer_add_data_", (DL_FUNC) &_simmer_add_data_, 11},
+    {"_simmer_add_dataframe_", (DL_FUNC) &_simmer_add_dataframe_, 11},
     {"_simmer_add_resource_", (DL_FUNC) &_simmer_add_resource_, 8},
     {"_simmer_add_resource_manager_", (DL_FUNC) &_simmer_add_resource_manager_, 6},
     {"_simmer_get_mon_arrivals_", (DL_FUNC) &_simmer_get_mon_arrivals_, 3},

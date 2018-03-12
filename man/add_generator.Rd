@@ -37,9 +37,11 @@ thus only higher priority arrivals can trigger preemption.}
 Returns the simulation environment.
 }
 \description{
-Define a new generator of arrivals in a simulation environment.
+Attach a new source of arrivals to a trajectory from a generator function.
 }
 \seealso{
 Convenience functions: \code{\link{at}}, \code{\link{from}},
 \code{\link{to}}, \code{\link{from_to}}.
+
+Other sources: \code{\link{add_dataframe}}.
 }

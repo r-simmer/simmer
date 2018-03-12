@@ -52,18 +52,18 @@ bool add_generator_(SEXP sim_, const std::string& name_prefix, const Environment
 }
 
 //[[Rcpp::export]]
-bool add_data_(SEXP sim_, const std::string& name_prefix, const Environment& trj,
-               const DataFrame& data, int mon, int batch, const std::string& time,
-               const std::vector<std::string>& attrs,
-               const std::vector<std::string>& priority,
-               const std::vector<std::string>& preemptible,
-               const std::vector<std::string>& restart)
+bool add_dataframe_(SEXP sim_, const std::string& name_prefix, const Environment& trj,
+                    const DataFrame& data, int mon, int batch, const std::string& time,
+                    const std::vector<std::string>& attrs,
+                    const std::vector<std::string>& priority,
+                    const std::vector<std::string>& preemptible,
+                    const std::vector<std::string>& restart)
 {
   XPtr<Simulator> sim(sim_);
-  return sim->add_data(name_prefix, trj, data, mon, batch, time, attrs,
-                       priority.empty() ? NONE : boost::make_optional(priority[0]),
-                       preemptible.empty() ? NONE : boost::make_optional(preemptible[0]),
-                       restart.empty() ? NONE : boost::make_optional(restart[0]));
+  return sim->add_dataframe(name_prefix, trj, data, mon, batch, time, attrs,
+                            priority.empty() ? NONE : boost::make_optional(priority[0]),
+                            preemptible.empty() ? NONE : boost::make_optional(preemptible[0]),
+                            restart.empty() ? NONE : boost::make_optional(restart[0]));
 }
 
 //[[Rcpp::export]]

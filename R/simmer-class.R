@@ -115,8 +115,8 @@ Simmer <- R6Class("simmer",
       self
     },
 
-    add_data = function(name_prefix, trajectory, data, mon=1, batch=50,
-                        col_time="time", time=c("relative", "absolute"),
+    add_dataframe = function(name_prefix, trajectory, data, mon=1, batch=50,
+                        col_time="time", time=c("interarrival", "absolute"),
                         col_attributes=NULL, col_priority="priority",
                         col_preemptible=col_priority, col_restart="restart")
     {
@@ -164,8 +164,8 @@ Simmer <- R6Class("simmer",
           stop(get_caller(), ": column '", col_name, "' is not numeric", call.=FALSE)
       }
 
-      ret <- add_data_(private$sim_obj, name_prefix, trajectory[], data, mon, batch,
-                       col_time, col_attributes, col_priority, col_preemptible, col_restart)
+      ret <- add_dataframe_(private$sim_obj, name_prefix, trajectory[], data, mon, batch,
+                            col_time, col_attributes, col_priority, col_preemptible, col_restart)
       if (ret) private$src[[name_prefix]] <- c(mon=mon)
       self
     },

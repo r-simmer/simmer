@@ -206,11 +206,11 @@ public:
    * @param   preemptible     column name
    * @param   restart         column name
    */
-  bool add_data(const std::string& name_prefix, REnv trj, RData data, int mon,
-                int batch, const std::string& time, const VEC<std::string>& attrs,
-                const OPT<std::string>& priority,
-                const OPT<std::string>& preemptible,
-                const OPT<std::string>& restart)
+  bool add_dataframe(const std::string& name_prefix, REnv trj, RData data, int mon,
+                     int batch, const std::string& time, const VEC<std::string>& attrs,
+                     const OPT<std::string>& priority,
+                     const OPT<std::string>& preemptible,
+                     const OPT<std::string>& restart)
   {
     if (process_map.find(name_prefix) != process_map.end()) {
       Rcpp::warning("process '%s' already defined", name_prefix);
