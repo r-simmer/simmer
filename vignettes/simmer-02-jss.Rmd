@@ -185,7 +185,7 @@ Resource
 Manager
  ~ An active entity, i.e., a process, that has the ability to adjust properties of a resource (capacity and queue size) at run-time.
 
-Generator
+Source
   ~ A process responsible for creating new *arrivals* with a given interarrival time pattern and inserting them into the simulation model.
 
 Arrival
@@ -207,9 +207,9 @@ Extending an \proglang{R} package (or any other piece of software written in any
 
 Figure \ref{architecture} sketches a UML (Unified Modelling Language) description of the architecture, which constitutes a process-based design, as in many modern DES frameworks. We draw the attention now to the \proglang{C++} classes (depicted in white).
 
-The first main component is the \code{Simulator} class. It comprises the event loop and the event queue, which will be addressed in the next section. The \code{Simulator} provides methods for scheduling and unscheduling events. Moreover, it is responsible for managing simulation-wide entities (e.g., resources and generators) and facilities (e.g., signaling between processes and batches) through diverse \proglang{C++} unordered maps:
+The first main component is the \code{Simulator} class. It comprises the event loop and the event queue, which will be addressed in the next section. The \code{Simulator} provides methods for scheduling and unscheduling events. Moreover, it is responsible for managing simulation-wide entities (e.g., resources and arrival sources) and facilities (e.g., signaling between processes and batches) through diverse \proglang{C++} unordered maps:
 
-- Maps of resources and processes (generators, arrivals and managers) by name.
+- Maps of resources and processes (sources, arrivals and managers) by name.
 - A map of pending events, which allows to unschedule a given process.
 - Maps of signals subscribed by arrivals and handlers defined for different signals.
 - Maps for forming batches of arrivals, named and unnamed.
@@ -222,7 +222,7 @@ This class also holds global attributes and monitoring information. Thus, monito
 - An arrival modifies an attribute, one of its own or a global one. The arrival notifies the new value.
 - An arrival leaves its trajectory by exhausting the activities associated (considered as *finished*) or because of another reason (*non-finished*, e.g., it is rejected from a resource). The arrival notifies global start, end and activity times.
 
-As mentioned in the previous section, there are two types of entities: passive ones (\code{Resource}) and active ones (processes \code{Generator}, \code{Arrival} and \code{Manager}). Generators create new arrivals, and the latter are the main actors of the simulation model. Managers can be used for dynamically changing the properties of a resource (capacity and queue size). All processes share a \code{run()} method that is invoked by the event loop each time a new event is extracted from the event list.
+As mentioned in the previous section, there are two types of entities: passive ones (\code{Resource}) and active ones (processes \code{Source}, \code{Arrival} and \code{Manager}). Sources create new arrivals, and the latter are the main actors of the simulation model. Managers can be used for dynamically changing the properties of a resource (capacity and queue size). All processes share a \code{run()} method that is invoked by the event loop each time a new event is extracted from the event list.
 
 There is a fourth kind of process not shown in Figure \ref{architecture}, called \code{Task}. It is a generic process that executes a given function once, and it is used by arrivals, resources, activities and the simulator itself to trigger dynamic actions or split up events. A \code{Task} is for instance used under the hood to trigger reneging or to broadcast signals after some delay.
 
@@ -325,7 +325,7 @@ Arrivals also hold a set of three prioritisation values for accessing resources:
 \code{restart}
   ~ Whether the ongoing activity must be restarted after being preempted.
 
-These three values are established for all the arrivals created by a particular generator, but they can also be dynamically changed on a per-arrival basis using the \code{set\_prioritization()} and \code{get\_prioritization()} activities, in the same way as attributes.
+These three values are established for all the arrivals created by a particular source, but they can also be dynamically changed on a per-arrival basis using the \code{set\_prioritization()} and \code{get\_prioritization()} activities, in the same way as attributes.
 
 ### Interaction with resources
 
@@ -375,11 +375,11 @@ The value supplied to all these methods may be a dynamical parameter. On the oth
 
 Its \code{resources} parameter is allowed to be dynamical, and there is also the possibility of defining custom policies. Once a resource is selected, there are special versions of the aforementioned activities for interacting with resources without specifying its name, such as \code{seize\_selected()}, \code{set\_capacity\_selected()} and so on.
 
-### Interaction with generators
+### Interaction with sources
 
-There are four activities specifically intended to modify generators. An arrival may \code{activate()} or \code{deactivate()} a generator, but also modify with \code{set\_trajectory()} the trajectory to which it attaches the arrivals created, or set a new interarrival distribution with \code{set\_distribution()}. For dynamically selecting a generator, the parameter that specifies the generator name in all these methods can be dynamical.
+There are four activities specifically intended to modify arrival sources. An arrival may \code{activate()} or \code{deactivate()} a source, but also modify with \code{set\_trajectory()} the trajectory to which it attaches the arrivals created, or set a new interarrival distribution with \code{set\_source()}. For dynamically selecting a source, the parameter that specifies the source name in all these methods can be dynamical.
 
-```{r, trajectory-generators}
+```{r, trajectory-sources}
 traj <- trajectory() %>%
   deactivate("dummy") %>%
   timeout(1) %>%
@@ -511,7 +511,7 @@ simmer() %>%
 
 ## The simulation environment
 
-The simulation environment manages resources and generators, and controls the simulation execution. The \code{simmer()} method instantiates the object, after which resources and generators can be appended using the \code{\%>\%} operator:
+The simulation environment manages resources and sources, and controls the simulation execution. The \code{simmer()} method instantiates the object, after which resources and sources can be appended using the \code{\%>\%} operator:
 
 ```{r, simmer-1}
 env <- simmer()
@@ -528,7 +528,7 @@ env %>%
   run(until=40)
 ```
 
-There are a number of methods for extracting information, such as the simulation time (\code{now()}), future scheduled events (\code{peek()}), and *getters* for obtaining resources' and generators' parameters (capacity, queue size, server count and queue count; number of arrivals generated so far). There are also several *setters* available for resources and generators (capacity, queue size; trajectory, distribution).
+There are a number of methods for extracting information, such as the simulation time (\code{now()}), future scheduled events (\code{peek()}), and *getters* for obtaining resources' and sources' parameters (capacity, queue size, server count and queue count; number of arrivals generated so far). There are also several *setters* available for resources and sources (capacity, queue size; trajectory, distribution).
 
 A \code{simmer} object can be \code{reset()} and re-run. However, there is a special method, \code{wrap()}, intended to extract all the information from the \proglang{C++} object encapsulated into a \code{simmer} environment and to deallocate that object. Thus, most of the *getters* work also when applied to wrapped environments, but such an object cannot be reset or re-run anymore.
 
@@ -536,15 +536,13 @@ A \code{simmer} object can be \code{reset()} and re-run. However, there is a spe
 
 A \pkg{simmer} resource, as stated in Section \ref{terminology}, comprises two internal self-managed parts: a server and a priority queue. Three main parameters define a resource: \code{name} of the resource, \code{capacity} of the server and \code{queue_size} (0 means no queue). Resources are monitored and non-preemptive by default. Preemption means that if a high priority arrival becomes eligible for processing, the resource will temporarily stop the processing of one (or more) of the lower priority arrivals being served. For preemptive resources, the \code{preempt_order} defines which arrival should be stopped first if there are many lower priority arrivals, and it assumes a first-in-first-out (FIFO) policy by default. Any preempted arrival is enqueued in a dedicated queue that has a higher priority over the main one (i.e., it is served first). The \code{queue_size_strict} parameter controls whether this dedicated queue must be taken into account for the queue size limit, if any. If this parameter enforces the limit, then rejection may occur in the main queue.
 
-### Generators
+### Sources
 
-Three main parameters define a generator: a \code{name_prefix} for each generated arrival, a trajectory to attach them to and an interarrival \code{distribution}. Parameters \code{priority}, \code{preemptible} and \code{restart} have been described in Section \ref{arrival-properties}. The monitoring flag accepts several levels in this case:
+Three main parameters define a source: a \code{name_prefix} for each generated arrival, a trajectory to attach them to and a source of interarrival times. A monitoring flag accepts several levels in this case to support arrival monitoring (default) and, additionally, attribute monitoring.
 
-0. No monitoring enabled.
-1. Arrival monitoring.
-2. Level 1 $+$ attribute monitoring.
+There are two kinds of source: *generators* and *data sources*. A *generator* (\code{add\_generator} method, as depicted in many examples throughout this article) is a dynamic source that draws interarrival times from a user-provided function. The \code{add\_dataframe} method allows the user to set up a *data source* which draws arrivals from a provided data frame. The former is the most versatile source, but the latter facilitates the attachment of pre-existent or pre-computed data with attributes that are automatically initialised on arrival creation.
 
-The interarrival \code{distribution} must return one or more interarrival times for each call. Internally, generators create as many arrivals as values returned by this function. They do so with zero-delay and re-schedule themselves with a delay equal to the sum of the values obtained. Whenever a negative interarrival value is obtained, the generator stops.
+In the case of generators, the interarrival \code{distribution} must return one or more interarrival times for each call. Internally, generators create as many arrivals as values returned by this function. Whenever a negative interarrival value is obtained, the generator stops. In the case of data sources, they draw arrivals from the \code{data} provided in batches. Both generators and data sources re-schedule themselves with a delay equal to the sum of the values obtained to produce the next batch.
 
 ## Monitoring and data retrieval
 
@@ -565,7 +563,7 @@ The following sections aim to provide some basic modelling examples. The topics 
 
 ## Queuing systems
 
-The concept of *trajectory* developed in \pkg{simmer} emerges as a natural way to simulate a wide range of problems related to Continuous-Time Markov Chains (CTMC), and more specifically to the so-called birth-death processes and queuing systems. Indeed, \pkg{simmer} not only provides very flexible resources (with or without queue), branches, delays and arrival generators, but they are bundled in a very comprehensive framework of verbs that can be chained with the pipe operator. Let us explore the expressiveness of a \pkg{simmer} trajectory using a *traditional* queuing example: the M/M/1. The package vignettes include further examples on M/M/c/k systems, queueing networks and CTMC models.
+The concept of *trajectory* developed in \pkg{simmer} emerges as a natural way to simulate a wide range of problems related to Continuous-Time Markov Chains (CTMC), and more specifically to the so-called birth-death processes and queuing systems. Indeed, \pkg{simmer} not only provides very flexible resources (with or without queue), branches, delays and arrival sources, but they are bundled in a very comprehensive framework of verbs that can be chained with the pipe operator. Let us explore the expressiveness of a \pkg{simmer} trajectory using a *traditional* queuing example: the M/M/1. The package vignettes include further examples on M/M/c/k systems, queueing networks and CTMC models.
 
 In Kendall's notation [@Kendall:1953], an M/M/1 system has exponential arrivals (**M**/M/1), a single server (M/M/**1**) with exponential service time (M/**M**/1) and an infinite queue (implicit M/M/1/**$\infty$**). For instance, people arriving at an ATM at rate $\lambda$, waiting their turn in the street and withdrawing money at rate $\mu$. These are the basic parameters of the system, whenever $\rho < 1$:
 
@@ -599,7 +597,7 @@ mm1.env <- simmer() %>%
 
 After the parameter setup, the first code block defines the trajectory: each arrival will seize the resource, wait some exponential random time (service time) and release the resource. The second code block instantiates the simulation environment, creates the resource, attaches an exponential generator to the trajectory and runs the simulation for 2000 units of time. Note that trajectories can be defined independently of the simulation environment, but it is recommended to instantiate the latter in the first place, so that trajectories are able to extract information from it (e.g., the simulation time).
 
-As a next step, we could extract the monitoring information and perform some analyses. The extension package \pkg{simmer.plot} [@CRAN:simmer.plot] provides convenience plotting methods to, for instance, quickly visualise the usage of a resource over time. Figure \ref{mm1-plot} gives a glimpse of this simulation using this package. In particular, it shows that the average number of customers in the system converges to the theoretical value given by Equation~\ref{eq:N}.
+As a next step, we could extract the monitoring information and perform some analyses. The extension package \pkg{simmer.plot} [@CRAN:simmer.plot] provides convenience plotting methods to, for instance, quickly visualise the usage of a resource over time. Figure \ref{mm1-plot} gives a glimpse of this simulation using this package. In particular, it shows that the average number of customers in the system converges to the theoretical value given by Equation \ref{eq:N}.
 
 ```{r, mm1-plot, echo=FALSE, eval=requireNamespace("simmer.plot", quietly=TRUE), out.width='.49\\linewidth', fig.height=4, fig.cap='Detail of the resource usage\\label{mm1-plot}.', fig.subcap=c("Instantaneous usage.", "Convergence over time.")}
 library("simmer.plot")
@@ -615,8 +613,6 @@ plot(mm1.env.res, "usage", "mm1.resource", items="system") +
   theme_bw() + geom_hline(yintercept=rho/(1-rho)) +
   theme(legend.justification=c(1, 0), legend.position=c(0.99, 0.01))
 ```
-
-\pagebreak
 
 ## Replication and parallelisation
 
@@ -698,7 +694,7 @@ xgn <- function(resource, G, n)
 
 Standard \proglang{R} tools (\code{lapply()} and the like) may also be used to generate large lists of trajectories with some variations. These small pieces can be concatenated together into longer trajectories using \code{join()}, but at the same time, they allow for multiple points of attachment of arrivals.
 
-During a simulation, trajectories can interact with the simulation environment in order to extract or modify parameters of interest such as the current simulation time, attributes, status of resources (get the number of arrivals in a resource, get or set resources' capacity or queue size), or status of generators (get the number of generated arrivals, set generators' attached trajectory or distribution). The only requirement is that the simulation object must be defined in the same \proglang{R} environment (or a parent one) *before* the simulation is started. Effectively, it is enough to detach the \code{run()} method from the instantiation (\code{simmer()}), namely, they should not be called in the same pipe. But, for the sake of consistency, it is a good coding practice to instantiate the simulation object always in the first place as follows:
+During a simulation, trajectories can interact with the simulation environment in order to extract or modify parameters of interest such as the current simulation time, attributes, status of resources (get the number of arrivals in a resource, get or set resources' capacity or queue size), or status of sources (get the number of generated arrivals, set sources' attached trajectory or distribution). The only requirement is that the simulation object must be defined in the same \proglang{R} environment (or a parent one) *before* the simulation is started. Effectively, it is enough to detach the \code{run()} method from the instantiation (\code{simmer()}), namely, they should not be called in the same pipe. But, for the sake of consistency, it is a good coding practice to instantiate the simulation object always in the first place as follows:
 
 ```{r, best-coding}
 set.seed(1234)
