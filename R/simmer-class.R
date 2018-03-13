@@ -145,15 +145,6 @@ Simmer <- R6Class("simmer",
         stop(get_caller(), ": columns '", paste0(col_undef, collapse="', '"),
              "' are not defined in ", as.character(substitute(data)), call.=FALSE)
 
-      if (any(data[[col_time]] < 0))
-        stop(get_caller(), ": time must be positive", call.=FALSE)
-
-      if (time == "absolute") {
-        if (is.unsorted(data[[col_time]]))
-          stop(get_caller(), ": unsorted absolute time provided", call.=FALSE)
-        data[[col_time]] <- c(data[[col_time]][1], diff(data[[col_time]]))
-      }
-
       if (!length(col_attributes)) {
         col_attributes <- setdiff(names(data), col_names)
         col_names <- c(col_names, col_attributes)
@@ -162,6 +153,15 @@ Simmer <- R6Class("simmer",
       for (col_name in col_names) {
         if (!(is.numeric(data[[col_name]]) || is.logical(data[[col_name]])))
           stop(get_caller(), ": column '", col_name, "' is not numeric", call.=FALSE)
+      }
+
+      if (any(is.na(data[[col_time]])) || any(data[[col_time]] < 0))
+        stop(get_caller(), ": time must be positive", call.=FALSE)
+
+      if (time == "absolute") {
+        if (is.unsorted(data[[col_time]]))
+          stop(get_caller(), ": unsorted absolute time provided", call.=FALSE)
+        data[[col_time]] <- c(data[[col_time]][1], diff(data[[col_time]]))
       }
 
       ret <- add_dataframe_(private$sim_obj, name_prefix, trajectory[], data, mon, batch,

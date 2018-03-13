@@ -244,11 +244,11 @@ set_source.trajectory <- function(.trj, source, object)
 
 #' @rdname set_trajectory
 #' @export
-set_distribution <- function(.trj, source, object) UseMethod("set_distribution")
+set_distribution <- function(.trj, source, object) UseMethod("set_distribution") # nocov
 
 #' @export
-set_distribution.trajectory <- function(.trj, source, object)
-  .Deprecated("set_source")
+set_distribution.trajectory <- function(.trj, source, object) # nocov
+  .Deprecated("set_source") # nocov
 
 #' Set Prioritization Values
 #'
