@@ -42,6 +42,9 @@ output: rticles::jss_article
 classoption: nojss
 citation_package: natbib
 bibliography: jss.bib
+pkgdown:
+  as_is: true
+  extension: pdf
 vignette: >
   %\VignetteIndexEntry{02. JSS paper}
   %\VignetteEngine{knitr::rmarkdown}
