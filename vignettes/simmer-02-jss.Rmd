@@ -21,8 +21,8 @@ author:
       28911 Leganés (Madrid) Spain
     email: azcorra@it.uc3m.es
 title:
-  formatted: "\\pkg{simmer}: Discrete-Event Simulation for \\proglang{R}"
   plain:     "simmer: Discrete-Event Simulation for R"
+  formatted: "\\pkg{simmer}: Discrete-Event Simulation for \\proglang{R}"
 abstract: >
   The \pkg{simmer} package brings discrete-event simulation to \proglang{R}.
   It is designed as a generic yet powerful process-oriented framework. The architecture
@@ -31,8 +31,8 @@ abstract: >
   revolves around the concept of *trajectory*, a common path in the simulation model
   for entities of the same type.
 keywords:
-  formatted: ["\\proglang{R}", Discrete-Event Simulation]
   plain:     [R, Discrete-Event Simulation]
+  formatted: ["\\proglang{R}", Discrete-Event Simulation]
 preamble: >
   \usepackage{amsmath}
   \usepackage{longtable}
