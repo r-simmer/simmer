@@ -461,111 +461,111 @@ protected:
 };
 
 /**
- * Activate a generator.
+ * Activate a source.
  */
 template <typename T>
 class Activate : public Activity {
 public:
   CLONEABLE(Activate<T>)
 
-  Activate(const T& generator)
-    : Activity("Activate"), generator(generator) {}
+  Activate(const T& source)
+    : Activity("Activate"), source(source) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL1(generator) << BENDL;
-    else Rcpp::Rcout << BARE1(generator) << ENDL;
+    if (!brief) Rcpp::Rcout << LABEL1(source) << BENDL;
+    else Rcpp::Rcout << BARE1(source) << ENDL;
   }
 
   double run(Arrival* arrival) {
-    arrival->sim->get_generator(get<std::string>(generator, arrival))->activate();
+    arrival->sim->get_source(get<std::string>(source, arrival))->activate();
     return 0;
   }
 
 protected:
-  T generator;
+  T source;
 };
 
 /**
- * Deactivate a generator.
+ * Deactivate a source.
  */
 template <typename T>
 class Deactivate : public Activity {
 public:
   CLONEABLE(Deactivate<T>)
 
-  Deactivate(const T& generator)
-    : Activity("Deactivate"), generator(generator) {}
+  Deactivate(const T& source)
+    : Activity("Deactivate"), source(source) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL1(generator) << BENDL;
-    else Rcpp::Rcout << BARE1(generator) << ENDL;
+    if (!brief) Rcpp::Rcout << LABEL1(source) << BENDL;
+    else Rcpp::Rcout << BARE1(source) << ENDL;
   }
 
   double run(Arrival* arrival) {
-    arrival->sim->get_generator(get<std::string>(generator, arrival))->deactivate();
+    arrival->sim->get_source(get<std::string>(source, arrival))->deactivate();
     return 0;
   }
 
 protected:
-  T generator;
+  T source;
 };
 
 /**
- * Set a generator's trajectory.
+ * Set a source's trajectory.
  */
 template <typename T>
 class SetTraj : public Activity {
 public:
   CLONEABLE(SetTraj<T>)
 
-  SetTraj(const T& generator, const REnv& trajectory)
-    : Activity("SetTraj"), generator(generator), trajectory(trajectory) {}
+  SetTraj(const T& source, const REnv& trajectory)
+    : Activity("SetTraj"), source(source), trajectory(trajectory) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL2(generator, trajectory) << BENDL;
-    else Rcpp::Rcout << BARE2(generator, trajectory) << ENDL;
+    if (!brief) Rcpp::Rcout << LABEL2(source, trajectory) << BENDL;
+    else Rcpp::Rcout << BARE2(source, trajectory) << ENDL;
   }
 
   double run(Arrival* arrival) {
     arrival->sim->
-      get_generator(get<std::string>(generator, arrival))->set_trajectory(trajectory);
+      get_source(get<std::string>(source, arrival))->set_trajectory(trajectory);
     return 0;
   }
 
 protected:
-  T generator;
+  T source;
   REnv trajectory;
 };
 
 /**
- * Set a generator's distribution.
+ * Set a source's source.
  */
-template <typename T>
-class SetDist : public Activity {
+template <typename T, typename U>
+class SetSource : public Activity {
 public:
-  CLONEABLE(SetDist<T>)
+  CLONEABLE(SetSource<T COMMA U>)
 
-  SetDist(const T& generator, const RFn& distribution)
-    : Activity("SetDist"), generator(generator), distribution(distribution) {}
+  SetSource(const T& source, const U& object)
+    : Activity("SetSource"), source(source), object(object) {}
 
   void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
     Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL2(generator, distribution) << BENDL;
-    else Rcpp::Rcout << BARE2(generator, distribution) << ENDL;
+    if (!brief) Rcpp::Rcout << LABEL2(source, object) << BENDL;
+    else Rcpp::Rcout << BARE2(source, object) << ENDL;
   }
 
   double run(Arrival* arrival) {
     arrival->sim->
-      get_generator(get<std::string>(generator, arrival))->set_distribution(distribution);
+      get_source(get<std::string>(source, arrival))->set_source(object);
     return 0;
   }
 
 protected:
-  T generator;
-  RFn distribution;
+  T source;
+  U object;
 };
 
 /**

@@ -50,7 +50,7 @@ get_mon_attributes.wrap <- function(.envs) get_mon_attributes.simmer(.envs)
 get_mon_resources.wrap <- function(.envs) get_mon_resources.simmer(.envs)
 
 #' @export
-get_n_generated.wrap <- function(.env, generator) get_n_generated.simmer(.env, generator)
+get_n_generated.wrap <- function(.env, source) get_n_generated.simmer(.env, source)
 
 #' @export
 get_capacity.wrap <- function(.env, resource) get_capacity.simmer(.env, resource)

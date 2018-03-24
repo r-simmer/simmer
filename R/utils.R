@@ -36,9 +36,10 @@ is_function <- function(name, env) {
 }
 
 is_trajectory <- function(name, env) {
+  check_traj <- function(traj) inherits(traj, "trajectory") & length(traj)
   if (name == "dots.")
-    all(sapply(env[[name]], inherits, what="trajectory"))
-  else inherits(env[[name]], "trajectory")
+    all(sapply(env[[name]], check_traj))
+  else check_traj(env[[name]])
 }
 
 is_data.frame <- function(name, env) is.data.frame(env[[name]])
@@ -73,7 +74,7 @@ check_args <- function(..., env.=parent.frame()) {
     funcs <- paste0("is_", sub(" ", "_", types[[var]]))
     if (!any(sapply(funcs, do.call, args=list(var, env.), envir=env.)))
       msg <- c(msg, paste0(
-        "'", sub("dots.", "...", var), "' is not a ", paste0(types[[var]], collapse=" or ")))
+        "'", sub("dots.", "...", var), "' is not a valid ", paste0(types[[var]], collapse=" or ")))
   }
 
   if (length(msg))

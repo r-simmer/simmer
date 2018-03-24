@@ -1,56 +1,138 @@
-context("generator")
+context("dataframe")
 
-test_that("a generator without a trajectory fails", {
-  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", 4, 1))
+test_that("a data source name conflicts with a generator name", {
+  expect_warning(
+    simmer(verbose = TRUE) %>%
+      add_generator("asdf", trajectory() %>% timeout(0), at(0)) %>%
+      add_dataframe("asdf", trajectory() %>% timeout(0), data.frame(time=0))
+  )
+  expect_warning(
+    simmer(verbose = TRUE) %>%
+      add_dataframe("asdf", trajectory() %>% timeout(0), data.frame(time=0)) %>%
+      add_generator("asdf", trajectory() %>% timeout(0), at(0))
+  )
 })
 
-test_that("a non-function dist fails", {
+test_that("a data source without a trajectory fails", {
+  DF <- data.frame(time=1)
+  expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", 4, DF))
+})
+
+test_that("a non-data.frame data argument fails", {
   t0 <- trajectory() %>% timeout(1)
-  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", t0, 1))
+  expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", t0, 1))
 })
 
 test_that("an empty trajectory fails", {
-  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", trajectory(), function() {}))
+  DF <- data.frame(time=1)
+  expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", trajectory(), DF))
 })
 
-test_that("a dist that returns a non-numeric value fails", {
+test_that("a data source with non-numeric values fails", {
   t0 <- trajectory() %>% timeout(1)
+  DF <- data.frame(time=NA)
+  expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", t0, DF))
+  DF <- data.frame(time="asdf")
+  expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", t0, DF))
+})
 
-  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", t0, function() {}) %>% step())
+test_that("unsorted absolute time fails", {
+  t0 <- trajectory() %>% timeout(1)
+  expect_error(
+    simmer(verbose = TRUE) %>%
+      add_dataframe("dummy", t0, data.frame(time=3:1), time="absolute")
+  )
+})
+
+test_that("absolute time works as expected", {
+  t0 <- trajectory() %>% timeout(0)
+
+  time <- c(0, 1, 3, 9)
+  arr <- simmer(verbose=TRUE) %>%
+    add_dataframe("dummy", t0, data.frame(time=time), time="absolute") %>%
+    run() %>%
+    get_mon_arrivals()
+
+  expect_equal(arr$start_time, time)
 })
 
 test_that("generates the expected amount", {
   t0 <- trajectory() %>% timeout(1)
+  DF <- data.frame(time=rep(1, 3))
 
   env <- simmer(verbose = TRUE) %>%
-    add_generator("customer", t0, at(c(0, 1, 2))) %>%
-    run(10)
+    add_dataframe("dummy", t0, DF) %>%
+    run()
 
   expect_error(env %>% get_n_generated("asdf"))
-  expect_equal(env %>% get_n_generated("customer"), 3)
+  expect_equal(env %>% get_n_generated("dummy"), 3)
 })
 
-test_that("generators are reset", {
+test_that("data sources are reset", {
   t <- trajectory() %>% timeout(1)
+  DF <- data.frame(time=rep(1, 3))
 
   expect_equal(3, simmer(verbose = TRUE) %>%
-    add_generator("dummy", t, at(0, 1, 2)) %>%
+    add_dataframe("dummy", t, DF) %>%
     run() %>% reset() %>% run() %>%
     get_mon_arrivals() %>% nrow()
   )
 })
 
+test_that("priorities are set", {
+  t <- trajectory() %>%
+    log_(function() paste(get_prioritization(env), collapse=","))
+
+  DF <- data.frame(time=rep(1, 3), priority=1:3, preemptible=2:4, restart=c(0, 1, 0))
+
+  env <- simmer(verbose = TRUE) %>%
+    add_dataframe("dummy", t, DF, col_preemptible="preemptible")
+
+  expect_output(run(env), "dummy0: 1,2,0.*dummy1: 2,3,1.*dummy2: 3,4,0")
+})
+
 test_that("preemptible < priority shows a warning", {
   t <- trajectory() %>% timeout(0)
-  expect_warning(simmer(verbose = TRUE) %>% add_generator("dummy", t, at(0), priority = 3, preemptible = 1))
+  DF <- data.frame(time=0, priority=3, preemptible=1)
+  expect_warning(simmer(verbose = TRUE) %>%
+    add_dataframe("dummy", t, DF, col_preemptible="preemptible") %>%
+    stepn()
+  )
+})
+
+test_that("attributes are set", {
+  t <- trajectory() %>% timeout(0)
+
+  DF <- data.frame(time=rep(1, 3), attr1=1:3, attr2=3:1)
+
+  attr <- simmer(verbose = TRUE) %>%
+    add_dataframe("dummy", t, DF, mon=2, col_attributes="attr1") %>%
+    run() %>%
+    get_mon_attributes()
+
+  expect_equal(attr$time, rep(0, 3))
+  expect_equal(attr$name, paste0("dummy", 0:2))
+  expect_equal(attr$key, rep("attr1", 3))
+  expect_equal(attr$value, 1:3)
+
+  attr <- simmer(verbose = TRUE) %>%
+    add_dataframe("dummy", t, DF, mon=2) %>%
+    run() %>%
+    get_mon_attributes()
+
+  expect_equal(attr$time, rep(0, 6))
+  expect_equal(attr$name, rep(paste0("dummy", 0:2), each=2))
+  expect_equal(attr$key, rep(paste0("attr", 1:2), 3))
+  expect_equal(attr$value, c(1, 3, 2, 2, 3, 1))
 })
 
 test_that("arrival names are correctly retrieved", {
   t <- trajectory() %>%
     log_(function() get_name(env))
+  DF <- data.frame(time=0)
 
   env <- simmer() %>%
-    add_generator("dummy", t, at(0))
+    add_dataframe("dummy", t, DF)
 
   expect_output(run(env), "0: dummy0: dummy0")
   expect_error(get_name(env))
@@ -76,13 +158,16 @@ test_that("arrivals are correctly monitored", {
     timeout(1) %>%
     rollback(1, times = Inf)
 
+  DFa <- DFb <- DFc <- data.frame(time=0)
+  DFd <- data.frame(time=1)
+
   env <- simmer(verbose = TRUE) %>%
     add_resource("res1", 1) %>%
     add_resource("res2") %>%
-    add_generator("a", a, at(0)) %>%
-    add_generator("b", b, at(0)) %>%
-    add_generator("c", c, at(0)) %>%
-    add_generator("d", c, at(1), mon = FALSE) %>%
+    add_dataframe("a", a, DFa) %>%
+    add_dataframe("b", b, DFb) %>%
+    add_dataframe("c", c, DFc) %>%
+    add_dataframe("d", c, DFd, mon = FALSE) %>%
     run(until = 4)
 
   arr1 <- get_mon_arrivals(env, per_resource = FALSE, ongoing = TRUE)

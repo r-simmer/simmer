@@ -3,16 +3,16 @@
 \name{activate}
 \alias{activate}
 \alias{deactivate}
-\title{Activate/Deactivate Generators}
+\title{Activate/Deactivate Sources}
 \usage{
-activate(.trj, generator)
+activate(.trj, source)
 
-deactivate(.trj, generator)
+deactivate(.trj, source)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
 
-\item{generator}{the name of the generator or a function returning a name.}
+\item{source}{the name of the source or a function returning a name.}
 }
 \value{
 Returns the trajectory object.
@@ -21,5 +21,5 @@ Returns the trajectory object.
 Activities for activating or deactivating the generation of arrivals by name.
 }
 \seealso{
-\code{\link{set_trajectory}}, \code{\link{set_distribution}}.
+\code{\link{set_trajectory}}, \code{\link{set_source}}.
 }

@@ -454,13 +454,13 @@ And, of course, everything learned for `seize()`, `release()`, `set_capacity()` 
 
 ### `activate()`, `deactivate()`
 
-The `activate(., generator)` and `deactivate(., generator)` methods are able to start or stop, respectively, a generator by name. This name can be supplied as either a string or a function returning a string. In the following simple example, the use of these methods spreads the interarrival times which otherwise would be of 1 unit of time, as defined in the generator:
+The `activate(., source)` and `deactivate(., source)` methods are able to start or stop, respectively, a source by name. This name can be supplied as either a string or a function returning a string. In the following simple example, the use of these methods spreads the interarrival times which otherwise would be of 1 unit of time, as defined in the source:
 
 ```{r}
 t <- trajectory() %>%
-  deactivate(generator = "dummy") %>%
+  deactivate(source = "dummy") %>%
   timeout(1) %>%
-  activate(generator = "dummy")
+  activate(source = "dummy")
 
 simmer() %>%
   add_generator("dummy", t, function() 1) %>%
@@ -468,9 +468,9 @@ simmer() %>%
   get_mon_arrivals()
 ```
 
-### `set_trajectory()`, `set_distribution()`
+### `set_trajectory()`, `set_source()`
 
-The `set_trajectory(., generator, trajectory)` and `set_distribution(., generator, distribution)` methods are able to install a new trajectory or distribution, respectively, in a generator by name. This name can be supplied as either a string or a function returning a string.
+The `set_trajectory(., source, trajectory)` and `set_source(., source, object)` methods are able to install a new trajectory or source object (function or data frame, depending on the source type), respectively, in a source by name. This name can be supplied as either a string or a function returning a string.
 
 In the following distribution, `t2` changes the distribution and then switches to `t1`, so that only the first arrival takes `t2`:
 
@@ -479,7 +479,7 @@ t1 <- trajectory() %>%
   timeout(1)
 
 t2 <- trajectory() %>%
-  set_distribution("dummy", function() 1) %>%
+  set_source("dummy", function() 1) %>%
   set_trajectory("dummy", t1) %>%
   timeout(2)
 

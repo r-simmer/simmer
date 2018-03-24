@@ -122,7 +122,7 @@ public:
   /**
    * Look for future events.
    */
-  Rcpp::DataFrame peek(int steps) const {
+  RData peek(int steps) const {
     VEC<double> time;
     VEC<std::string> process;
     if (steps) {
@@ -132,7 +132,7 @@ public:
         if (!--steps) break;
       }
     }
-    return Rcpp::DataFrame::create(
+    return RData::create(
       Rcpp::Named("time")             = time,
       Rcpp::Named("process")          = process,
       Rcpp::Named("stringsAsFactors") = false
@@ -189,6 +189,35 @@ public:
     }
     Generator* gen = new Generator(this, name_prefix, mon, trj, dist,
                                    Order(priority, preemptible, restart));
+    process_map[name_prefix] = gen;
+    gen->activate();
+    return true;
+  }
+
+  /**
+   * Attach arrivals from a data frame.
+   * @param   name_prefix     prefix for the arrival names
+   * @param   trj             a user-defined R trajectory
+   * @param   data            a user-supplied data frame
+   * @param   mon             monitoring level
+   * @param   time            column name
+   * @param   attrs           column names for attributes
+   * @param   priority        column name
+   * @param   preemptible     column name
+   * @param   restart         column name
+   */
+  bool add_dataframe(const std::string& name_prefix, REnv trj, RData data, int mon,
+                     int batch, const std::string& time, const VEC<std::string>& attrs,
+                     const OPT<std::string>& priority,
+                     const OPT<std::string>& preemptible,
+                     const OPT<std::string>& restart)
+  {
+    if (process_map.find(name_prefix) != process_map.end()) {
+      Rcpp::warning("process '%s' already defined", name_prefix);
+      return false;
+    }
+    DataSrc* gen = new DataSrc(this, name_prefix, mon, trj, data, batch, time,
+                               attrs, priority, preemptible, restart);
     process_map[name_prefix] = gen;
     gen->activate();
     return true;
@@ -257,13 +286,13 @@ public:
   }
 
   /**
-   * Get a generator by name.
+   * Get a source by name.
    */
-  Generator* get_generator(const std::string& name) const {
+  Source* get_source(const std::string& name) const {
     EntMap::const_iterator search = process_map.find(name);
     if (search == process_map.end())
-      Rcpp::stop("generator '%s' not found (typo?)", name);
-    return static_cast<Generator*>(search->second);
+      Rcpp::stop("source '%s' not found (typo?)", name);
+    return static_cast<Source*>(search->second);
   }
 
   /**
@@ -386,13 +415,13 @@ public:
   /**
    * Get monitoring data.
    */
-  Rcpp::DataFrame get_mon_arrivals(bool per_resource, bool ongoing) const {
+  RData get_mon_arrivals(bool per_resource, bool ongoing) const {
     if (!per_resource) {
       VEC<std::string> name             = mon_arr_traj.get<std::string>("name");
       VEC<double> start_time            = mon_arr_traj.get<double>("start_time");
       VEC<double> end_time              = mon_arr_traj.get<double>("end_time");
       VEC<double> activity_time         = mon_arr_traj.get<double>("activity_time");
-      Rcpp::LogicalVector finished      = Rcpp::wrap(mon_arr_traj.get<bool>("finished"));
+      RBool finished                    = Rcpp::wrap(mon_arr_traj.get<bool>("finished"));
       if (ongoing) {
         foreach_ (const ArrMap::value_type& itr, arrival_map) {
           if (dynamic_cast<Batched*>(itr.first) || !itr.first->is_monitored())
@@ -404,7 +433,7 @@ public:
           finished.push_back(R_NaInt);
         }
       }
-      return Rcpp::DataFrame::create(
+      return RData::create(
         Rcpp::Named("name")             = name,
         Rcpp::Named("start_time")       = start_time,
         Rcpp::Named("end_time")         = end_time,
@@ -434,7 +463,7 @@ public:
           }
         }
       }
-      return Rcpp::DataFrame::create(
+      return RData::create(
         Rcpp::Named("name")             = name,
         Rcpp::Named("start_time")       = start_time,
         Rcpp::Named("end_time")         = end_time,
@@ -444,8 +473,8 @@ public:
       );
     }
   }
-  Rcpp::DataFrame get_mon_attributes() const {
-    return Rcpp::DataFrame::create(
+  RData get_mon_attributes() const {
+    return RData::create(
       Rcpp::Named("time")             = mon_attributes.get<double>("time"),
       Rcpp::Named("name")             = mon_attributes.get<std::string>("name"),
       Rcpp::Named("key")              = mon_attributes.get<std::string>("key"),
@@ -453,8 +482,8 @@ public:
       Rcpp::Named("stringsAsFactors") = false
     );
   }
-  Rcpp::DataFrame get_mon_resources() const {
-    return Rcpp::DataFrame::create(
+  RData get_mon_resources() const {
+    return RData::create(
       Rcpp::Named("resource")         = mon_resources.get<std::string>("resource"),
       Rcpp::Named("time")             = mon_resources.get<double>("time"),
       Rcpp::Named("server")           = mon_resources.get<int>("server"),

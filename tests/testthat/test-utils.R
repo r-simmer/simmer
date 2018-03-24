@@ -6,7 +6,7 @@ func <- function() {
   C <- "asdf"
   D <- -2.1
   E <- function() 1
-  F <- trajectory()
+  F <- trajectory() %>% timeout(1)
   G <- schedule(c(1, 2), c(1, 1), 3)
   H <- c("asdf", "asdf")
   I <- c(1, Inf)
@@ -85,6 +85,8 @@ test_that("argument matching work as expected", {
   expect_true(is_function("var", environment()))
 
   expect_silent(func())
+  var <- trajectory()
+  expect_error(check_args(var="flag"))
   var <- "asdf"
   expect_error(check_args(var="flag"))
 })

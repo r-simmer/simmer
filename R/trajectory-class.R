@@ -177,40 +177,41 @@ Trajectory <- R6Class("trajectory",
       )
     },
 
-    activate = function(generator) {
-      check_args(generator=c("string", "function"))
+    activate = function(source) {
+      check_args(source=c("string", "function"))
       switch(
-        binarise(is.function(generator)),
-        private$add_activity(Activate__new(generator)),
-        private$add_activity(Activate__new_func(generator))
+        binarise(is.function(source)),
+        private$add_activity(Activate__new(source)),
+        private$add_activity(Activate__new_func(source))
       )
     },
 
-    deactivate = function(generator) {
-      check_args(generator=c("string", "function"))
+    deactivate = function(source) {
+      check_args(source=c("string", "function"))
       switch(
-        binarise(is.function(generator)),
-        private$add_activity(Deactivate__new(generator)),
-        private$add_activity(Deactivate__new_func(generator))
+        binarise(is.function(source)),
+        private$add_activity(Deactivate__new(source)),
+        private$add_activity(Deactivate__new_func(source))
       )
     },
 
-    set_trajectory = function(generator, trajectory) {
-      check_args(generator=c("string", "function"), trajectory="trajectory")
+    set_trajectory = function(source, trajectory) {
+      check_args(source=c("string", "function"), trajectory="trajectory")
       switch(
-        binarise(is.function(generator)),
-        private$add_activity(SetTraj__new(generator, trajectory[])),
-        private$add_activity(SetTraj__new_func(generator, trajectory[]))
+        binarise(is.function(source)),
+        private$add_activity(SetTraj__new(source, trajectory[])),
+        private$add_activity(SetTraj__new_func(source, trajectory[]))
       )
     },
 
-    set_distribution = function(generator, distribution) {
-      check_args(generator=c("string", "function"), distribution="function")
-      distribution <- make_resetable(distribution)
+    set_source = function(source, object) {
+      check_args(source=c("string", "function"), object=c("function", "data.frame"))
       switch(
-        binarise(is.function(generator)),
-        private$add_activity(SetDist__new(generator, distribution)),
-        private$add_activity(SetDist__new_func(generator, distribution))
+        binarise(is.function(source), is.function(object)),
+        private$add_activity(SetSourceDF__new(source, object)),
+        private$add_activity(SetSourceDF__new_func(source, object)),
+        private$add_activity(SetSourceFn__new(source, make_resetable(object))),
+        private$add_activity(SetSourceFn__new_func(source, make_resetable(object)))
       )
     },
 

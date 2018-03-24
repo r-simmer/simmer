@@ -6,7 +6,7 @@ test_that("an arrival waits", {
 
   env <- simmer(verbose = TRUE) %>%
     add_generator("dummy", t, at(0)) %>%
-    run()
+    run(1000)
 
   expect_equal(env %>% peek, Inf)
   expect_equal(nrow(get_mon_arrivals(env)), 0)
@@ -147,7 +147,7 @@ test_that("a signal is ignored inside a batch (1)", {
   env <- simmer(verbose = TRUE) %>%
     add_resource("res", 1) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
-    run()
+    run(1000)
   arr_glb <- get_mon_arrivals(env)
   arr_res <- get_mon_arrivals(env, per_resource = TRUE)
 
@@ -264,7 +264,7 @@ test_that("launch handler while blocked inside a resource", {
   env <- simmer(verbose = TRUE) %>%
     add_resource("res", 1) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
-    run()
+    run(1000)
   arr_glb <- get_mon_arrivals(env)
   arr_res <- get_mon_arrivals(env, per_resource = TRUE)
 

@@ -2,28 +2,32 @@
 % Please edit documentation in R/trajectory-activities.R
 \name{set_trajectory}
 \alias{set_trajectory}
+\alias{set_source}
 \alias{set_distribution}
-\title{Set Generator Parameters}
+\title{Set Source Parameters}
 \usage{
-set_trajectory(.trj, generator, trajectory)
+set_trajectory(.trj, source, trajectory)
 
-set_distribution(.trj, generator, distribution)
+set_source(.trj, source, object)
+
+set_distribution(.trj, source, object)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
 
-\item{generator}{the name of the generator or a function returning a name.}
+\item{source}{the name of the source or a function returning a name.}
 
 \item{trajectory}{the trajectory that the generated arrivals will follow.}
 
-\item{distribution}{a function modelling the interarrival times (returning a
-negative value stops the generator).}
+\item{object}{a function modelling the interarrival times (if the source type
+is a generator; returning a negative value stops the generator) or a data frame
+(if the source type is a data source).}
 }
 \value{
 Returns the trajectory object.
 }
 \description{
-Activities for modifying a generator's trajectory or distribution by name.
+Activities for modifying a source's trajectory or source object by name.
 }
 \seealso{
 \code{\link{activate}}, \code{\link{deactivate}}.

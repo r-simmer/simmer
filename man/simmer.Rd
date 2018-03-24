@@ -49,7 +49,8 @@ Available methods by category:
 \code{\link{get_queue_size_selected}}, \code{\link{get_server_count_selected}},
 \code{\link{get_queue_count_selected}}
 
-\item Generators: \code{\link{add_generator}}, \code{\link{get_n_generated}}
+\item Sources: \code{\link{add_generator}}, \code{\link{add_dataframe}},
+\code{\link{get_n_generated}}
 
 \item Data retrieval: \code{\link{get_mon_arrivals}},
 \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}

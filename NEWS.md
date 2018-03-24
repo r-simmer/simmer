@@ -1,3 +1,15 @@
+# simmer 3.8.0
+
+## New features:
+
+* New data source `add_dataframe` enables the attachment of precomputed data, in the form of a data frame, to a trajectory. It can be used instead of (or along with) `add_generator`. The most notable advantage over the latter is that `add_dataframe` is able to automatically set attributes and prioritisation values per arrival based on columns of the provided data frame (#140 closing #123).
+* New `set_source` activity deprecates `set_distribution()`. It works both for generators and data sources (275a09c, as part of #140).
+
+## Minor changes and fixes:
+
+* Some documentation improvements (1e14ed7, 194ed05).
+* New default `until=Inf` for the `run` method (3e6aae9, as part of #140).
+
 # simmer 3.7.0
 
 ## New features:
