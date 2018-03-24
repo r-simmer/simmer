@@ -94,51 +94,116 @@ private:
   bool restart;       /**< whether activity must be restarted after preemption */
 };
 
+Activity* trj_head(const REnv& trj);
+
+/**
+ * Abstract class for source processes.
+ */
+class Source : public Process {
+public:
+  /**
+  * Constructor.
+  * @param sim             a pointer to the simulator
+  * @param name_prefix     name prefix for each new arrival
+  * @param mon             int that indicates whether this entity must be monitored
+  * @param trj             a user-defined R trajectory
+  * @param source          some source for arrivals
+  * @param order           priority, preemptible, restart
+  */
+  Source(Simulator* sim, const std::string& name_prefix, int mon,
+         const REnv& trj, const Order& order)
+    : Process(sim, name_prefix, mon, PRIORITY_MIN), count(0), order(order),
+      first_activity(trj_head(trj)), trj(trj) {}
+
+  virtual void reset() { count = 0; }
+
+  int get_n_generated() const { return count; }
+
+  virtual void set_source(const ANY& new_source) = 0;
+
+  void set_trajectory(const REnv& new_trj) {
+    trj = new_trj;
+    first_activity = trj_head(trj);
+  }
+
+protected:
+  int count;                /**< number of arrivals generated */
+  Order order;
+  Activity* first_activity;
+
+  Arrival* new_arrival(double delay);
+
+private:
+  REnv trj;
+};
+
 /**
  * Generation process.
  */
-class Generator : public Process {
+class Generator : public Source {
 public:
-  /**
-   * Constructor.
-   * @param sim             a pointer to the simulator
-   * @param name            the name
-   * @param mon             int that indicates whether this entity must be monitored
-   * @param trj             a user-defined R trajectory
-   * @param dist            a user-defined R function that provides random numbers
-   * @param order           priority, preemptible, restart
-   */
   Generator(Simulator* sim, const std::string& name_prefix, int mon,
-            const Rcpp::Environment& trj, const Rcpp::Function& dist, const Order& order)
-    : Process(sim, name_prefix, mon, PRIORITY_MIN), count(0), trj(trj),
-      dist(dist), order(order), first_activity(NULL) { set_first_activity(); }
+            const REnv& trj, const RFn& dist, const Order& order)
+    : Source(sim, name_prefix, mon, trj, order), source(dist) {}
 
-  /**
-   * Reset the generator: counter, trajectory
-   */
   void reset() {
-    count = 0;
-    Rcpp::Function reset_fun(dist.attr("reset"));
+    Source::reset();
+    RFn reset_fun(source.attr("reset"));
     reset_fun();
+  }
+
+  void set_source(const ANY& new_source) {
+    if (new_source.type() != typeid(RFn))
+      Rcpp::stop("source '%s': requires a function", name);
+    source = boost::any_cast<RFn>(new_source);
   }
 
   void run();
 
-  int get_n_generated() const { return count; }
-  void set_trajectory(const Rcpp::Environment& new_trj) {
-    trj = new_trj;
-    set_first_activity();
+private:
+  RFn source;
+};
+
+class DataSrc : public Source {
+public:
+  DataSrc(Simulator* sim, const std::string& name_prefix, int mon,
+          const REnv& trj, RData data, int batch, const std::string& time,
+          const VEC<std::string>& attrs, const OPT<std::string>& priority,
+          const OPT<std::string>& preemptible, const OPT<std::string>& restart)
+    : Source(sim, name_prefix, mon, trj, Order()), source(data), batch(batch),
+      col_time(time), col_attrs(attrs), col_priority(priority),
+      col_preemptible(preemptible), col_restart(restart) {}
+
+  void run();
+
+  void set_source(const ANY& new_source) {
+    if (new_source.type() != typeid(RData))
+      Rcpp::stop("source '%s': requires a data frame", name);
+    source = boost::any_cast<RData>(new_source);
+
+    VEC<std::string> n = source.names();
+    if (std::find(n.begin(), n.end(), col_time) == n.end())
+      Rcpp::stop("source '%s': column '%s' not present", name, col_time);
+    if (col_priority && std::find(n.begin(), n.end(), *col_priority) == n.end())
+      Rcpp::stop("source '%s': column '%s' not present", name, *col_priority);
+    if (col_preemptible && std::find(n.begin(), n.end(), *col_preemptible) == n.end())
+      Rcpp::stop("source '%s': column '%s' not present", name, *col_preemptible);
+    if (col_restart && std::find(n.begin(), n.end(), *col_restart) == n.end())
+      Rcpp::stop("source '%s': column '%s' not present", name, *col_restart);
+    for (size_t i = 0; i < col_attrs.size(); ++i) {
+      if (std::find(n.begin(), n.end(), col_attrs[i]) == n.end())
+        Rcpp::stop("source '%s': column '%s' not present", name, col_attrs[i]);
+    }
   }
-  void set_distribution(const Rcpp::Function& new_dist) { dist = new_dist; }
 
 private:
-  int count;                /**< number of arrivals generated */
-  Rcpp::Environment trj;
-  Rcpp::Function dist;
-  Order order;
-  Activity* first_activity;
-
-  void set_first_activity();
+  RData source;
+  int batch;
+  std::string col_time;
+  VEC<std::string> col_attrs;
+  OPT<std::string> col_priority;
+  OPT<std::string> col_preemptible;
+  OPT<std::string> col_restart;
 };
 
 /**

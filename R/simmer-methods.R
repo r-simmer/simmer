@@ -6,42 +6,53 @@
 #' @param verbose enable showing activity information.
 #'
 #' @return Returns a simulation environment.
-#' @seealso Methods for dealing with a simulation environment:
-#' \code{\link{reset}}, \code{\link{now}}, \code{\link{peek}}, \code{\link{stepn}}, \code{\link{run}},
-#' \code{\link{add_resource}}, \code{\link{add_generator}}, \code{\link{get_mon_arrivals}},
-#' \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}, \code{\link{get_n_generated}},
-#' \code{\link{get_capacity}}, \code{\link{get_queue_size}},
-#' \code{\link{get_server_count}}, \code{\link{get_queue_count}}.
+#' @seealso
+#' Available methods by category:
+#' \itemize{
+#'
+#' \item Simulation control: \code{\link{stepn}}, \code{\link{run}},
+#' \code{\link{now}}, \code{\link{peek}}, \code{\link{reset}}
+#'
+#' \item Resources: \code{\link{add_resource}}, \code{\link{get_capacity}},
+#' \code{\link{get_queue_size}}, \code{\link{get_server_count}},
+#' \code{\link{get_queue_count}}, \code{\link{get_capacity_selected}},
+#' \code{\link{get_queue_size_selected}}, \code{\link{get_server_count_selected}},
+#' \code{\link{get_queue_count_selected}}
+#'
+#' \item Sources: \code{\link{add_generator}}, \code{\link{add_dataframe}},
+#' \code{\link{get_n_generated}}
+#'
+#' \item Data retrieval: \code{\link{get_mon_arrivals}},
+#' \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}
+#'
+#' }
+#'
 #' @export
 #'
 #' @examples
+#' ## a simple trajectory that prints a message
 #' t0 <- trajectory("my trajectory") %>%
-#'   ## add an intake activity
-#'   seize("nurse", 1) %>%
-#'   timeout(function() rnorm(1, 15)) %>%
-#'   release("nurse", 1) %>%
-#'   ## add a consultation activity
-#'   seize("doctor", 1) %>%
-#'   timeout(function() rnorm(1, 20)) %>%
-#'   release("doctor", 1) %>%
-#'   ## add a planning activity
-#'   seize("administration", 1) %>%
-#'   timeout(function() rnorm(1, 5)) %>%
-#'   release("administration", 1)
+#'   log_("arrival generated")
 #'
-#' env <- simmer("SuperDuperSim") %>%
-#'   add_resource("nurse", 1) %>%
-#'   add_resource("doctor", 2) %>%
-#'   add_resource("administration", 1) %>%
-#'   add_generator("patient", t0, function() rnorm(1, 10, 2)) %>%
-#'   run(until=80)
+#' ## create an empty simulation environment
+#' env <- simmer("SuperDuperSim")
+#' env
+#'
+#' ## add a generator and attach it to the trajectory above
+#' env %>% add_generator("dummy", t0, function() 1)
+#'
+#' ## run for some time
+#' env %>% run(until=4.5)
+#' env %>% now()           # current simulation time
+#' env %>% peek()          # time for the next event
+#' env %>% stepn()         # execute next event
 #'
 simmer <- function(name="anonymous", verbose=FALSE) Simmer$new(name, verbose)
 
 #' Reset a Simulator
 #'
 #' Reset the following components of a simulation environment:
-#' time, event queue, resources, generators and statistics.
+#' time, event queue, resources, sources and statistics.
 #'
 #' @param .env the simulation environment.
 #'
@@ -67,10 +78,10 @@ reset.simmer <- function(.env) .env$reset()
 #' @return Returns the simulation environment.
 #' @seealso \code{\link{reset}}.
 #' @export
-run <- function(.env, until=1000, progress=NULL, steps=10) UseMethod("run")
+run <- function(.env, until=Inf, progress=NULL, steps=10) UseMethod("run")
 
 #' @export
-run.simmer <- function(.env, until=1000, progress=NULL, steps=10) {
+run.simmer <- function(.env, until=Inf, progress=NULL, steps=10) {
   check_args(until="number", progress=c("function", "NULL"), steps="number")
   if (is.function(progress)) {
     progress(0)
@@ -156,7 +167,7 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
 
 #' Add a Generator
 #'
-#' Define a new generator of arrivals in a simulation environment.
+#' Attach a new source of arrivals to a trajectory from a generator function.
 #'
 #' @inheritParams reset
 #' @param name_prefix the name prefix of the generated arrivals.
@@ -179,6 +190,8 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \code{\link{at}}, \code{\link{from}},
 #' \code{\link{to}}, \code{\link{from_to}}.
+#'
+#' Other sources: \code{\link{add_dataframe}}.
 #' @export
 add_generator <- function(.env, name_prefix, trajectory, distribution, mon=1,
                           priority=0, preemptible=priority, restart=FALSE)
@@ -188,6 +201,63 @@ add_generator <- function(.env, name_prefix, trajectory, distribution, mon=1,
 add_generator.simmer <- function(.env, name_prefix, trajectory, distribution, mon=1,
                                  priority=0, preemptible=priority, restart=FALSE)
   .env$add_generator(name_prefix, trajectory, distribution, mon, priority, preemptible, restart)
+
+#' Add a Data Frame
+#'
+#' Attach a new source of arrivals to a trajectory from a data frame.
+#'
+#' @inheritParams add_generator
+#' @param data a data frame with, at least, a column of (inter)arrival times (see details).
+#' @param batch number of arrivals generated at a time. Arrivals are read from
+#' the data frame and attached to the trajectory in batches depending on this
+#' value. In general, it should not be changed.
+#' @param col_time name of the time column in the data frame.
+#' @param time type of time column: \emph{interarrival}, if the time column
+#' contains interarrival times, or \emph{absolute}, if the time column contains
+#' absolute arrival times.
+#' @param col_attributes vector of names of the attributes columns (see details).
+#' @param col_priority name of the priority column.
+#' @param col_preemptible name of the preemptible column.
+#' @param col_restart name of the restart column.
+#'
+#' @return Returns the simulation environment.
+#'
+#' @details The data frame provided must have, at least, a column of (inter)arrival
+#' times. This method will look for it under the name \code{"time"} by default,
+#' although this can be changed with the \code{col_time} parameter.
+#'
+#' If there is any column named \code{col_priority="priority"},
+#' \code{col_preemptible=priority} or \code{col_restart="restart"}, they will be
+#' used to set the prioritization values for each arrival (see \code{\link{add_generator}}).
+#'
+#' If there are additional columns (with \code{col_attributes=NULL}, by default),
+#' they will be assigned to arrival attributes named after each column name. All
+#' these columns must be numeric (or logical). Otherwise, if a vector of column
+#' names is specified, only these will be assigned as attributes and the rest of
+#' the columns will be ignored.
+#'
+#' A value of \code{batch=Inf} means that the whole data frame will be attached
+#' at the beginning of the simulation. This is not desirable in general, because
+#' the performance of the event queue is degraded when it is populated with too
+#' many events. On the other hand, a low value results in an increased overhead
+#' due to many function calls. The default value has been tested to provide a
+#' good trade-off.
+#'
+#' @seealso Other sources: \code{\link{add_generator}}.
+#' @export
+add_dataframe <- function(.env, name_prefix, trajectory, data, mon=1, batch=50,
+                          col_time="time", time=c("interarrival", "absolute"),
+                          col_attributes=NULL, col_priority="priority",
+                          col_preemptible=col_priority, col_restart="restart")
+  UseMethod("add_dataframe")
+
+#' @export
+add_dataframe.simmer <- function(.env, name_prefix, trajectory, data, mon=1, batch=50,
+                                 col_time="time", time=c("interarrival", "absolute"),
+                                 col_attributes=NULL, col_priority="priority",
+                                 col_preemptible=col_priority, col_restart="restart")
+  .env$add_dataframe(name_prefix, trajectory, data, mon, batch, col_time, time,
+                     col_attributes, col_priority, col_preemptible, col_restart)
 
 #' Monitoring Statistics
 #'
@@ -227,15 +297,15 @@ get_mon_resources.simmer <- function(.envs)
 
 #' Get Process Parameters
 #'
-#' Getters for processes (generators and arrivals) number of arrivals generated
-#' by a generator, the name of the active arrival, an attribute from the active
+#' Getters for processes (sources and arrivals) number of arrivals generated
+#' by a source, the name of the active arrival, an attribute from the active
 #' arrival or a global one, and prioritization values.
 #'
 #' @inheritParams reset
-#' @param generator the name of the generator.
+#' @param source the name of the source.
 #'
 #' @details \code{get_n_generated} returns the number of arrivals generated by a
-#' given generator.
+#' given source.
 #'
 #' \code{get_name} returns the number of the running arrival. \code{get_attribute}
 #' returns a running arrival's attributes or global ones. If a provided key was
@@ -247,10 +317,10 @@ get_mon_resources.simmer <- function(.envs)
 #'
 #' @seealso \code{\link{set_attribute}}, \code{\link{set_prioritization}}.
 #' @export
-get_n_generated <- function(.env, generator) UseMethod("get_n_generated")
+get_n_generated <- function(.env, source) UseMethod("get_n_generated")
 
 #' @export
-get_n_generated.simmer <- function(.env, generator) .env$get_n_generated(generator)
+get_n_generated.simmer <- function(.env, source) .env$get_n_generated(source)
 
 #' @rdname get_n_generated
 #' @export

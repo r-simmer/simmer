@@ -43,6 +43,20 @@ Returns a new trajectory object.
 \description{
 Operators acting on trajectories to extract or replace parts.
 }
+\examples{
+x <- join(lapply(1:12, function(i)
+  trajectory() \%>\% timeout(i)
+))
+x
+
+x[10]                 # the tenth element of x
+x[-1]                 # delete the 1st element of x
+x[c(TRUE, FALSE)]     # logical indexing
+x[c(1, 5, 2, 12, 4)]  # numeric indexing
+x[c(FALSE, TRUE)] <- x[c(TRUE, FALSE)] # replacing
+x
+
+}
 \seealso{
 \code{\link{length.trajectory}}, \code{\link{get_n_activities}}, \code{\link{join}}.
 }

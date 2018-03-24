@@ -1,16 +1,24 @@
-citHeader("To cite 'simmer' in publications use:")
+bibentry(
+  header  = "To cite 'simmer' in publications use:",
+  bibtype = "Article",
+  title   = "{simmer}: Discrete-Event Simulation for {R}",
+  author  = c(person("Iñaki", "Ucar"),
+              person("Bart", "Smeets"),
+              person("Arturo", "Azcorra")),
+  year    = "2018",
+  journal = "Journal of Statistical Software",
+  volume  = "accepted for publication"
+)
 
-citEntry(
-  entry        = "Article",
-  title        = "{simmer}: Discrete-Event Simulation for {R}",
-  author       = personList(as.person("Iñaki Ucar"),
-                            as.person("Bart Smeets"),
-                            as.person("Arturo Azcorra")),
-  year         = "2018",
-  journal      = "Journal of Statistical Software",
-  volume       = "accepted for publication",
-
-  textVersion  = paste("Iñaki Ucar, Bart Smeets and Arturo Azcorra (2018).",
-                       "simmer: Discrete-Event Simulation for R.",
-                       "Journal of Statistical Software, accepted for publication.")
+bibentry(
+  header  = "If appropriate, use also:",
+  bibtype = "Article",
+  title   = "Design and Analysis of 5G Scenarios with {simmer}: An {R} Package for Fast DES Prototyping",
+  author  = c(person("Iñaki", "Ucar"),
+              person("José Alberto", "Hernández"),
+              person("Pablo", "Serrano"),
+              person("Arturo", "Azcorra")),
+  year    = "2018",
+  journal = "IEEE Communications Magazine",
+  volume  = "accepted for publication"
 )

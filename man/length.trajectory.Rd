@@ -20,6 +20,19 @@ Get the number of activities in a trajectory. \code{length} returns the number
 of first-level activities (sub-trajectories not included). \code{get_n_activities}
 returns the total number of activities (sub-trajectories included).
 }
+\examples{
+x <- trajectory() \%>\%
+  timeout(1)
+
+x <- x \%>\%
+  clone(2, x, x)
+x
+
+## length does not account for subtrajectories
+length(x)
+get_n_activities(x)
+
+}
 \seealso{
-\code{\link{[.trajectory}}, \code{\link{[[.trajectory}}, \code{\link{join}}.
+\code{\link{Extract.trajectory}}, \code{\link{join}}.
 }

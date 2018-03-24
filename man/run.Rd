@@ -5,7 +5,7 @@
 \alias{stepn}
 \title{Run a Simulation}
 \usage{
-run(.env, until = 1000, progress = NULL, steps = 10)
+run(.env, until = Inf, progress = NULL, steps = 10)
 
 stepn(.env, n = 1)
 }

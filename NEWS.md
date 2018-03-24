@@ -1,3 +1,15 @@
+# simmer 3.8.0
+
+## New features:
+
+* New data source `add_dataframe` enables the attachment of precomputed data, in the form of a data frame, to a trajectory. It can be used instead of (or along with) `add_generator`. The most notable advantage over the latter is that `add_dataframe` is able to automatically set attributes and prioritisation values per arrival based on columns of the provided data frame (#140 closing #123).
+* New `set_source` activity deprecates `set_distribution()`. It works both for generators and data sources (275a09c, as part of #140).
+
+## Minor changes and fixes:
+
+* Some documentation improvements (1e14ed7, 194ed05).
+* New default `until=Inf` for the `run` method (3e6aae9, as part of #140).
+
 # simmer 3.7.0
 
 ## New features:
@@ -8,11 +20,12 @@
 
 ## Minor changes and fixes:
 
-* Remove v3.6.x deprecations: the old attribute retrieval system (see notes for v3.6.3), as well as methods `create_trajectory()` and `onestep()` (#117).
-* New vignette: a paper accepted for publication in the Journal of Statistical Software. Remove "Terminology" vignette (#127).
 * Broadcast signals with higher priority to prevent an arrival to catch its own signal with a `trap()` after a `send()` (#135).
 * Generate new arrivals with minimum priority to avoid wrong interactions with simultaneous activities (#136).
+* Remove v3.6.x deprecations: the old attribute retrieval system (see notes for v3.6.3), as well as methods `create_trajectory()` and `onestep()` (#117).
 * Remove `get_mon_resources()`'s `data` argument. It was there for historical reasons and probably nobody was using it (851d34b).
+* New vignette, "simmer: Discrete-Event Simuation for R", paper accepted for publication in the Journal of Statistical Software. Remove "Terminology" vignette (#127).
+* New vignette, "Design and Analysis of 5G Scenarios", supplementary materials for a paper accepted for publication in the IEEE Communications Magazine (#137).
 
 # simmer 3.6.5
 
