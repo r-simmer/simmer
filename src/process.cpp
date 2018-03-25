@@ -197,7 +197,7 @@ void Arrival::terminate(bool finished) {
   }
   unset_remaining();
   if (is_monitored() >= 1 && !dynamic_cast<Batched*>(this))
-    sim->record_end(name, lifetime.start, lifetime.activity, finished);
+    sim->mon->record_end(name, lifetime.start, sim->now(), lifetime.activity, finished);
   delete this;
 }
 
@@ -205,7 +205,7 @@ void Arrival::set_attribute(const std::string& key, double value, bool global) {
   if (global) return sim->set_attribute(key, value);
   attributes[key] = value;
   if (is_monitored() >= 2)
-    sim->record_attribute(name, key, value);
+    sim->mon->record_attribute(sim->now(), name, key, value);
 }
 
 double Arrival::get_attribute(const std::string& key, bool global) const {
@@ -275,11 +275,11 @@ void Arrival::renege(Activity* next) {
 
 void Arrival::report(const std::string& resource) const {
   ArrTime time = restime.find(resource)->second;
-  sim->record_release(name, time.start, time.activity, resource);
+  sim->mon->record_release(name, time.start, sim->now(), time.activity, resource);
 }
 
 void Arrival::report(const std::string& resource, double start, double activity) const {
-  sim->record_release(name, start, activity, resource);
+  sim->mon->record_release(name, start, sim->now(), activity, resource);
 }
 
 bool Arrival::leave_resources(bool flag) {

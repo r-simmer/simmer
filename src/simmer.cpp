@@ -85,19 +85,20 @@ bool add_resource_manager_(SEXP sim_, const std::string& name, const std::string
 //[[Rcpp::export]]
 DataFrame get_mon_arrivals_(SEXP sim_, bool per_resource, bool ongoing) {
   XPtr<Simulator> sim(sim_);
-  return sim->get_mon_arrivals(per_resource, ongoing);
+  if (ongoing) sim->record_ongoing(per_resource);
+  return sim->mon->get_arrivals(per_resource);
 }
 
 //[[Rcpp::export]]
 DataFrame get_mon_attributes_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
-  return sim->get_mon_attributes();
+  return sim->mon->get_attributes();
 }
 
 //[[Rcpp::export]]
 DataFrame get_mon_resources_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
-  return sim->get_mon_resources();
+  return sim->mon->get_resources();
 }
 
 //[[Rcpp::export]]

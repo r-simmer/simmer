@@ -22,6 +22,7 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #define MSET boost::container::multiset
 #define USET boost::unordered_set
 #define UMAP boost::unordered_map
+#define MAP  std::map
 
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>

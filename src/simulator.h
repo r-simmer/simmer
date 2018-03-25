@@ -32,7 +32,7 @@ class Simulator {
 
   typedef MSET<Event> PQueue;
   typedef UMAP<Process*, PQueue::iterator> EvMap;
-  typedef UMAP<std::string, Entity*> EntMap;
+  typedef MAP<std::string, Entity*> EntMap;
   typedef UMAP<Arrival*, USET<std::string> > ArrMap;
   typedef UMAP<std::string, Batched*> NamBMap;
   typedef UMAP<Activity*, Batched*> UnnBMap;
@@ -43,14 +43,17 @@ class Simulator {
 public:
   std::string name;
   bool verbose;
+  Monitor* mon;
 
   /**
    * Constructor.
    * @param name    simulator name
    * @param verbose verbose flag
+   * @param mon     monitoring object
    */
   Simulator(const std::string& name, bool verbose)
-    : name(name), verbose(verbose), now_(0), process_(NULL), b_count(0) {}
+    : name(name), verbose(verbose), mon(new MemoryMon()),
+      now_(0), process_(NULL), b_count(0) {}
 
   ~Simulator() {
     foreach_ (EntMap::value_type& itr, resource_map)
@@ -63,6 +66,7 @@ public:
       if (itr.second) delete itr.second;
     foreach_ (UnnBMap::value_type& itr, unnamedb_map)
       if (itr.second) delete itr.second;
+    delete mon;
   }
 
   /**
@@ -90,10 +94,7 @@ public:
     b_count = 0;
     signal_map.clear();
     attributes.clear();
-    mon_arr_traj.clear();
-    mon_arr_res.clear();
-    mon_attributes.clear();
-    mon_resources.clear();
+    mon->clear();
   }
 
   double now() const { return now_; }
@@ -312,6 +313,21 @@ public:
     return arrival;
   }
 
+  void record_ongoing(bool per_resource) const {
+    foreach_ (const ArrMap::value_type& itr1, arrival_map) {
+      if (dynamic_cast<Batched*>(itr1.first) || !itr1.first->is_monitored())
+        continue;
+      if (!per_resource)
+        mon->record_end(itr1.first->name, itr1.first->get_start(), R_NaReal, R_NaReal, false);
+      else foreach_ (const EntMap::value_type& itr2, resource_map) {
+        double start = itr1.first->get_start(itr2.second->name);
+        if (start < 0)
+          continue;
+        mon->record_release(itr1.first->name, start, R_NaReal, R_NaReal, itr2.second->name);
+      }
+    }
+  }
+
   Batched** get_batch(Activity* ptr, const std::string& id) {
     if (id.size()) {
       if (namedb_map.find(id) == namedb_map.end())
@@ -363,7 +379,7 @@ public:
 
   void set_attribute(const std::string& key, double value) {
     attributes[key] = value;
-    record_attribute("", key, value);
+    mon->record_attribute(now_, "", key, value);
   }
   double get_attribute(const std::string& key) const {
     Attr::const_iterator search = attributes.find(key);
@@ -379,121 +395,6 @@ public:
     arrival_map.erase(arrival);
   }
 
-  /**
-   * Record monitoring data.
-   */
-  void record_end(const std::string& name, double start, double activity, bool finished) {
-    mon_arr_traj.insert("name",           name);
-    mon_arr_traj.insert("start_time",     start);
-    mon_arr_traj.insert("end_time",       now_);
-    mon_arr_traj.insert("activity_time",  activity);
-    mon_arr_traj.insert("finished",       finished);
-  }
-  void record_release(const std::string& name, double start, double activity, const std::string& resource) {
-    mon_arr_res.insert("name",            name);
-    mon_arr_res.insert("start_time",      start);
-    mon_arr_res.insert("end_time",        now_);
-    mon_arr_res.insert("activity_time",   activity);
-    mon_arr_res.insert("resource",        resource);
-  }
-  void record_attribute(const std::string& name, const std::string& key, double value) {
-    mon_attributes.insert("time",         now_);
-    mon_attributes.insert("name",         name);
-    mon_attributes.insert("key",          key);
-    mon_attributes.insert("value",        value);
-  }
-  void record_resource(const std::string& name, int server_count, int queue_count,
-                       int capacity, int queue_size) {
-    mon_resources.insert("resource",      name);
-    mon_resources.insert("time",          now_);
-    mon_resources.insert("server",        server_count);
-    mon_resources.insert("queue",         queue_count);
-    mon_resources.insert("capacity",      capacity);
-    mon_resources.insert("queue_size",    queue_size);
-  }
-
-  /**
-   * Get monitoring data.
-   */
-  RData get_mon_arrivals(bool per_resource, bool ongoing) const {
-    if (!per_resource) {
-      VEC<std::string> name             = mon_arr_traj.get<std::string>("name");
-      VEC<double> start_time            = mon_arr_traj.get<double>("start_time");
-      VEC<double> end_time              = mon_arr_traj.get<double>("end_time");
-      VEC<double> activity_time         = mon_arr_traj.get<double>("activity_time");
-      RBool finished                    = Rcpp::wrap(mon_arr_traj.get<bool>("finished"));
-      if (ongoing) {
-        foreach_ (const ArrMap::value_type& itr, arrival_map) {
-          if (dynamic_cast<Batched*>(itr.first) || !itr.first->is_monitored())
-            continue;
-          name.push_back(itr.first->name);
-          start_time.push_back(itr.first->get_start());
-          end_time.push_back(R_NaReal);
-          activity_time.push_back(R_NaReal);
-          finished.push_back(R_NaInt);
-        }
-      }
-      return RData::create(
-        Rcpp::Named("name")             = name,
-        Rcpp::Named("start_time")       = start_time,
-        Rcpp::Named("end_time")         = end_time,
-        Rcpp::Named("activity_time")    = activity_time,
-        Rcpp::Named("finished")         = finished,
-        Rcpp::Named("stringsAsFactors") = false
-      );
-    } else {
-      VEC<std::string> name             = mon_arr_res.get<std::string>("name");
-      VEC<double> start_time            = mon_arr_res.get<double>("start_time");
-      VEC<double> end_time              = mon_arr_res.get<double>("end_time");
-      VEC<double> activity_time         = mon_arr_res.get<double>("activity_time");
-      VEC<std::string> resource         = mon_arr_res.get<std::string>("resource");
-      if (ongoing) {
-        foreach_ (const ArrMap::value_type& itr1, arrival_map) {
-          if (dynamic_cast<Batched*>(itr1.first) || !itr1.first->is_monitored())
-            continue;
-          foreach_ (const EntMap::value_type& itr2, resource_map) {
-            double start = itr1.first->get_start(itr2.second->name);
-            if (start < 0)
-              continue;
-            name.push_back(itr1.first->name);
-            start_time.push_back(start);
-            end_time.push_back(R_NaReal);
-            activity_time.push_back(R_NaReal);
-            resource.push_back(itr2.second->name);
-          }
-        }
-      }
-      return RData::create(
-        Rcpp::Named("name")             = name,
-        Rcpp::Named("start_time")       = start_time,
-        Rcpp::Named("end_time")         = end_time,
-        Rcpp::Named("activity_time")    = activity_time,
-        Rcpp::Named("resource")         = resource,
-        Rcpp::Named("stringsAsFactors") = false
-      );
-    }
-  }
-  RData get_mon_attributes() const {
-    return RData::create(
-      Rcpp::Named("time")             = mon_attributes.get<double>("time"),
-      Rcpp::Named("name")             = mon_attributes.get<std::string>("name"),
-      Rcpp::Named("key")              = mon_attributes.get<std::string>("key"),
-      Rcpp::Named("value")            = mon_attributes.get<double>("value"),
-      Rcpp::Named("stringsAsFactors") = false
-    );
-  }
-  RData get_mon_resources() const {
-    return RData::create(
-      Rcpp::Named("resource")         = mon_resources.get<std::string>("resource"),
-      Rcpp::Named("time")             = mon_resources.get<double>("time"),
-      Rcpp::Named("server")           = mon_resources.get<int>("server"),
-      Rcpp::Named("queue")            = mon_resources.get<int>("queue"),
-      Rcpp::Named("capacity")         = mon_resources.get<int>("capacity"),
-      Rcpp::Named("queue_size")       = mon_resources.get<int>("queue_size"),
-      Rcpp::Named("stringsAsFactors") = false
-    );
-  }
-
 private:
   double now_;              /**< simulation time */
   Process* process_;        /**< running process */
@@ -507,10 +408,6 @@ private:
   size_t b_count;           /**< unnamed batch counter */
   SigMap signal_map;        /**< map of arrivals subscribed to signals */
   Attr attributes;          /**< user-defined (key, value) pairs */
-  Monitor mon_arr_traj;     /**< arrival statistics per trajectory */
-  Monitor mon_arr_res;      /**< arrival statistics per resource */
-  Monitor mon_attributes;   /**< attribute statistics */
-  Monitor mon_resources;    /**< resource statistics */
 };
 
 #endif
