@@ -33,6 +33,7 @@ class Monitor {
 public:
   virtual ~Monitor() {}
   virtual void clear() = 0;
+  virtual void flush() {}
 
   virtual void record_end(const std::string& name, double start, double end,
                           double activity, bool finished) = 0;
@@ -48,7 +49,7 @@ public:
   virtual RData get_resources() const = 0;
 };
 
-class MemoryMon : public Monitor {
+class MemMonitor : public Monitor {
 public:
   void clear() {
     arr_traj.clear();
@@ -143,6 +144,117 @@ private:
   MonitorMap arr_res;      /**< arrival statistics per resource */
   MonitorMap attributes;   /**< attribute statistics */
   MonitorMap resources;    /**< resource statistics */
+};
+
+class CsvMonitor : public Monitor {
+  struct sepofstream {
+    sepofstream(std::ofstream& os, std::string& sep) : os(os), sep(sep) {}
+    std::ofstream& os;
+    std::string& sep;
+
+    template <class T>
+    friend sepofstream& operator<<(sepofstream& con, const T& x) {
+      con.os << x << con.sep;
+      return con;
+    }
+  };
+
+public:
+  CsvMonitor(const std::string& arr_traj_path, const std::string& arr_res_path,
+             const std::string& attributes_path, const std::string& resources_path,
+             const RFn& csv_reader)
+    : arr_traj_path(arr_traj_path), arr_res_path(arr_res_path),
+      attributes_path(attributes_path), resources_path(resources_path),
+      csv_reader(csv_reader), sep(",") { init(); }
+
+  void clear() {
+    close();
+    init();
+  }
+
+  void flush() {
+    arr_traj.flush();
+    arr_res.flush();
+    attributes.flush();
+    resources.flush();
+  }
+
+  void record_end(const std::string& name, double start, double end,
+                  double activity, bool finished)
+  {
+    sepofstream c(arr_traj, sep);
+    c << name << start << end << activity;
+    arr_traj << finished << "\n";
+  }
+
+  void record_release(const std::string& name, double start, double end,
+                      double activity, const std::string& resource)
+  {
+    sepofstream c(arr_res, sep);
+    c << name << start << end << activity;
+    arr_res << resource << "\n";
+  }
+
+  void record_attribute(double time, const std::string& name,
+                        const std::string& key, double value)
+  {
+    sepofstream c(attributes, sep);
+    c << time << name << key;
+    attributes << value << "\n";
+  }
+
+  void record_resource(const std::string& name, double time, int server_count,
+                       int queue_count, int capacity, int queue_size)
+  {
+    sepofstream c(resources, sep);
+    c << name << time << server_count << queue_count << capacity;
+    resources << queue_size << "\n";
+  }
+
+  RData get_arrivals(bool per_resource) const {
+    if (!per_resource)
+      return csv_reader(arr_traj_path);
+    return csv_reader(arr_res_path);
+  }
+
+  RData get_attributes() const { return csv_reader(attributes_path); }
+
+  RData get_resources() const { return csv_reader(resources_path); }
+
+private:
+  std::string arr_traj_path;
+  std::string arr_res_path;
+  std::string attributes_path;
+  std::string resources_path;
+  std::ofstream arr_traj;          /**< arrival statistics per trajectory */
+  std::ofstream arr_res;           /**< arrival statistics per resource */
+  std::ofstream attributes;        /**< attribute statistics */
+  std::ofstream resources;         /**< resource statistics */
+  RFn csv_reader;
+  std::string sep;
+
+  void init() {
+    arr_traj.open(arr_traj_path.c_str());
+    arr_res.open(arr_res_path.c_str());
+    attributes.open(attributes_path.c_str());
+    resources.open(resources_path.c_str());
+    sepofstream a(arr_traj, sep), b(arr_res, sep), c(attributes, sep), d(resources, sep);
+    a << "name" << "start_time" << "end_time" << "activity_time";
+    arr_traj << "finished\n";
+    b << "name" << "start_time" << "end_time" << "activity_time";
+    arr_res << "resource\n";
+    c << "time" << "name" << "key";
+    attributes << "value\n";
+    d << "resource" << "time" << "server" << "queue" << "capacity";
+    resources << "queue_size\n";
+  }
+
+  void close() {
+    arr_traj.close();
+    arr_res.close();
+    attributes.close();
+    resources.close();
+  }
 };
 
 #endif

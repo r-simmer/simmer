@@ -1,8 +1,8 @@
 #ifndef SIMMER_H
 #define SIMMER_H
 
-// [[Rcpp::depends(BH)]]
 #include <Rcpp.h>
+#include <fstream>
 
 #include <boost/container/set.hpp>
 #include <boost/unordered_set.hpp>

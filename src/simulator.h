@@ -52,7 +52,7 @@ public:
    * @param mon     monitoring object
    */
   Simulator(const std::string& name, bool verbose)
-    : name(name), verbose(verbose), mon(new MemoryMon()),
+    : name(name), verbose(verbose), mon(new MemMonitor()),
       now_(0), process_(NULL), b_count(0) {}
 
   ~Simulator() {
@@ -141,34 +141,21 @@ public:
   }
 
   /**
-   * Process the next event. Only one step, a giant leap for mankind.
-   */
-  bool step(double until = -1) {
-    if (event_queue.empty())
-      return false;
-    PQueue::iterator ev = event_queue.begin();
-    if (until >= 0 && until <= ev->time) {
-      if (until > now_)
-        now_ = until;
-      return false;
-    }
-    now_ = ev->time;
-    process_ = ev->process;
-    event_map.erase(ev->process);
-    process_->run();
-    process_ = NULL;
-    event_queue.erase(ev);
-    return true;
-  }
-
-  /**
    * Executes steps until the given criterion is met.
    * @param   until   time of ending
    */
   void run(double until) {
     size_t nsteps = 0;
-    while (step(until))
+    while (_step(until))
       if (++nsteps % 100000 == 0) Rcpp::checkUserInterrupt();
+    mon->flush();
+  }
+
+  void step(unsigned int n = 1) {
+    size_t nsteps = 0;
+    while (n-- && _step())
+      if (++nsteps % 100000 == 0) Rcpp::checkUserInterrupt();
+    mon->flush();
   }
 
   /**
@@ -408,6 +395,27 @@ private:
   size_t b_count;           /**< unnamed batch counter */
   SigMap signal_map;        /**< map of arrivals subscribed to signals */
   Attr attributes;          /**< user-defined (key, value) pairs */
+
+  /**
+   * Process the next event. Only one step, a giant leap for mankind.
+   */
+  bool _step(double until = -1) {
+    if (event_queue.empty())
+      return false;
+    PQueue::iterator ev = event_queue.begin();
+    if (until >= 0 && until <= ev->time) {
+      if (until > now_)
+        now_ = until;
+      return false;
+    }
+    now_ = ev->time;
+    process_ = ev->process;
+    event_map.erase(ev->process);
+    process_->run();
+    process_ = NULL;
+    event_queue.erase(ev);
+    return true;
+  }
 };
 
 #endif
