@@ -9,6 +9,7 @@
 
 * Some documentation improvements (1e14ed7, 194ed05).
 * New default `until=Inf` for the `run` method (3e6aae9, as part of #140).
+* Fix process reset: sources are reset in strict order of creation (e7d909b).
 
 # simmer 3.7.0
 
