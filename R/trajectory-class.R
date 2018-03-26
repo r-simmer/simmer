@@ -15,7 +15,8 @@ Trajectory <- R6Class("trajectory",
       cat(paste0(margin, "trajectory: ", self$name, ", ",
                  private$n_activities, " activities\n"))
       lapply(private$ptrs, function(i) activity_print_(i, indent, verbose))
-      invisible(self)
+      # invisible(self)
+      # see https://github.com/r-lib/R6/issues/140
     },
 
     subset = function(i, double=FALSE) {
