@@ -109,9 +109,9 @@ fork_seq <- list(
   Aristotle  = c(4, 1)
 )
 
-simulate(fork_seq, time=50) %>%
-  print() %>%
-  philosophers_gantt() + theme_bw()
+env <- simulate(fork_seq, time=50)
+env
+philosophers_gantt(env) + theme_bw()
 ```
 
 As we can see, the simulation stopped very soon at a point in which every philosopher holds one fork and waits for the other to be available. The solution originally proposed by Dijkstra establishes the convention that all resources must be requested in order. This means that, in our simulation, Aristotle should pick fork 1 first instead:
@@ -119,9 +119,9 @@ As we can see, the simulation stopped very soon at a point in which every philos
 ```{r, message=FALSE}
 fork_seq$Aristotle <- rev(fork_seq$Aristotle)
 
-simulate(fork_seq, time=50) %>%
-  print() %>%
-  philosophers_gantt() + theme_bw()
+env <- simulate(fork_seq, time=50)
+env
+philosophers_gantt(env) + theme_bw()
 ```
 
 There are multiple solutions to this starvation problem, but this is probably the most straightforward way to break the *circularity* of the initial algorithm by making one philosopher pick the left fork first.
