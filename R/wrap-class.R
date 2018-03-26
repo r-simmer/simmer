@@ -45,7 +45,8 @@ Wrap <- R6Class("wrap",
           " | monitored: ", private$src[[name]][["mon"]],
           " | n_generated: ", self$get_n_generated(name), " }\n"
         ))
-      invisible(self)
+      # invisible(self)
+      # see https://github.com/r-lib/R6/issues/140
     },
 
     now = function() private$now_val,
