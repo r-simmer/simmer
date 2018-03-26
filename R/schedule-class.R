@@ -25,8 +25,7 @@ Schedule <- R6Class("schedule",
         " | period: ", ifelse(private$period > 0, private$period, Inf), " }\n",
         "{ values: ", paste(private$values, collapse = " "), " }\n"
       ))
-      # invisible(self)
-      # see https://github.com/r-lib/R6/issues/140
+      invisible(self)
     },
 
     get_schedule = function() { private$schedule }

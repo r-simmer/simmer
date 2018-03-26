@@ -7,7 +7,6 @@
 
 ## Minor changes and fixes:
 
-* Revert 21f524e (see #128) due to a bug in R6 (see r-lib/R6#140) that prevents the simulator from being garbage-collected (eb1cbb6, e453a64).
 * Some documentation improvements (1e14ed7, 194ed05).
 * New default `until=Inf` for the `run` method (3e6aae9, as part of #140).
 

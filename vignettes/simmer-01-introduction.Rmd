@@ -72,8 +72,8 @@ It is possible to run the simulation step by step, and such a method is chainabl
 
 ```{r, message=FALSE}
 env %>%
-  stepn()     # 1 step
-env %>%
+  stepn() %>% # 1 step
+  print() %>%
   stepn(3)    # 3 steps
 env %>% peek(Inf, verbose=TRUE)
 ```
