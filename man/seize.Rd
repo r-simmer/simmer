@@ -22,12 +22,13 @@ release_selected(.trj, amount = 1, id = 0)
 
 \item{resource}{the name of the resource.}
 
-\item{amount}{the amount to seize/release, accepts either a numeric or a callable object
-(a function) which must return a numeric.}
+\item{amount}{the amount to seize/release, accepts either a numeric or a callable
+object (a function) which must return a numeric.}
 
-\item{continue}{a boolean (if \code{post.seize} OR \code{reject} is defined) or a pair of booleans
-(if \code{post.seize} AND \code{reject} are defined) to indicate whether these subtrajectories
-should continue to the next activity in the main trajectory.}
+\item{continue}{a boolean (if \code{post.seize} OR \code{reject} is defined)
+or a pair of booleans (if \code{post.seize} AND \code{reject} are defined; if
+only one value is provided, it will be recycled) to indicate whether these
+subtrajectories should continue to the next activity in the main trajectory.}
 
 \item{post.seize}{an optional trajectory object which will be followed after a successful seize.}
 

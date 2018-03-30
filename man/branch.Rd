@@ -14,8 +14,9 @@ branch(.trj, option, continue, ...)
 continues to the next activity. A returning value between \code{1} to \code{N}
 makes the arrival to follow the corresponding sub-trajectory.}
 
-\item{continue}{a vector of \code{N} booleans that indicate whether the arrival must
-continue to the main trajectory after each sub-trajectory or not.}
+\item{continue}{a vector of \code{N} booleans that indicate whether the arrival
+must continue to the main trajectory after each sub-trajectory or not (if only
+one value is provided, it will be recycled to match the number of sub-trajectories).}
 
 \item{...}{\code{N} trajectory objects (or a list of \code{N} trajectory objects)
 describing each sub-trajectory.}
