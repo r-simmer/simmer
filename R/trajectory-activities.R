@@ -282,7 +282,8 @@ set_prioritization.trajectory <- function(.trj, values, mod=c(NA, "+", "*"))
 #' makes the arrival to follow the corresponding sub-trajectory.
 #' @param continue a vector of \code{N} booleans that indicate whether the arrival must
 #' continue to the main trajectory after each sub-trajectory or not.
-#' @param ... \code{N} trajectory objects describing each sub-trajectory.
+#' @param ... \code{N} trajectory objects (or a list of \code{N} trajectory objects)
+#' describing each sub-trajectory.
 #'
 #' @return Returns the trajectory object.
 #' @export
@@ -366,8 +367,8 @@ renege_abort.trajectory <- function(.trj) .trj$renege_abort()
 #' @inheritParams seize
 #' @param n number of clones, accepts either a numeric or a callable object
 #' (a function) which must return a numeric.
-#' @param ... optional parallel sub-trajectories. Each clone will follow
-#' a different sub-trajectory if available.
+#' @param ... a number of optional parallel sub-trajectories (or a list of
+#' sub-trajectories). Each clone will follow a different sub-trajectory if available.
 #'
 #' @return Returns the trajectory object.
 #' @export

@@ -45,3 +45,13 @@ test_that("an index out of range fails", {
     run()
   expect_equal(env %>% now(), 1)
 })
+
+test_that("accepts a list of trajectories", {
+  t1 <- trajectory() %>% timeout(1)
+
+  t2 <- trajectory() %>%
+    branch(function() 1, continue=rep(TRUE, 10), replicate(10, t1))
+
+  expect_equal(length(t2), 1)
+  expect_equal(get_n_activities(t2), 11)
+})

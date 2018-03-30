@@ -226,7 +226,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     branch = function(option, continue, ...) {
-      dots. <- list(...)
+      dots. <- c(...)
       check_args(option="function", continue="flag", dots.="trajectory")
       stopifnot(length(continue) == length(dots.))
       traj <- sapply(dots., `[`)
@@ -274,7 +274,7 @@ Trajectory <- R6Class("trajectory",
     renege_abort = function() { private$add_activity(RenegeAbort__new()) },
 
     replicate = function(n, ...) {
-      dots. <- list(...)
+      dots. <- c(...)
       check_args(n=c("number", "function"), dots.="trajectory")
       trj <- sapply(dots., `[`)
       switch(

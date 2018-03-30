@@ -15,8 +15,8 @@ synchronize(.trj, wait = TRUE, mon_all = FALSE)
 \item{n}{number of clones, accepts either a numeric or a callable object
 (a function) which must return a numeric.}
 
-\item{...}{optional parallel sub-trajectories. Each clone will follow
-a different sub-trajectory if available.}
+\item{...}{a number of optional parallel sub-trajectories (or a list of
+sub-trajectories). Each clone will follow a different sub-trajectory if available.}
 
 \item{wait}{if \code{FALSE}, all clones but the first to arrive are removed.
 if \code{TRUE} (default), all clones but the last to arrive are removed.}

@@ -17,7 +17,8 @@ makes the arrival to follow the corresponding sub-trajectory.}
 \item{continue}{a vector of \code{N} booleans that indicate whether the arrival must
 continue to the main trajectory after each sub-trajectory or not.}
 
-\item{...}{\code{N} trajectory objects describing each sub-trajectory.}
+\item{...}{\code{N} trajectory objects (or a list of \code{N} trajectory objects)
+describing each sub-trajectory.}
 }
 \value{
 Returns the trajectory object.
