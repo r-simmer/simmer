@@ -217,7 +217,7 @@ The first main component is the \code{Simulator} class. It comprises the event l
 - Maps of signals subscribed by arrivals and handlers defined for different signals.
 - Maps for forming batches of arrivals, named and unnamed.
 
-This class also holds global attributes and monitoring information. Thus, monitoring counters, which are derived from the \code{Monitor} class, are centralised, and they register every change of state produced during the simulation time. There are five types of built-in changes of state that are recorded by calling \code{Simulator}'s \code{record\_*()} methods:
+This class also holds global attributes and monitoring information. Thus, monitoring counters, which are derived from the \code{Monitor} class, are centralised, and they register every change of state produced during the simulation time. There are five types of built-in changes of state that are recorded by calling \code{Monitor}'s \code{record\_*()} methods:
 
 - An arrival is accepted into a resource (served or enqueued). The resource notifies about the new status of its internal counters.
 - An arrival leaves a resource. The resource notifies the new status of its internal counters, and the arrival notifies start, end and activity times in that particular resource.
