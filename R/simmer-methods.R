@@ -47,7 +47,8 @@
 #' env %>% peek()          # time for the next event
 #' env %>% stepn()         # execute next event
 #'
-simmer <- function(name="anonymous", verbose=FALSE) Simmer$new(name, verbose)
+simmer <- function(name="anonymous", verbose=FALSE, mon=monitor_mem())
+  Simmer$new(name, verbose, mon)
 
 #' Reset a Simulator
 #'

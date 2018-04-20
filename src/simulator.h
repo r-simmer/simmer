@@ -51,9 +51,8 @@ public:
    * @param verbose verbose flag
    * @param mon     monitoring object
    */
-  Simulator(const std::string& name, bool verbose)
-    : name(name), verbose(verbose), mon(new MemMonitor()),
-      now_(0), process_(NULL), b_count(0) {}
+  Simulator(const std::string& name, bool verbose, Monitor* mon)
+    : name(name), verbose(verbose), mon(mon), now_(0), process_(NULL), b_count(0) {}
 
   ~Simulator() {
     foreach_ (EntMap::value_type& itr, resource_map)
@@ -66,7 +65,6 @@ public:
       if (itr.second) delete itr.second;
     foreach_ (UnnBMap::value_type& itr, unnamedb_map)
       if (itr.second) delete itr.second;
-    delete mon;
   }
 
   /**

@@ -48,6 +48,8 @@ is_simmer <- function(name, env) inherits(env[[name]], "simmer")
 
 is_schedule <- function(name, env) inherits(env[[name]], "schedule")
 
+is_monitor <- function(name, env) inherits(env[[name]], "monitor")
+
 is_NA <- function(name, env) is.na(env[[name]])
 
 is_NULL <- function(name, env) is.null(env[[name]])

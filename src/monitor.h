@@ -3,6 +3,35 @@
 
 #include "simmer.h"
 
+class Monitor {
+public:
+  Monitor() {
+    ends_h = vec_of<std::string>("name")("start_time")("end_time")("activity_time")("finished");
+    releases_h = vec_of<std::string>("name")("start_time")("end_time")("activity_time")("resource");
+    attributes_h = vec_of<std::string>("time")("name")("key")("value");
+    resources_h = vec_of<std::string>("resource")("time")("server")("queue")("capacity")("queue_size");
+  }
+
+  virtual ~Monitor() {}
+  virtual void clear() = 0;
+  virtual void flush() {}
+
+  virtual void record_end(const std::string& name, double start, double end,
+                          double activity, bool finished) = 0;
+  virtual void record_release(const std::string& name, double start, double end,
+                              double activity, const std::string& resource) = 0;
+  virtual void record_attribute(double time, const std::string& name,
+                                const std::string& key, double value) = 0;
+  virtual void record_resource(const std::string& name, double time, int server_count,
+                               int queue_count, int capacity, int queue_size) = 0;
+
+protected:
+  VEC<std::string> ends_h;
+  VEC<std::string> releases_h;
+  VEC<std::string> attributes_h;
+  VEC<std::string> resources_h;
+};
+
 class MonitorMap {
   typedef boost::variant< VEC<bool>, VEC<int>, VEC<double>, VEC<std::string> > _vec;
   typedef UMAP<std::string, _vec> _map;
@@ -17,7 +46,7 @@ public:
   }
 
   template <typename T>
-  void insert(const std::string& key, const T& value) {
+  void push_back(const std::string& key, const T& value) {
     if (map.find(key) == map.end())
       map[key] = VEC<T>();
     boost::get< VEC<T> >(map[key]).push_back(value);
@@ -29,31 +58,11 @@ private:
   _map map;
 };
 
-class Monitor {
-public:
-  virtual ~Monitor() {}
-  virtual void clear() = 0;
-  virtual void flush() {}
-
-  virtual void record_end(const std::string& name, double start, double end,
-                          double activity, bool finished) = 0;
-  virtual void record_release(const std::string& name, double start, double end,
-                              double activity, const std::string& resource) = 0;
-  virtual void record_attribute(double time, const std::string& name,
-                                const std::string& key, double value) = 0;
-  virtual void record_resource(const std::string& name, double time, int server_count,
-                               int queue_count, int capacity, int queue_size) = 0;
-
-  virtual RData get_arrivals(bool per_resource) const = 0;
-  virtual RData get_attributes() const = 0;
-  virtual RData get_resources() const = 0;
-};
-
 class MemMonitor : public Monitor {
 public:
   void clear() {
-    arr_traj.clear();
-    arr_res.clear();
+    ends.clear();
+    releases.clear();
     attributes.clear();
     resources.clear();
   }
@@ -61,120 +70,155 @@ public:
   void record_end(const std::string& name, double start, double end,
                   double activity, bool finished)
   {
-    arr_traj.insert("name",           name);
-    arr_traj.insert("start_time",     start);
-    arr_traj.insert("end_time",       end);
-    arr_traj.insert("activity_time",  activity);
-    arr_traj.insert("finished",       finished);
+    ends.push_back(ends_h[0], name);
+    ends.push_back(ends_h[1], start);
+    ends.push_back(ends_h[2], end);
+    ends.push_back(ends_h[3], activity);
+    ends.push_back(ends_h[4], finished);
   }
 
   void record_release(const std::string& name, double start, double end,
                       double activity, const std::string& resource)
   {
-    arr_res.insert("name",            name);
-    arr_res.insert("start_time",      start);
-    arr_res.insert("end_time",        end);
-    arr_res.insert("activity_time",   activity);
-    arr_res.insert("resource",        resource);
+    releases.push_back(releases_h[0], name);
+    releases.push_back(releases_h[1], start);
+    releases.push_back(releases_h[2], end);
+    releases.push_back(releases_h[3], activity);
+    releases.push_back(releases_h[4], resource);
   }
 
   void record_attribute(double time, const std::string& name,
                         const std::string& key, double value)
   {
-    attributes.insert("time",         time);
-    attributes.insert("name",         name);
-    attributes.insert("key",          key);
-    attributes.insert("value",        value);
+    attributes.push_back(attributes_h[0], time);
+    attributes.push_back(attributes_h[1], name);
+    attributes.push_back(attributes_h[2], key);
+    attributes.push_back(attributes_h[3], value);
   }
 
   void record_resource(const std::string& name, double time, int server_count,
                        int queue_count, int capacity, int queue_size)
   {
-    resources.insert("resource",      name);
-    resources.insert("time",          time);
-    resources.insert("server",        server_count);
-    resources.insert("queue",         queue_count);
-    resources.insert("capacity",      capacity);
-    resources.insert("queue_size",    queue_size);
+    resources.push_back(resources_h[0], name);
+    resources.push_back(resources_h[1], time);
+    resources.push_back(resources_h[2], server_count);
+    resources.push_back(resources_h[3], queue_count);
+    resources.push_back(resources_h[4], capacity);
+    resources.push_back(resources_h[5], queue_size);
   }
 
   RData get_arrivals(bool per_resource) const {
     if (!per_resource) return RData::create(
-      Rcpp::Named("name")             = arr_traj.get<std::string>("name"),
-      Rcpp::Named("start_time")       = arr_traj.get<double>("start_time"),
-      Rcpp::Named("end_time")         = arr_traj.get<double>("end_time"),
-      Rcpp::Named("activity_time")    = arr_traj.get<double>("activity_time"),
-      Rcpp::Named("finished")         = arr_traj.get<bool>("finished"),
+      Rcpp::Named(ends_h[0]) = ends.get<std::string>(ends_h[0]),
+      Rcpp::Named(ends_h[1]) = ends.get<double>(ends_h[1]),
+      Rcpp::Named(ends_h[2]) = ends.get<double>(ends_h[2]),
+      Rcpp::Named(ends_h[3]) = ends.get<double>(ends_h[3]),
+      Rcpp::Named(ends_h[4]) = ends.get<bool>(ends_h[4]),
       Rcpp::Named("stringsAsFactors") = false
     );
     return RData::create(
-      Rcpp::Named("name")             = arr_res.get<std::string>("name"),
-      Rcpp::Named("start_time")       = arr_res.get<double>("start_time"),
-      Rcpp::Named("end_time")         = arr_res.get<double>("end_time"),
-      Rcpp::Named("activity_time")    = arr_res.get<double>("activity_time"),
-      Rcpp::Named("resource")         = arr_res.get<std::string>("resource"),
+      Rcpp::Named(releases_h[0]) = releases.get<std::string>(releases_h[0]),
+      Rcpp::Named(releases_h[1]) = releases.get<double>(releases_h[1]),
+      Rcpp::Named(releases_h[2]) = releases.get<double>(releases_h[2]),
+      Rcpp::Named(releases_h[3]) = releases.get<double>(releases_h[3]),
+      Rcpp::Named(releases_h[4]) = releases.get<std::string>(releases_h[4]),
       Rcpp::Named("stringsAsFactors") = false
     );
   }
 
   RData get_attributes() const {
     return RData::create(
-      Rcpp::Named("time")             = attributes.get<double>("time"),
-      Rcpp::Named("name")             = attributes.get<std::string>("name"),
-      Rcpp::Named("key")              = attributes.get<std::string>("key"),
-      Rcpp::Named("value")            = attributes.get<double>("value"),
+      Rcpp::Named(attributes_h[0]) = attributes.get<double>(attributes_h[0]),
+      Rcpp::Named(attributes_h[1]) = attributes.get<std::string>(attributes_h[1]),
+      Rcpp::Named(attributes_h[2]) = attributes.get<std::string>(attributes_h[2]),
+      Rcpp::Named(attributes_h[3]) = attributes.get<double>(attributes_h[3]),
       Rcpp::Named("stringsAsFactors") = false
     );
   }
 
   RData get_resources() const {
     return RData::create(
-      Rcpp::Named("resource")         = resources.get<std::string>("resource"),
-      Rcpp::Named("time")             = resources.get<double>("time"),
-      Rcpp::Named("server")           = resources.get<int>("server"),
-      Rcpp::Named("queue")            = resources.get<int>("queue"),
-      Rcpp::Named("capacity")         = resources.get<int>("capacity"),
-      Rcpp::Named("queue_size")       = resources.get<int>("queue_size"),
+      Rcpp::Named(resources_h[0]) = resources.get<std::string>(resources_h[0]),
+      Rcpp::Named(resources_h[1]) = resources.get<double>(resources_h[1]),
+      Rcpp::Named(resources_h[2]) = resources.get<int>(resources_h[2]),
+      Rcpp::Named(resources_h[3]) = resources.get<int>(resources_h[3]),
+      Rcpp::Named(resources_h[4]) = resources.get<int>(resources_h[4]),
+      Rcpp::Named(resources_h[5]) = resources.get<int>(resources_h[5]),
       Rcpp::Named("stringsAsFactors") = false
     );
   }
 
 private:
-  MonitorMap arr_traj;     /**< arrival statistics per trajectory */
-  MonitorMap arr_res;      /**< arrival statistics per resource */
-  MonitorMap attributes;   /**< attribute statistics */
-  MonitorMap resources;    /**< resource statistics */
+  MonitorMap ends;        /**< arrival statistics per trajectory */
+  MonitorMap releases;    /**< arrival statistics per resource */
+  MonitorMap attributes;  /**< attribute statistics */
+  MonitorMap resources;   /**< resource statistics */
 };
 
-class CsvMonitor : public Monitor {
-  struct sepofstream {
-    sepofstream(std::ofstream& os, std::string& sep) : os(os), sep(sep) {}
-    std::ofstream& os;
-    std::string& sep;
-
-    template <class T>
-    friend sepofstream& operator<<(sepofstream& con, const T& x) {
-      con.os << x << con.sep;
-      return con;
-    }
-  };
+class CsvWriter {
+  typedef VEC<std::string> Header;
 
 public:
-  CsvMonitor(const std::string& arr_traj_path, const std::string& arr_res_path,
-             const std::string& attributes_path, const std::string& resources_path,
-             const RFn& csv_reader)
-    : arr_traj_path(arr_traj_path), arr_res_path(arr_res_path),
-      attributes_path(attributes_path), resources_path(resources_path),
-      csv_reader(csv_reader), sep(",") { init(); }
+  CsvWriter(const std::string& path, Header header, char sep=',')
+    : i(0), path(path), header(header), sep(sep) { init(); }
 
+  void close() { file.close(); }
+  void flush() { file.flush(); }
   void clear() {
     close();
+    i = 0;
     init();
   }
 
+  template <typename T>
+  friend CsvWriter& operator<<(CsvWriter& cw, const T& elem) {
+    if (cw.i++ > 0)
+      cw.file << cw.sep;
+    cw.file << elem;
+    if (cw.i == cw.header.size()) {
+      cw.file << '\n';
+      cw.i = 0;
+    }
+    return cw;
+  }
+
+private:
+  unsigned int i;
+  std::string path;
+  Header header;
+  char sep;
+  std::ofstream file;
+
+  void init() {
+    file.open(path.c_str());
+    foreach_ (const std::string& name, header)
+      *this << name;
+    file.setf(std::ios_base::fixed);
+  }
+};
+
+class CsvMonitor : public Monitor {
+  typedef std::vector<std::string> Header;
+
+public:
+  CsvMonitor(const std::string& ends_path, const std::string& releases_path,
+             const std::string& attributes_path, const std::string& resources_path)
+    : Monitor(),
+      ends(CsvWriter(ends_path, ends_h)),
+      releases(CsvWriter(releases_path, releases_h)),
+      attributes(CsvWriter(attributes_path, attributes_h)),
+      resources(CsvWriter(resources_path, resources_h)) {}
+
+  void clear() {
+    ends.clear();
+    releases.clear();
+    attributes.clear();
+    resources.clear();
+  }
+
   void flush() {
-    arr_traj.flush();
-    arr_res.flush();
+    ends.flush();
+    releases.flush();
     attributes.flush();
     resources.flush();
   }
@@ -182,79 +226,32 @@ public:
   void record_end(const std::string& name, double start, double end,
                   double activity, bool finished)
   {
-    sepofstream c(arr_traj, sep);
-    c << name << start << end << activity;
-    arr_traj << finished << "\n";
+    ends << name << start << end << activity << finished;
   }
 
   void record_release(const std::string& name, double start, double end,
                       double activity, const std::string& resource)
   {
-    sepofstream c(arr_res, sep);
-    c << name << start << end << activity;
-    arr_res << resource << "\n";
+    releases << name << start << end << activity << resource;
   }
 
   void record_attribute(double time, const std::string& name,
                         const std::string& key, double value)
   {
-    sepofstream c(attributes, sep);
-    c << time << name << key;
-    attributes << value << "\n";
+    attributes << time << name << key << value;
   }
 
   void record_resource(const std::string& name, double time, int server_count,
                        int queue_count, int capacity, int queue_size)
   {
-    sepofstream c(resources, sep);
-    c << name << time << server_count << queue_count << capacity;
-    resources << queue_size << "\n";
+    resources << name << time << server_count << queue_count << capacity << queue_size;
   }
-
-  RData get_arrivals(bool per_resource) const {
-    if (!per_resource)
-      return csv_reader(arr_traj_path);
-    return csv_reader(arr_res_path);
-  }
-
-  RData get_attributes() const { return csv_reader(attributes_path); }
-
-  RData get_resources() const { return csv_reader(resources_path); }
 
 private:
-  std::string arr_traj_path;
-  std::string arr_res_path;
-  std::string attributes_path;
-  std::string resources_path;
-  std::ofstream arr_traj;          /**< arrival statistics per trajectory */
-  std::ofstream arr_res;           /**< arrival statistics per resource */
-  std::ofstream attributes;        /**< attribute statistics */
-  std::ofstream resources;         /**< resource statistics */
-  RFn csv_reader;
-  std::string sep;
-
-  void init() {
-    arr_traj.open(arr_traj_path.c_str());
-    arr_res.open(arr_res_path.c_str());
-    attributes.open(attributes_path.c_str());
-    resources.open(resources_path.c_str());
-    sepofstream a(arr_traj, sep), b(arr_res, sep), c(attributes, sep), d(resources, sep);
-    a << "name" << "start_time" << "end_time" << "activity_time";
-    arr_traj << "finished\n";
-    b << "name" << "start_time" << "end_time" << "activity_time";
-    arr_res << "resource\n";
-    c << "time" << "name" << "key";
-    attributes << "value\n";
-    d << "resource" << "time" << "server" << "queue" << "capacity";
-    resources << "queue_size\n";
-  }
-
-  void close() {
-    arr_traj.close();
-    arr_res.close();
-    attributes.close();
-    resources.close();
-  }
+  CsvWriter ends;
+  CsvWriter releases;
+  CsvWriter attributes;
+  CsvWriter resources;
 };
 
 #endif

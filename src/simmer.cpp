@@ -9,8 +9,8 @@
 using namespace Rcpp;
 
 //[[Rcpp::export]]
-SEXP Simulator__new(const std::string& name, bool verbose) {
-  return XPtr<Simulator>(new Simulator(name, verbose));
+SEXP Simulator__new(const std::string& name, bool verbose, SEXP mon) {
+  return XPtr<Simulator>(new Simulator(name, verbose, XPtr<Monitor>(mon)));
 }
 
 //[[Rcpp::export]]
@@ -83,22 +83,32 @@ bool add_resource_manager_(SEXP sim_, const std::string& name, const std::string
 }
 
 //[[Rcpp::export]]
-DataFrame get_mon_arrivals_(SEXP sim_, bool per_resource, bool ongoing) {
+void record_ongoing_(SEXP sim_, bool per_resource) {
   XPtr<Simulator> sim(sim_);
-  if (ongoing) sim->record_ongoing(per_resource);
-  return sim->mon->get_arrivals(per_resource);
+  sim->record_ongoing(per_resource);
 }
 
 //[[Rcpp::export]]
-DataFrame get_mon_attributes_(SEXP sim_) {
-  XPtr<Simulator> sim(sim_);
-  return sim->mon->get_attributes();
+SEXP MemMonitor__new() {
+  return XPtr<MemMonitor>(new MemMonitor());
 }
 
 //[[Rcpp::export]]
-DataFrame get_mon_resources_(SEXP sim_) {
-  XPtr<Simulator> sim(sim_);
-  return sim->mon->get_resources();
+DataFrame get_arrivals_(SEXP mon_, bool per_resource) {
+  XPtr<MemMonitor> mon(mon_);
+  return mon->get_arrivals(per_resource);
+}
+
+//[[Rcpp::export]]
+DataFrame get_attributes_(SEXP mon_) {
+  XPtr<MemMonitor> mon(mon_);
+  return mon->get_attributes();
+}
+
+//[[Rcpp::export]]
+DataFrame get_resources_(SEXP mon_) {
+  XPtr<MemMonitor> mon(mon_);
+  return mon->get_resources();
 }
 
 //[[Rcpp::export]]

@@ -11,6 +11,15 @@
 #define VEC std::vector
 
 template <typename T>
+struct vec_of : public VEC<T> {
+  vec_of(const T& t) { (*this)(t); }
+  vec_of& operator()(const T& t) {
+    this->push_back(t);
+    return *this;
+  }
+};
+
+template <typename T>
 std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
   out << "[";
   if (!v.empty())
