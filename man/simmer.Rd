@@ -10,6 +10,9 @@ simmer(name = "anonymous", verbose = FALSE, mon = monitor_mem())
 \item{name}{the name of the simulator.}
 
 \item{verbose}{enable showing activity information.}
+
+\item{mon}{monitor (in memory by default); see \code{\link{monitor}} for
+other options.}
 }
 \value{
 Returns a simulation environment.

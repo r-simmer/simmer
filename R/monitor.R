@@ -27,6 +27,9 @@ Monitor <- R6Class("monitor",
   )
 )
 
+#' Create a Monitor
+#'
+#' @name monitor
 #' @export
 monitor_mem <- function()
   Monitor$new("In memory", MemMonitor__new(), get_arrivals_, get_attributes_, get_resources_)

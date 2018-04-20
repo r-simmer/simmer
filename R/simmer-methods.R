@@ -4,6 +4,8 @@
 #'
 #' @param name the name of the simulator.
 #' @param verbose enable showing activity information.
+#' @param mon monitor (in memory by default); see \code{\link{monitor}} for
+#' other options.
 #'
 #' @return Returns a simulation environment.
 #' @seealso

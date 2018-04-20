@@ -155,65 +155,59 @@ private:
   MonitorMap resources;   /**< resource statistics */
 };
 
-class CsvWriter {
-  typedef VEC<std::string> Header;
-
+class CsvWriter : public std::ofstream {
 public:
-  CsvWriter(const std::string& path, Header header, char sep=',')
-    : i(0), path(path), header(header), sep(sep) { init(); }
-
-  void close() { file.close(); }
-  void flush() { file.flush(); }
-  void clear() {
-    close();
+  void open(const std::string& path, VEC<std::string> header, char sep=',') {
+    std::ofstream::open(path.c_str());
+    foreach_ (const std::string& name, header)
+      *this << name;
+    setf(std::ios_base::fixed);
     i = 0;
-    init();
+    n_cols = (int) header.size();
+    sep = sep;
   }
 
   template <typename T>
-  friend CsvWriter& operator<<(CsvWriter& cw, const T& elem) {
-    if (cw.i++ > 0)
-      cw.file << cw.sep;
-    cw.file << elem;
-    if (cw.i == cw.header.size()) {
-      cw.file << '\n';
-      cw.i = 0;
+  friend CsvWriter& operator<<(CsvWriter& ofs, const T& elem) {
+    std::ofstream& ofsp = (std::ofstream&) ofs;
+    if (ofs.i++ > 0)
+      ofsp << ofs.sep;
+    ofsp << elem;
+    if (ofs.i == ofs.n_cols) {
+      ofsp << '\n';
+      ofs.i = 0;
     }
-    return cw;
+    return ofs;
   }
 
 private:
-  unsigned int i;
-  std::string path;
-  Header header;
+  int i;
+  int n_cols;
   char sep;
-  std::ofstream file;
-
-  void init() {
-    file.open(path.c_str());
-    foreach_ (const std::string& name, header)
-      *this << name;
-    file.setf(std::ios_base::fixed);
-  }
 };
 
 class CsvMonitor : public Monitor {
-  typedef std::vector<std::string> Header;
-
 public:
   CsvMonitor(const std::string& ends_path, const std::string& releases_path,
              const std::string& attributes_path, const std::string& resources_path)
-    : Monitor(),
-      ends(CsvWriter(ends_path, ends_h)),
-      releases(CsvWriter(releases_path, releases_h)),
-      attributes(CsvWriter(attributes_path, attributes_h)),
-      resources(CsvWriter(resources_path, resources_h)) {}
+    : Monitor(), ends_path(ends_path), releases_path(releases_path),
+      attributes_path(attributes_path), resources_path(resources_path)
+  {
+    ends.open(ends_path, ends_h);
+    releases.open(releases_path, releases_h);
+    attributes.open(attributes_path, attributes_h);
+    resources.open(resources_path, resources_h);
+  }
 
   void clear() {
-    ends.clear();
-    releases.clear();
-    attributes.clear();
-    resources.clear();
+    ends.close();
+    releases.close();
+    attributes.close();
+    resources.close();
+    ends.open(ends_path, ends_h);
+    releases.open(releases_path, releases_h);
+    attributes.open(attributes_path, attributes_h);
+    resources.open(resources_path, resources_h);
   }
 
   void flush() {
@@ -248,6 +242,10 @@ public:
   }
 
 private:
+  std::string ends_path;
+  std::string releases_path;
+  std::string attributes_path;
+  std::string resources_path;
   CsvWriter ends;
   CsvWriter releases;
   CsvWriter attributes;
