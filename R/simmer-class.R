@@ -6,30 +6,32 @@ Simmer <- R6Class("simmer",
       check_args(name="string", verbose="flag", mon="monitor")
       self$name <- name
       private$mon <- mon
-      private$sim_obj <- Simulator__new(name, verbose, mon$get_ptr())
+      private$sim_obj <- Simulator__new(name, verbose, mon$get_xptr())
       self
     },
 
     print = function() {
       cat(paste0(
         "simmer environment: ", self$name,
-        " | now: ", self$now(), " | next: ", self$peek(), "\n"
+        " | now: ", self$now(), " | next: ", self$peek(), "\n",
+        "{ Monitor: ", private$mon$name, " }\n"
       ))
-      for (name in names(private$res))
-        cat(paste0(
-          "{ Resource: ", name,
-          " | monitored: ", private$res[[name]][["mon"]],
-          " | server status: ", self$get_server_count(name),
-          "(", self$get_capacity(name), ")",
-          " | queue status: ", self$get_queue_count(name),
-          "(", self$get_queue_size(name), ") }\n"
-        ))
-      for (name in names(private$src))
-        cat(paste0(
-          "{ Source: ", name,
-          " | monitored: ", private$src[[name]][["mon"]],
-          " | n_generated: ", self$get_n_generated(name), " }\n"
-        ))
+      for (name in names(private$mon$handlers)) cat(paste0(
+        "  { ", name, ": ", private$mon$handlers[[name]], " }\n"
+      ))
+      for (name in names(private$res)) cat(paste0(
+        "{ Resource: ", name,
+        " | monitored: ", private$res[[name]][["mon"]],
+        " | server status: ", self$get_server_count(name),
+        "(", self$get_capacity(name), ")",
+        " | queue status: ", self$get_queue_count(name),
+        "(", self$get_queue_size(name), ") }\n"
+      ))
+      for (name in names(private$src)) cat(paste0(
+        "{ Source: ", name,
+        " | monitored: ", private$src[[name]][["mon"]],
+        " | n_generated: ", self$get_n_generated(name), " }\n"
+      ))
       invisible(self)
     },
 

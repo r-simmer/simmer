@@ -8,8 +8,36 @@
 \usage{
 monitor_mem()
 
-monitor_csv(path = tempdir(), reader = read.csv, sep = ",", ...)
+monitor_csv(path = tempdir(), keep = FALSE, sep = ",",
+  reader = read.csv, ...)
+}
+\arguments{
+\item{path}{directory where files will be created (must exist).}
+
+\item{keep}{whether to keep files on exit. By default, files are removed.}
+
+\item{sep}{separator character.}
+
+\item{reader}{function that will be used to read the files.}
+
+\item{...}{further arguments for \code{reader}.}
+}
+\value{
+A \code{monitor} object.
 }
 \description{
-Create a Monitor
+Methods for creating \code{monitor} objects for simulation environments.
+}
+\details{
+The in-memory monitor is enabled by default (\code{memory_mem}),
+and it should the fastest.
+
+For large simulations, or if the RAM footprint is an issue, you may
+consider monitoring to disk. To that end, \code{monitor_csv} stores the values
+in comma-separated (CSV) files. The usual \code{\link{get_mon}_*} methods
+retrieve data frames from such files using the \code{reader} provided. By
+default, \code{\link[utils]{read.csv}} is used, but you may consider using
+faster alternatives from other packages. It is also possible to \code{keep}
+the files in a custom directory to read and post-process them in a separate
+workflow.
 }
