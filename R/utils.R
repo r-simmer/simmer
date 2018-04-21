@@ -10,8 +10,6 @@ is_string <- function(name, env)
 
 is_string_vector <- function(name, env) is.character(env[[name]])
 
-is_numeric <- function(name, env) is.numeric(env[[name]])
-
 is_number <- function(name, env) {
   if (is.numeric(env[[name]]) && length(env[[name]]) == 1) {
     if (is.infinite(env[[name]]))
@@ -42,18 +40,7 @@ is_trajectory <- function(name, env) {
   else check_traj(env[[name]])
 }
 
-is_data.frame <- function(name, env) is.data.frame(env[[name]])
-
-is_simmer <- function(name, env) inherits(env[[name]], "simmer")
-
-is_schedule <- function(name, env) inherits(env[[name]], "schedule")
-
-is_monitor <- function(name, env) inherits(env[[name]], "monitor")
-
-is_externalptr <- function(name, env) inherits(env[[name]], "externalptr")
-
 is_NA <- function(name, env) is.na(env[[name]])
-
 is_NULL <- function(name, env) is.null(env[[name]])
 
 get_caller <- function() {
@@ -75,10 +62,13 @@ check_args <- function(..., env.=parent.frame()) {
   msg <- NULL
 
   for (var in names(types)) {
-    funcs <- paste0("is_", sub(" ", "_", types[[var]]))
-    if (!any(sapply(funcs, do.call, args=list(var, env.), envir=env.)))
-      msg <- c(msg, paste0(
-        "'", sub("dots.", "...", var), "' is not a valid ", paste0(types[[var]], collapse=" or ")))
+    check <- sapply(paste0("is_", sub(" ", "_", types[[var]])), function(func) {
+      if (!exists(func))
+       return(inherits(env.[[var]], sub("is_", "", func)))
+      do.call(func, args=list(var, env.), envir=env.)
+    })
+    if (!any(check)) msg <- c(msg, paste0(
+      "'", sub("dots.", "...", var), "' is not a valid ", paste0(types[[var]], collapse=" or ")))
   }
 
   if (length(msg))
