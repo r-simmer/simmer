@@ -2,23 +2,23 @@ Monitor <- R6Class("monitor",
   public = list(
     name = NA,
 
-    initialize = function(name, ptr,
+    initialize = function(name, xptr,
                           get_arrivals, get_attributes, get_resources,
                           handlers=NULL, finalize=function() {})
     {
       check_args(
         name = "string",
-        ptr = "externalptr",
+        xptr = "externalptr",
         get_arrivals = "function",
         get_attributes = "function",
         get_resources = "function",
         finalize = "function"
       )
       self$name <- name
-      private$ptr <- ptr
-      self$get_arrivals <- function(...) get_arrivals(private$ptr, ...)
-      self$get_attributes <- function(...) get_attributes(private$ptr, ...)
-      self$get_resources <- function(...) get_resources(private$ptr, ...)
+      private$xptr <- xptr
+      self$get_arrivals <- function(...) get_arrivals(private$xptr, ...)
+      self$get_attributes <- function(...) get_attributes(private$xptr, ...)
+      self$get_resources <- function(...) get_resources(private$xptr, ...)
       self$handlers <- handlers
       self$finalize <- finalize
       self
@@ -37,11 +37,11 @@ Monitor <- R6Class("monitor",
       invisible(self)
     },
 
-    get_xptr = function() { private$ptr }
+    get_xptr = function() { private$xptr }
   ),
 
   private = list(
-    ptr = NULL
+    xptr = NULL
   )
 )
 
@@ -94,10 +94,10 @@ monitor_csv <- function(path=tempdir(), keep=FALSE, sep=",", reader=read.csv, ..
   Monitor$new(
     "to disk (CSV)",
     CsvMonitor__new(files[1], files[2], files[3], files[4], sep),
-    function(ptr, per_resource)
+    function(xptr, per_resource)
       do.call(reader, list(ifelse(!per_resource, files[1], files[2])), ...),
-    function(ptr) do.call(reader, list(files[3], ...)),
-    function(ptr) do.call(reader, list(files[4], ...)),
+    function(xptr) do.call(reader, list(files[3], ...)),
+    function(xptr) do.call(reader, list(files[4], ...)),
     files,
     function() if(!keep) unlink(files)
   )

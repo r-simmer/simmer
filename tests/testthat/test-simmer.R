@@ -147,7 +147,7 @@ test_that("we can force some errors (just to complete coverage)", {
     add_resource("dummy") %>%
     add_generator("dummy", trajectory() %>% timeout(0), function() 1, mon = 1000)
   env$.__enclos_env__$private$sim_obj <- NULL
-  env$.__enclos_env__$private$mon$.__enclos_env__$private$ptr <- NULL
+  env$.__enclos_env__$private$mon$.__enclos_env__$private$xptr <- NULL
 
   expect_error(env %>% reset())
   expect_error(env %>% now())
