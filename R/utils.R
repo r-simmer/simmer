@@ -112,3 +112,9 @@ magrittr_workaround <- function(func) {
     rm(".", envir=environment(func))
   func
 }
+
+recycle <- function(param, n) {
+  if (length(param) != 1 || n == 1)
+    return(param)
+  rep(param, n)
+}

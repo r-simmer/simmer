@@ -197,3 +197,13 @@ test_that("attributes are copied over", {
 
   expect_equal(attr$value, c(1, 2, 2))
 })
+
+test_that("accepts a list of trajectories", {
+  t1 <- trajectory() %>% timeout(1)
+
+  t2 <- trajectory() %>%
+    clone(10, replicate(10, t1))
+
+  expect_equal(length(t2), 1)
+  expect_equal(get_n_activities(t2), 11)
+})

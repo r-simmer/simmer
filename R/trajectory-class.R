@@ -83,6 +83,7 @@ Trajectory <- R6Class("trajectory",
     get_n_activities = function() { private$n_activities },
 
     seize = function(resource, amount=1, id=0, continue=NULL, post.seize=NULL, reject=NULL) {
+      continue <- recycle(continue, length(c(post.seize, reject)))
       stopifnot(length(continue) == length(c(post.seize, reject)))
       if (!length(continue)) continue <- TRUE
       check_args(
@@ -226,8 +227,9 @@ Trajectory <- R6Class("trajectory",
     },
 
     branch = function(option, continue, ...) {
-      dots. <- list(...)
+      dots. <- c(...)
       check_args(option="function", continue="flag", dots.="trajectory")
+      continue <- recycle(continue, length(dots.))
       stopifnot(length(continue) == length(dots.))
       traj <- sapply(dots., `[`)
       private$add_activity(Branch__new(option, continue, traj))
@@ -274,7 +276,7 @@ Trajectory <- R6Class("trajectory",
     renege_abort = function() { private$add_activity(RenegeAbort__new()) },
 
     replicate = function(n, ...) {
-      dots. <- list(...)
+      dots. <- c(...)
       check_args(n=c("number", "function"), dots.="trajectory")
       trj <- sapply(dots., `[`)
       switch(

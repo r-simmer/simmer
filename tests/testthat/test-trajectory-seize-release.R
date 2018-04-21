@@ -126,7 +126,7 @@ test_that("arrivals can retry a seize", {
 
 test_that("arrivals go through post.seize or reject and then continue", {
   t <- trajectory() %>%
-    seize("dummy", 1, continue = c(TRUE, TRUE),
+    seize("dummy", 1, continue = TRUE,
           post.seize = trajectory() %>%
             timeout(2) %>%
             release("dummy"),
