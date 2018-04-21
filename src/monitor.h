@@ -165,6 +165,7 @@ public:
     this->sep = sep;
     foreach_ (const std::string& name, header)
       *this << name;
+    flush();
   }
 
   template <typename T>
