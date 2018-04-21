@@ -167,6 +167,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// CsvMonitor__new
+SEXP CsvMonitor__new(const std::string& ends_path, const std::string& releases_path, const std::string& attributes_path, const std::string& resources_path, const std::string& sep);
+RcppExport SEXP _simmer_CsvMonitor__new(SEXP ends_pathSEXP, SEXP releases_pathSEXP, SEXP attributes_pathSEXP, SEXP resources_pathSEXP, SEXP sepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type ends_path(ends_pathSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type releases_path(releases_pathSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type attributes_path(attributes_pathSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type resources_path(resources_pathSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type sep(sepSEXP);
+    rcpp_result_gen = Rcpp::wrap(CsvMonitor__new(ends_path, releases_path, attributes_path, resources_path, sep));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_arrivals_
 DataFrame get_arrivals_(SEXP mon_, bool per_resource);
 RcppExport SEXP _simmer_get_arrivals_(SEXP mon_SEXP, SEXP per_resourceSEXP) {
@@ -1242,6 +1257,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_add_resource_manager_", (DL_FUNC) &_simmer_add_resource_manager_, 6},
     {"_simmer_record_ongoing_", (DL_FUNC) &_simmer_record_ongoing_, 2},
     {"_simmer_MemMonitor__new", (DL_FUNC) &_simmer_MemMonitor__new, 0},
+    {"_simmer_CsvMonitor__new", (DL_FUNC) &_simmer_CsvMonitor__new, 5},
     {"_simmer_get_arrivals_", (DL_FUNC) &_simmer_get_arrivals_, 2},
     {"_simmer_get_attributes_", (DL_FUNC) &_simmer_get_attributes_, 1},
     {"_simmer_get_resources_", (DL_FUNC) &_simmer_get_resources_, 1},

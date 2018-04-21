@@ -3,9 +3,12 @@
 \name{monitor}
 \alias{monitor}
 \alias{monitor_mem}
+\alias{monitor_csv}
 \title{Create a Monitor}
 \usage{
 monitor_mem()
+
+monitor_csv(path = tempdir(), reader = read.csv, sep = ",", ...)
 }
 \description{
 Create a Monitor

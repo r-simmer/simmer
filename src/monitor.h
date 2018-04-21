@@ -159,12 +159,12 @@ class CsvWriter : public std::ofstream {
 public:
   void open(const std::string& path, VEC<std::string> header, char sep=',') {
     std::ofstream::open(path.c_str());
-    foreach_ (const std::string& name, header)
-      *this << name;
     setf(std::ios_base::fixed);
     i = 0;
     n_cols = (int) header.size();
-    sep = sep;
+    this->sep = sep;
+    foreach_ (const std::string& name, header)
+      *this << name;
   }
 
   template <typename T>
@@ -189,14 +189,15 @@ private:
 class CsvMonitor : public Monitor {
 public:
   CsvMonitor(const std::string& ends_path, const std::string& releases_path,
-             const std::string& attributes_path, const std::string& resources_path)
+             const std::string& attributes_path, const std::string& resources_path,
+             char sep=',')
     : Monitor(), ends_path(ends_path), releases_path(releases_path),
-      attributes_path(attributes_path), resources_path(resources_path)
+      attributes_path(attributes_path), resources_path(resources_path), sep(sep)
   {
-    ends.open(ends_path, ends_h);
-    releases.open(releases_path, releases_h);
-    attributes.open(attributes_path, attributes_h);
-    resources.open(resources_path, resources_h);
+    ends.open(ends_path, ends_h, sep);
+    releases.open(releases_path, releases_h, sep);
+    attributes.open(attributes_path, attributes_h, sep);
+    resources.open(resources_path, resources_h, sep);
   }
 
   void clear() {
@@ -204,10 +205,10 @@ public:
     releases.close();
     attributes.close();
     resources.close();
-    ends.open(ends_path, ends_h);
-    releases.open(releases_path, releases_h);
-    attributes.open(attributes_path, attributes_h);
-    resources.open(resources_path, resources_h);
+    ends.open(ends_path, ends_h, sep);
+    releases.open(releases_path, releases_h, sep);
+    attributes.open(attributes_path, attributes_h, sep);
+    resources.open(resources_path, resources_h, sep);
   }
 
   void flush() {
@@ -246,6 +247,7 @@ private:
   std::string releases_path;
   std::string attributes_path;
   std::string resources_path;
+  char sep;
   CsvWriter ends;
   CsvWriter releases;
   CsvWriter attributes;

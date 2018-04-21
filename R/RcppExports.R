@@ -49,6 +49,10 @@ MemMonitor__new <- function() {
     .Call(`_simmer_MemMonitor__new`)
 }
 
+CsvMonitor__new <- function(ends_path, releases_path, attributes_path, resources_path, sep) {
+    .Call(`_simmer_CsvMonitor__new`, ends_path, releases_path, attributes_path, resources_path, sep)
+}
+
 get_arrivals_ <- function(mon_, per_resource) {
     .Call(`_simmer_get_arrivals_`, mon_, per_resource)
 }

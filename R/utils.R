@@ -50,6 +50,8 @@ is_schedule <- function(name, env) inherits(env[[name]], "schedule")
 
 is_monitor <- function(name, env) inherits(env[[name]], "monitor")
 
+is_externalptr <- function(name, env) inherits(env[[name]], "externalptr")
+
 is_NA <- function(name, env) is.na(env[[name]])
 
 is_NULL <- function(name, env) is.null(env[[name]])
