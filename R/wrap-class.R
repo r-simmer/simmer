@@ -25,28 +25,7 @@ Wrap <- R6Class("wrap",
       self
     },
 
-    print = function() {
-      cat(paste0(
-        "simmer wrapper: ", self$name,
-        " | now: ", self$now(), " | next: ", self$peek(), "\n"
-      ))
-      for (name in names(private$res))
-        cat(paste0(
-          "{ Resource: ", name,
-          " | monitored: ", private$res[[name]][["mon"]],
-          " | server status: ", self$get_server_count(name),
-          "(", self$get_capacity(name), ")",
-          " | queue status: ", self$get_queue_count(name),
-          "(", self$get_queue_size(name), ") }\n"
-        ))
-      for (name in names(private$src))
-        cat(paste0(
-          "{ Source: ", name,
-          " | monitored: ", private$src[[name]][["mon"]],
-          " | n_generated: ", self$get_n_generated(name), " }\n"
-        ))
-      invisible(self)
-    },
+    print = Simmer$public_methods$print,
 
     now = function() private$now_val,
 

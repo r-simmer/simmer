@@ -9,8 +9,8 @@
 using namespace Rcpp;
 
 //[[Rcpp::export]]
-SEXP Simulator__new(const std::string& name, bool verbose) {
-  return XPtr<Simulator>(new Simulator(name, verbose));
+SEXP Simulator__new(const std::string& name, bool verbose, SEXP mon) {
+  return XPtr<Simulator>(new Simulator(name, verbose, XPtr<Monitor>(mon)));
 }
 
 //[[Rcpp::export]]
@@ -34,7 +34,7 @@ DataFrame peek_(SEXP sim_, int steps) {
 //[[Rcpp::export]]
 void stepn_(SEXP sim_, unsigned int n) {
   XPtr<Simulator> sim(sim_);
-  while (n--) sim->step();
+  sim->step(n);
 }
 
 //[[Rcpp::export]]
@@ -83,21 +83,41 @@ bool add_resource_manager_(SEXP sim_, const std::string& name, const std::string
 }
 
 //[[Rcpp::export]]
-DataFrame get_mon_arrivals_(SEXP sim_, bool per_resource, bool ongoing) {
+void record_ongoing_(SEXP sim_, bool per_resource) {
   XPtr<Simulator> sim(sim_);
-  return sim->get_mon_arrivals(per_resource, ongoing);
+  sim->record_ongoing(per_resource);
 }
 
 //[[Rcpp::export]]
-DataFrame get_mon_attributes_(SEXP sim_) {
-  XPtr<Simulator> sim(sim_);
-  return sim->get_mon_attributes();
+SEXP MemMonitor__new() {
+  return XPtr<MemMonitor>(new MemMonitor());
 }
 
 //[[Rcpp::export]]
-DataFrame get_mon_resources_(SEXP sim_) {
-  XPtr<Simulator> sim(sim_);
-  return sim->get_mon_resources();
+SEXP CsvMonitor__new(const std::string& ends_path, const std::string& releases_path,
+                     const std::string& attributes_path, const std::string& resources_path,
+                     const std::string& sep)
+{
+  return XPtr<CsvMonitor>(
+    new CsvMonitor(ends_path, releases_path, attributes_path, resources_path, sep[0]));
+}
+
+//[[Rcpp::export]]
+DataFrame get_arrivals_(SEXP mon_, bool per_resource) {
+  XPtr<MemMonitor> mon(mon_);
+  return mon->get_arrivals(per_resource);
+}
+
+//[[Rcpp::export]]
+DataFrame get_attributes_(SEXP mon_) {
+  XPtr<MemMonitor> mon(mon_);
+  return mon->get_attributes();
+}
+
+//[[Rcpp::export]]
+DataFrame get_resources_(SEXP mon_) {
+  XPtr<MemMonitor> mon(mon_);
+  return mon->get_resources();
 }
 
 //[[Rcpp::export]]

@@ -5,11 +5,12 @@
 #' @param .trj the trajectory object.
 #' @inheritParams select
 #' @param resource the name of the resource.
-#' @param amount the amount to seize/release, accepts either a numeric or a callable object
-#' (a function) which must return a numeric.
-#' @param continue a boolean (if \code{post.seize} OR \code{reject} is defined) or a pair of booleans
-#' (if \code{post.seize} AND \code{reject} are defined) to indicate whether these subtrajectories
-#' should continue to the next activity in the main trajectory.
+#' @param amount the amount to seize/release, accepts either a numeric or a callable
+#' object (a function) which must return a numeric.
+#' @param continue a boolean (if \code{post.seize} OR \code{reject} is defined)
+#' or a pair of booleans (if \code{post.seize} AND \code{reject} are defined; if
+#' only one value is provided, it will be recycled) to indicate whether these
+#' subtrajectories should continue to the next activity in the main trajectory.
 #' @param post.seize an optional trajectory object which will be followed after a successful seize.
 #' @param reject an optional trajectory object which will be followed if the arrival is rejected.
 #'
@@ -280,9 +281,11 @@ set_prioritization.trajectory <- function(.trj, values, mod=c(NA, "+", "*"))
 #' \code{0} and \code{N}. A return value equal to \code{0} skips the branch and
 #' continues to the next activity. A returning value between \code{1} to \code{N}
 #' makes the arrival to follow the corresponding sub-trajectory.
-#' @param continue a vector of \code{N} booleans that indicate whether the arrival must
-#' continue to the main trajectory after each sub-trajectory or not.
-#' @param ... \code{N} trajectory objects describing each sub-trajectory.
+#' @param continue a vector of \code{N} booleans that indicate whether the arrival
+#' must continue to the main trajectory after each sub-trajectory or not (if only
+#' one value is provided, it will be recycled to match the number of sub-trajectories).
+#' @param ... \code{N} trajectory objects (or a list of \code{N} trajectory objects)
+#' describing each sub-trajectory.
 #'
 #' @return Returns the trajectory object.
 #' @export
@@ -366,8 +369,8 @@ renege_abort.trajectory <- function(.trj) .trj$renege_abort()
 #' @inheritParams seize
 #' @param n number of clones, accepts either a numeric or a callable object
 #' (a function) which must return a numeric.
-#' @param ... optional parallel sub-trajectories. Each clone will follow
-#' a different sub-trajectory if available.
+#' @param ... a number of optional parallel sub-trajectories (or a list of
+#' sub-trajectories). Each clone will follow a different sub-trajectory if available.
 #'
 #' @return Returns the trajectory object.
 #' @export
