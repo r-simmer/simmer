@@ -2,10 +2,7 @@
 #define POLICY_H
 
 #include "simmer.h"
-
-// forward declarations
-class Simulator;
-class Resource;
+#include "simulator.h"
 
 class Policy {
   typedef Resource* (Policy::*method)(Simulator*, const VEC<std::string>&);
@@ -19,7 +16,10 @@ public:
     policies["random"]            = &Policy::policy_random;
   }
 
-  friend std::ostream& operator<<(std::ostream& out, const Policy& policy);
+  friend std::ostream& operator<<(std::ostream& out, const Policy& policy) {
+    out << policy.name;
+    return out;
+  }
 
   Resource* dispatch(Simulator* sim, const VEC<std::string>& resources) {
     MethodMap::iterator x = policies.find(name);
@@ -31,10 +31,47 @@ private:
   std::string name;
   MethodMap policies;
 
-  Resource* policy_shortest_queue(Simulator* sim, const VEC<std::string>& resources);
-  Resource* policy_round_robin(Simulator* sim, const VEC<std::string>& resources);
-  Resource* policy_first_available(Simulator* sim, const VEC<std::string>& resources);
-  Resource* policy_random(Simulator* sim, const VEC<std::string>& resources);
+  Resource* policy_shortest_queue(Simulator* sim, const VEC<std::string>& resources) {
+    Resource* selected = sim->get_resource(resources[0]);
+    size_t n = resources.size();
+    for (size_t i = 1; i < n; i++) {
+      Resource* res = sim->get_resource(resources[i]);
+      if (res->get_server_count() + res->get_queue_count() <
+        selected->get_server_count() + selected->get_queue_count())
+        selected = res;
+    }
+    return selected;
+  }
+
+  Resource* policy_round_robin(Simulator* sim, const VEC<std::string>& resources) {
+    static int i = -1;
+    if (++i >= (int)resources.size())
+      i = 0;
+    return sim->get_resource(resources[i]);
+  }
+
+  Resource* policy_first_available(Simulator* sim, const VEC<std::string>& resources) {
+    size_t i, n = resources.size();
+    Resource* selected;
+    for (i = 0; i < n; i++) {
+      selected = sim->get_resource(resources[i]);
+      if (selected->get_server_count() < selected->get_capacity())
+        goto select;
+    }
+    for (i = 0; i < n; i++) {
+      selected = sim->get_resource(resources[i]);
+      if (selected->get_queue_count() < selected->get_queue_size())
+        goto select;
+    }
+    return sim->get_resource(resources[0]);
+    select:
+      return selected;
+  }
+
+  Resource* policy_random(Simulator* sim, const VEC<std::string>& resources) {
+    int i = Rcpp::sample(resources.size(), 1)[0];
+    return sim->get_resource(resources[i-1]);
+  }
 };
 
 #endif
