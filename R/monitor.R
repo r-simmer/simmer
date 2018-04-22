@@ -86,11 +86,12 @@ monitor_delim <- function(path=tempdir(), keep=FALSE, sep=" ", ext=".txt",
   if (!dir.exists(path))
     stop(match.call()[[1]], ": directory '", path, "' does not exist", call.=FALSE)
 
+  pattern <- tempfile(tmpdir=path)
   files <- c(
-    arrivals = tempfile("arrivals_", path, ext),
-    releases = tempfile("releases_", path, ext),
-    attributes = tempfile("attributes_", path, ext),
-    resources = tempfile("resources_", path, ext)
+    arrivals = paste0(pattern, "_arrivals", ext),
+    releases = paste0(pattern, "_releases", ext),
+    attributes = paste0(pattern, "_attributes", ext),
+    resources = paste0(pattern, "_resources", ext)
   )
   file.create(files)
 
