@@ -4,6 +4,7 @@
 
 * New data source `add_dataframe` enables the attachment of precomputed data, in the form of a data frame, to a trajectory. It can be used instead of (or along with) `add_generator`. The most notable advantage over the latter is that `add_dataframe` is able to automatically set attributes and prioritisation values per arrival based on columns of the provided data frame (#140 closing #123).
 * New `set_source` activity deprecates `set_distribution()`. It works both for generators and data sources (275a09c, as part of #140).
+* New monitoring interface allows for disk offloading. The `simmer()` constructor gains a new argument `mon` to provide different types of monitors. By default, monitoring is performed in-memory, as usual. Additionally, monitoring can be offloaded to disk through `monitor_delim` and `monitor_csv`, which produce flat delimited files. But more importantly, the C++ interface has been refactorised to enable the development of new monitoring backends (#146 closing #119).
 
 ## Minor changes and fixes:
 
