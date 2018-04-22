@@ -160,6 +160,7 @@ public:
   void open(const std::string& path, VEC<std::string> header, char sep=',') {
     std::ofstream::open(path.c_str());
     setf(std::ios_base::fixed);
+    precision(9);
     i = 0;
     n_cols = (int) header.size();
     this->sep = sep;
