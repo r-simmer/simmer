@@ -51,3 +51,15 @@ test_that("a timeout is correctly monitored", {
   expect_equal(get_mon_arrivals(env)[1, ]$end_time, 16)
   expect_equal(get_mon_arrivals(env, TRUE)[1, ]$end_time, 16)
 })
+
+test_that("an infinite timeout can be defined", {
+  t <- trajectory() %>%
+    timeout(Inf)
+
+  arr <- simmer() %>%
+    add_generator("dummy", t, at(0)) %>%
+    run() %>%
+    get_mon_arrivals()
+
+  expect_equal(arr$end_time, Inf)
+})
