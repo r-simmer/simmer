@@ -2,32 +2,12 @@
 #define SIMMER_H
 
 #include <Rcpp.h>
-#include <fstream>
 
 #include <boost/container/set.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
 
 #define VEC std::vector
-
-template <typename T>
-struct vec_of : public VEC<T> {
-  vec_of(const T& t) { (*this)(t); }
-  vec_of& operator()(const T& t) {
-    this->push_back(t);
-    return *this;
-  }
-};
-
-template <typename T>
-std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
-  out << "[";
-  if (!v.empty())
-    std::copy(v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
-  out << "\b\b]";
-  return out;
-}
-
 #define MSET boost::container::multiset
 #define USET boost::unordered_set
 #define UMAP boost::unordered_map
@@ -62,21 +42,6 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #define RStr Rcpp::CharacterVector
 #define RBool Rcpp::LogicalVector
 
-inline std::ostream& operator<<(std::ostream& out, const RData& df) {
-  out << "data.frame";
-  return out;
-}
-
-inline std::ostream& operator<<(std::ostream& out, const RFn& fn) {
-  out << "function()";
-  return out;
-}
-
-inline std::ostream& operator<<(std::ostream& out, const REnv& env) {
-  out << "function()";
-  return out;
-}
-
 #define FMT(n, justify) std::setw(n) << std::justify
 #define IND(n) std::string(n, ' ')
 
@@ -100,5 +65,38 @@ inline std::ostream& operator<<(std::ostream& out, const REnv& env) {
 #define CLONEABLE(Type) virtual Type* clone() const { return new Type(*this); }
 
 typedef UMAP<std::string, double> Attr;
+
+template <typename T>
+struct vec_of : public VEC<T> {
+  vec_of(const T& t) { (*this)(t); }
+  vec_of& operator()(const T& t) {
+    this->push_back(t);
+    return *this;
+  }
+};
+
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
+  out << "[";
+  if (!v.empty())
+    std::copy(v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
+  out << "\b\b]";
+  return out;
+}
+
+inline std::ostream& operator<<(std::ostream& out, const RData& df) {
+  out << "data.frame";
+  return out;
+}
+
+inline std::ostream& operator<<(std::ostream& out, const RFn& fn) {
+  out << "function()";
+  return out;
+}
+
+inline std::ostream& operator<<(std::ostream& out, const REnv& env) {
+  out << "function()";
+  return out;
+}
 
 #endif

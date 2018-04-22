@@ -2,6 +2,7 @@
 #define MONITOR_H
 
 #include "simmer.h"
+#include <fstream>
 
 class Monitor {
 public:

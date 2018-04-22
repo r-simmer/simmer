@@ -4,6 +4,13 @@
 #include "simmer.h"
 #include "monitor.h"
 #include "process.h"
+#include "task.h"
+#include "manager.h"
+#include "source.h"
+#include "generator.h"
+#include "datasrc.h"
+#include "arrival.h"
+#include "batched.h"
 #include "resource.h"
 
 class Activity;
