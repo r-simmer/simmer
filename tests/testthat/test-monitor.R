@@ -54,10 +54,10 @@ test_that("delim monitors collect the same values as in-memory monitors", {
     run()
 
   # do not compare the 'finished' column
-  expect_equal(get_mon_arrivals(env_csv)[,-5], get_mon_arrivals(env_mem)[,-5], tolerance=1e-9)
-  expect_equal(get_mon_arrivals(env_csv, TRUE), get_mon_arrivals(env_mem, TRUE), tolerance=1e-9)
-  expect_equal(get_mon_attributes(env_csv), get_mon_attributes(env_mem), tolerance=1e-9)
-  expect_equal(get_mon_resources(env_csv), get_mon_resources(env_mem), tolerance=1e-9)
+  expect_equal(get_mon_arrivals(env_csv)[,-5], get_mon_arrivals(env_mem)[,-5], tolerance=1e-8)
+  expect_equal(get_mon_arrivals(env_csv, TRUE), get_mon_arrivals(env_mem, TRUE), tolerance=1e-8)
+  expect_equal(get_mon_attributes(env_csv), get_mon_attributes(env_mem), tolerance=1e-8)
+  expect_equal(get_mon_resources(env_csv), get_mon_resources(env_mem), tolerance=1e-8)
 
   arr <- read.csv(mon$handlers[["arrivals"]], stringsAsFactors=FALSE)
   rel <- read.csv(mon$handlers[["releases"]], stringsAsFactors=FALSE)
