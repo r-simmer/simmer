@@ -3,13 +3,17 @@
 \name{monitor}
 \alias{monitor}
 \alias{monitor_mem}
+\alias{monitor_delim}
 \alias{monitor_csv}
 \title{Create a Monitor}
 \usage{
 monitor_mem()
 
-monitor_csv(path = tempdir(), keep = FALSE, sep = ",",
-  reader = read.csv, ...)
+monitor_delim(path = tempdir(), keep = FALSE, sep = " ", ext = ".txt",
+  reader = read.delim, args = list(stringsAsFactors = FALSE))
+
+monitor_csv(path = tempdir(), keep = FALSE, reader = read.csv,
+  args = list(stringsAsFactors = FALSE))
 }
 \arguments{
 \item{path}{directory where files will be created (must exist).}
@@ -18,9 +22,11 @@ monitor_csv(path = tempdir(), keep = FALSE, sep = ",",
 
 \item{sep}{separator character.}
 
+\item{ext}{file extension to use.}
+
 \item{reader}{function that will be used to read the files.}
 
-\item{...}{further arguments for \code{reader}.}
+\item{args}{a list of further arguments for \code{reader}.}
 }
 \value{
 A \code{monitor} object.
@@ -33,11 +39,14 @@ The in-memory monitor is enabled by default (\code{memory_mem}),
 and it should the fastest.
 
 For large simulations, or if the RAM footprint is an issue, you may
-consider monitoring to disk. To that end, \code{monitor_csv} stores the values
-in comma-separated (CSV) files. The usual \code{\link{get_mon}_*} methods
-retrieve data frames from such files using the \code{reader} provided. By
-default, \code{\link[utils]{read.csv}} is used, but you may consider using
-faster alternatives from other packages. It is also possible to \code{keep}
-the files in a custom directory to read and post-process them in a separate
+consider monitoring to disk. To that end, \code{monitor_delim} stores the values
+in flat delimited files. The usual \code{\link{get_mon}_*} methods retrieve
+data frames from such files using the \code{reader} provided. By default,
+\code{\link[utils]{read.delim}} is used, but you may consider using faster
+alternatives from other packages. It is also possible to \code{keep} the
+files in a custom directory to read and post-process them in a separate
 workflow.
+
+\code{monitor_csv} is a special case of \code{monitor_delim} with
+\code{sep=","} and \code{ext=".csv"}.
 }
