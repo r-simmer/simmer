@@ -141,7 +141,7 @@ timeout <- function(.trj, task) UseMethod("timeout")
 
 #' @export
 timeout.trajectory <- function(.trj, task) {
-  check_args(task=c("number", "function"))
+  check_args(task=c("numeric", "function"))
   .trj$timeout(task)
 }
 
