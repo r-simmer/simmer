@@ -6,14 +6,15 @@
 using namespace Rcpp;
 
 // Simulator__new
-SEXP Simulator__new(const std::string& name, bool verbose);
-RcppExport SEXP _simmer_Simulator__new(SEXP nameSEXP, SEXP verboseSEXP) {
+SEXP Simulator__new(const std::string& name, bool verbose, SEXP mon);
+RcppExport SEXP _simmer_Simulator__new(SEXP nameSEXP, SEXP verboseSEXP, SEXP monSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type name(nameSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(Simulator__new(name, verbose));
+    Rcpp::traits::input_parameter< SEXP >::type mon(monSEXP);
+    rcpp_result_gen = Rcpp::wrap(Simulator__new(name, verbose, mon));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -145,38 +146,73 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// get_mon_arrivals_
-DataFrame get_mon_arrivals_(SEXP sim_, bool per_resource, bool ongoing);
-RcppExport SEXP _simmer_get_mon_arrivals_(SEXP sim_SEXP, SEXP per_resourceSEXP, SEXP ongoingSEXP) {
+// record_ongoing_
+void record_ongoing_(SEXP sim_, bool per_resource);
+RcppExport SEXP _simmer_record_ongoing_(SEXP sim_SEXP, SEXP per_resourceSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
     Rcpp::traits::input_parameter< bool >::type per_resource(per_resourceSEXP);
-    Rcpp::traits::input_parameter< bool >::type ongoing(ongoingSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_mon_arrivals_(sim_, per_resource, ongoing));
-    return rcpp_result_gen;
+    record_ongoing_(sim_, per_resource);
+    return R_NilValue;
 END_RCPP
 }
-// get_mon_attributes_
-DataFrame get_mon_attributes_(SEXP sim_);
-RcppExport SEXP _simmer_get_mon_attributes_(SEXP sim_SEXP) {
+// MemMonitor__new
+SEXP MemMonitor__new();
+RcppExport SEXP _simmer_MemMonitor__new() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    rcpp_result_gen = Rcpp::wrap(get_mon_attributes_(sim_));
+    rcpp_result_gen = Rcpp::wrap(MemMonitor__new());
     return rcpp_result_gen;
 END_RCPP
 }
-// get_mon_resources_
-DataFrame get_mon_resources_(SEXP sim_);
-RcppExport SEXP _simmer_get_mon_resources_(SEXP sim_SEXP) {
+// CsvMonitor__new
+SEXP CsvMonitor__new(const std::string& ends_path, const std::string& releases_path, const std::string& attributes_path, const std::string& resources_path, const std::string& sep);
+RcppExport SEXP _simmer_CsvMonitor__new(SEXP ends_pathSEXP, SEXP releases_pathSEXP, SEXP attributes_pathSEXP, SEXP resources_pathSEXP, SEXP sepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
-    rcpp_result_gen = Rcpp::wrap(get_mon_resources_(sim_));
+    Rcpp::traits::input_parameter< const std::string& >::type ends_path(ends_pathSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type releases_path(releases_pathSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type attributes_path(attributes_pathSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type resources_path(resources_pathSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type sep(sepSEXP);
+    rcpp_result_gen = Rcpp::wrap(CsvMonitor__new(ends_path, releases_path, attributes_path, resources_path, sep));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_arrivals_
+DataFrame get_arrivals_(SEXP mon_, bool per_resource);
+RcppExport SEXP _simmer_get_arrivals_(SEXP mon_SEXP, SEXP per_resourceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type mon_(mon_SEXP);
+    Rcpp::traits::input_parameter< bool >::type per_resource(per_resourceSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_arrivals_(mon_, per_resource));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_attributes_
+DataFrame get_attributes_(SEXP mon_);
+RcppExport SEXP _simmer_get_attributes_(SEXP mon_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type mon_(mon_SEXP);
+    rcpp_result_gen = Rcpp::wrap(get_attributes_(mon_));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_resources_
+DataFrame get_resources_(SEXP mon_);
+RcppExport SEXP _simmer_get_resources_(SEXP mon_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type mon_(mon_SEXP);
+    rcpp_result_gen = Rcpp::wrap(get_resources_(mon_));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1209,7 +1245,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_simmer_Simulator__new", (DL_FUNC) &_simmer_Simulator__new, 2},
+    {"_simmer_Simulator__new", (DL_FUNC) &_simmer_Simulator__new, 3},
     {"_simmer_reset_", (DL_FUNC) &_simmer_reset_, 1},
     {"_simmer_now_", (DL_FUNC) &_simmer_now_, 1},
     {"_simmer_peek_", (DL_FUNC) &_simmer_peek_, 2},
@@ -1219,9 +1255,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_add_dataframe_", (DL_FUNC) &_simmer_add_dataframe_, 11},
     {"_simmer_add_resource_", (DL_FUNC) &_simmer_add_resource_, 8},
     {"_simmer_add_resource_manager_", (DL_FUNC) &_simmer_add_resource_manager_, 6},
-    {"_simmer_get_mon_arrivals_", (DL_FUNC) &_simmer_get_mon_arrivals_, 3},
-    {"_simmer_get_mon_attributes_", (DL_FUNC) &_simmer_get_mon_attributes_, 1},
-    {"_simmer_get_mon_resources_", (DL_FUNC) &_simmer_get_mon_resources_, 1},
+    {"_simmer_record_ongoing_", (DL_FUNC) &_simmer_record_ongoing_, 2},
+    {"_simmer_MemMonitor__new", (DL_FUNC) &_simmer_MemMonitor__new, 0},
+    {"_simmer_CsvMonitor__new", (DL_FUNC) &_simmer_CsvMonitor__new, 5},
+    {"_simmer_get_arrivals_", (DL_FUNC) &_simmer_get_arrivals_, 2},
+    {"_simmer_get_attributes_", (DL_FUNC) &_simmer_get_attributes_, 1},
+    {"_simmer_get_resources_", (DL_FUNC) &_simmer_get_resources_, 1},
     {"_simmer_get_n_generated_", (DL_FUNC) &_simmer_get_n_generated_, 2},
     {"_simmer_get_name_", (DL_FUNC) &_simmer_get_name_, 1},
     {"_simmer_get_attribute_", (DL_FUNC) &_simmer_get_attribute_, 3},

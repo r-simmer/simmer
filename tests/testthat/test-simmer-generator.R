@@ -94,14 +94,16 @@ test_that("arrivals are correctly monitored", {
   expect_equal(arr1$start_time, c(0, 0, 0))
   expect_equal(arr1$end_time, c(NA_real_, NA, NA))
   expect_equal(arr1$activity_time, c(NA_real_, NA, NA))
-  expect_equal(arr1$finished, c(NA, NA, NA))
+  expect_equal(arr1$finished, rep(FALSE, 3))
   expect_equal(arr2$name, c("a0", "a0", "b0", "c0"))
   expect_equal(arr2$start_time, c(0, 0, 0, 0))
   expect_equal(arr2$end_time, c(NA_real_, NA, NA, NA))
   expect_equal(arr2$activity_time, c(NA_real_, NA, NA, NA))
   expect_equal(arr2$resource, c("res1", "res2", "res1", "res1"))
 
-  env %>% run(until = 10)
+  env %>%
+    reset() %>%
+    run(until = 10)
 
   arr1 <- get_mon_arrivals(env, per_resource = FALSE, ongoing = TRUE)
   arr1 <- arr1[order(arr1$name), ]
@@ -112,14 +114,16 @@ test_that("arrivals are correctly monitored", {
   expect_equal(arr1$start_time, c(0, 0, 0))
   expect_equal(arr1$end_time, c(5, NA, NA))
   expect_equal(arr1$activity_time, c(5, NA, NA))
-  expect_equal(arr1$finished, c(TRUE, NA, NA))
+  expect_equal(arr1$finished, c(TRUE, FALSE, FALSE))
   expect_equal(arr2$name, c("a0", "a0", "b0", "c0"))
   expect_equal(arr2$start_time, c(0, 0, 0, 0))
   expect_equal(arr2$end_time, c(5, 5, NA, NA))
   expect_equal(arr2$activity_time, c(5, 5, NA, NA))
   expect_equal(arr2$resource, c("res1", "res2", "res1", "res1"))
 
-  env %>% run(until = 12)
+  env %>%
+    reset() %>%
+    run(until = 12)
 
   arr1 <- get_mon_arrivals(env, per_resource = FALSE, ongoing = TRUE)
   arr1 <- arr1[order(arr1$name), ]
@@ -130,7 +134,7 @@ test_that("arrivals are correctly monitored", {
   expect_equal(arr1$start_time, c(0, 0, 0))
   expect_equal(arr1$end_time, c(5, 11, NA))
   expect_equal(arr1$activity_time, c(5, 6, NA))
-  expect_equal(arr1$finished, c(TRUE, TRUE, NA))
+  expect_equal(arr1$finished, c(TRUE, TRUE, FALSE))
   expect_equal(arr2$name, c("a0", "a0", "b0", "c0"))
   expect_equal(arr2$start_time, c(0, 0, 0, 0))
   expect_equal(arr2$end_time, c(5, 5, 11, NA))

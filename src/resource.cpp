@@ -17,7 +17,7 @@ void Resource::set_capacity(int value) {
         break;
   }
   if (is_monitored())
-    sim->record_resource(name, server_count, queue_count, capacity, queue_size);
+    sim->mon->record_resource(name, sim->now(), server_count, queue_count, capacity, queue_size);
 }
 
 void Resource::set_queue_size(int value) {
@@ -30,7 +30,7 @@ void Resource::set_queue_size(int value) {
       try_free_queue(sim->verbose, sim->now());
   }
   if (is_monitored())
-    sim->record_resource(name, server_count, queue_count, capacity, queue_size);
+    sim->mon->record_resource(name, sim->now(), server_count, queue_count, capacity, queue_size);
 }
 
 int Resource::seize(Arrival* arrival, int amount) {
@@ -55,7 +55,7 @@ int Resource::seize(Arrival* arrival, int amount) {
 
   arrival->register_entity(this);
   if (is_monitored())
-    sim->record_resource(name, server_count, queue_count, capacity, queue_size);
+    sim->mon->record_resource(name, sim->now(), server_count, queue_count, capacity, queue_size);
   return status;
 }
 
@@ -79,7 +79,7 @@ int Resource::post_release() {
       break;
 
   if (is_monitored())
-    sim->record_resource(name, server_count, queue_count, capacity, queue_size);
+    sim->mon->record_resource(name, sim->now(), server_count, queue_count, capacity, queue_size);
   return SUCCESS;
 }
 
@@ -96,6 +96,6 @@ bool Resource::erase(Arrival* arrival, bool stay) {
   }
 
   if (is_monitored())
-    sim->record_resource(name, server_count, queue_count, capacity, queue_size);
+    sim->mon->record_resource(name, sim->now(), server_count, queue_count, capacity, queue_size);
   return true;
 }

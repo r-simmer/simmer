@@ -4,6 +4,7 @@
 
 * New data source `add_dataframe` enables the attachment of precomputed data, in the form of a data frame, to a trajectory. It can be used instead of (or along with) `add_generator`. The most notable advantage over the latter is that `add_dataframe` is able to automatically set attributes and prioritisation values per arrival based on columns of the provided data frame (#140 closing #123).
 * New `set_source` activity deprecates `set_distribution()`. It works both for generators and data sources (275a09c, as part of #140).
+* New monitoring interface allows for disk offloading. The `simmer()` constructor gains a new argument `mon` to provide different types of monitors. By default, monitoring is performed in-memory, as usual. Additionally, monitoring can be offloaded to disk through `monitor_delim` and `monitor_csv`, which produce flat delimited files. But more importantly, the C++ interface has been refactorised to enable the development of new monitoring backends (#146 closing #119).
 
 ## Minor changes and fixes:
 
@@ -11,6 +12,7 @@
 * New default `until=Inf` for the `run` method (3e6aae9, as part of #140).
 * `branch` and `clone` now accept lists of trajectories, in the same way as `join`, so that there is no need to use `do.call` (#142).
 * The argument `continue` (present in `seize` and `branch`) is recycled if only one value is provided but several sub-trajectories are defined (#143).
+* Fix process reset: sources are reset in strict order of creation (e7d909b).
 
 # simmer 3.7.0
 

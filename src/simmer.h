@@ -1,14 +1,23 @@
 #ifndef SIMMER_H
 #define SIMMER_H
 
-// [[Rcpp::depends(BH)]]
 #include <Rcpp.h>
+#include <fstream>
 
 #include <boost/container/set.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
 
 #define VEC std::vector
+
+template <typename T>
+struct vec_of : public VEC<T> {
+  vec_of(const T& t) { (*this)(t); }
+  vec_of& operator()(const T& t) {
+    this->push_back(t);
+    return *this;
+  }
+};
 
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
@@ -22,6 +31,7 @@ std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
 #define MSET boost::container::multiset
 #define USET boost::unordered_set
 #define UMAP boost::unordered_map
+#define MAP  std::map
 
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>

@@ -2,33 +2,36 @@ Simmer <- R6Class("simmer",
   public = list(
     name = NA,
 
-    initialize = function(name="anonymous", verbose=FALSE) {
-      check_args(name="string", verbose="flag")
+    initialize = function(name="anonymous", verbose=FALSE, mon=monitor_mem()) {
+      check_args(name="string", verbose="flag", mon="monitor")
       self$name <- name
-      private$sim_obj <- Simulator__new(name, verbose)
+      private$mon <- mon
+      private$sim_obj <- Simulator__new(name, verbose, mon$get_xptr())
       self
     },
 
     print = function() {
       cat(paste0(
         "simmer environment: ", self$name,
-        " | now: ", self$now(), " | next: ", self$peek(), "\n"
+        " | now: ", self$now(), " | next: ", self$peek(), "\n",
+        "{ Monitor: ", private$mon$name, " }\n"
       ))
-      for (name in names(private$res))
-        cat(paste0(
-          "{ Resource: ", name,
-          " | monitored: ", private$res[[name]][["mon"]],
-          " | server status: ", self$get_server_count(name),
-          "(", self$get_capacity(name), ")",
-          " | queue status: ", self$get_queue_count(name),
-          "(", self$get_queue_size(name), ") }\n"
-        ))
-      for (name in names(private$src))
-        cat(paste0(
-          "{ Source: ", name,
-          " | monitored: ", private$src[[name]][["mon"]],
-          " | n_generated: ", self$get_n_generated(name), " }\n"
-        ))
+      for (name in names(private$mon$handlers)) cat(paste0(
+        "  { ", name, ": ", private$mon$handlers[[name]], " }\n"
+      ))
+      for (name in names(private$res)) cat(paste0(
+        "{ Resource: ", name,
+        " | monitored: ", private$res[[name]][["mon"]],
+        " | server status: ", self$get_server_count(name),
+        "(", self$get_capacity(name), ")",
+        " | queue status: ", self$get_queue_count(name),
+        "(", self$get_queue_size(name), ") }\n"
+      ))
+      for (name in names(private$src)) cat(paste0(
+        "{ Source: ", name,
+        " | monitored: ", private$src[[name]][["mon"]],
+        " | n_generated: ", self$get_n_generated(name), " }\n"
+      ))
       invisible(self)
     },
 
@@ -171,13 +174,14 @@ Simmer <- R6Class("simmer",
     },
 
     get_mon_arrivals = function(per_resource=FALSE, ongoing=FALSE) {
-      get_mon_arrivals_(private$sim_obj, per_resource, ongoing)
+      if (ongoing) record_ongoing_(private$sim_obj, per_resource)
+      private$mon$get_arrivals(per_resource)
     },
 
-    get_mon_attributes = function() get_mon_attributes_(private$sim_obj),
+    get_mon_attributes = function() private$mon$get_attributes(),
 
     get_mon_resources = function() {
-      monitor_data <- get_mon_resources_(private$sim_obj)
+      monitor_data <- private$mon$get_resources()
       monitor_data$capacity <-
         replace(monitor_data$capacity, monitor_data$capacity == -1, Inf)
       monitor_data$queue_size <-
@@ -242,6 +246,7 @@ Simmer <- R6Class("simmer",
 
   private = list(
     sim_obj = NULL,
+    mon = NULL,
     res = list(),
     src = list()
   )

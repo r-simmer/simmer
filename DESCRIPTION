@@ -22,7 +22,8 @@ Imports:
     Rcpp,
     R6,
     magrittr,
-    codetools
+    codetools,
+    utils
 Suggests:
     simmer.plot,
     parallel,
