@@ -113,6 +113,18 @@ monitor_delim <- function(path=tempdir(), keep=FALSE, sep=" ", ext=".txt",
 #' @rdname monitor
 #' @importFrom utils read.csv
 #' @export
+#' @examples
+#' mon <- monitor_csv()
+#' mon
+#'
+#' env <- simmer(mon=mon) %>%
+#'   add_generator("dummy", trajectory() %>% timeout(1), function() 1) %>%
+#'   run(10)
+#' env
+#'
+#' read.csv(mon$handlers["arrivals"]) # direct access
+#' get_mon_arrivals(env)              # adds the "replication" column
+#'
 monitor_csv <- function(path=tempdir(), keep=FALSE,
                         reader=read.csv, args=list(stringsAsFactors=FALSE))
   monitor_delim(path, keep, ",", ".csv", reader, args)

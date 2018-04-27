@@ -50,3 +50,16 @@ workflow.
 \code{monitor_csv} is a special case of \code{monitor_delim} with
 \code{sep=","} and \code{ext=".csv"}.
 }
+\examples{
+mon <- monitor_csv()
+mon
+
+env <- simmer(mon=mon) \%>\%
+  add_generator("dummy", trajectory() \%>\% timeout(1), function() 1) \%>\%
+  run(10)
+env
+
+read.csv(mon$handlers["arrivals"]) # direct access
+get_mon_arrivals(env)              # adds the "replication" column
+
+}
