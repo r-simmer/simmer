@@ -154,6 +154,8 @@ env %>%
 
 The simulation has been run for 1000 units of time, and the simulator has monitored all the state changes and lifetimes of all processes, which enables any kind of analysis without any additional effort from the modeller's side. For instance, we may extract a history of the resource's state to analyse the average number of machines/operatives in use as well as the average number of jobs/tasks waiting for an assignment.
 
+\pagebreak
+
 ```{r, job-shop-4}
 aggregate(cbind(server, queue) ~ resource, get_mon_resources(env), mean)
 ```
@@ -200,11 +202,10 @@ Trajectory
 Activity
   ~ The individual unit of action that allows arrivals to interact with resources and other entities, perform custom routines while spending time in the system, move back and forth through the trajectory dynamically, and much more.
 
-![UML diagram of the simulation core architecture. Blue classes represent how \proglang{R} encapsulates the \proglang{C++} core. Blue circles represent how \proglang{C++} interfaces with \proglang{R}.\label{architecture}](includes/jss-simmer-design.pdf)
-
-\pagebreak
 
 ## Architecture
+
+![UML diagram of the simulation core architecture. Blue classes represent how \proglang{R} encapsulates the \proglang{C++} core. Blue circles represent how \proglang{C++} interfaces with \proglang{R}.\label{architecture}](includes/jss-simmer-design.pdf)
 
 Extending an \proglang{R} package (or any other piece of software written in any interpreted language) with compiled code poses an important trade-off between performance and flexibility: placing too much functionality into the compiled part produces gains in performance, but degrades modelling capabilities, and vice versa. The following lines are devoted to discuss how this trade-off is resolved in \pkg{simmer}.
 
@@ -517,18 +518,17 @@ simmer() %>%
 The simulation environment manages resources and sources, and controls the simulation execution. The \code{simmer()} method instantiates the object, after which resources and sources can be appended using the \code{\%>\%} operator:
 
 ```{r, simmer-1}
-env <- simmer()
-
-env %>%
+env <- simmer() %>%
   add_resource("res_name", 1) %>%
-  add_generator("arrival", traj0, function() 25)
+  add_generator("arrival", traj0, function() 25) %>%
+  print()
 ```
 
 Then, the simulation can be executed, or \code{run()}, \code{until} a stop time:
 
 ```{r, simmer-2}
 env %>%
-  run(until=40)
+  run(until=30)
 ```
 
 There are a number of methods for extracting information, such as the simulation time (\code{now()}), future scheduled events (\code{peek()}), and *getters* for obtaining resources' and sources' parameters (capacity, queue size, server count and queue count; number of arrivals generated so far). There are also several *setters* available for resources and sources (capacity, queue size; trajectory, distribution).
