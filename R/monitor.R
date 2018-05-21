@@ -69,7 +69,7 @@ monitor_mem <- function()
 #' consider monitoring to disk. To that end, \code{monitor_delim} stores the values
 #' in flat delimited files. The usual \code{\link{get_mon}_*} methods retrieve
 #' data frames from such files using the \code{reader} provided. By default,
-#' \code{\link[utils]{read.delim}} is used, but you may consider using faster
+#' \code{\link[utils:read.table]{read.delim}} is used, but you may consider using faster
 #' alternatives from other packages. It is also possible to \code{keep} the
 #' files in a custom directory to read and post-process them in a separate
 #' workflow.
@@ -113,6 +113,18 @@ monitor_delim <- function(path=tempdir(), keep=FALSE, sep=" ", ext=".txt",
 #' @rdname monitor
 #' @importFrom utils read.csv
 #' @export
+#' @examples
+#' mon <- monitor_csv()
+#' mon
+#'
+#' env <- simmer(mon=mon) %>%
+#'   add_generator("dummy", trajectory() %>% timeout(1), function() 1) %>%
+#'   run(10)
+#' env
+#'
+#' read.csv(mon$handlers["arrivals"]) # direct access
+#' get_mon_arrivals(env)              # adds the "replication" column
+#'
 monitor_csv <- function(path=tempdir(), keep=FALSE,
                         reader=read.csv, args=list(stringsAsFactors=FALSE))
   monitor_delim(path, keep, ",", ".csv", reader, args)

@@ -9,7 +9,7 @@ test_that("delim monitors create new files with right headers", {
 
   for (name in names(mon$handlers)) {
     expect_true(file.exists(mon$handlers[[name]]))
-    expect_equal(dirname(mon$handlers[[name]]), tempdir())
+    expect_equal(dirname(mon$handlers[[name]]), gsub("\\\\", "/", tempdir()))
     expect_match(basename(mon$handlers[[name]]), paste0(name, ".csv"))
   }
 

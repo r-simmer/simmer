@@ -1,3 +1,6 @@
+title: simmer | DES for R
+url: https://r-simmer.org
+
 template:
   params:
     bootswatch: yeti
@@ -7,56 +10,56 @@ reference:
   - title: "Build and manage trajectories"
     desc: "Methods for building and manipulating trajectory objects"
     contents:
-      - trajectory
-      - Extract.trajectory
-      - join
-      - length.trajectory
+    - trajectory
+    - Extract.trajectory
+    - join
+    - length.trajectory
   - title: "Add activities to trajectories"
     desc: "Verbs for appending activities to trajectory objects"
     contents:
-      - batch
-      - branch
-      - clone
-      - leave
-      - renege_in
-      - rollback
-      - seize
-      - select
-      - set_attribute
-      - set_prioritization
-      - set_capacity
-      - timeout
-      - activate
-      - set_trajectory
-      - send
-      - log_
+    - batch
+    - branch
+    - clone
+    - leave
+    - renege_in
+    - rollback
+    - seize
+    - select
+    - set_attribute
+    - set_prioritization
+    - set_capacity
+    - timeout
+    - activate
+    - set_trajectory
+    - send
+    - log_
   - title: "Build and run simulation environments"
     desc: "Methods for building and running simulation objects"
     contents:
-      - simmer
-      - starts_with("add_")
-      - reset
-      - run
-      - wrap
+    - simmer
+    - monitor
+    - starts_with("add_")
+    - reset
+    - run
+    - wrap
   - title: "Manage simulation environments"
     desc: "Methods for getting information about simulation components"
     contents:
-      - get_n_generated
-      - get_capacity
-      - now
-      - peek
+    - get_n_generated
+    - get_capacity
+    - now
+    - peek
   - title: "Monitoring"
     desc: "Methods for getting monitoring statistics"
     contents:
-      - starts_with("get_mon")
+    - starts_with("get_mon")
   - title: "Convenience functions"
     desc: "Helper methods for generators and resources"
     contents:
-      - at
-      - schedule
+    - at
+    - schedule
 
 navbar:
-  title: simmer | DES for R
   left:
   - text: "Reference"
     icon: fa-gears
@@ -64,37 +67,37 @@ navbar:
   - text: "Articles"
     icon: fa-graduation-cap
     menu:
-      - text: "Introduction to simmer"
-        href: articles/simmer-01-introduction.html
-      - text: "JSS paper"
-        href: articles/simmer-02-jss.pdf
-      - text: "Advanced Trajectory Usage"
-        href: articles/simmer-03-trajectories.html
-      - text: "The Bank Tutorial: Part I"
-        href: articles/simmer-04-bank-1.html
-      - text: "The Bank Tutorial: Part II"
-        href: articles/simmer-04-bank-2.html
-      - text: "Other SimPy Examples"
-        href: articles/simmer-05-simpy.html
-      - text: "Queueing Systems"
-        href: articles/simmer-06-queueing.html
-      - text: "Continuous-Time Markov Chains"
-        href: articles/simmer-07-ctmc.html
-      - text: "Dining Philosophers Problem"
-        href: articles/simmer-08-philosophers.html
-      - text: "Design and Analysis of 5G Scenarios"
-        href: articles/simmer-aa-5G.html
+    - text: "Introduction to simmer"
+      href: articles/simmer-01-introduction.html
+    - text: "JSS paper"
+      href: articles/simmer-02-jss.pdf
+    - text: "Advanced Trajectory Usage"
+      href: articles/simmer-03-trajectories.html
+    - text: "The Bank Tutorial: Part I"
+      href: articles/simmer-04-bank-1.html
+    - text: "The Bank Tutorial: Part II"
+      href: articles/simmer-04-bank-2.html
+    - text: "Other SimPy Examples"
+      href: articles/simmer-05-simpy.html
+    - text: "Queueing Systems"
+      href: articles/simmer-06-queueing.html
+    - text: "Continuous-Time Markov Chains"
+      href: articles/simmer-07-ctmc.html
+    - text: "Dining Philosophers Problem"
+      href: articles/simmer-08-philosophers.html
+    - text: "Design and Analysis of 5G Scenarios"
+      href: articles/simmer-aa-5G.html
   - text: "News"
     icon: fa-newspaper-o
     href: news/index.html
   - text: "Extensions"
     icon: fa-puzzle-piece
     menu:
-      - text: "simmer.plot"
-        href: extensions/plot
-      - text: "simmer.bricks"
-        href: extensions/bricks
-      - text: "simmer.optim"
-        href: https://github.com/r-simmer/simmer.optim
-      - text: "simmer.json"
-        href: https://github.com/r-simmer/simmer.json
+    - text: "simmer.plot"
+      href: extensions/plot
+    - text: "simmer.bricks"
+      href: extensions/bricks
+    - text: "simmer.optim"
+      href: https://github.com/r-simmer/simmer.optim
+    - text: "simmer.json"
+      href: https://github.com/r-simmer/simmer.json
