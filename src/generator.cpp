@@ -1,6 +1,6 @@
-#include "generator.h"
-#include "simulator.h"
-#include "activity.h"
+#include <simmer/process/generator.h>
+#include <simmer/simulator.h>
+#include <simmer/activity.h>
 
 void Generator::run() {
   // get the delay for the next (n) arrival(s)

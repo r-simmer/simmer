@@ -1,8 +1,8 @@
-#include "arrival.h"
-#include "simulator.h"
-#include "activity.h"
-#include "resource.h"
-#include "batched.h"
+#include <simmer/process/arrival.h>
+#include <simmer/process/batched.h>
+#include <simmer/simulator.h>
+#include <simmer/activity.h>
+#include <simmer/resource.h>
 
 void Arrival::init() {
   (*clones)++;

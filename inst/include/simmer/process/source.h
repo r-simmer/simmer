@@ -1,8 +1,8 @@
-#ifndef SOURCE_H
-#define SOURCE_H
+#ifndef simmer__process_source_h
+#define simmer__process_source_h
 
-#include "process.h"
-#include "order.h"
+#include <simmer/process/process.h>
+#include <simmer/process/order.h>
 
 // forward declarations
 class Activity;

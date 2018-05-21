@@ -1,5 +1,5 @@
-#include "task.h"
-#include "simulator.h"
+#include <simmer/process/task.h>
+#include <simmer/simulator.h>
 
 void Task::run() {
   if (sim->verbose) Rcpp::Rcout <<

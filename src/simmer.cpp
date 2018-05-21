@@ -1,10 +1,11 @@
-#include "simmer.h"
-#include "activity.h"
-#include "entity.h"
-#include "process.h"
-#include "resource.h"
-#include "monitor.h"
-#include "simulator.h"
+#include <simmer.h>
+#include <simmer/activity.h>
+#include <simmer/activity/utils/fnwrap.h>
+#include <simmer/entity.h>
+#include <simmer/process.h>
+#include <simmer/resource.h>
+#include <simmer/monitor.h>
+#include <simmer/simulator.h>
 
 using namespace Rcpp;
 

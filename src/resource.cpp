@@ -1,5 +1,5 @@
-#include "simulator.h"
-#include "resource.h"
+#include <simmer/simulator.h>
+#include <simmer/resource.h>
 
 void Resource::set_capacity(int value) {
   if (capacity == value)

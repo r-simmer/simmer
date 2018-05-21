@@ -1,7 +1,7 @@
-#ifndef GENERATOR_H
-#define GENERATOR_H
+#ifndef simmer__process_generator_h
+#define simmer__process_generator_h
 
-#include "source.h"
+#include <simmer/process/source.h>
 
 /**
  * Generation process.

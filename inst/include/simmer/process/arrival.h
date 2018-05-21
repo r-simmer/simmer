@@ -1,9 +1,9 @@
-#ifndef ARRIVAL_H
-#define ARRIVAL_H
+#ifndef simmer__process_arrival_h
+#define simmer__process_arrival_h
 
-#include "process.h"
-#include "task.h"
-#include "order.h"
+#include <simmer/process/process.h>
+#include <simmer/process/task.h>
+#include <simmer/process/order.h>
 
 // forward declarations
 class Activity;

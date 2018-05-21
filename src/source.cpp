@@ -1,7 +1,7 @@
-#include "source.h"
-#include "simulator.h"
-#include "arrival.h"
-#include "activity.h"
+#include <simmer/process/source.h>
+#include <simmer/process/arrival.h>
+#include <simmer/simulator.h>
+#include <simmer/activity.h>
 
 Activity* trj_head(const REnv& trj) { return trj_get(trj, "head"); }
 

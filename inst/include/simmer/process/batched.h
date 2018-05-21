@@ -1,7 +1,7 @@
-#ifndef BATCHED_H
-#define BATCHED_H
+#ifndef simmer__process_batched_h
+#define simmer__process_batched_h
 
-#include "arrival.h"
+#include <simmer/process/arrival.h>
 
 /**
  *  Batch of arrivals.

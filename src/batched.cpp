@@ -1,5 +1,5 @@
-#include "batched.h"
-#include "simulator.h"
+#include <simmer/process/batched.h>
+#include <simmer/simulator.h>
 
 void Batched::terminate(bool finished) {
   foreach_ (Arrival* arrival, arrivals)

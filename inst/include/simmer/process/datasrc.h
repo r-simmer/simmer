@@ -1,7 +1,7 @@
-#ifndef DATASRC_H
-#define DATASRC_H
+#ifndef simmer__process_datasrc_h
+#define simmer__process_datasrc_h
 
-#include "source.h"
+#include <simmer/process/source.h>
 
 class DataSrc : public Source {
 public:

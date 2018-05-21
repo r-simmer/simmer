@@ -1,7 +1,7 @@
-#ifndef ENTITY_H
-#define ENTITY_H
+#ifndef simmer__entity_h
+#define simmer__entity_h
 
-#include "simmer.h"
+#include <simmer.h>
 
 // forward declarations
 class Simulator;

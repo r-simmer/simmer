@@ -1,5 +1,5 @@
-#include "manager.h"
-#include "simulator.h"
+#include <simmer/process/manager.h>
+#include <simmer/simulator.h>
 
 void Manager::run() {
   if (sim->verbose) Rcpp::Rcout <<

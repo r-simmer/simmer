@@ -1,7 +1,7 @@
-#include "datasrc.h"
-#include "simulator.h"
-#include "activity.h"
-#include "arrival.h"
+#include <simmer/process/datasrc.h>
+#include <simmer/process/arrival.h>
+#include <simmer/simulator.h>
+#include <simmer/activity.h>
 
 void DataSrc::run() {
   double delay = 0;

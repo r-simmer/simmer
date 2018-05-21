@@ -1,7 +1,7 @@
-#ifndef TASK_H
-#define TASK_H
+#ifndef simmer__process_task_h
+#define simmer__process_task_h
 
-#include "process.h"
+#include <simmer/process/process.h>
 
 class Task : public Process {
   typedef Fn<void()> Callback;

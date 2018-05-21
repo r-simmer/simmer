@@ -1,5 +1,5 @@
-#ifndef SIMMER_H
-#define SIMMER_H
+#ifndef simmer__h
+#define simmer__h
 
 #include <Rcpp.h>
 

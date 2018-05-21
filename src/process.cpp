@@ -1,5 +1,5 @@
-#include "process.h"
-#include "simulator.h"
+#include <simmer/process/process.h>
+#include <simmer/simulator.h>
 
 bool Process::activate(double delay) {
   sim->schedule(delay, this, priority);

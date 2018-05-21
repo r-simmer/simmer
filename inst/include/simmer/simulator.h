@@ -1,17 +1,10 @@
-#ifndef SIMULATOR_H
-#define SIMULATOR_H
+#ifndef simmer__simulator_h
+#define simmer__simulator_h
 
-#include "simmer.h"
-#include "monitor.h"
-#include "process.h"
-#include "task.h"
-#include "manager.h"
-#include "source.h"
-#include "generator.h"
-#include "datasrc.h"
-#include "arrival.h"
-#include "batched.h"
-#include "resource.h"
+#include <simmer.h>
+#include <simmer/monitor.h>
+#include <simmer/process.h>
+#include <simmer/resource.h>
 
 class Activity;
 

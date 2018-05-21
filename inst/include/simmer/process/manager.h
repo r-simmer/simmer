@@ -1,7 +1,7 @@
-#ifndef MANAGER_H
-#define MANAGER_H
+#ifndef simmer__process_manager_h
+#define simmer__process_manager_h
 
-#include "process.h"
+#include <simmer/process/process.h>
 
 class Manager : public Process {
   typedef Fn<void(int)> Setter;

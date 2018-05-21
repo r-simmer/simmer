@@ -1,7 +1,7 @@
-#ifndef PROCESS_H
-#define PROCESS_H
+#ifndef simmer__process_process_h
+#define simmer__process_process_h
 
-#include "entity.h"
+#include <simmer/entity.h>
 
 /**
  * Abstract class for processes, active entities that need a method run().
