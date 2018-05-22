@@ -7,199 +7,203 @@
 #include <simmer/activity/utils/getop.h>
 #include <simmer/activity/utils/policy.h>
 
-/**
- * Seize a resource.
- */
-template <typename T>
-class Seize : public Fork, public ResGetter {
-public:
-  CLONEABLE(Seize<T>)
+namespace simmer {
 
-  Seize(const std::string& resource, const T& amount, const VEC<bool>& cont,
-        const VEC<REnv>& trj, unsigned short mask)
-    : Fork("Seize", cont, trj),
-      ResGetter("Seize", resource), amount(amount), mask(mask) {}
+  /**
+   * Seize a resource.
+   */
+  template <typename T>
+  class Seize : public Fork, public ResGetter {
+  public:
+    CLONEABLE(Seize<T>)
 
-  Seize(int id, const T& amount, const VEC<bool>& cont,
-        const VEC<REnv>& trj, unsigned short mask)
-    : Fork("Seize", cont, trj),
-      ResGetter("Seize", "[]", id), amount(amount), mask(mask) {}
+    Seize(const std::string& resource, const T& amount, const VEC<bool>& cont,
+          const VEC<REnv>& trj, unsigned short mask)
+      : Fork("Seize", cont, trj),
+        ResGetter("Seize", resource), amount(amount), mask(mask) {}
 
-  void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
-    Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL2(resource, amount) << BENDL;
-    else Rcpp::Rcout << BARE2(resource, amount) << SEP;
-    Fork::print(indent, verbose, brief);
-  }
+    Seize(int id, const T& amount, const VEC<bool>& cont,
+          const VEC<REnv>& trj, unsigned short mask)
+      : Fork("Seize", cont, trj),
+        ResGetter("Seize", "[]", id), amount(amount), mask(mask) {}
 
-  double run(Arrival* arrival) {
-    return select_path(
-      arrival, get_resource(arrival)->seize(arrival, std::abs(get<int>(amount, arrival))));
-  }
-
-protected:
-  T amount;
-  unsigned short mask;
-
-  int select_path(Arrival* arrival, int ret) {
-    switch (ret) {
-    case REJECT:
-      if (mask & 2) {
-        ret = SUCCESS;
-        if (mask & 1)
-          selected = heads[1];
-        else
-          selected = heads[0];
-      } else arrival->terminate(false);
-      break;
-    default:
-      if (mask & 1)
-        selected = heads[0];
-      break;
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      if (!brief) Rcpp::Rcout << LABEL2(resource, amount) << BENDL;
+      else Rcpp::Rcout << BARE2(resource, amount) << SEP;
+      Fork::print(indent, verbose, brief);
     }
-    return ret;
-  }
-};
 
-/**
- * Release a resource.
- */
-template <typename T>
-class Release : public Activity, public ResGetter {
-public:
-  CLONEABLE(Release<T>)
+    double run(Arrival* arrival) {
+      return select_path(
+        arrival, get_resource(arrival)->seize(arrival, std::abs(get<int>(amount, arrival))));
+    }
 
-  Release(const std::string& resource, const T& amount)
-    : Activity("Release", PRIORITY_RELEASE),
-      ResGetter("Release", resource), amount(amount) {}
+  protected:
+    T amount;
+    unsigned short mask;
 
-  Release(int id, const T& amount)
-    : Activity("Release", PRIORITY_RELEASE),
-      ResGetter("Release", "[]", id), amount(amount) {}
+    int select_path(Arrival* arrival, int ret) {
+      switch (ret) {
+      case REJECT:
+        if (mask & 2) {
+          ret = SUCCESS;
+          if (mask & 1)
+            selected = heads[1];
+          else
+            selected = heads[0];
+        } else arrival->terminate(false);
+        break;
+      default:
+        if (mask & 1)
+          selected = heads[0];
+        break;
+      }
+      return ret;
+    }
+  };
 
-  void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
-    Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL2(resource, amount) << BENDL;
-    else Rcpp::Rcout << BARE2(resource, amount) << ENDL;
-  }
+  /**
+   * Release a resource.
+   */
+  template <typename T>
+  class Release : public Activity, public ResGetter {
+  public:
+    CLONEABLE(Release<T>)
 
-  double run(Arrival* arrival) {
-    return get_resource(arrival)->release(arrival, std::abs(get<int>(amount, arrival)));
-  }
+    Release(const std::string& resource, const T& amount)
+      : Activity("Release", PRIORITY_RELEASE),
+        ResGetter("Release", resource), amount(amount) {}
 
-protected:
-  T amount;
-};
+    Release(int id, const T& amount)
+      : Activity("Release", PRIORITY_RELEASE),
+        ResGetter("Release", "[]", id), amount(amount) {}
 
-/**
- * Set a resource's capacity.
- */
-template <typename T>
-class SetCapacity : public Activity, public ResGetter {
-public:
-  CLONEABLE(SetCapacity<T>)
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      if (!brief) Rcpp::Rcout << LABEL2(resource, amount) << BENDL;
+      else Rcpp::Rcout << BARE2(resource, amount) << ENDL;
+    }
 
-  SetCapacity(const std::string& resource, const T& value, char mod='N')
-    : Activity("SetCapacity"), ResGetter("SetCapacity", resource),
-      value(value), mod(mod), op(get_op<double>(mod)) {}
+    double run(Arrival* arrival) {
+      return get_resource(arrival)->release(arrival, std::abs(get<int>(amount, arrival)));
+    }
 
-  SetCapacity(int id, const T& value, char mod='N')
-    : Activity("SetCapacity"), ResGetter("SetCapacity", "[]", id),
-      value(value), mod(mod), op(get_op<double>(mod)) {}
+  protected:
+    T amount;
+  };
 
-  void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
-    Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL3(resource, value, mod) << BENDL;
-    else Rcpp::Rcout << BARE3(resource, value, mod) << ENDL;
-  }
+  /**
+   * Set a resource's capacity.
+   */
+  template <typename T>
+  class SetCapacity : public Activity, public ResGetter {
+  public:
+    CLONEABLE(SetCapacity<T>)
 
-  double run(Arrival* arrival) {
-    double ret = get<double>(value, arrival);
-    double oldval = get_resource(arrival)->get_capacity();
-    if (oldval < 0) oldval = R_PosInf;
+    SetCapacity(const std::string& resource, const T& value, char mod='N')
+      : Activity("SetCapacity"), ResGetter("SetCapacity", resource),
+        value(value), mod(mod), op(get_op<double>(mod)) {}
 
-    if (op) ret = op(oldval, ret);
-    if (ret >= 0)
-      get_resource(arrival)->set_capacity((ret == R_PosInf) ? -1 : (int) ret);
+    SetCapacity(int id, const T& value, char mod='N')
+      : Activity("SetCapacity"), ResGetter("SetCapacity", "[]", id),
+        value(value), mod(mod), op(get_op<double>(mod)) {}
 
-    if (arrival->is_paused())
-      return ENQUEUE;
-    return 0;
-  }
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      if (!brief) Rcpp::Rcout << LABEL3(resource, value, mod) << BENDL;
+      else Rcpp::Rcout << BARE3(resource, value, mod) << ENDL;
+    }
 
-protected:
-  T value;
-  char mod;
-  Fn<double(double, double)> op;
-};
+    double run(Arrival* arrival) {
+      double ret = get<double>(value, arrival);
+      double oldval = get_resource(arrival)->get_capacity();
+      if (oldval < 0) oldval = R_PosInf;
 
-/**
- * Set a resource's queue size.
- */
-template <typename T>
-class SetQueue : public Activity, public ResGetter {
-public:
-  CLONEABLE(SetQueue<T>)
+      if (op) ret = op(oldval, ret);
+      if (ret >= 0)
+        get_resource(arrival)->set_capacity((ret == R_PosInf) ? -1 : (int) ret);
 
-  SetQueue(const std::string& resource, const T& value, char mod='N')
-    : Activity("SetQueue"), ResGetter("SetQueue", resource),
-      value(value), mod(mod), op(get_op<double>(mod)) {}
+      if (arrival->is_paused())
+        return ENQUEUE;
+      return 0;
+    }
 
-  SetQueue(int id, const T& value, char mod='N')
-    : Activity("SetQueue"), ResGetter("SetQueue", "[]", id),
-      value(value), mod(mod), op(get_op<double>(mod)) {}
+  protected:
+    T value;
+    char mod;
+    Fn<double(double, double)> op;
+  };
 
-  void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
-    Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL3(resource, value, mod) << BENDL;
-    else Rcpp::Rcout << BARE3(resource, value, mod) << ENDL;
-  }
+  /**
+   * Set a resource's queue size.
+   */
+  template <typename T>
+  class SetQueue : public Activity, public ResGetter {
+  public:
+    CLONEABLE(SetQueue<T>)
 
-  double run(Arrival* arrival) {
-    double ret = get<double>(value, arrival);
-    double oldval = get_resource(arrival)->get_queue_size();
-    if (oldval < 0) oldval = R_PosInf;
+    SetQueue(const std::string& resource, const T& value, char mod='N')
+      : Activity("SetQueue"), ResGetter("SetQueue", resource),
+        value(value), mod(mod), op(get_op<double>(mod)) {}
 
-    if (op) ret = op(oldval, ret);
-    if (ret >= 0)
-      get_resource(arrival)->set_queue_size((ret == R_PosInf) ? -1 : (int) ret);
+    SetQueue(int id, const T& value, char mod='N')
+      : Activity("SetQueue"), ResGetter("SetQueue", "[]", id),
+        value(value), mod(mod), op(get_op<double>(mod)) {}
 
-    return 0;
-  }
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      if (!brief) Rcpp::Rcout << LABEL3(resource, value, mod) << BENDL;
+      else Rcpp::Rcout << BARE3(resource, value, mod) << ENDL;
+    }
 
-protected:
-  T value;
-  char mod;
-  Fn<double(double, double)> op;
-};
+    double run(Arrival* arrival) {
+      double ret = get<double>(value, arrival);
+      double oldval = get_resource(arrival)->get_queue_size();
+      if (oldval < 0) oldval = R_PosInf;
 
-/**
- * Select a resource based on some policy.
- */
-template <typename T>
-class Select : public Activity {
-public:
-  CLONEABLE(Select<T>)
+      if (op) ret = op(oldval, ret);
+      if (ret >= 0)
+        get_resource(arrival)->set_queue_size((ret == R_PosInf) ? -1 : (int) ret);
 
-  Select(const T& resources, const std::string& policy, int id)
-    : Activity("Select"), resources(resources), id(id), policy(Policy(policy)) {}
+      return 0;
+    }
 
-  void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
-    Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL2(resources, policy) << BENDL;
-    else Rcpp::Rcout << BARE2(resources, policy) << ENDL;
-  }
+  protected:
+    T value;
+    char mod;
+    Fn<double(double, double)> op;
+  };
 
-  double run(Arrival* arrival) {
-    arrival->set_resource_selected(
-        id, policy.dispatch(arrival->sim, get<VEC<std::string> >(resources, arrival)));
-    return 0;
-  }
+  /**
+   * Select a resource based on some policy.
+   */
+  template <typename T>
+  class Select : public Activity {
+  public:
+    CLONEABLE(Select<T>)
 
-protected:
-  T resources;
-  int id;
-  Policy policy;
-};
+    Select(const T& resources, const std::string& policy, int id)
+      : Activity("Select"), resources(resources), id(id), policy(Policy(policy)) {}
+
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      if (!brief) Rcpp::Rcout << LABEL2(resources, policy) << BENDL;
+      else Rcpp::Rcout << BARE2(resources, policy) << ENDL;
+    }
+
+    double run(Arrival* arrival) {
+      arrival->set_resource_selected(
+          id, policy.dispatch(arrival->sim, get<VEC<std::string> >(resources, arrival)));
+      return 0;
+    }
+
+  protected:
+    T resources;
+    int id;
+    Policy policy;
+  };
+
+} // namespace simmer
 
 #endif

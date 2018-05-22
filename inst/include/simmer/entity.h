@@ -4,22 +4,26 @@
 #include <simmer/common.h>
 #include <simmer/simulator.h>
 
-/**
- *  Base class. Every element in a simulation model is an entity.
- */
-class Entity {
-public:
-  Simulator* sim;
-  std::string name;
+namespace simmer {
 
-  Entity(Simulator* sim, const std::string& name, int mon)
-    : sim(sim), name(name), mon(std::abs(mon)) {}
-  virtual ~Entity() {}
-  virtual void reset() = 0;
-  int is_monitored() const { return mon; }
+  /**
+   *  Base class. Every element in a simulation model is an entity.
+   */
+  class Entity {
+  public:
+    Simulator* sim;
+    std::string name;
 
-private:
-  int mon;
-};
+    Entity(Simulator* sim, const std::string& name, int mon)
+      : sim(sim), name(name), mon(std::abs(mon)) {}
+    virtual ~Entity() {}
+    virtual void reset() = 0;
+    int is_monitored() const { return mon; }
+
+  private:
+    int mon;
+  };
+
+} // namespace simmer
 
 #endif

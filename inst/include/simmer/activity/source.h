@@ -3,112 +3,116 @@
 
 #include <simmer/activity.h>
 
-/**
- * Activate a source.
- */
-template <typename T>
-class Activate : public Activity {
-public:
-  CLONEABLE(Activate<T>)
+namespace simmer {
 
-  Activate(const T& source)
-    : Activity("Activate"), source(source) {}
+  /**
+   * Activate a source.
+   */
+  template <typename T>
+  class Activate : public Activity {
+  public:
+    CLONEABLE(Activate<T>)
 
-  void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
-    Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL1(source) << BENDL;
-    else Rcpp::Rcout << BARE1(source) << ENDL;
-  }
+    Activate(const T& source)
+      : Activity("Activate"), source(source) {}
 
-  double run(Arrival* arrival) {
-    arrival->sim->get_source(get<std::string>(source, arrival))->activate();
-    return 0;
-  }
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      if (!brief) Rcpp::Rcout << LABEL1(source) << BENDL;
+      else Rcpp::Rcout << BARE1(source) << ENDL;
+    }
 
-protected:
-  T source;
-};
+    double run(Arrival* arrival) {
+      arrival->sim->get_source(get<std::string>(source, arrival))->activate();
+      return 0;
+    }
 
-/**
- * Deactivate a source.
- */
-template <typename T>
-class Deactivate : public Activity {
-public:
-  CLONEABLE(Deactivate<T>)
+  protected:
+    T source;
+  };
 
-  Deactivate(const T& source)
-    : Activity("Deactivate"), source(source) {}
+  /**
+   * Deactivate a source.
+   */
+  template <typename T>
+  class Deactivate : public Activity {
+  public:
+    CLONEABLE(Deactivate<T>)
 
-  void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
-    Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL1(source) << BENDL;
-    else Rcpp::Rcout << BARE1(source) << ENDL;
-  }
+    Deactivate(const T& source)
+      : Activity("Deactivate"), source(source) {}
 
-  double run(Arrival* arrival) {
-    arrival->sim->get_source(get<std::string>(source, arrival))->deactivate();
-    return 0;
-  }
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      if (!brief) Rcpp::Rcout << LABEL1(source) << BENDL;
+      else Rcpp::Rcout << BARE1(source) << ENDL;
+    }
 
-protected:
-  T source;
-};
+    double run(Arrival* arrival) {
+      arrival->sim->get_source(get<std::string>(source, arrival))->deactivate();
+      return 0;
+    }
 
-/**
- * Set a source's source.
- */
-template <typename T, typename U>
-class SetSource : public Activity {
-public:
-  CLONEABLE(SetSource<T COMMA U>)
+  protected:
+    T source;
+  };
 
-  SetSource(const T& source, const U& object)
-    : Activity("SetSource"), source(source), object(object) {}
+  /**
+   * Set a source's source.
+   */
+  template <typename T, typename U>
+  class SetSource : public Activity {
+  public:
+    CLONEABLE(SetSource<T COMMA U>)
 
-  void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
-    Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL2(source, object) << BENDL;
-    else Rcpp::Rcout << BARE2(source, object) << ENDL;
-  }
+    SetSource(const T& source, const U& object)
+      : Activity("SetSource"), source(source), object(object) {}
 
-  double run(Arrival* arrival) {
-    arrival->sim->
-      get_source(get<std::string>(source, arrival))->set_source(object);
-    return 0;
-  }
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      if (!brief) Rcpp::Rcout << LABEL2(source, object) << BENDL;
+      else Rcpp::Rcout << BARE2(source, object) << ENDL;
+    }
 
-protected:
-  T source;
-  U object;
-};
+    double run(Arrival* arrival) {
+      arrival->sim->
+        get_source(get<std::string>(source, arrival))->set_source(object);
+      return 0;
+    }
 
-/**
- * Set a source's trajectory.
- */
-template <typename T>
-class SetTraj : public Activity {
-public:
-  CLONEABLE(SetTraj<T>)
+  protected:
+    T source;
+    U object;
+  };
 
-  SetTraj(const T& source, const REnv& trajectory)
-    : Activity("SetTraj"), source(source), trajectory(trajectory) {}
+  /**
+   * Set a source's trajectory.
+   */
+  template <typename T>
+  class SetTraj : public Activity {
+  public:
+    CLONEABLE(SetTraj<T>)
 
-  void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
-    Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << LABEL2(source, trajectory) << BENDL;
-    else Rcpp::Rcout << BARE2(source, trajectory) << ENDL;
-  }
+    SetTraj(const T& source, const REnv& trajectory)
+      : Activity("SetTraj"), source(source), trajectory(trajectory) {}
 
-  double run(Arrival* arrival) {
-    arrival->sim->
-      get_source(get<std::string>(source, arrival))->set_trajectory(trajectory);
-    return 0;
-  }
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      if (!brief) Rcpp::Rcout << LABEL2(source, trajectory) << BENDL;
+      else Rcpp::Rcout << BARE2(source, trajectory) << ENDL;
+    }
 
-protected:
-  T source;
-  REnv trajectory;
-};
+    double run(Arrival* arrival) {
+      arrival->sim->
+        get_source(get<std::string>(source, arrival))->set_trajectory(trajectory);
+      return 0;
+    }
+
+  protected:
+    T source;
+    REnv trajectory;
+  };
+
+} // namespace simmer
 
 #endif

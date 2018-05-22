@@ -1,6 +1,7 @@
 #include <simmer.h>
 
 using namespace Rcpp;
+using namespace simmer;
 
 //[[Rcpp::export]]
 SEXP Seize__new(const std::string& resource, int amount, std::vector<bool> cont,

@@ -1,6 +1,7 @@
 #include <simmer.h>
 
 using namespace Rcpp;
+using namespace simmer;
 
 //[[Rcpp::export]]
 SEXP MemMonitor__new() {

@@ -13,12 +13,14 @@
 #include <boost/container/set.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
+#include <map>
+#include <vector>
 
-#define VEC   std::vector
 #define MSET  boost::container::multiset
 #define USET  boost::unordered_set
 #define UMAP  boost::unordered_map
 #define MAP   std::map
+#define VEC   std::vector
 
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
@@ -62,57 +64,61 @@
 #define BASE_CLONEABLE(Type) virtual Type* clone() const = 0;
 #define CLONEABLE(Type) virtual Type* clone() const { return new Type(*this); }
 
-typedef UMAP<std::string, double> Attr;
+namespace simmer {
 
-template <typename T>
-struct vec_of : public VEC<T> {
-  vec_of(const T& t) { (*this)(t); }
-  vec_of& operator()(const T& t) {
-    this->push_back(t);
-    return *this;
-  }
-};
+  typedef UMAP<std::string, double> Attr;
 
-template <typename T>
-std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
-  out << "[";
-  if (!v.empty())
-    std::copy(v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
-  out << "\b\b]";
-  return out;
-}
+  template <typename T>
+  struct vec_of : public VEC<T> {
+    vec_of(const T& t) { (*this)(t); }
+    vec_of& operator()(const T& t) {
+      this->push_back(t);
+      return *this;
+    }
+  };
 
-inline std::ostream& operator<<(std::ostream& out, const RData& df) {
-  out << "data.frame";
-  return out;
-}
-
-inline std::ostream& operator<<(std::ostream& out, const RFn& fn) {
-  out << "function()";
-  return out;
-}
-
-inline std::ostream& operator<<(std::ostream& out, const REnv& env) {
-  out << "function()";
-  return out;
-}
-
-template <typename T, typename U, typename V>
-class FnWrap {
-public:
-  FnWrap() {}
-  FnWrap(const Fn<T(U)>& call, const V& arg) : call(call), arg(arg) {}
-
-  T operator()(U param) { return call(param); }
-
-  friend std::ostream& operator<<(std::ostream& out, const FnWrap<T, U, V>& fn) {
-    out << fn.arg;
+  template <typename T>
+  std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
+    out << "[";
+    if (!v.empty())
+      std::copy(v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
+    out << "\b\b]";
     return out;
   }
 
-private:
-  Fn<T(U)> call;
-  V arg;
-};
+  inline std::ostream& operator<<(std::ostream& out, const RData& df) {
+    out << "data.frame";
+    return out;
+  }
+
+  inline std::ostream& operator<<(std::ostream& out, const RFn& fn) {
+    out << "function()";
+    return out;
+  }
+
+  inline std::ostream& operator<<(std::ostream& out, const REnv& env) {
+    out << "function()";
+    return out;
+  }
+
+  template <typename T, typename U, typename V>
+  class FnWrap {
+  public:
+    FnWrap() {}
+    FnWrap(const Fn<T(U)>& call, const V& arg) : call(call), arg(arg) {}
+
+    T operator()(U param) { return call(param); }
+
+    friend std::ostream& operator<<(std::ostream& out, const FnWrap<T, U, V>& fn) {
+      out << fn.arg;
+      return out;
+    }
+
+  private:
+    Fn<T(U)> call;
+    V arg;
+  };
+
+} // namespace simmer
 
 #endif

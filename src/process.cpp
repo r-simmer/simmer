@@ -1,6 +1,7 @@
 #include <simmer.h>
 
 using namespace Rcpp;
+using namespace simmer;
 
 //[[Rcpp::export]]
 int get_n_generated_(SEXP sim_, const std::string& name) {

@@ -3,30 +3,34 @@
 
 #include <simmer/entity.h>
 
-/**
- * Abstract class for processes, active entities that need a method run().
- */
-class Process : public Entity {
-public:
-  Process(Simulator* sim, const std::string& name, int mon, int priority = 0)
-    : Entity(sim, name, mon), priority(priority) {}
+namespace simmer {
 
-  virtual void run() = 0;
+  /**
+   * Abstract class for processes, active entities that need a method run().
+   */
+  class Process : public Entity {
+  public:
+    Process(Simulator* sim, const std::string& name, int mon, int priority = 0)
+      : Entity(sim, name, mon), priority(priority) {}
 
-  virtual bool activate(double delay = 0) {
-    sim->schedule(delay, this, priority);
-    return true;
-  }
+    virtual void run() = 0;
 
-  virtual bool deactivate() {
-    if (!sim->is_scheduled(this))
-      return false;
-    sim->unschedule(this);
-    return true;
-  }
+    virtual bool activate(double delay = 0) {
+      sim->schedule(delay, this, priority);
+      return true;
+    }
 
-protected:
-  int priority;
-};
+    virtual bool deactivate() {
+      if (!sim->is_scheduled(this))
+        return false;
+      sim->unschedule(this);
+      return true;
+    }
+
+  protected:
+    int priority;
+  };
+
+} // namespace simmer
 
 #endif

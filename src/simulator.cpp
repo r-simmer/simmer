@@ -1,6 +1,7 @@
 #include <simmer.h>
 
 using namespace Rcpp;
+using namespace simmer;
 
 //[[Rcpp::export]]
 SEXP Simulator__new(const std::string& name, bool verbose, SEXP mon) {

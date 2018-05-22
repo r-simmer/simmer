@@ -4,30 +4,34 @@
 #include <simmer/activity.h>
 #include <simmer/process/arrival.h>
 
-/**
- * Print a message.
- */
-template <typename T>
-class Log : public Activity {
-public:
-  CLONEABLE(Log<T>)
+namespace simmer {
 
-  Log(const T& message) : Activity("Log"), message(message) {}
+  /**
+   * Print a message.
+   */
+  template <typename T>
+  class Log : public Activity {
+  public:
+    CLONEABLE(Log<T>)
 
-  void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
-    Activity::print(indent, verbose, brief);
-    if (!brief) Rcpp::Rcout << "message" << BENDL;
-    else Rcpp::Rcout << "message" << ENDL;
-  }
+    Log(const T& message) : Activity("Log"), message(message) {}
 
-  double run(Arrival* arrival) {
-    Rcpp::Rcout << arrival->sim->now() << ": " << arrival->name << ": " <<
-      get<std::string>(message, arrival) << std::endl;
-    return 0;
-  }
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      if (!brief) Rcpp::Rcout << "message" << BENDL;
+      else Rcpp::Rcout << "message" << ENDL;
+    }
 
-protected:
-  T message;
-};
+    double run(Arrival* arrival) {
+      Rcpp::Rcout << arrival->sim->now() << ": " << arrival->name << ": " <<
+        get<std::string>(message, arrival) << std::endl;
+      return 0;
+    }
+
+  protected:
+    T message;
+  };
+
+} // namespace simmer
 
 #endif
