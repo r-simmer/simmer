@@ -3,44 +3,42 @@
 
 #include <Rcpp.h>
 
+#define RFn   Rcpp::Function
+#define REnv  Rcpp::Environment
+#define RData Rcpp::DataFrame
+#define RNum  Rcpp::NumericVector
+#define RStr  Rcpp::CharacterVector
+#define RBool Rcpp::LogicalVector
+
 #include <boost/container/set.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
 
-#define VEC std::vector
-#define MSET boost::container::multiset
-#define USET boost::unordered_set
-#define UMAP boost::unordered_map
-#define MAP  std::map
+#define VEC   std::vector
+#define MSET  boost::container::multiset
+#define USET  boost::unordered_set
+#define UMAP  boost::unordered_map
+#define MAP   std::map
 
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 #include <boost/typeof/typeof.hpp>
 #include <boost/any.hpp>
 
-#define OPT boost::optional
-#define NONE boost::none
-#define AUTO BOOST_AUTO
-#define ANY boost::any
+#define OPT   boost::optional
+#define NONE  boost::none
+#define ANY   boost::any
 
 #include <boost/foreach.hpp>
 
 #define foreach_    BOOST_FOREACH
 #define foreach_r_  BOOST_REVERSE_FOREACH
 
-#include <boost/variant.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
-#define Fn boost::function
-#define BIND boost::bind
-
-#define RFn Rcpp::Function
-#define REnv Rcpp::Environment
-#define RData Rcpp::DataFrame
-#define RNum Rcpp::NumericVector
-#define RStr Rcpp::CharacterVector
-#define RBool Rcpp::LogicalVector
+#define Fn    boost::function
+#define BIND  boost::bind
 
 #define FMT(n, justify) std::setw(n) << std::justify
 #define IND(n) std::string(n, ' ')
