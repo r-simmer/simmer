@@ -1,10 +1,8 @@
 #ifndef simmer__entity_h
 #define simmer__entity_h
 
-#include <simmer.h>
-
-// forward declarations
-class Simulator;
+#include <simmer/common.h>
+#include <simmer/simulator.h>
 
 /**
  *  Base class. Every element in a simulation model is an entity.

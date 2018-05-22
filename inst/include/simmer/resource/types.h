@@ -1,7 +1,7 @@
 #ifndef simmer__resource_types_h
 #define simmer__resource_types_h
 
-#include <simmer/process.h>
+#include <simmer/process/arrival.h>
 
 struct RSeize {
   double arrived_at;

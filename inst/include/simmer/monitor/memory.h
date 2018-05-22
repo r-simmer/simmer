@@ -1,7 +1,7 @@
 #ifndef simmer__monitor_memory_h
 #define simmer__monitor_memory_h
 
-#include <simmer/monitor/monitor.h>
+#include <simmer/monitor.h>
 
 class MonitorMap {
   typedef boost::variant< VEC<bool>, VEC<int>, VEC<double>, VEC<std::string> > _vec;

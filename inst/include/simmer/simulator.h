@@ -1,11 +1,15 @@
 #ifndef simmer__simulator_h
 #define simmer__simulator_h
 
-#include <simmer.h>
+#include <simmer/common.h>
 #include <simmer/monitor.h>
-#include <simmer/process.h>
-#include <simmer/resource.h>
 
+class Entity;
+class Resource;
+class Process;
+class Source;
+class Arrival;
+class Batched;
 class Activity;
 
 /**
@@ -54,46 +58,12 @@ public:
   Simulator(const std::string& name, bool verbose, Monitor* mon)
     : name(name), verbose(verbose), mon(mon), now_(0), process_(NULL), b_count(0) {}
 
-  ~Simulator() {
-    foreach_ (EntMap::value_type& itr, resource_map)
-      delete itr.second;
-    foreach_ (PQueue::value_type& itr, event_queue)
-      if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
-    foreach_ (EntMap::value_type& itr, process_map)
-      delete itr.second;
-    foreach_ (NamBMap::value_type& itr, namedb_map)
-      if (itr.second) delete itr.second;
-    foreach_ (UnnBMap::value_type& itr, unnamedb_map)
-      if (itr.second) delete itr.second;
-  }
+  ~Simulator();
 
   /**
    * Reset the simulation: time, event queue, resources, processes and statistics.
    */
-  void reset() {
-    now_ = 0;
-    foreach_ (EntMap::value_type& itr, resource_map)
-      static_cast<Resource*>(itr.second)->reset();
-    foreach_ (PQueue::value_type& itr, event_queue)
-      if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
-    event_queue.clear();
-    event_map.clear();
-    foreach_ (EntMap::value_type& itr, process_map) {
-      static_cast<Process*>(itr.second)->reset();
-      static_cast<Process*>(itr.second)->activate();
-    }
-    foreach_ (NamBMap::value_type& itr, namedb_map)
-      if (itr.second) delete itr.second;
-    foreach_ (UnnBMap::value_type& itr, unnamedb_map)
-      if (itr.second) delete itr.second;
-    arrival_map.clear();
-    namedb_map.clear();
-    unnamedb_map.clear();
-    b_count = 0;
-    signal_map.clear();
-    attributes.clear();
-    mon->clear();
-  }
+  void reset();
 
   double now() const { return now_; }
 
@@ -121,22 +91,7 @@ public:
   /**
    * Look for future events.
    */
-  RData peek(int steps) const {
-    VEC<double> time;
-    VEC<std::string> process;
-    if (steps) {
-      foreach_ (const PQueue::value_type& itr, event_queue) {
-        time.push_back(itr.time);
-        process.push_back(itr.process->name);
-        if (!--steps) break;
-      }
-    }
-    return RData::create(
-      Rcpp::Named("time")             = time,
-      Rcpp::Named("process")          = process,
-      Rcpp::Named("stringsAsFactors") = false
-    );
-  }
+  RData peek(int steps) const;
 
   /**
    * Executes steps until the given criterion is met.
@@ -167,18 +122,7 @@ public:
    * @param   restart         whether activity must be restarted after preemption
    */
   bool add_generator(const std::string& name_prefix, REnv trj, RFn dist,
-                     int mon, int priority, int preemptible, bool restart)
-  {
-    if (process_map.find(name_prefix) != process_map.end()) {
-      Rcpp::warning("process '%s' already defined", name_prefix);
-      return false;
-    }
-    Generator* gen = new Generator(this, name_prefix, mon, trj, dist,
-                                   Order(priority, preemptible, restart));
-    process_map[name_prefix] = gen;
-    gen->activate();
-    return true;
-  }
+                     int mon, int priority, int preemptible, bool restart);
 
   /**
    * Attach arrivals from a data frame.
@@ -196,18 +140,7 @@ public:
                      int batch, const std::string& time, const VEC<std::string>& attrs,
                      const OPT<std::string>& priority,
                      const OPT<std::string>& preemptible,
-                     const OPT<std::string>& restart)
-  {
-    if (process_map.find(name_prefix) != process_map.end()) {
-      Rcpp::warning("process '%s' already defined", name_prefix);
-      return false;
-    }
-    DataSrc* gen = new DataSrc(this, name_prefix, mon, trj, data, batch, time,
-                               attrs, priority, preemptible, restart);
-    process_map[name_prefix] = gen;
-    gen->activate();
-    return true;
-  }
+                     const OPT<std::string>& restart);
 
   /**
    * Add a resource to the simulator.
@@ -220,27 +153,7 @@ public:
    * @param   queue_size_strict whether the queue size is a hard limit
    */
   bool add_resource(const std::string& name, int capacity, int queue_size, bool mon,
-                    bool preemptive, const std::string& preempt_order, bool queue_size_strict)
-  {
-    if (resource_map.find(name) != resource_map.end()) {
-      Rcpp::warning("resource '%s' already defined", name);
-      return false;
-    }
-    Resource* res;
-    if (!preemptive) {
-      res = new PriorityRes<FIFO>(this, name, mon, capacity,
-                                  queue_size, queue_size_strict);
-    } else {
-      if (preempt_order.compare("fifo") == 0)
-        res = new PreemptiveRes<FIFO>(this, name, mon, capacity,
-                                      queue_size, queue_size_strict);
-      else
-        res = new PreemptiveRes<LIFO>(this, name, mon, capacity,
-                                      queue_size, queue_size_strict);
-    }
-    resource_map[name] = res;
-    return true;
-  }
+                    bool preemptive, const std::string& preempt_order, bool queue_size_strict);
 
   /**
    * Add a process that manages the capacity or the queue_size of a resource
@@ -251,67 +164,12 @@ public:
    * @param   value     vector of values
    */
   bool add_resource_manager(const std::string& name, const std::string& param,
-                            const VEC<double>& duration, const VEC<int>& value, int period)
-  {
-    if (process_map.find(name) != process_map.end())
-      Rcpp::stop("process '%s' already defined", name);
-    EntMap::iterator search = resource_map.find(name);
-    if (search == resource_map.end())
-      Rcpp::stop("resource '%s' not found (typo?)", name);
-    Resource* res = static_cast<Resource*>(search->second);
-    Manager* manager;
-    if (param.compare("capacity") == 0)
-      manager = new Manager(this, name, param, duration, value, period,
-                            BIND(&Resource::set_capacity, res, _1));
-    else
-      manager = new Manager(this, name, param, duration, value, period,
-                            BIND(&Resource::set_queue_size, res, _1));
-    process_map[name + "_" + param] = manager;
-    manager->activate();
-    return true;
-  }
+                            const VEC<double>& duration, const VEC<int>& value, int period);
 
-  /**
-   * Get a source by name.
-   */
-  Source* get_source(const std::string& name) const {
-    EntMap::const_iterator search = process_map.find(name);
-    if (search == process_map.end())
-      Rcpp::stop("source '%s' not found (typo?)", name);
-    return static_cast<Source*>(search->second);
-  }
-
-  /**
-   * Get a resource by name.
-   */
-  Resource* get_resource(const std::string& name) const {
-    EntMap::const_iterator search = resource_map.find(name);
-    if (search == resource_map.end())
-      Rcpp::stop("resource '%s' not found (typo?)", name);
-    return static_cast<Resource*>(search->second);
-  }
-
-  Arrival* get_running_arrival() const {
-    Arrival* arrival = dynamic_cast<Arrival*>(process_);
-    if (!arrival)
-      Rcpp::stop("there is no arrival running");
-    return arrival;
-  }
-
-  void record_ongoing(bool per_resource) const {
-    foreach_ (const ArrMap::value_type& itr1, arrival_map) {
-      if (dynamic_cast<Batched*>(itr1.first) || !itr1.first->is_monitored())
-        continue;
-      if (!per_resource)
-        mon->record_end(itr1.first->name, itr1.first->get_start(), R_NaReal, R_NaReal, false);
-      else foreach_ (const EntMap::value_type& itr2, resource_map) {
-        double start = itr1.first->get_start(itr2.second->name);
-        if (start < 0)
-          continue;
-        mon->record_release(itr1.first->name, start, R_NaReal, R_NaReal, itr2.second->name);
-      }
-    }
-  }
+  Source* get_source(const std::string& name) const;
+  Resource* get_resource(const std::string& name) const;
+  Arrival* get_running_arrival() const;
+  void record_ongoing(bool per_resource) const;
 
   Batched** get_batch(Activity* ptr, const std::string& id) {
     if (id.size()) {
@@ -327,16 +185,7 @@ public:
 
   size_t get_batch_count() { return b_count++; }
 
-  void broadcast(const VEC<std::string>& signals) {
-    foreach_ (const std::string& signal, signals) {
-      foreach_ (const HandlerMap::value_type& itr, signal_map[signal]) {
-        if (!itr.second.first)
-          continue;
-        Task* task = new Task(this, "Handler", itr.second.second, PRIORITY_SIGNAL);
-        task->activate();
-      }
-    }
-  }
+  void broadcast(const VEC<std::string>& signals);
   void subscribe(const std::string& signal, Arrival* arrival, Fn<void()> handler) {
     signal_map[signal][arrival] = std::make_pair(true, handler);
     arrival_map[arrival].emplace(signal);
@@ -397,23 +246,7 @@ private:
   /**
    * Process the next event. Only one step, a giant leap for mankind.
    */
-  bool _step(double until = -1) {
-    if (event_queue.empty())
-      return false;
-    PQueue::iterator ev = event_queue.begin();
-    if (until >= 0 && until <= ev->time) {
-      if (until > now_)
-        now_ = until;
-      return false;
-    }
-    now_ = ev->time;
-    process_ = ev->process;
-    event_map.erase(ev->process);
-    process_->run();
-    process_ = NULL;
-    event_queue.erase(ev);
-    return true;
-  }
+  bool _step(double until = -1);
 };
 
 #endif

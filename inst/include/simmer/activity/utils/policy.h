@@ -1,8 +1,9 @@
 #ifndef simmer__activity_utils_policy_h
 #define simmer__activity_utils_policy_h
 
-#include <simmer.h>
+#include <simmer/common.h>
 #include <simmer/simulator.h>
+#include <simmer/resource.h>
 
 class Policy {
   typedef Resource* (Policy::*method)(Simulator*, const VEC<std::string>&);

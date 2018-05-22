@@ -1,7 +1,8 @@
 #ifndef simmer__activity_log_h
 #define simmer__activity_log_h
 
-#include <simmer/activity/activity.h>
+#include <simmer/activity.h>
+#include <simmer/process/arrival.h>
 
 /**
  * Print a message.

@@ -1,8 +1,9 @@
 #ifndef simmer__activity_arrival_h
 #define simmer__activity_arrival_h
 
-#include <simmer/activity/activity.h>
+#include <simmer/activity.h>
 #include <simmer/activity/utils/getop.h>
+#include <simmer/process/batched.h>
 
 /**
  * Set attributes.
@@ -180,10 +181,8 @@ public:
 
   double run(Arrival* arrival) {
     Batched* batched = dynamic_cast<Batched*>(arrival);
-    if (!batched || batched->is_permanent())
+    if (!batched || !batched->pop_all(get_next()))
       return 0;
-    batched->pop_all(get_next());
-    delete batched;
     return REJECT;
   }
 };

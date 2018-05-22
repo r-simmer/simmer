@@ -1,7 +1,7 @@
 #ifndef simmer__process_order_h
 #define simmer__process_order_h
 
-#include <simmer.h>
+#include <simmer/common.h>
 
 struct Order {
 public:

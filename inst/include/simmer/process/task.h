@@ -1,7 +1,7 @@
 #ifndef simmer__process_task_h
 #define simmer__process_task_h
 
-#include <simmer/process/process.h>
+#include <simmer/process.h>
 
 class Task : public Process {
   typedef Fn<void()> Callback;
@@ -12,7 +12,15 @@ public:
   ~Task() { reset(); }
 
   void reset() {}
-  void run();
+  void run() {
+    if (sim->verbose) Rcpp::Rcout <<
+      FMT(10, right) << sim->now() << " |" <<
+      FMT(12, right) << "task: " << FMT(15, left) << name << "|" <<
+      FMT(12+16, right) << "|" << std::endl;
+
+    task();
+    delete this;
+  }
 
 private:
   Callback task;

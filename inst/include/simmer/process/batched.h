@@ -22,20 +22,32 @@ public:
 
   ~Batched() { reset(); }
 
-  void terminate(bool finished);
+  void terminate(bool finished) {
+    foreach_ (Arrival* arrival, arrivals)
+    arrival->terminate(finished);
+    arrivals.clear();
+    Arrival::terminate(finished);
+  }
 
-  void pop_all(Activity* next) {
+  bool pop_all(Activity* next) {
+    if (permanent) return false;
     foreach_ (Arrival* arrival, arrivals) {
       arrival->set_activity(next);
       arrival->unregister_entity(this);
       arrival->activate();
     }
     arrivals.clear();
+    delete this;
+    return true;
   }
 
-  void set_attribute(const std::string& key, double value, bool global=false);
+  void set_attribute(const std::string& key, double value, bool global=false) {
+    if (global) return sim->set_attribute(key, value);
+    attributes[key] = value;
+    foreach_ (Arrival* arrival, arrivals)
+      arrival->set_attribute(key, value);
+  }
 
-  bool is_permanent() const { return permanent; }
   size_t size() const { return arrivals.size(); }
 
   void insert(Arrival* arrival) {
@@ -43,7 +55,32 @@ public:
     arrivals.push_back(arrival);
     arrival->register_entity(this);
   }
-  void erase(Arrival* arrival);
+
+  bool erase(Arrival* arrival) {
+    if (permanent) return false;
+    bool del = activity;
+    if (arrivals.size() > 1 || (batch && batch->permanent)) {
+      del = false;
+      if (arrival->is_monitored()) {
+        Batched* up = this;
+        while (up) {
+          up->report(arrival);
+          up = up->batch;
+        }
+      }
+    } else if (arrivals.size() == 1 && !batch) {
+      if (!leave_resources(!activity))
+        deactivate();
+    } else {
+      del = true;
+      batch->erase(this);
+      leave_resources();
+    }
+    arrivals.erase(std::remove(arrivals.begin(), arrivals.end(), arrival), arrivals.end());
+    arrival->unregister_entity(this);
+    if (del) delete this;
+    return true;
+  }
 
 private:
   VEC<Arrival*> arrivals;
@@ -71,7 +108,11 @@ private:
     }
   }
 
-  void report(Arrival* arrival) const;
+  void report(Arrival* arrival) const {
+    foreach_ (const ResTime::value_type& itr, restime)
+    arrival->report(itr.first, itr.second.start,
+                    itr.second.activity - status.busy_until + sim->now());
+  }
 
   void update_activity(double value) {
     Arrival::update_activity(value);

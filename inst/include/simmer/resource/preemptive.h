@@ -1,10 +1,10 @@
 #ifndef simmer__resource_preemptive_h
 #define simmer__resource_preemptive_h
 
-#include <simmer/process.h>
-#include <simmer/resource/resource.h>
+#include <simmer/resource.h>
 #include <simmer/resource/priority.h>
 #include <simmer/resource/types.h>
+#include <simmer/process/arrival.h>
 
 /**
 *  Preemptive resource.

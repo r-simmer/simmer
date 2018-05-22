@@ -2,6 +2,7 @@
 #define simmer__process_generator_h
 
 #include <simmer/process/source.h>
+#include <simmer/activity.h>
 
 /**
  * Generation process.
@@ -24,7 +25,24 @@ public:
     source = boost::any_cast<RFn>(new_source);
   }
 
-  void run();
+  void run() {
+    // get the delay for the next (n) arrival(s)
+    RNum delays = source();
+    size_t n = delays.size();
+    double delay = 0;
+
+    for (size_t i = 0; i < n; ++i) {
+      if (delays[i] < 0)
+        return;
+      delay += delays[i];
+
+      // schedule the arrival
+      sim->schedule(delay, new_arrival(delay),
+                    first_activity->priority ? first_activity->priority : count);
+    }
+    // schedule the generator
+    sim->schedule(delay, this, priority);
+  }
 
 private:
   RFn source;

@@ -1,14 +1,12 @@
 #ifndef simmer__process_source_h
 #define simmer__process_source_h
 
-#include <simmer/process/process.h>
+#include <simmer/process.h>
 #include <simmer/process/order.h>
+#include <simmer/process/arrival.h>
+#include <simmer/activity.h>
 
-// forward declarations
-class Activity;
-class Arrival;
-
-Activity* trj_head(const REnv& trj);
+inline Activity* trj_head(const REnv& trj) { return trj_get(trj, "head"); }
 
 /**
  * Abstract class for source processes.
@@ -45,7 +43,20 @@ protected:
   Order order;
   Activity* first_activity;
 
-  Arrival* new_arrival(double delay);
+  Arrival* new_arrival(double delay) {
+    // format the name and create the next arrival
+    std::string arr_name = name + boost::lexical_cast<std::string>(count++);
+    Arrival* arrival = new Arrival(sim, arr_name, is_monitored(),
+                                   order, first_activity, count);
+
+    if (sim->verbose) Rcpp::Rcout <<
+      FMT(10, right) << sim->now() << " |" <<
+      FMT(12, right) << "source: " << FMT(15, left) << name << "|" <<
+      FMT(12, right) << "new: " << FMT(15, left) << arr_name << "| " <<
+      (sim->now() + delay) << std::endl;
+
+    return arrival;
+  }
 
 private:
   REnv trj;

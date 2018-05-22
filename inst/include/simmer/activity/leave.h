@@ -1,7 +1,7 @@
 #ifndef simmer__activity_leave_h
 #define simmer__activity_leave_h
 
-#include <simmer/activity/activity.h>
+#include <simmer/activity.h>
 
 /**
  * Leave the trajectory with some probability.

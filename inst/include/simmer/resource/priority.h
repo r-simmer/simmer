@@ -1,9 +1,9 @@
 #ifndef simmer__resource_priority_h
 #define simmer__resource_priority_h
 
-#include <simmer/process.h>
-#include <simmer/resource/resource.h>
+#include <simmer/resource.h>
 #include <simmer/resource/types.h>
+#include <simmer/process/arrival.h>
 
 /**
 *  Priority resource.

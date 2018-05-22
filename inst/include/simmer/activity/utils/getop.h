@@ -1,7 +1,7 @@
 #ifndef simmer__activity_utils_getop_h
 #define simmer__activity_utils_getop_h
 
-#include <simmer.h>
+#include <simmer/common.h>
 
 template <typename T>
 Fn<T(T, T)> get_op(char mod) {

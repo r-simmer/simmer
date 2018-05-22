@@ -1,7 +1,7 @@
 #ifndef simmer__monitor_csv_h
 #define simmer__monitor_csv_h
 
-#include <simmer/monitor/monitor.h>
+#include <simmer/monitor.h>
 #include <fstream>
 
 class CsvWriter : public std::ofstream {

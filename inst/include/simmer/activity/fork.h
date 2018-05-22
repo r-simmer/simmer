@@ -1,7 +1,7 @@
 #ifndef simmer__activity_fork_h
 #define simmer__activity_fork_h
 
-#include <simmer/activity/activity.h>
+#include <simmer/activity.h>
 
 // abstract class for multipath activities
 class Fork : public Activity {

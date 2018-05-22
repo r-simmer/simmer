@@ -1,7 +1,7 @@
 #ifndef simmer__activity_rollback_h
 #define simmer__activity_rollback_h
 
-#include <simmer/activity/activity.h>
+#include <simmer/activity.h>
 
 /**
  * Rollback to a previous activity.

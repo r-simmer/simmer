@@ -1,102 +1,41 @@
 #ifndef simmer__h
 #define simmer__h
 
-#include <Rcpp.h>
+#include <simmer/common.h>
+#include <simmer/simulator.h>
 
-#include <boost/container/set.hpp>
-#include <boost/unordered_set.hpp>
-#include <boost/unordered_map.hpp>
+#include <simmer/monitor.h>
+#include <simmer/monitor/memory.h>
+#include <simmer/monitor/csv.h>
 
-#define VEC std::vector
-#define MSET boost::container::multiset
-#define USET boost::unordered_set
-#define UMAP boost::unordered_map
-#define MAP  std::map
+#include <simmer/activity.h>
+#include <simmer/activity/fork.h>
+#include <simmer/activity/log.h>
+#include <simmer/activity/timeout.h>
+#include <simmer/activity/arrival.h>
+#include <simmer/activity/resource.h>
+#include <simmer/activity/source.h>
+#include <simmer/activity/branch.h>
+#include <simmer/activity/rollback.h>
+#include <simmer/activity/leave.h>
+#include <simmer/activity/renege.h>
+#include <simmer/activity/async.h>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/optional.hpp>
-#include <boost/typeof/typeof.hpp>
-#include <boost/any.hpp>
+#include <simmer/process.h>
+#include <simmer/process/task.h>
+#include <simmer/process/manager.h>
+#include <simmer/process/source.h>
+#include <simmer/process/generator.h>
+#include <simmer/process/datasrc.h>
+#include <simmer/process/arrival.h>
+#include <simmer/process/batched.h>
 
-#define OPT boost::optional
-#define NONE boost::none
-#define AUTO BOOST_AUTO
-#define ANY boost::any
+#include <simmer/resource.h>
+#include <simmer/resource/types.h>
+#include <simmer/resource/priority.h>
+#include <simmer/resource/preemptive.h>
 
-#include <boost/foreach.hpp>
-
-#define foreach_    BOOST_FOREACH
-#define foreach_r_  BOOST_REVERSE_FOREACH
-
-#include <boost/variant.hpp>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
-
-#define Fn boost::function
-#define BIND boost::bind
-
-#define RFn Rcpp::Function
-#define REnv Rcpp::Environment
-#define RData Rcpp::DataFrame
-#define RNum Rcpp::NumericVector
-#define RStr Rcpp::CharacterVector
-#define RBool Rcpp::LogicalVector
-
-#define FMT(n, justify) std::setw(n) << std::justify
-#define IND(n) std::string(n, ' ')
-
-#define PRIORITY_MAX            std::numeric_limits<int>::min()
-#define PRIORITY_RELEASE        -6
-#define PRIORITY_MANAGER        -5
-#define PRIORITY_RELEASE_POST   -4
-#define PRIORITY_SEND           -3
-#define PRIORITY_SIGNAL         -2
-#define PRIORITY_TRAP           -1
-#define PRIORITY_MIN            std::numeric_limits<int>::max()
-
-#define SUCCESS    0
-#define ENQUEUE   -1
-#define REJECT    -2
-#define BLOCK     std::numeric_limits<double>::infinity()
-
-#define COMMA ,
-
-#define BASE_CLONEABLE(Type) virtual Type* clone() const = 0;
-#define CLONEABLE(Type) virtual Type* clone() const { return new Type(*this); }
-
-typedef UMAP<std::string, double> Attr;
-
-template <typename T>
-struct vec_of : public VEC<T> {
-  vec_of(const T& t) { (*this)(t); }
-  vec_of& operator()(const T& t) {
-    this->push_back(t);
-    return *this;
-  }
-};
-
-template <typename T>
-std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
-  out << "[";
-  if (!v.empty())
-    std::copy(v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
-  out << "\b\b]";
-  return out;
-}
-
-inline std::ostream& operator<<(std::ostream& out, const RData& df) {
-  out << "data.frame";
-  return out;
-}
-
-inline std::ostream& operator<<(std::ostream& out, const RFn& fn) {
-  out << "function()";
-  return out;
-}
-
-inline std::ostream& operator<<(std::ostream& out, const REnv& env) {
-  out << "function()";
-  return out;
-}
+#include <simmer/simulator_impl.h>
+#include <simmer/process/arrival_impl.h>
 
 #endif

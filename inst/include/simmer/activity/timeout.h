@@ -1,7 +1,7 @@
 #ifndef simmer__activity_timeout_h
 #define simmer__activity_timeout_h
 
-#include <simmer/activity/activity.h>
+#include <simmer/activity.h>
 
 /**
  * Timeout.

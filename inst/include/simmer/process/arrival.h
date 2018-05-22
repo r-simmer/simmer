@@ -1,12 +1,11 @@
 #ifndef simmer__process_arrival_h
 #define simmer__process_arrival_h
 
-#include <simmer/process/process.h>
+#include <simmer/process.h>
 #include <simmer/process/task.h>
 #include <simmer/process/order.h>
+#include <simmer/activity.h>
 
-// forward declarations
-class Activity;
 class Batched;
 class Resource;
 
@@ -56,36 +55,117 @@ public:
 
   ~Arrival() { reset(); }
 
-  void run();
-  void restart();
-  void pause();
+  void run() {
+    double delay;
+
+    if (!activity)
+      goto finish;
+    if (lifetime.start < 0)
+      lifetime.start = sim->now();
+
+    if (sim->verbose) {
+      Rcpp::Rcout <<
+        FMT(10, right) << sim->now() << " |" <<
+          FMT(12, right) << "arrival: " << FMT(15, left) << name << "|" <<
+            FMT(12, right) << "activity: " << FMT(15, left) << activity->name << "| ";
+      activity->print(0, false, true);
+    }
+
+    delay = activity->run(this);
+    if (delay == REJECT)
+      goto end;
+    activity = activity->get_next();
+    if (delay == ENQUEUE)
+      goto end;
+
+    if (delay != BLOCK) {
+      set_busy(sim->now() + delay);
+      update_activity(delay);
+    }
+    sim->schedule(delay, this, activity ? activity->priority : PRIORITY_MAX);
+
+    end:
+      return;
+    finish:
+      terminate(true);
+  }
+
+  void restart() {
+    set_busy(sim->now() + status.remaining);
+    activate(status.remaining);
+    set_remaining(0);
+    paused = false;
+  }
+
+  void pause() {
+    deactivate();
+    unset_busy(sim->now());
+    if (status.remaining && order.get_restart()) {
+      unset_remaining();
+      activity = activity->get_prev();
+    }
+    paused = true;
+  }
+
   bool is_paused() const { return paused; }
-  void stop();
+
+  void stop() {
+    deactivate();
+    if (status.busy_until < sim->now())
+      return;
+    unset_busy(sim->now());
+    unset_remaining();
+  }
+
   virtual void terminate(bool finished);
 
   int get_clones() const { return *clones; }
 
-  virtual void set_attribute(const std::string& key, double value, bool global=false);
-  double get_attribute(const std::string& key, bool global=false) const;
+  virtual void set_attribute(const std::string& key, double value, bool global=false) {
+    if (global) return sim->set_attribute(key, value);
+    attributes[key] = value;
+    if (is_monitored() >= 2)
+      sim->mon->record_attribute(sim->now(), name, key, value);
+  }
+
+  double get_attribute(const std::string& key, bool global=false) const {
+    if (global) return sim->get_attribute(key);
+    Attr::const_iterator search = attributes.find(key);
+    if (search == attributes.end())
+      return NA_REAL;
+    return search->second;
+  }
 
   double get_start(const std::string& name);
+
   double get_start() const { return lifetime.start; }
+
   double get_remaining() const { return status.remaining; }
 
   void set_activity(Activity* ptr) { activity = ptr; }
+
   Activity* get_activity() const { return activity; }
 
   void set_resource_selected(int id, Resource* res) { selected[id] = res; }
+
   Resource* get_resource_selected(int id) const {
     SelMap::const_iterator search = selected.find(id);
     if (search != selected.end())
       return search->second;
     return NULL;
   }
+
   void register_entity(Resource* ptr);
+
   void register_entity(Batched* ptr) { batch = ptr; }
+
   void unregister_entity(Resource* ptr);
-  void unregister_entity(Batched* ptr) { batch = NULL; }
+
+  void unregister_entity(Batched* ptr) {
+    if (ptr != batch)
+      Rcpp::stop("illegal unregister of arrival '%s'", name);
+    batch = NULL;
+  }
 
   void set_renege(double timeout, Activity* next) {
     cancel_renege();
@@ -94,8 +174,23 @@ public:
                      PRIORITY_MIN);
     timer->activate(timeout);
   }
-  void set_renege(const std::string& sig, Activity* next);
-  void cancel_renege();
+
+  void set_renege(const std::string& sig, Activity* next) {
+    cancel_renege();
+    signal = sig;
+    sim->subscribe(signal, this, BIND(&Arrival::renege, this, next));
+  }
+
+  void cancel_renege() {
+    if (timer) {
+      timer->deactivate();
+      delete timer;
+      timer = NULL;
+    } else if (!signal.empty()) {
+      sim->unsubscribe(signal, this);
+      signal.clear();
+    }
+  }
 
 private:
   bool paused;
@@ -111,11 +206,29 @@ private:
   Batched* batch;       /**< batch that contains this arrival */
   ResMSet resources;    /**< resources that contain this arrival */
 
-  void init();
-  void reset();
+  void init() {
+    (*clones)++;
+    sim->register_arrival(this);
+  }
+
+  void reset() {
+    cancel_renege();
+    if (!--(*clones))
+      delete clones;
+    sim->unregister_arrival(this);
+  }
+
   void renege(Activity* next);
-  virtual void report(const std::string& resource) const;
-  virtual void report(const std::string& resource, double start, double activity) const;
+
+  virtual void report(const std::string& resource) const {
+    ArrTime time = restime.find(resource)->second;
+    sim->mon->record_release(name, time.start, sim->now(), time.activity, resource);
+  }
+
+  virtual void report(const std::string& resource, double start, double activity) const {
+    sim->mon->record_release(name, start, sim->now(), activity, resource);
+  }
+
   bool leave_resources(bool flag = false);
 
   virtual void update_activity(double value) {

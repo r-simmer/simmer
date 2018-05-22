@@ -1,7 +1,7 @@
 #ifndef simmer__activity_async_h
 #define simmer__activity_async_h
 
-#include <simmer/activity/activity.h>
+#include <simmer/activity.h>
 #include <simmer/activity/fork.h>
 
 /**

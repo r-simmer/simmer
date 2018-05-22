@@ -1,7 +1,7 @@
 #ifndef simmer__activity_resource_h
 #define simmer__activity_resource_h
 
-#include <simmer/activity/activity.h>
+#include <simmer/activity.h>
 #include <simmer/activity/fork.h>
 #include <simmer/activity/utils/resgetter.h>
 #include <simmer/activity/utils/getop.h>
