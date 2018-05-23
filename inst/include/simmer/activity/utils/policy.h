@@ -5,7 +5,7 @@
 #include <simmer/simulator.h>
 #include <simmer/resource.h>
 
-namespace simmer {
+namespace simmer { namespace internal {
 
   class Policy {
     typedef Resource* (Policy::*method)(Simulator*, const VEC<std::string>&);
@@ -77,6 +77,6 @@ namespace simmer {
     }
   };
 
-} // namespace simmer
+}} // namespace internal simmer
 
 #endif

@@ -2,8 +2,6 @@
 #define simmer__activity_h
 
 #include <simmer/common.h>
-#include <simmer/simulator.h>
-#include <simmer/activity/utils/macros.h>
 
 namespace simmer {
 
@@ -81,10 +79,34 @@ namespace simmer {
     T get(const Fn<T(Arrival*)>& call, Arrival* arrival) const { return call(arrival); }
   };
 
-  inline Activity* trj_get(const REnv& trj, const std::string& method) {
-    RFn func(trj[method]);
-    return Rcpp::as<Rcpp::XPtr<Activity> >(func());
-  }
+  namespace internal {
+
+    inline class Activity* head(const REnv& trajectory) {
+      RFn method = trajectory["head"];
+      return Rcpp::as<Rcpp::XPtr<Activity> >(method());
+    }
+
+    inline class Activity* tail(const REnv& trajectory) {
+      RFn method = trajectory["tail"];
+      return Rcpp::as<Rcpp::XPtr<Activity> >(method());
+    }
+
+    inline int get_n_activities(const REnv& trajectory) {
+      RFn method = trajectory["get_n_activities"];
+      return Rcpp::as<int>(method());
+    }
+
+    inline REnv clone(const REnv& trajectory) {
+      RFn method = trajectory["clone"];
+      return method();
+    }
+
+    inline void print(const REnv& trajectory, unsigned int indent, bool verbose) {
+      RFn method = trajectory["print"];
+      method(indent, verbose);
+    }
+
+  } // namespace internal
 
 } // namespace simmer
 

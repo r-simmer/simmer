@@ -2,7 +2,8 @@
 #define simmer__activity_arrival_h
 
 #include <simmer/activity.h>
-#include <simmer/activity/utils/getop.h>
+#include <simmer/activity/utils/macros.h>
+#include <simmer/activity/utils/functions.h>
 #include <simmer/process/batched.h>
 
 namespace simmer {
@@ -17,7 +18,7 @@ namespace simmer {
 
     SetAttribute(const T& keys, const U& values, bool global, char mod='N')
       : Activity("SetAttribute"), keys(keys), values(values),
-        global(global), mod(mod), op(get_op<double>(mod)) {}
+        global(global), mod(mod), op(internal::get_op<double>(mod)) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
@@ -60,7 +61,7 @@ namespace simmer {
     CLONEABLE(SetPrior<T>)
 
     SetPrior(const T& values, char mod='N')
-      : Activity("SetPrior"), values(values), mod(mod), op(get_op<int>(mod)) {}
+      : Activity("SetPrior"), values(values), mod(mod), op(internal::get_op<int>(mod)) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);

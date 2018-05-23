@@ -3,7 +3,7 @@
 
 #include <simmer/simulator.h>
 
-namespace simmer {
+namespace simmer { namespace internal {
 
   // abstract class for resource retrieval
   class ResGetter {
@@ -31,6 +31,6 @@ namespace simmer {
     std::string activity;
   };
 
-} // namespace simmer
+}} // namespace internal simmer
 
 #endif

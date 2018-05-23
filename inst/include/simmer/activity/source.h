@@ -2,6 +2,7 @@
 #define simmer__activity_source_h
 
 #include <simmer/activity.h>
+#include <simmer/activity/utils/macros.h>
 
 namespace simmer {
 

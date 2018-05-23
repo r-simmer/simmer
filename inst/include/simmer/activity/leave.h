@@ -2,6 +2,7 @@
 #define simmer__activity_leave_h
 
 #include <simmer/activity.h>
+#include <simmer/activity/utils/macros.h>
 
 namespace simmer {
 

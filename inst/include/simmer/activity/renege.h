@@ -2,6 +2,7 @@
 #define simmer__activity_renege_h
 
 #include <simmer/activity/fork.h>
+#include <simmer/activity/utils/macros.h>
 
 namespace simmer {
 

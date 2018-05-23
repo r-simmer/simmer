@@ -2,6 +2,7 @@
 #define simmer__activity_log_h
 
 #include <simmer/activity.h>
+#include <simmer/activity/utils/macros.h>
 #include <simmer/process/arrival.h>
 
 namespace simmer {

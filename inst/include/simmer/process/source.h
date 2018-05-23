@@ -8,8 +8,6 @@
 
 namespace simmer {
 
-  inline Activity* trj_head(const REnv& trj) { return trj_get(trj, "head"); }
-
   /**
    * Abstract class for source processes.
    */
@@ -27,7 +25,7 @@ namespace simmer {
     Source(Simulator* sim, const std::string& name_prefix, int mon,
            const REnv& trj, const Order& order)
       : Process(sim, name_prefix, mon, PRIORITY_MIN), count(0), order(order),
-        first_activity(trj_head(trj)), trj(trj) {}
+        first_activity(internal::head(trj)), trj(trj) {}
 
     virtual void reset() { count = 0; }
 
@@ -37,7 +35,7 @@ namespace simmer {
 
     void set_trajectory(const REnv& new_trj) {
       trj = new_trj;
-      first_activity = trj_head(trj);
+      first_activity = internal::head(trj);
     }
 
   protected:

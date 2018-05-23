@@ -3,6 +3,7 @@
 
 #include <simmer/activity.h>
 #include <simmer/activity/fork.h>
+#include <simmer/activity/utils/macros.h>
 
 namespace simmer {
 

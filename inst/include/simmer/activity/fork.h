@@ -13,10 +13,9 @@ namespace simmer {
       : Activity(name, priority), cont(cont), trj(trj), selected(NULL)
     {
       foreach_ (const VEC<REnv>::value_type& itr, trj) {
-        heads.push_back(trj_get(itr, "head"));
-        tails.push_back(trj_get(itr, "tail"));
-        RFn get_n_activities(itr["get_n_activities"]);
-        count += Rcpp::as<int>(get_n_activities());
+        heads.push_back(internal::head(itr));
+        tails.push_back(internal::tail(itr));
+        count += internal::get_n_activities(itr);
       }
       foreach_ (const VEC<Activity*>::value_type& itr, heads)
         itr->set_prev(this);
@@ -26,10 +25,9 @@ namespace simmer {
       heads.clear();
       tails.clear();
       foreach_ (VEC<REnv>::value_type& itr, trj) {
-        RFn clone(itr["clone"]);
-        itr = clone();
-        heads.push_back(trj_get(itr, "head"));
-        tails.push_back(trj_get(itr, "tail"));
+        itr = internal::clone(itr);
+        heads.push_back(internal::head(itr));
+        tails.push_back(internal::tail(itr));
       }
       foreach_ (const VEC<Activity*>::value_type& itr, heads)
         itr->set_prev(this);
@@ -42,8 +40,7 @@ namespace simmer {
         for (unsigned int i = 0; i < trj.size(); i++) {
           Rcpp::Rcout <<
             IND(indent) << "Fork " << i+1 << (cont[i] ? ", continue," : ", stop,");
-          RFn print(trj[i]["print"]);
-          print(indent, verbose);
+          internal::print(trj[i], indent, verbose);
         }
       } else Rcpp::Rcout << trj.size() << " paths" << std::endl;
     }

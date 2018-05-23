@@ -3,8 +3,9 @@
 
 #include <simmer/activity.h>
 #include <simmer/activity/fork.h>
+#include <simmer/activity/utils/macros.h>
+#include <simmer/activity/utils/functions.h>
 #include <simmer/activity/utils/resgetter.h>
-#include <simmer/activity/utils/getop.h>
 #include <simmer/activity/utils/policy.h>
 
 namespace simmer {
@@ -13,19 +14,19 @@ namespace simmer {
    * Seize a resource.
    */
   template <typename T>
-  class Seize : public Fork, public ResGetter {
+  class Seize : public Fork, public internal::ResGetter {
   public:
     CLONEABLE(Seize<T>)
 
     Seize(const std::string& resource, const T& amount, const VEC<bool>& cont,
           const VEC<REnv>& trj, unsigned short mask)
       : Fork("Seize", cont, trj),
-        ResGetter("Seize", resource), amount(amount), mask(mask) {}
+        internal::ResGetter("Seize", resource), amount(amount), mask(mask) {}
 
     Seize(int id, const T& amount, const VEC<bool>& cont,
           const VEC<REnv>& trj, unsigned short mask)
       : Fork("Seize", cont, trj),
-        ResGetter("Seize", "[]", id), amount(amount), mask(mask) {}
+        internal::ResGetter("Seize", "[]", id), amount(amount), mask(mask) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
@@ -67,17 +68,17 @@ namespace simmer {
    * Release a resource.
    */
   template <typename T>
-  class Release : public Activity, public ResGetter {
+  class Release : public Activity, public internal::ResGetter {
   public:
     CLONEABLE(Release<T>)
 
     Release(const std::string& resource, const T& amount)
       : Activity("Release", PRIORITY_RELEASE),
-        ResGetter("Release", resource), amount(amount) {}
+        internal::ResGetter("Release", resource), amount(amount) {}
 
     Release(int id, const T& amount)
       : Activity("Release", PRIORITY_RELEASE),
-        ResGetter("Release", "[]", id), amount(amount) {}
+        internal::ResGetter("Release", "[]", id), amount(amount) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
@@ -97,17 +98,17 @@ namespace simmer {
    * Set a resource's capacity.
    */
   template <typename T>
-  class SetCapacity : public Activity, public ResGetter {
+  class SetCapacity : public Activity, public internal::ResGetter {
   public:
     CLONEABLE(SetCapacity<T>)
 
     SetCapacity(const std::string& resource, const T& value, char mod='N')
-      : Activity("SetCapacity"), ResGetter("SetCapacity", resource),
-        value(value), mod(mod), op(get_op<double>(mod)) {}
+      : Activity("SetCapacity"), internal::ResGetter("SetCapacity", resource),
+        value(value), mod(mod), op(internal::get_op<double>(mod)) {}
 
     SetCapacity(int id, const T& value, char mod='N')
-      : Activity("SetCapacity"), ResGetter("SetCapacity", "[]", id),
-        value(value), mod(mod), op(get_op<double>(mod)) {}
+      : Activity("SetCapacity"), internal::ResGetter("SetCapacity", "[]", id),
+        value(value), mod(mod), op(internal::get_op<double>(mod)) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
@@ -139,17 +140,17 @@ namespace simmer {
    * Set a resource's queue size.
    */
   template <typename T>
-  class SetQueue : public Activity, public ResGetter {
+  class SetQueue : public Activity, public internal::ResGetter {
   public:
     CLONEABLE(SetQueue<T>)
 
     SetQueue(const std::string& resource, const T& value, char mod='N')
-      : Activity("SetQueue"), ResGetter("SetQueue", resource),
-        value(value), mod(mod), op(get_op<double>(mod)) {}
+      : Activity("SetQueue"), internal::ResGetter("SetQueue", resource),
+        value(value), mod(mod), op(internal::get_op<double>(mod)) {}
 
     SetQueue(int id, const T& value, char mod='N')
-      : Activity("SetQueue"), ResGetter("SetQueue", "[]", id),
-        value(value), mod(mod), op(get_op<double>(mod)) {}
+      : Activity("SetQueue"), internal::ResGetter("SetQueue", "[]", id),
+        value(value), mod(mod), op(internal::get_op<double>(mod)) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
@@ -184,7 +185,7 @@ namespace simmer {
     CLONEABLE(Select<T>)
 
     Select(const T& resources, const std::string& policy, int id)
-      : Activity("Select"), resources(resources), id(id), policy(Policy(policy)) {}
+      : Activity("Select"), resources(resources), id(id), policy(internal::Policy(policy)) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
@@ -201,7 +202,7 @@ namespace simmer {
   protected:
     T resources;
     int id;
-    Policy policy;
+    internal::Policy policy;
   };
 
 } // namespace simmer
