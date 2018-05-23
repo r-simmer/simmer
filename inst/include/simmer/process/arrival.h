@@ -158,14 +158,16 @@ namespace simmer {
     }
 
     void register_entity(Resource* ptr);
-
-    void register_entity(Batched* ptr) { batch = ptr; }
-
     void unregister_entity(Resource* ptr);
+
+    void register_entity(Batched* ptr) {
+      if (!ptr) Rcpp::stop("illegal register of arrival '%s'", name); // nocov
+      batch = ptr;
+    }
 
     void unregister_entity(Batched* ptr) {
       if (ptr != batch)
-        Rcpp::stop("illegal unregister of arrival '%s'", name);
+        Rcpp::stop("illegal unregister of arrival '%s'", name); // nocov
       batch = NULL;
     }
 
