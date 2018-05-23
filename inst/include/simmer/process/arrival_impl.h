@@ -29,7 +29,7 @@ namespace simmer {
   }
 
   inline void Arrival::register_entity(Resource* ptr) {
-    if (!ptr) Rcpp::stop("illegal register of arrival '%s'", name); // nocov
+    if (!ptr) Rcpp::stop("illegal register of arrival '%s'", name); // # nocov
     if (is_monitored()) {
       restime[ptr->name].start = sim->now();
       restime[ptr->name].activity = 0;
@@ -40,7 +40,7 @@ namespace simmer {
   inline void Arrival::unregister_entity(Resource* ptr) {
     ResMSet::iterator search = resources.find(ptr);
     if (!ptr || search == resources.end())
-      Rcpp::stop("illegal unregister of arrival '%s'", name); // nocov
+      Rcpp::stop("illegal unregister of arrival '%s'", name); // # nocov
     if (is_monitored())
       report(ptr->name);
     resources.erase(search);
