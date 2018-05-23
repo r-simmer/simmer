@@ -6,38 +6,42 @@
 
 namespace simmer {
 
-  class CsvWriter : public std::ofstream {
-  public:
-    void open(const std::string& path, VEC<std::string> header, char sep=',') {
-      std::ofstream::open(path.c_str());
-      setf(std::ios_base::fixed);
-      precision(9);
-      i = 0;
-      n_cols = (int) header.size();
-      this->sep = sep;
-      foreach_ (const std::string& name, header)
-        *this << name;
-      flush();
-    }
+  namespace internal {
 
-    template <typename T>
-    friend CsvWriter& operator<<(CsvWriter& ofs, const T& elem) {
-      std::ofstream& ofsp = (std::ofstream&) ofs;
-      if (ofs.i++ > 0)
-        ofsp << ofs.sep;
-      ofsp << elem;
-      if (ofs.i == ofs.n_cols) {
-        ofsp << '\n';
-        ofs.i = 0;
+    class CsvWriter : public std::ofstream {
+    public:
+      void open(const std::string& path, VEC<std::string> header, char sep=',') {
+        std::ofstream::open(path.c_str());
+        setf(std::ios_base::fixed);
+        precision(9);
+        i = 0;
+        n_cols = (int) header.size();
+        this->sep = sep;
+        foreach_ (const std::string& name, header)
+          *this << name;
+        flush();
       }
-      return ofs;
-    }
 
-  private:
-    int i;
-    int n_cols;
-    char sep;
-  };
+      template <typename T>
+      friend CsvWriter& operator<<(CsvWriter& ofs, const T& elem) {
+        std::ofstream& ofsp = (std::ofstream&) ofs;
+        if (ofs.i++ > 0)
+          ofsp << ofs.sep;
+        ofsp << elem;
+        if (ofs.i == ofs.n_cols) {
+          ofsp << '\n';
+          ofs.i = 0;
+        }
+        return ofs;
+      }
+
+    private:
+      int i;
+      int n_cols;
+      char sep;
+    };
+
+  } // namespace internal
 
   class CsvMonitor : public Monitor {
   public:
@@ -101,10 +105,10 @@ namespace simmer {
     std::string attributes_path;
     std::string resources_path;
     char sep;
-    CsvWriter ends;
-    CsvWriter releases;
-    CsvWriter attributes;
-    CsvWriter resources;
+    internal::CsvWriter ends;
+    internal::CsvWriter releases;
+    internal::CsvWriter attributes;
+    internal::CsvWriter resources;
   };
 
 } // namespace simmer

@@ -6,31 +6,35 @@
 
 namespace simmer {
 
-  class MonitorMap {
-    typedef boost::variant< VEC<bool>, VEC<int>, VEC<double>, VEC<std::string> > _vec;
-    typedef UMAP<std::string, _vec> _map;
+  namespace internal {
 
-  public:
-    template <typename T>
-    VEC<T> get(const std::string& key) const {
-      _map::const_iterator search = map.find(key);
-      if (search != map.end())
-        return boost::get< VEC<T> >(search->second);
-      return VEC<T>();
-    }
+    class MonitorMap {
+      typedef boost::variant< VEC<bool>, VEC<int>, VEC<double>, VEC<std::string> > _vec;
+      typedef UMAP<std::string, _vec> _map;
 
-    template <typename T>
-    void push_back(const std::string& key, const T& value) {
-      if (map.find(key) == map.end())
-        map[key] = VEC<T>();
-      boost::get< VEC<T> >(map[key]).push_back(value);
-    }
+    public:
+      template <typename T>
+      VEC<T> get(const std::string& key) const {
+        _map::const_iterator search = map.find(key);
+        if (search != map.end())
+          return boost::get< VEC<T> >(search->second);
+        return VEC<T>();
+      }
 
-    void clear() { map.clear(); }
+      template <typename T>
+      void push_back(const std::string& key, const T& value) {
+        if (map.find(key) == map.end())
+          map[key] = VEC<T>();
+        boost::get< VEC<T> >(map[key]).push_back(value);
+      }
 
-  private:
-    _map map;
-  };
+      void clear() { map.clear(); }
+
+    private:
+      _map map;
+    };
+
+  } // namespace internal
 
   class MemMonitor : public Monitor {
   public:
@@ -123,10 +127,10 @@ namespace simmer {
     }
 
   private:
-    MonitorMap ends;        /**< arrival statistics per trajectory */
-    MonitorMap releases;    /**< arrival statistics per resource */
-    MonitorMap attributes;  /**< attribute statistics */
-    MonitorMap resources;   /**< resource statistics */
+    internal::MonitorMap ends;        /**< arrival statistics per trajectory */
+    internal::MonitorMap releases;    /**< arrival statistics per resource */
+    internal::MonitorMap attributes;  /**< attribute statistics */
+    internal::MonitorMap resources;   /**< resource statistics */
   };
 
 } // namespace simmer
