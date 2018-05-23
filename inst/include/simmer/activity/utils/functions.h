@@ -12,8 +12,6 @@ namespace simmer { namespace internal {
       return BIND(std::plus<double>(), _1, _2);
     case '*':
       return BIND(std::multiplies<double>(), _1, _2);
-    default:
-      Rcpp::stop("operator '%c' not supported", mod);
     }
     return NULL;
   }
