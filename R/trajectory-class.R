@@ -152,7 +152,7 @@ Trajectory <- R6Class("trajectory",
     },
 
     timeout = function(task, global=FALSE) {
-      check_args(task=c("number", "function", "string"))
+      check_args(task=c("numeric", "function", "string"))
       if (is.character(task))
         return(private$add_activity(Timeout__new_attr(task, global)))
       switch(

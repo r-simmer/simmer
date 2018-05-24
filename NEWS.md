@@ -13,6 +13,7 @@
 * `branch` and `clone` now accept lists of trajectories, in the same way as `join`, so that there is no need to use `do.call` (#142).
 * The argument `continue` (present in `seize` and `branch`) is recycled if only one value is provided but several sub-trajectories are defined (#143).
 * Fix process reset: sources are reset in strict order of creation (e7d909b).
+* Fix infinite timeouts (#144).
 
 # simmer 3.7.0
 

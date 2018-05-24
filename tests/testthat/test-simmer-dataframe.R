@@ -28,6 +28,12 @@ test_that("an empty trajectory fails", {
   expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", trajectory(), DF))
 })
 
+test_that("non-existent column names fail", {
+  t0 <- trajectory() %>% timeout(1)
+  DF <- data.frame(time=1)
+  expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", t0, DF, col_time="asdf"))
+})
+
 test_that("a data source with non-numeric values fails", {
   t0 <- trajectory() %>% timeout(1)
   DF <- data.frame(time=NA)

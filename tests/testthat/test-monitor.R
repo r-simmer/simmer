@@ -9,8 +9,8 @@ test_that("delim monitors create new files with right headers", {
 
   for (name in names(mon$handlers)) {
     expect_true(file.exists(mon$handlers[[name]]))
-    expect_equal(dirname(mon$handlers[[name]]), tempdir())
-    expect_match(basename(mon$handlers[[name]]), paste0(name, "_.*.csv"))
+    expect_equal(dirname(mon$handlers[[name]]), gsub("\\\\", "/", tempdir()))
+    expect_match(basename(mon$handlers[[name]]), paste0(name, ".csv"))
   }
 
   arr <- mon$get_arrivals(FALSE)
@@ -33,6 +33,8 @@ test_that("delim monitors create new files with right headers", {
 })
 
 test_that("delim monitors collect the same values as in-memory monitors", {
+  set.seed(1234)
+
   t <- trajectory() %>%
     timeout(rexp(1)) %>%
     set_attribute("attr", rexp(1)) %>%
@@ -54,10 +56,10 @@ test_that("delim monitors collect the same values as in-memory monitors", {
     run()
 
   # do not compare the 'finished' column
-  expect_equal(get_mon_arrivals(env_csv)[,-5], get_mon_arrivals(env_mem)[,-5])
-  expect_equal(get_mon_arrivals(env_csv, TRUE), get_mon_arrivals(env_mem, TRUE))
-  expect_equal(get_mon_attributes(env_csv), get_mon_attributes(env_mem))
-  expect_equal(get_mon_resources(env_csv), get_mon_resources(env_mem))
+  expect_equal(get_mon_arrivals(env_csv)[,-5], get_mon_arrivals(env_mem)[,-5], tolerance=1e-6)
+  expect_equal(get_mon_arrivals(env_csv, TRUE), get_mon_arrivals(env_mem, TRUE), tolerance=1e-6)
+  expect_equal(get_mon_attributes(env_csv), get_mon_attributes(env_mem), tolerance=1e-6)
+  expect_equal(get_mon_resources(env_csv), get_mon_resources(env_mem), tolerance=1e-6)
 
   arr <- read.csv(mon$handlers[["arrivals"]], stringsAsFactors=FALSE)
   rel <- read.csv(mon$handlers[["releases"]], stringsAsFactors=FALSE)
@@ -69,7 +71,7 @@ test_that("delim monitors collect the same values as in-memory monitors", {
   expect_equal(get_mon_attributes(env_csv)[,seq_len(ncol(atr))], atr)
   expect_equal(get_mon_resources(env_csv)[,seq_len(ncol(res))], res)
 
-  reset(env_csv)
+  expect_output(print(reset(env_csv)), "^.*Monitor:.*disk.*delimited")
 
   expect_equal(nrow(get_mon_arrivals(env_csv)), 0)
   expect_equal(nrow(get_mon_arrivals(env_csv, TRUE)), 0)

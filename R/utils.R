@@ -40,6 +40,7 @@ is_trajectory <- function(name, env) {
   else check_traj(env[[name]])
 }
 
+is_numeric <- function(name, env) is.numeric(env[[name]])
 is_NA <- function(name, env) is.na(env[[name]])
 is_NULL <- function(name, env) is.null(env[[name]])
 
