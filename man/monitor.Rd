@@ -91,7 +91,7 @@ env <- simmer(mon=mon) \%>\%
   run(10)
 env
 
-read.csv(mon$handlers["arrivals"]) # direct access
-get_mon_arrivals(env)              # adds the "replication" column
+read.csv(mon$handlers$arrivals) # direct access
+get_mon_arrivals(env)           # adds the "replication" column
 
 }
