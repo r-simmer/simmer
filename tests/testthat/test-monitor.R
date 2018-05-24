@@ -71,7 +71,7 @@ test_that("delim monitors collect the same values as in-memory monitors", {
   expect_equal(get_mon_attributes(env_csv)[,seq_len(ncol(atr))], atr)
   expect_equal(get_mon_resources(env_csv)[,seq_len(ncol(res))], res)
 
-  reset(env_csv)
+  expect_output(print(reset(env_csv)), "^.*Monitor:.*disk.*delimited")
 
   expect_equal(nrow(get_mon_arrivals(env_csv)), 0)
   expect_equal(nrow(get_mon_arrivals(env_csv, TRUE)), 0)
