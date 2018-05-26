@@ -213,8 +213,8 @@ namespace simmer {
     } catch (std::exception &ex) {
       Arrival* arrival = dynamic_cast<Arrival*>(process_);
       throw Rcpp::exception(tfm::format(
-        "'%s'%s: %s",
-        process_->name,
+        "'%s' at %.2f%s:\n %s",
+        process_->name, now_,
         arrival ? " in '" + arrival->get_activity()->name + "'" : "",
         ex.what()).c_str(), false
       );
