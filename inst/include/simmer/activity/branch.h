@@ -28,7 +28,7 @@ namespace simmer {
     double run(Arrival* arrival) {
       int ret = get<int>(option, arrival);
       if (ret < 0 || ret > (int)heads.size())
-        Rcpp::stop("%s: index out of range", name);
+        Rcpp::stop("index out of range");
       if (ret) selected = heads[ret-1];
       return 0;
     }

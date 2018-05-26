@@ -23,7 +23,7 @@ namespace simmer {
 
     void set_source(const ANY& new_source) {
       if (new_source.type() != typeid(RFn))
-        Rcpp::stop("source '%s': requires a function", name);
+        Rcpp::stop("function required");
       source = boost::any_cast<RFn>(new_source);
     }
 

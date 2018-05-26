@@ -57,21 +57,21 @@ namespace simmer {
 
     void set_source(const ANY& new_source) {
       if (new_source.type() != typeid(RData))
-        Rcpp::stop("source '%s': requires a data frame", name);
+        Rcpp::stop("data frame required");
       source = boost::any_cast<RData>(new_source);
 
       VEC<std::string> n = source.names();
       if (std::find(n.begin(), n.end(), col_time) == n.end())
-        Rcpp::stop("source '%s': column '%s' not present", name, col_time);
+        Rcpp::stop("column '%s' not present", col_time);
       if (col_priority && std::find(n.begin(), n.end(), *col_priority) == n.end())
-        Rcpp::stop("source '%s': column '%s' not present", name, *col_priority);
+        Rcpp::stop("column '%s' not present", *col_priority);
       if (col_preemptible && std::find(n.begin(), n.end(), *col_preemptible) == n.end())
-        Rcpp::stop("source '%s': column '%s' not present", name, *col_preemptible);
+        Rcpp::stop("column '%s' not present", *col_preemptible);
       if (col_restart && std::find(n.begin(), n.end(), *col_restart) == n.end())
-        Rcpp::stop("source '%s': column '%s' not present", name, *col_restart);
+        Rcpp::stop("column '%s' not present", *col_restart);
       for (size_t i = 0; i < col_attrs.size(); ++i) {
         if (std::find(n.begin(), n.end(), col_attrs[i]) == n.end())
-          Rcpp::stop("source '%s': column '%s' not present", name, col_attrs[i]);
+          Rcpp::stop("column '%s' not present", col_attrs[i]);
       }
     }
 
