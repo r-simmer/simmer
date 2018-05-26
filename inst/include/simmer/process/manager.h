@@ -19,9 +19,9 @@ namespace simmer {
     void run() {
       if (sim->verbose) Rcpp::Rcout <<
         FMT(10, right) << sim->now() << " |" <<
-          FMT(12, right) << "manager: " << FMT(15, left) << name << "|" <<
-            FMT(12, right) << "parameter: " << FMT(15, left) << param << "| " <<
-              value[index] << std::endl;
+        FMT(12, right) << "manager: " << FMT(15, left) << name << "|" <<
+        FMT(12, right) << "parameter: " << FMT(15, left) << param << "| " <<
+        value[index] << std::endl;
 
       set(value[index]);
       index++;

@@ -208,7 +208,17 @@ namespace simmer {
     now_ = ev->time;
     process_ = ev->process;
     event_map.erase(ev->process);
-    process_->run();
+    try {
+      process_->run();
+    } catch (std::exception &ex) {
+      Arrival* arrival = dynamic_cast<Arrival*>(process_);
+      throw Rcpp::exception(tfm::format(
+        "'%s' at %.2f%s:\n %s",
+        process_->name, now_,
+        arrival ? " in '" + arrival->get_activity()->name + "'" : "",
+        ex.what()).c_str(), false
+      );
+    }
     process_ = NULL;
     event_queue.erase(ev);
     return true;

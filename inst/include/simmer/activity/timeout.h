@@ -25,7 +25,7 @@ namespace simmer {
     double run(Arrival* arrival) {
       double value = get<double>(delay, arrival);
       if (ISNAN(value))
-        Rcpp::stop("%s: missing value (NA or NaN returned)", name);
+        Rcpp::stop("missing value (NA or NaN returned)");
       return std::abs(value);
     }
 

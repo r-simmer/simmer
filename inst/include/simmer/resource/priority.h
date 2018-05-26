@@ -115,9 +115,9 @@ namespace simmer {
       if (verbose) verbose_print(time, arrival->name, "DEPART");
       typename ServerMap::iterator search = server_map.find(arrival);
       if (search == server_map.end())
-        Rcpp::stop("%s: release: not previously seized", name);
+        Rcpp::stop("'%s' not previously seized", name);
       if (search->second->amount < amount)
-        Rcpp::stop("%s: release: incorrect amount (%d)", name, amount);
+        Rcpp::stop("incorrect amount for '%s' (%d)", name, amount);
       else if (amount < 0 || amount == search->second->amount) {
         server_count -= search->second->amount;
         amount = search->second->amount;

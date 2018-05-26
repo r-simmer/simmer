@@ -31,7 +31,7 @@ namespace simmer {
       VEC<double> vals = get<VEC<double> >(values, arrival);
 
       if (ks.size() != vals.size())
-        Rcpp::stop("%s: number of keys and values don't match", name);
+        Rcpp::stop("number of keys and values don't match");
 
       if (op) {
         for (unsigned int i = 0; i < ks.size(); i++) {
@@ -72,7 +72,7 @@ namespace simmer {
     double run(Arrival* arrival) {
       VEC<int> ret = get<VEC<int> >(values, arrival);
       if (ret.size() != 3)
-        Rcpp::stop("%s: 3 values needed", name);
+        Rcpp::stop("3 values needed, %u received", ret.size());
 
       if (op) {
         ret[0] = op(arrival->order.get_priority(), ret[0]);

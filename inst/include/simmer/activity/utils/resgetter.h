@@ -22,8 +22,7 @@ namespace simmer { namespace internal {
       if (id < 0)
         selected = arrival->sim->get_resource(resource);
       else selected = arrival->get_resource_selected(id);
-      if (!selected)
-        Rcpp::stop("%s: %s(%s, %i): no resource selected", arrival->name, activity, resource, id);
+      if (!selected) Rcpp::stop("no resource selected");
       return selected;
     }
 
