@@ -2,7 +2,6 @@
 #define simmer__activity_rollback_h
 
 #include <simmer/activity.h>
-#include <simmer/activity/utils/macros.h>
 
 namespace simmer {
 
@@ -22,13 +21,12 @@ namespace simmer {
         cached(NULL), selected(NULL) { pending.clear(); }
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
-      if (!cached) cached = goback();
       Activity::print(indent, verbose, brief);
-      if (!brief) {
-        Rcpp::Rcout << LABEL1(amount) << " (" << cached->name << "), ";
-        if (check) Rcpp::Rcout << LABEL1(*check) << BENDL;
-        else Rcpp::Rcout << LABEL1(times) << BENDL;
-      } else Rcpp::Rcout << BARE1(cached->name) << ENDL;
+      if (!cached) cached = goback();
+      std::string to = " (" + cached->name + ")";
+      std::string amount = boost::lexical_cast<std::string>(this->amount) + to;
+      if (check) internal::print(brief, true, ARG(amount), ARG(*check));
+      else internal::print(brief, true, ARG(amount), ARG(times));
     }
 
     double run(Arrival* arrival) {

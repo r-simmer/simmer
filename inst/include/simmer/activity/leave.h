@@ -2,7 +2,6 @@
 #define simmer__activity_leave_h
 
 #include <simmer/activity.h>
-#include <simmer/activity/utils/macros.h>
 
 namespace simmer {
 
@@ -18,8 +17,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL1(prob) << BENDL;
-      else Rcpp::Rcout << BARE1(prob) << ENDL;
+      internal::print(brief, true, ARG(prob));
     }
 
     double run(Arrival* arrival) {

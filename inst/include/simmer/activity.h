@@ -3,6 +3,9 @@
 
 #include <simmer/common.h>
 
+#define MAX_PRINT_ARGS 4
+#define ARG(arg) (#arg": "), arg
+
 namespace simmer {
 
   /**
@@ -105,6 +108,27 @@ namespace simmer {
       RFn method = trajectory["print"];
       method(indent, verbose);
     }
+
+    inline void print(bool brief, bool endl) {
+      if (!brief) Rcpp::Rcout << " }" << std::endl;
+      else if (endl) Rcpp::Rcout << std::endl;
+    }
+
+    #define PRINT_ARGS(Z, N, D) BOOST_PP_COMMA_IF(BOOST_PP_ADD(N, D))         \
+      BOOST_PP_IF(D,, const char*) BOOST_PP_CAT(n, BOOST_PP_ADD(N, D))        \
+      BOOST_PP_COMMA() BOOST_PP_IF(D,, BOOST_PP_CAT(T, BOOST_PP_ADD(N, D))&)  \
+      BOOST_PP_CAT(v, BOOST_PP_ADD(N, D))
+
+    #define NO_LAST_ARG(N) BOOST_PP_IF(BOOST_PP_SUB(N, 1), true, false)
+
+    #define PRINT_FUNC(Z, N, D)                                               \
+    template<BOOST_PP_ENUM_PARAMS(N, typename T)>                             \
+    void print(bool brief, bool endl, BOOST_PP_REPEAT(N, PRINT_ARGS, 0)) {    \
+      Rcpp::Rcout << (brief ? "" : n0) << v0 <<                               \
+        (NO_LAST_ARG(N) || (brief && !endl) ? ", " : "");                     \
+      print(brief, endl BOOST_PP_REPEAT(BOOST_PP_SUB(N, 1), PRINT_ARGS, 1));  \
+    }
+    BOOST_PP_REPEAT_FROM_TO(1, BOOST_PP_ADD(MAX_PRINT_ARGS, 1), PRINT_FUNC, ~)
 
   } // namespace internal
 

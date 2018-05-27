@@ -2,7 +2,6 @@
 #define simmer__activity_source_h
 
 #include <simmer/activity.h>
-#include <simmer/activity/utils/macros.h>
 
 namespace simmer {
 
@@ -19,8 +18,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL1(source) << BENDL;
-      else Rcpp::Rcout << BARE1(source) << ENDL;
+      internal::print(brief, true, ARG(source));
     }
 
     double run(Arrival* arrival) {
@@ -45,8 +43,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL1(source) << BENDL;
-      else Rcpp::Rcout << BARE1(source) << ENDL;
+      internal::print(brief, true, ARG(source));
     }
 
     double run(Arrival* arrival) {
@@ -71,8 +68,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL2(source, object) << BENDL;
-      else Rcpp::Rcout << BARE2(source, object) << ENDL;
+      internal::print(brief, true, ARG(source), ARG(object));
     }
 
     double run(Arrival* arrival) {
@@ -99,8 +95,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL2(source, trajectory) << BENDL;
-      else Rcpp::Rcout << BARE2(source, trajectory) << ENDL;
+      internal::print(brief, true, ARG(source), ARG(trajectory));
     }
 
     double run(Arrival* arrival) {
