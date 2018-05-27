@@ -123,6 +123,7 @@ namespace simmer {
     #define PRINT_FUNC(Z, N, D)                                               \
     template<BOOST_PP_ENUM_PARAMS(N, typename T)>                             \
     void print(bool brief, bool endl, BOOST_PP_REPEAT(N, PRINT_ARGS, 0)) {    \
+      using simmer::operator<<; // gcc-4.8.4 fails miserably without this     \
       if (!brief) Rcpp::Rcout << n0;                                          \
       Rcpp::Rcout << v0 << (NO_LAST_ARG(N) || (brief && !endl) ? ", " : "");  \
       print(brief, endl BOOST_PP_REPEAT(BOOST_PP_SUB(N, 1), PRINT_ARGS, 1));  \
