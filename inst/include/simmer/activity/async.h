@@ -3,7 +3,6 @@
 
 #include <simmer/activity.h>
 #include <simmer/activity/fork.h>
-#include <simmer/activity/utils/macros.h>
 
 namespace simmer {
 
@@ -20,8 +19,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL2(signals, delay) << BENDL;
-      else Rcpp::Rcout << BARE2(signals, delay) << ENDL;
+      internal::print(brief, true, ARG(signals), ARG(delay));
     }
 
     double run(Arrival* arrival) {
@@ -58,8 +56,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL1(signals) << BENDL;
-      else Rcpp::Rcout << BARE1(signals) << SEP;
+      internal::print(brief, false, ARG(signals));
       Fork::print(indent, verbose, brief);
     }
 
@@ -111,8 +108,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL1(signals) << BENDL;
-      else Rcpp::Rcout << BARE1(signals) << ENDL;
+      internal::print(brief, true, ARG(signals));
     }
 
     double run(Arrival* arrival) {
@@ -135,8 +131,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << BENDL;
-      else Rcpp::Rcout << ENDL;
+      internal::print(brief, true);
     }
 
     double run(Arrival* arrival) { return BLOCK; }

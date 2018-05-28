@@ -3,6 +3,9 @@
 
 #include <simmer/common.h>
 
+#define MAX_PRINT_ARGS 4
+#define ARG(arg) (#arg": "), arg
+
 namespace simmer {
 
   /**
@@ -35,16 +38,15 @@ namespace simmer {
      * @param indent number of spaces at the beginning of each line
      */
     virtual void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
-      if (!brief) {
-        std::ios::fmtflags fmt(Rcpp::Rcout.flags());
-        Rcpp::Rcout <<
-          IND(indent) << "{ Activity: " << FMT(12, left) << name << " | ";
-        if (verbose) Rcpp::Rcout <<
-          FMT(9, right) << prev << " <- " <<
-          FMT(9, right) << this << " -> " <<
-          FMT(9, left) << next << " | ";
-        Rcpp::Rcout.flags(fmt);
-      }
+      if (brief) return;
+      std::ios::fmtflags fmt(Rcpp::Rcout.flags());
+      Rcpp::Rcout << IND(indent) <<
+        "{ Activity: " << FMT(12, left) << name << " | ";
+      if (verbose) Rcpp::Rcout <<
+        FMT(9, right) << prev << " <- " <<
+        FMT(9, right) << this << " -> " <<
+        FMT(9, left)  << next << " | ";
+      Rcpp::Rcout.flags(fmt);
     }
 
     /**
@@ -105,6 +107,28 @@ namespace simmer {
       RFn method = trajectory["print"];
       method(indent, verbose);
     }
+
+    inline void print(bool brief, bool endl) {
+      if (!brief) Rcpp::Rcout << " }" << std::endl;
+      else if (endl) Rcpp::Rcout << std::endl;
+    }
+
+    #define PRINT_ARGS(Z, N, D) BOOST_PP_COMMA_IF(BOOST_PP_ADD(N, D))         \
+      BOOST_PP_IF(D,, const char*) BOOST_PP_CAT(n, BOOST_PP_ADD(N, D))        \
+      BOOST_PP_COMMA() BOOST_PP_IF(D,, BOOST_PP_CAT(T, BOOST_PP_ADD(N, D))&)  \
+      BOOST_PP_CAT(v, BOOST_PP_ADD(N, D))
+
+    #define NO_LAST_ARG(N) BOOST_PP_IF(BOOST_PP_SUB(N, 1), true, false)
+
+    #define PRINT_FUNC(Z, N, D)                                               \
+    template<BOOST_PP_ENUM_PARAMS(N, typename T)>                             \
+    void print(bool brief, bool endl, BOOST_PP_REPEAT(N, PRINT_ARGS, 0)) {    \
+      using simmer::operator<<; /* gcc-4.8.4 fails miserably without this */  \
+      if (!brief) Rcpp::Rcout << n0;                                          \
+      Rcpp::Rcout << v0 << (NO_LAST_ARG(N) || (brief && !endl) ? ", " : "");  \
+      print(brief, endl BOOST_PP_REPEAT(BOOST_PP_SUB(N, 1), PRINT_ARGS, 1));  \
+    }
+    BOOST_PP_REPEAT_FROM_TO(1, BOOST_PP_ADD(MAX_PRINT_ARGS, 1), PRINT_FUNC, ~)
 
   } // namespace internal
 

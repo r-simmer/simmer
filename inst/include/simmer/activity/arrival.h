@@ -2,7 +2,6 @@
 #define simmer__activity_arrival_h
 
 #include <simmer/activity.h>
-#include <simmer/activity/utils/macros.h>
 #include <simmer/activity/utils/functions.h>
 #include <simmer/process/batched.h>
 
@@ -22,8 +21,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL4(keys, values, global, mod) << BENDL;
-      else Rcpp::Rcout << BARE4(keys, values, global, mod) << ENDL;
+      internal::print(brief, true, ARG(keys), ARG(values), ARG(global), ARG(mod));
     }
 
     double run(Arrival* arrival) {
@@ -65,8 +63,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL2(values, mod) << BENDL;
-      else Rcpp::Rcout << BARE2(values, mod) << ENDL;
+      internal::print(brief, true, ARG(values), ARG(mod));
     }
 
     double run(Arrival* arrival) {
@@ -107,9 +104,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief)
-        Rcpp::Rcout << LABEL4(n, timeout, permanent, id) << BENDL;
-      else Rcpp::Rcout << BARE4(n, timeout, permanent, id) << ENDL;
+      internal::print(brief, true, ARG(n), ARG(timeout), ARG(permanent), ARG(id));
     }
 
     double run(Arrival* arrival) {
@@ -139,7 +134,7 @@ namespace simmer {
         ptr = new Batched(arrival->sim, str, permanent);
       } else {
         int count = arrival->sim->get_batch_count();
-        str= "batch" + boost::lexical_cast<std::string>(count);
+        str = MakeString() << "batch" << count;
         ptr = new Batched(arrival->sim, str, permanent, count);
       }
       double dt = std::abs(get<double>(timeout, arrival));
@@ -178,8 +173,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << BENDL;
-      else Rcpp::Rcout << ENDL;
+      internal::print(brief, true);
     }
 
     double run(Arrival* arrival) {

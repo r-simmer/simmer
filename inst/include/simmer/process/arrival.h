@@ -66,10 +66,7 @@ namespace simmer {
         lifetime.start = sim->now();
 
       if (sim->verbose) {
-        Rcpp::Rcout <<
-          FMT(10, right) << sim->now() << " |" <<
-          FMT(12, right) << "arrival: " << FMT(15, left) << name << "|" <<
-          FMT(12, right) << "activity: " << FMT(15, left) << activity->name << "| ";
+        sim->print("arrival", name, "activity", activity->name, "", false);
         activity->print(0, false, true);
       }
 

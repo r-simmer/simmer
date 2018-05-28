@@ -2,7 +2,6 @@
 #define simmer__activity_renege_h
 
 #include <simmer/activity/fork.h>
-#include <simmer/activity/utils/macros.h>
 
 namespace simmer {
 
@@ -19,8 +18,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL1(t) << BENDL;
-      else Rcpp::Rcout << BARE1(t) << SEP;
+      internal::print(brief, false, ARG(t));
       Fork::print(indent, verbose, brief);
     }
 
@@ -49,8 +47,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL1(signal) << BENDL;
-      else Rcpp::Rcout << BARE1(signal) << SEP;
+      internal::print(brief, false, ARG(signal));
       Fork::print(indent, verbose, brief);
     }
 
@@ -77,8 +74,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << BENDL;
-      else Rcpp::Rcout << ENDL;
+      internal::print(brief, true);
     }
 
     double run(Arrival* arrival) {

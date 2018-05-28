@@ -8,6 +8,7 @@
 ## Minor changes and fixes:
 
 * Enhanced exception handling, with more informative error messages (#148).
+* Refactorisation of the printing methods and associated code (#149).
 
 # simmer 3.8.0
 

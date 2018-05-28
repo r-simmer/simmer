@@ -45,15 +45,12 @@ namespace simmer {
 
     Arrival* new_arrival(double delay) {
       // format the name and create the next arrival
-      std::string arr_name = name + boost::lexical_cast<std::string>(count++);
+      std::string arr_name = MakeString() << name << count++;
       Arrival* arrival = new Arrival(sim, arr_name, is_monitored(),
                                      order, first_activity, count);
 
-      if (sim->verbose) Rcpp::Rcout <<
-        FMT(10, right) << sim->now() << " |" <<
-        FMT(12, right) << "source: " << FMT(15, left) << name << "|" <<
-        FMT(12, right) << "new: " << FMT(15, left) << arr_name << "| " <<
-        (sim->now() + delay) << std::endl;
+      if (sim->verbose) sim->print("source", name, "new", arr_name,
+          MakeString() << (sim->now() + delay));
 
       return arrival;
     }

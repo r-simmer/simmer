@@ -29,11 +29,12 @@ namespace simmer {
     }
 
   protected:
+    using Resource::sim;
     using Resource::capacity;
     using Resource::server_count;
     using Resource::queue_count;
     using Resource::queue_size_strict;
-    using Resource::verbose_print;
+    using Resource::print;
 
     using PriorityRes<T>::server;
     using PriorityRes<T>::server_map;
@@ -65,22 +66,22 @@ namespace simmer {
       return false;
     }
 
-    int try_free_server(bool verbose, double time) {
+    int try_free_server() {
       int count = 0;
       typename T::iterator first = server.begin();
       if (first == server.end())
         return count;
       first->arrival->pause();
-      if (verbose) verbose_print(time, first->arrival->name, "PREEMPT");
+      if (sim->verbose) print(first->arrival->name, "PREEMPT");
       count += first->amount;
       server_count -= first->amount;
       server_map.erase(first->arrival);
       if (queue_size_strict) {
         if (!room_in_queue(first->amount, first->priority())) {
-          if (verbose) verbose_print(time, first->arrival->name, "REJECT");
+          if (sim->verbose) print(first->arrival->name, "REJECT");
           first->arrival->unregister_entity(this);
           first->arrival->terminate(false);
-        } else insert_in_queue(verbose, time, first->arrival, first->amount);
+        } else insert_in_queue(first->arrival, first->amount);
       } else {
         preempted_map[first->arrival] = preempted.insert(*first);
         queue_count += first->amount;
@@ -89,15 +90,15 @@ namespace simmer {
       return count;
     }
 
-    int try_serve_from_queue(bool verbose, double time) {
+    int try_serve_from_queue() {
       int count = 0;
       RPQueue::iterator next = preempted.begin();
       if (next == preempted.end())
-        return PriorityRes<T>::try_serve_from_queue(verbose, time);
+        return PriorityRes<T>::try_serve_from_queue();
       if (!room_in_server(next->amount, next->priority()))
         return count;
       next->arrival->restart();
-      insert_in_server(verbose, time, next->arrival, next->amount);
+      insert_in_server(next->arrival, next->amount);
       count += next->amount;
       queue_count -= next->amount;
       preempted_map.erase(next->arrival);
@@ -105,12 +106,12 @@ namespace simmer {
       return count;
     }
 
-    int remove_from_queue(bool verbose, double time, Arrival* arrival) {
-      int count = PriorityRes<T>::remove_from_queue(verbose, time, arrival);
+    int remove_from_queue(Arrival* arrival) {
+      int count = PriorityRes<T>::remove_from_queue(arrival);
       QueueMap::iterator search = preempted_map.find(arrival);
       if (count || search == preempted_map.end())
         return count;
-      if (verbose) verbose_print(time, arrival->name, "DEPART");
+      if (sim->verbose) print(arrival->name, "DEPART");
       count += search->second->amount;
       queue_count -= search->second->amount;
       search->second->arrival->unregister_entity(this);
