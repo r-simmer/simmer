@@ -23,8 +23,7 @@ namespace simmer {
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
       if (!cached) cached = goback();
-      std::string to = " (" + cached->name + ")";
-      std::string amount = boost::lexical_cast<std::string>(this->amount) + to;
+      std::string amount = MakeString() << this->amount << " (" << cached->name << ")";
       if (check) internal::print(brief, true, ARG(amount), ARG(*check));
       else internal::print(brief, true, ARG(amount), ARG(times));
     }

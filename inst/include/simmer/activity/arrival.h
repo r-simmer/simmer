@@ -134,7 +134,7 @@ namespace simmer {
         ptr = new Batched(arrival->sim, str, permanent);
       } else {
         int count = arrival->sim->get_batch_count();
-        str= "batch" + boost::lexical_cast<std::string>(count);
+        str = MakeString() << "batch" << count;
         ptr = new Batched(arrival->sim, str, permanent, count);
       }
       double dt = std::abs(get<double>(timeout, arrival));

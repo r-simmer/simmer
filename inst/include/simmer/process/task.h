@@ -15,11 +15,7 @@ namespace simmer {
 
     void reset() {}
     void run() {
-      if (sim->verbose) Rcpp::Rcout <<
-        FMT(10, right) << sim->now() << " |" <<
-        FMT(12, right) << "task: " << FMT(15, left) << name << "|" <<
-        FMT(12+16, right) << "|" << std::endl;
-
+      if (sim->verbose) sim->print("task", name);
       task();
       delete this;
     }
