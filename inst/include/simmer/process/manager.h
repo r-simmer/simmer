@@ -17,11 +17,8 @@ namespace simmer {
     void reset() { index = 0; }
 
     void run() {
-      if (sim->verbose) Rcpp::Rcout <<
-        FMT(10, right) << sim->now() << " |" <<
-          FMT(12, right) << "manager: " << FMT(15, left) << name << "|" <<
-            FMT(12, right) << "parameter: " << FMT(15, left) << param << "| " <<
-              value[index] << std::endl;
+      if (sim->verbose) sim->print("manager", name, "parameter", param,
+          MakeString() << value[index]);
 
       set(value[index]);
       index++;

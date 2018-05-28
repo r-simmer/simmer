@@ -38,8 +38,8 @@ namespace simmer {
       if (!brief) {
         if (indent > 10) return; // max 6 levels
         for (unsigned int i = 0; i < trj.size(); i++) {
-          Rcpp::Rcout <<
-            IND(indent) << "Fork " << i+1 << (cont[i] ? ", continue," : ", stop,");
+          Rcpp::Rcout << IND(indent) <<
+            "Fork " << i+1 << (cont[i] ? ", continue," : ", stop,");
           internal::print(trj[i], indent, verbose);
         }
       } else Rcpp::Rcout << trj.size() << " paths" << std::endl;

@@ -1,3 +1,15 @@
+# simmer 3.9.0
+
+## New features:
+
+* The C++ core has been refactorised into a header-only library under `inst/include` (#147 closing #145). Therefore, from now on it is possible to extend the C++ API from another package by listing `simmer` under the `LinkingTo` field in the DESCRIPTION file.
+* New generic `monitor` constructor enables the development of new monitoring backends in other packages (179f656, as part of #147).
+
+## Minor changes and fixes:
+
+* Enhanced exception handling, with more informative error messages (#148).
+* Refactorisation of the printing methods and associated code (#149).
+
 # simmer 3.8.0
 
 ## New features:

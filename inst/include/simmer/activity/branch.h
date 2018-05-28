@@ -3,7 +3,6 @@
 
 #include <simmer/activity.h>
 #include <simmer/activity/fork.h>
-#include <simmer/activity/utils/macros.h>
 
 namespace simmer {
 
@@ -20,15 +19,14 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL1(option) << BENDL;
-      else Rcpp::Rcout << BARE1(option) << SEP;
+      internal::print(brief, false, ARG(option));
       Fork::print(indent, verbose, brief);
     }
 
     double run(Arrival* arrival) {
       int ret = get<int>(option, arrival);
       if (ret < 0 || ret > (int)heads.size())
-        Rcpp::stop("%s: index out of range", name);
+        Rcpp::stop("index out of range");
       if (ret) selected = heads[ret-1];
       return 0;
     }
@@ -50,8 +48,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL1(n) << BENDL;
-      else Rcpp::Rcout << BARE1(n) << SEP;
+      internal::print(brief, false, ARG(n));
       Fork::print(indent, verbose, brief);
     }
 
@@ -88,8 +85,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL1(wait) << BENDL;
-      else Rcpp::Rcout << BARE1(wait) << ENDL;
+      internal::print(brief, true, ARG(wait));
     }
 
     double run(Arrival* arrival) {

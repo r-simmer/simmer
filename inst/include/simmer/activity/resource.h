@@ -3,7 +3,6 @@
 
 #include <simmer/activity.h>
 #include <simmer/activity/fork.h>
-#include <simmer/activity/utils/macros.h>
 #include <simmer/activity/utils/functions.h>
 #include <simmer/activity/utils/resgetter.h>
 #include <simmer/activity/utils/policy.h>
@@ -30,8 +29,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL2(resource, amount) << BENDL;
-      else Rcpp::Rcout << BARE2(resource, amount) << SEP;
+      internal::print(brief, false, ARG(resource), ARG(amount));
       Fork::print(indent, verbose, brief);
     }
 
@@ -82,8 +80,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL2(resource, amount) << BENDL;
-      else Rcpp::Rcout << BARE2(resource, amount) << ENDL;
+      internal::print(brief, true, ARG(resource), ARG(amount));
     }
 
     double run(Arrival* arrival) {
@@ -112,8 +109,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL3(resource, value, mod) << BENDL;
-      else Rcpp::Rcout << BARE3(resource, value, mod) << ENDL;
+      internal::print(brief, true, ARG(resource), ARG(value), ARG(mod));
     }
 
     double run(Arrival* arrival) {
@@ -154,8 +150,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL3(resource, value, mod) << BENDL;
-      else Rcpp::Rcout << BARE3(resource, value, mod) << ENDL;
+      internal::print(brief, true, ARG(resource), ARG(value), ARG(mod));
     }
 
     double run(Arrival* arrival) {
@@ -189,8 +184,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << LABEL2(resources, policy) << BENDL;
-      else Rcpp::Rcout << BARE2(resources, policy) << ENDL;
+      internal::print(brief, true, ARG(resources), ARG(policy));
     }
 
     double run(Arrival* arrival) {

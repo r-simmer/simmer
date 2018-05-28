@@ -22,7 +22,6 @@
 #define MAP   std::map
 #define VEC   std::vector
 
-#include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 #include <boost/typeof/typeof.hpp>
 #include <boost/any.hpp>
@@ -117,6 +116,14 @@ namespace simmer {
   private:
     Fn<T(U)> call;
     V arg;
+  };
+
+  class MakeString {
+    std::ostringstream stream;
+  public:
+    operator std::string() const { return stream.str(); }
+    template<class T>
+    MakeString& operator<<(const T& v) { stream << v; return *this; }
   };
 
 } // namespace simmer

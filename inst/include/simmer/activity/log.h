@@ -2,7 +2,6 @@
 #define simmer__activity_log_h
 
 #include <simmer/activity.h>
-#include <simmer/activity/utils/macros.h>
 #include <simmer/process/arrival.h>
 
 namespace simmer {
@@ -19,8 +18,7 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!brief) Rcpp::Rcout << "message" << BENDL;
-      else Rcpp::Rcout << "message" << ENDL;
+      internal::print(brief, true, "message", "");
     }
 
     double run(Arrival* arrival) {

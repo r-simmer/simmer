@@ -113,6 +113,17 @@ namespace simmer {
       mon->flush();
     }
 
+    void print(const std::string& e_type,      const std::string& e_name,
+               const std::string& a_type = "", const std::string& a_name = "",
+               const std::string& trail = "",  bool flush=true) const
+    {
+      Rcpp::Rcout <<
+        FMT(10, right) << now_ << " |" <<
+        FMT(12, right) << e_type + ": " << FMT(15, left) << e_name << "|" <<
+        FMT(12, right) << a_type + ": " << FMT(15, left) << a_name << "| " << trail;
+      if (flush) Rcpp::Rcout << std::endl;
+    }
+
     /**
      * Add a generator of arrivals to the simulator.
      * @param   name_prefix     prefix for the arrival names
