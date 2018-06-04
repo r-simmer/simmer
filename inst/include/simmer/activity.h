@@ -85,11 +85,13 @@ namespace simmer {
 
     inline class Activity* head(const REnv& trajectory) {
       RFn method = trajectory["head"];
+      if (method() == R_NilValue) return NULL;
       return Rcpp::as<Rcpp::XPtr<Activity> >(method());
     }
 
     inline class Activity* tail(const REnv& trajectory) {
       RFn method = trajectory["tail"];
+      if (method() == R_NilValue) return NULL;
       return Rcpp::as<Rcpp::XPtr<Activity> >(method());
     }
 

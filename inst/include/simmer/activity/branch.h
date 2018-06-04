@@ -27,7 +27,7 @@ namespace simmer {
       int ret = get<int>(option, arrival);
       if (ret < 0 || ret > (int)heads.size())
         Rcpp::stop("index out of range");
-      if (ret) selected = heads[ret-1];
+      if (ret) path = ret-1;
       return 0;
     }
 
@@ -56,13 +56,13 @@ namespace simmer {
       unsigned int ret = (unsigned int) std::abs(get<int>(n, arrival));
       for (unsigned int i = 1; i < ret; i++) {
         if (i < heads.size())
-          selected = heads[i];
+          path = i;
         Arrival* new_arrival = arrival->clone();
         new_arrival->set_activity(get_next());
         new_arrival->activate();
       }
       if (heads.size())
-        selected = heads[0];
+        path = 0;
       return 0;
     }
 

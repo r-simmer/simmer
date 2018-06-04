@@ -40,7 +40,8 @@ namespace simmer {
 
         // schedule the arrival
         sim->schedule(delay, new_arrival(delay),
-                      first_activity->priority ? first_activity->priority : count);
+                      first_activity && first_activity->priority ?
+                        first_activity->priority : count);
       }
       // schedule the generator
       sim->schedule(delay, this, priority);
