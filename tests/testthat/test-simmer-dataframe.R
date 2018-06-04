@@ -23,11 +23,6 @@ test_that("a non-data.frame data argument fails", {
   expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", t0, 1))
 })
 
-test_that("an empty trajectory fails", {
-  DF <- data.frame(time=1)
-  expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", trajectory(), DF))
-})
-
 test_that("non-existent column names fail", {
   t0 <- trajectory() %>% timeout(1)
   DF <- data.frame(time=1)

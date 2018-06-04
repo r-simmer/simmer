@@ -11,10 +11,6 @@ test_that("the wrong number of elements fails, but continue is recycled", {
   expect_silent(trajectory() %>% branch(function() 1, TRUE, t, t))
 })
 
-test_that("an empty trajectory fails", {
-  expect_error(trajectory() %>% branch(function() 1, TRUE, trajectory()))
-})
-
 test_that("an index equal to 0 skips the branch", {
   t0 <- trajectory() %>%
     branch(function() 0, TRUE,

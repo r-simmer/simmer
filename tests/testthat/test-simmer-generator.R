@@ -9,10 +9,6 @@ test_that("a non-function dist fails", {
   expect_error(simmer(verbose = TRUE) %>% add_generator("customer", t0, 1))
 })
 
-test_that("an empty trajectory fails", {
-  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", trajectory(), function() {}))
-})
-
 test_that("a dist that returns a non-numeric value fails", {
   t0 <- trajectory() %>% timeout(1)
 
