@@ -4,6 +4,7 @@
 
 * The C++ core has been refactorised into a header-only library under `inst/include` (#147 closing #145). Therefore, from now on it is possible to extend the C++ API from another package by listing `simmer` under the `LinkingTo` field in the DESCRIPTION file.
 * New generic `monitor` constructor enables the development of new monitoring backends in other packages (179f656, as part of #147).
+* New simulation-scoped logging levels. The `log_` activity has a new argument `level` which determines whether the message is printed depending on a global `log_level` defined in the `simmer` constructor (#152).
 
 ## Minor changes and fixes:
 
