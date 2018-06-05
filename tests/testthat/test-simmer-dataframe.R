@@ -3,54 +3,57 @@ context("dataframe")
 test_that("a data source name conflicts with a generator name", {
   expect_warning(
     simmer(verbose = TRUE) %>%
-      add_generator("asdf", trajectory() %>% timeout(0), at(0)) %>%
-      add_dataframe("asdf", trajectory() %>% timeout(0), data.frame(time=0))
+      add_generator("asdf", trajectory(), at(0)) %>%
+      add_dataframe("asdf", trajectory(), data.frame(time=0))
   )
   expect_warning(
     simmer(verbose = TRUE) %>%
-      add_dataframe("asdf", trajectory() %>% timeout(0), data.frame(time=0)) %>%
-      add_generator("asdf", trajectory() %>% timeout(0), at(0))
+      add_dataframe("asdf", trajectory(), data.frame(time=0)) %>%
+      add_generator("asdf", trajectory(), at(0))
   )
 })
 
 test_that("a data source without a trajectory fails", {
   DF <- data.frame(time=1)
-  expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", 4, DF))
+  expect_error(
+    simmer(verbose = TRUE) %>%
+      add_dataframe("dummy", 4, DF))
 })
 
 test_that("a non-data.frame data argument fails", {
-  t0 <- trajectory() %>% timeout(1)
-  expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", t0, 1))
+  expect_error(
+    simmer(verbose = TRUE) %>%
+      add_dataframe("dummy", trajectory(), 1))
 })
 
 test_that("non-existent column names fail", {
-  t0 <- trajectory() %>% timeout(1)
   DF <- data.frame(time=1)
-  expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", t0, DF, col_time="asdf"))
+  expect_error(
+    simmer(verbose = TRUE) %>%
+      add_dataframe("dummy", trajectory(), DF, col_time="asdf"))
 })
 
 test_that("a data source with non-numeric values fails", {
-  t0 <- trajectory() %>% timeout(1)
   DF <- data.frame(time=NA)
-  expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", t0, DF))
+  expect_error(
+    simmer(verbose = TRUE) %>%
+      add_dataframe("dummy", trajectory(), DF))
   DF <- data.frame(time="asdf")
-  expect_error(simmer(verbose = TRUE) %>% add_dataframe("dummy", t0, DF))
+  expect_error(
+    simmer(verbose = TRUE) %>%
+      add_dataframe("dummy", trajectory(), DF))
 })
 
 test_that("unsorted absolute time fails", {
-  t0 <- trajectory() %>% timeout(1)
   expect_error(
     simmer(verbose = TRUE) %>%
-      add_dataframe("dummy", t0, data.frame(time=3:1), time="absolute")
-  )
+      add_dataframe("dummy", trajectory(), data.frame(time=3:1), time="absolute"))
 })
 
 test_that("absolute time works as expected", {
-  t0 <- trajectory() %>% timeout(0)
-
   time <- c(0, 1, 3, 9)
   arr <- simmer(verbose=TRUE) %>%
-    add_dataframe("dummy", t0, data.frame(time=time), time="absolute") %>%
+    add_dataframe("dummy", trajectory(), data.frame(time=time), time="absolute") %>%
     run() %>%
     get_mon_arrivals()
 
@@ -58,23 +61,23 @@ test_that("absolute time works as expected", {
 })
 
 test_that("generates the expected amount", {
-  t0 <- trajectory() %>% timeout(1)
-  DF <- data.frame(time=rep(1, 3))
-
   env <- simmer(verbose = TRUE) %>%
-    add_dataframe("dummy", t0, DF) %>%
+    add_dataframe("dummy", trajectory(), data.frame(time=rep(1, 3))) %>%
     run()
+  arr <- get_mon_arrivals(env)
 
   expect_error(env %>% get_n_generated("asdf"))
   expect_equal(env %>% get_n_generated("dummy"), 3)
+  expect_equal(arr$start_time, 1:3)
+  expect_equal(arr$end_time, 1:3)
+  expect_equal(arr$activity_time, rep(0, 3))
 })
 
 test_that("data sources are reset", {
-  t <- trajectory() %>% timeout(1)
   DF <- data.frame(time=rep(1, 3))
 
   expect_equal(3, simmer(verbose = TRUE) %>%
-    add_dataframe("dummy", t, DF) %>%
+    add_dataframe("dummy", trajectory(), DF) %>%
     run() %>% reset() %>% run() %>%
     get_mon_arrivals() %>% nrow()
   )
@@ -93,21 +96,18 @@ test_that("priorities are set", {
 })
 
 test_that("preemptible < priority shows a warning", {
-  t <- trajectory() %>% timeout(0)
   DF <- data.frame(time=0, priority=3, preemptible=1)
   expect_warning(simmer(verbose = TRUE) %>%
-    add_dataframe("dummy", t, DF, col_preemptible="preemptible") %>%
+    add_dataframe("dummy", trajectory(), DF, col_preemptible="preemptible") %>%
     stepn()
   )
 })
 
 test_that("attributes are set", {
-  t <- trajectory() %>% timeout(0)
-
   DF <- data.frame(time=rep(1, 3), attr1=1:3, attr2=3:1)
 
   attr <- simmer(verbose = TRUE) %>%
-    add_dataframe("dummy", t, DF, mon=2, col_attributes="attr1") %>%
+    add_dataframe("dummy", trajectory(), DF, mon=2, col_attributes="attr1") %>%
     run() %>%
     get_mon_attributes()
 
@@ -117,7 +117,7 @@ test_that("attributes are set", {
   expect_equal(attr$value, 1:3)
 
   attr <- simmer(verbose = TRUE) %>%
-    add_dataframe("dummy", t, DF, mon=2) %>%
+    add_dataframe("dummy", trajectory(), DF, mon=2) %>%
     run() %>%
     get_mon_attributes()
 

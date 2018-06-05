@@ -4,20 +4,20 @@ test_that("a rollback points to the correct activity", {
   t0 <- trajectory() %>%
     seize("nurse", 1) %>%
     timeout(function() rnorm(1, 15)) %>%
-    branch(function() 1, T, trajectory() %>% timeout(function() 1)) %>%
+    branch(function() 1, TRUE, trajectory() %>% timeout(function() 1)) %>%
     rollback(3)
   expect_output(activity_print_(t0$tail(), 0, 0), "Seize")
 
   t0 <- trajectory() %>%
     seize("nurse", 1) %>%
     timeout(function() rnorm(1, 15)) %>%
-    branch(function() 1, T, trajectory() %>% timeout(function() 1)) %>%
+    branch(function() 1, TRUE, trajectory() %>% timeout(function() 1)) %>%
     rollback(30)
   expect_output(activity_print_(t0$tail(), 0, 0), "Seize")
 
   t0 <- trajectory() %>%
     seize("dummy", 1) %>%
-    branch(function() 1, T,
+    branch(function() 1, TRUE,
            trajectory() %>%
              rollback(2))
 

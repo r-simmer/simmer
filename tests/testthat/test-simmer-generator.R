@@ -1,44 +1,49 @@
 context("generator")
 
 test_that("a generator without a trajectory fails", {
-  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", 4, 1))
+  expect_error(
+    simmer(verbose = TRUE) %>%
+      add_generator("customer", 4, 1))
 })
 
 test_that("a non-function dist fails", {
-  t0 <- trajectory() %>% timeout(1)
-  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", t0, 1))
+  expect_error(
+    simmer(verbose = TRUE) %>%
+      add_generator("customer", trajectory(), 1))
 })
 
 test_that("a dist that returns a non-numeric value fails", {
-  t0 <- trajectory() %>% timeout(1)
-
-  expect_error(simmer(verbose = TRUE) %>% add_generator("customer", t0, function() {}) %>% step())
+  expect_error(
+    simmer(verbose = TRUE) %>%
+      add_generator("customer", trajectory(), function() {}) %>%
+      step())
 })
 
 test_that("generates the expected amount", {
-  t0 <- trajectory() %>% timeout(1)
-
   env <- simmer(verbose = TRUE) %>%
-    add_generator("customer", t0, at(c(0, 1, 2))) %>%
-    run(10)
+    add_generator("customer", trajectory(), at(1:3)) %>%
+    run()
+  arr <- get_mon_arrivals(env)
 
   expect_error(env %>% get_n_generated("asdf"))
   expect_equal(env %>% get_n_generated("customer"), 3)
+  expect_equal(arr$start_time, 1:3)
+  expect_equal(arr$end_time, 1:3)
+  expect_equal(arr$activity_time, rep(0, 3))
 })
 
 test_that("generators are reset", {
-  t <- trajectory() %>% timeout(1)
-
   expect_equal(3, simmer(verbose = TRUE) %>%
-    add_generator("dummy", t, at(0, 1, 2)) %>%
+    add_generator("dummy", trajectory(), at(0, 1, 2)) %>%
     run() %>% reset() %>% run() %>%
     get_mon_arrivals() %>% nrow()
   )
 })
 
 test_that("preemptible < priority shows a warning", {
-  t <- trajectory() %>% timeout(0)
-  expect_warning(simmer(verbose = TRUE) %>% add_generator("dummy", t, at(0), priority = 3, preemptible = 1))
+  expect_warning(
+    simmer(verbose = TRUE) %>%
+      add_generator("dummy", trajectory(), at(0), priority = 3, preemptible = 1))
 })
 
 test_that("arrival names are correctly retrieved", {
