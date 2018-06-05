@@ -86,17 +86,25 @@ Additionally, you may want to try the `simmer.bricks` package, a plugin for `sim
 
 ### `log_()`
 
-The `log_(., message`) method just prints a given message preceded by the simulation time and the name of the arrival, for debugging purposes:
+The `log_(., message, level`) method just prints a given message preceded by the simulation time and the name of the arrival, for debugging purposes. The logging level is defined in the simulation environment:
 
 ```{r}
-set.seed(1234)
-
 t <- trajectory() %>%
-  log_("hello world!")
+  log_("this is always printed") %>% # level = 0 by default
+  log_("this is printed if `log_level>=1`", level = 1) %>%
+  log_("this is printed if `log_level>=2`", level = 2)
 
 simmer() %>%
-  add_generator("dummy", t, function() rexp(1, 1)) %>%
-  run(5) %>% invisible
+  add_generator("dummy", t, at(0)) %>%
+  run() %>% invisible
+
+simmer(log_level = 1) %>%
+  add_generator("dummy", t, at(0)) %>%
+  run() %>% invisible
+
+simmer(log_level = Inf) %>%
+  add_generator("dummy", t, at(0)) %>%
+  run() %>% invisible
 ```
 
 ### `set_attribute()`
