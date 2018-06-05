@@ -4,8 +4,8 @@ using namespace Rcpp;
 using namespace simmer;
 
 //[[Rcpp::export]]
-SEXP Simulator__new(const std::string& name, bool verbose, SEXP mon) {
-  return XPtr<Simulator>(new Simulator(name, verbose, XPtr<Monitor>(mon)));
+SEXP Simulator__new(const std::string& name, bool verbose, SEXP mon, int log_level) {
+  return XPtr<Simulator>(new Simulator(name, verbose, XPtr<Monitor>(mon), log_level));
 }
 
 //[[Rcpp::export]]

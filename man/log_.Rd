@@ -4,13 +4,17 @@
 \alias{log_}
 \title{Logging}
 \usage{
-log_(.trj, message)
+log_(.trj, message, level = 0)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
 
 \item{message}{the message to display, accepts either a string or a callable object
 (a function) which must return a string.}
+
+\item{level}{debugging level. The \code{message} will be printed if, and only if,
+the \code{level} provided is less or equal to the \code{log_level} defined in the
+simulation environment (see \code{\link{simmer}}).}
 }
 \value{
 Returns the trajectory object.

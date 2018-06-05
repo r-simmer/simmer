@@ -346,12 +346,12 @@ Trajectory <- R6Class("trajectory",
 
     wait = function() { private$add_activity(Wait__new()) },
 
-    log = function(message) {
-      check_args(message=c("string", "function"))
+    log = function(message, level=0) {
+      check_args(message=c("string", "function"), level="number")
       switch(
         binarise(is.function(message)),
-        private$add_activity(Log__new(message)),
-        private$add_activity(Log__new_func(message))
+        private$add_activity(Log__new(message, level)),
+        private$add_activity(Log__new_func(message, level))
       )
     }
   ),

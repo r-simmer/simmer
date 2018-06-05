@@ -802,24 +802,26 @@ BEGIN_RCPP
 END_RCPP
 }
 // Log__new
-SEXP Log__new(const std::string& message);
-RcppExport SEXP _simmer_Log__new(SEXP messageSEXP) {
+SEXP Log__new(const std::string& message, int level);
+RcppExport SEXP _simmer_Log__new(SEXP messageSEXP, SEXP levelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type message(messageSEXP);
-    rcpp_result_gen = Rcpp::wrap(Log__new(message));
+    Rcpp::traits::input_parameter< int >::type level(levelSEXP);
+    rcpp_result_gen = Rcpp::wrap(Log__new(message, level));
     return rcpp_result_gen;
 END_RCPP
 }
 // Log__new_func
-SEXP Log__new_func(const Function& message);
-RcppExport SEXP _simmer_Log__new_func(SEXP messageSEXP) {
+SEXP Log__new_func(const Function& message, int level);
+RcppExport SEXP _simmer_Log__new_func(SEXP messageSEXP, SEXP levelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Function& >::type message(messageSEXP);
-    rcpp_result_gen = Rcpp::wrap(Log__new_func(message));
+    Rcpp::traits::input_parameter< int >::type level(levelSEXP);
+    rcpp_result_gen = Rcpp::wrap(Log__new_func(message, level));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1093,15 +1095,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // Simulator__new
-SEXP Simulator__new(const std::string& name, bool verbose, SEXP mon);
-RcppExport SEXP _simmer_Simulator__new(SEXP nameSEXP, SEXP verboseSEXP, SEXP monSEXP) {
+SEXP Simulator__new(const std::string& name, bool verbose, SEXP mon, int log_level);
+RcppExport SEXP _simmer_Simulator__new(SEXP nameSEXP, SEXP verboseSEXP, SEXP monSEXP, SEXP log_levelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type name(nameSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< SEXP >::type mon(monSEXP);
-    rcpp_result_gen = Rcpp::wrap(Simulator__new(name, verbose, mon));
+    Rcpp::traits::input_parameter< int >::type log_level(log_levelSEXP);
+    rcpp_result_gen = Rcpp::wrap(Simulator__new(name, verbose, mon, log_level));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1310,8 +1313,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_UnTrap__new", (DL_FUNC) &_simmer_UnTrap__new, 1},
     {"_simmer_UnTrap__new_func", (DL_FUNC) &_simmer_UnTrap__new_func, 1},
     {"_simmer_Wait__new", (DL_FUNC) &_simmer_Wait__new, 0},
-    {"_simmer_Log__new", (DL_FUNC) &_simmer_Log__new, 1},
-    {"_simmer_Log__new_func", (DL_FUNC) &_simmer_Log__new_func, 1},
+    {"_simmer_Log__new", (DL_FUNC) &_simmer_Log__new, 2},
+    {"_simmer_Log__new_func", (DL_FUNC) &_simmer_Log__new_func, 2},
     {"_simmer_activity_get_count_", (DL_FUNC) &_simmer_activity_get_count_, 1},
     {"_simmer_activity_print_", (DL_FUNC) &_simmer_activity_print_, 3},
     {"_simmer_activity_get_next_", (DL_FUNC) &_simmer_activity_get_next_, 1},
@@ -1335,7 +1338,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_get_server_count_selected_", (DL_FUNC) &_simmer_get_server_count_selected_, 2},
     {"_simmer_get_queue_count_", (DL_FUNC) &_simmer_get_queue_count_, 2},
     {"_simmer_get_queue_count_selected_", (DL_FUNC) &_simmer_get_queue_count_selected_, 2},
-    {"_simmer_Simulator__new", (DL_FUNC) &_simmer_Simulator__new, 3},
+    {"_simmer_Simulator__new", (DL_FUNC) &_simmer_Simulator__new, 4},
     {"_simmer_reset_", (DL_FUNC) &_simmer_reset_, 1},
     {"_simmer_now_", (DL_FUNC) &_simmer_now_, 1},
     {"_simmer_peek_", (DL_FUNC) &_simmer_peek_, 2},

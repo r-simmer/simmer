@@ -4,7 +4,8 @@
 \alias{simmer}
 \title{Create a Simulator}
 \usage{
-simmer(name = "anonymous", verbose = FALSE, mon = monitor_mem())
+simmer(name = "anonymous", verbose = FALSE, mon = monitor_mem(),
+  log_level = 0)
 }
 \arguments{
 \item{name}{the name of the simulator.}
@@ -13,6 +14,8 @@ simmer(name = "anonymous", verbose = FALSE, mon = monitor_mem())
 
 \item{mon}{monitor (in memory by default); see \code{\link{monitor}} for
 other options.}
+
+\item{log_level}{debugging level (see \code{\link{log_}}).}
 }
 \value{
 Returns a simulation environment.
