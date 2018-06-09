@@ -69,6 +69,23 @@ test_that("a signal is received while blocked", {
   expect_equal(arr$activity_time, c(1, 1, 1))
 })
 
+test_that("an empty handler is equivalent to NULL", {
+  t <- trajectory() %>%
+    send("signal", 3) %>%
+    trap("signal", handler=trajectory()) %>%
+    wait() %>%
+    timeout(1)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("dummy", t, at(0, 1, 2)) %>%
+    run()
+  arr <- get_mon_arrivals(env)
+
+  expect_equal(arr$start_time, c(0, 1, 2))
+  expect_equal(arr$end_time, c(4, 4, 4))
+  expect_equal(arr$activity_time, c(1, 1, 1))
+})
+
 test_that("a signal is received while in a timeout", {
   t <- trajectory() %>%
     send(function() "signal", 3) %>%

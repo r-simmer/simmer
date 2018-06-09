@@ -1,8 +1,10 @@
 context("resource-schedule")
 
 test_that("a schedule name conflicts with a generator name", {
-  expect_error(simmer(verbose = TRUE) %>%
-    add_generator("asdf", trajectory() %>% timeout(0), at(0)) %>%
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("asdf", trajectory(), at(0))
+
+  expect_error(env %>%
     add_resource("asdf", schedule(c(1, 2), c(1, 1)))
   )
 })

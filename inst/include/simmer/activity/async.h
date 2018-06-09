@@ -82,7 +82,7 @@ namespace simmer {
       if (!arrival->sim->is_scheduled(arrival))
         return;
       arrival->stop();
-      if (heads.size()) {
+      if (heads.size() && heads[0]) {
         if (!interruptible) {
           arrival->sim->unsubscribe(arrival);
           pending[arrival] = arrival->get_activity();

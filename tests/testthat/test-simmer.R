@@ -81,13 +81,11 @@ test_that("the simulator is reset (2)", {
 })
 
 test_that("the progress is reported", {
-  t1 <- trajectory() %>% timeout(1)
-
   progress <- NULL
   record <- function(x) progress <<- c(progress, x)
 
   env <- simmer() %>%
-    add_generator("dummy", t1, at(0)) %>%
+    add_generator("dummy", trajectory(), at(0)) %>%
     run(progress=record)
 
   expect_equal(progress, seq(0, 1, 0.1))
@@ -145,7 +143,7 @@ test_that("we can force some errors (just to complete coverage)", {
 
   env <- simmer(verbose = TRUE) %>%
     add_resource("dummy") %>%
-    add_generator("dummy", trajectory() %>% timeout(0), function() 1, mon = 1000)
+    add_generator("dummy", trajectory(), function() 1, mon = 1000)
   env$.__enclos_env__$private$sim_obj <- NULL
   env$.__enclos_env__$private$mon$.__enclos_env__$private$xptr <- NULL
 

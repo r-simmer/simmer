@@ -1,18 +1,12 @@
 context("branch")
 
 test_that("a non-function option fails", {
-  t <- trajectory() %>% timeout(1)
-  expect_error(trajectory() %>% branch(1, TRUE, t))
+  expect_error(trajectory() %>% branch(1, TRUE, trajectory()))
 })
 
 test_that("the wrong number of elements fails, but continue is recycled", {
-  t <- trajectory() %>% timeout(1)
-  expect_error(trajectory() %>% branch(function() 1, c(TRUE, TRUE), t))
-  expect_silent(trajectory() %>% branch(function() 1, TRUE, t, t))
-})
-
-test_that("an empty trajectory fails", {
-  expect_error(trajectory() %>% branch(function() 1, TRUE, trajectory()))
+  expect_error(trajectory() %>% branch(function() 1, c(TRUE, TRUE), trajectory()))
+  expect_silent(trajectory() %>% branch(function() 1, TRUE, trajectory(), trajectory()))
 })
 
 test_that("an index equal to 0 skips the branch", {
@@ -56,4 +50,34 @@ test_that("accepts a list of trajectories", {
 
   expect_equal(length(t2), 1)
   expect_equal(get_n_activities(t2), 11)
+})
+
+test_that("the continue argument works as expected", {
+  sequential <- function(n) {
+    i <- 0
+    function() {
+      i <<- i + 1
+      if (i > n) i <<- 1
+      i
+    }
+  }
+
+  t0 <- trajectory()
+  t1 <- trajectory() %>% timeout(1)
+
+  t <- trajectory() %>%
+    branch(
+      sequential(4),
+      continue=c(FALSE, TRUE, FALSE, TRUE),
+      t0, t0, t1, t1
+    ) %>%
+    timeout(1)
+
+  arr <- simmer(verbose = TRUE) %>%
+    add_generator("dummy", t, at(0:3)) %>%
+    run() %>%
+    get_mon_arrivals()
+
+  expect_equal(arr$start_time, 0:3)
+  expect_equal(arr$activity_time, c(0, 1, 1, 2))
 })

@@ -10,27 +10,27 @@ namespace simmer {
   public:
     Fork(const std::string& name, const VEC<bool>& cont,
          const VEC<REnv>& trj, int priority = 0)
-      : Activity(name, priority), cont(cont), trj(trj), selected(NULL)
+      : Activity(name, priority), cont(cont), trj(trj), path(-1)
     {
       foreach_ (const VEC<REnv>::value_type& itr, trj) {
-        heads.push_back(internal::head(itr));
+        Activity* head = internal::head(itr);
+        if (head) head->set_prev(this);
+        heads.push_back(head);
         tails.push_back(internal::tail(itr));
         count += internal::get_n_activities(itr);
       }
-      foreach_ (const VEC<Activity*>::value_type& itr, heads)
-        itr->set_prev(this);
     }
 
-    Fork(const Fork& o) : Activity(o), cont(o.cont), trj(o.trj), selected(NULL) {
+    Fork(const Fork& o) : Activity(o), cont(o.cont), trj(o.trj), path(-1) {
       heads.clear();
       tails.clear();
       foreach_ (VEC<REnv>::value_type& itr, trj) {
         itr = internal::clone(itr);
-        heads.push_back(internal::head(itr));
+        Activity* head = internal::head(itr);
+        if (head) head->set_prev(this);
+        heads.push_back(head);
         tails.push_back(internal::tail(itr));
       }
-      foreach_ (const VEC<Activity*>::value_type& itr, heads)
-        itr->set_prev(this);
     }
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
@@ -48,15 +48,16 @@ namespace simmer {
     void set_next(Activity* activity) {
       Activity::set_next(activity);
       for (unsigned int i = 0; i < tails.size(); i++) {
-        if (cont[i]) tails[i]->set_next(activity);
+        if (cont[i] && tails[i]) tails[i]->set_next(activity);
       }
     }
 
     Activity* get_next() {
-      if (selected) {
-        Activity* aux = selected;
-        selected = NULL;
-        return aux;
+      if (path >= 0) {
+        int selected = path;
+        path = -1;
+        if (heads[selected] || !cont[selected])
+          return heads[selected];
       }
       return Activity::get_next();
     }
@@ -64,7 +65,7 @@ namespace simmer {
   protected:
     VEC<bool> cont;
     VEC<REnv> trj;
-    Activity* selected;
+    int path;
     VEC<Activity*> heads;
     VEC<Activity*> tails;
   };

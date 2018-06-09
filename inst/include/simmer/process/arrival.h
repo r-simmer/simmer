@@ -60,10 +60,10 @@ namespace simmer {
     void run() {
       double delay;
 
-      if (!activity)
-        goto finish;
       if (lifetime.start < 0)
         lifetime.start = sim->now();
+      if (!activity)
+        goto finish;
 
       if (sim->verbose) {
         sim->print("arrival", name, "activity", activity->name, "", false);
