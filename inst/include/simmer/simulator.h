@@ -50,15 +50,18 @@ namespace simmer {
     std::string name;
     bool verbose;
     Monitor* mon;
+    int log_level;
 
     /**
      * Constructor.
-     * @param name    simulator name
-     * @param verbose verbose flag
-     * @param mon     monitoring object
+     * @param name      simulator name
+     * @param verbose   verbose flag
+     * @param mon       monitoring object
+     * @param log_level debugging level (for activities)
      */
-    Simulator(const std::string& name, bool verbose, Monitor* mon)
-      : name(name), verbose(verbose), mon(mon), now_(0), process_(NULL), b_count(0) {}
+    Simulator(const std::string& name, bool verbose, Monitor* mon, int log_level)
+      : name(name), verbose(verbose), mon(mon), log_level(log_level), now_(0),
+        process_(NULL), b_count(0) {}
 
     ~Simulator();
 

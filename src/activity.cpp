@@ -357,13 +357,13 @@ SEXP UnTrap__new_func(const Function& signals) {
 SEXP Wait__new() { return XPtr<Wait>(new Wait()); }
 
 //[[Rcpp::export]]
-SEXP Log__new(const std::string& message) {
-  return XPtr<Log<std::string> >(new Log<std::string>(message));
+SEXP Log__new(const std::string& message, int level) {
+  return XPtr<Log<std::string> >(new Log<std::string>(message, level));
 }
 
 //[[Rcpp::export]]
-SEXP Log__new_func(const Function& message) {
-  return XPtr<Log<Function> >(new Log<Function>(message));
+SEXP Log__new_func(const Function& message, int level) {
+  return XPtr<Log<Function> >(new Log<Function>(message, level));
 }
 
 //[[Rcpp::export]]

@@ -6,6 +6,7 @@
 #' @param verbose enable showing activity information.
 #' @param mon monitor (in memory by default); see \code{\link{monitor}} for
 #' other options.
+#' @param log_level debugging level (see \code{\link{log_}}).
 #'
 #' @return Returns a simulation environment.
 #' @seealso
@@ -49,8 +50,8 @@
 #' env %>% peek()          # time for the next event
 #' env %>% stepn()         # execute next event
 #'
-simmer <- function(name="anonymous", verbose=FALSE, mon=monitor_mem())
-  Simmer$new(name, verbose, mon)
+simmer <- function(name="anonymous", verbose=FALSE, mon=monitor_mem(), log_level=0)
+  Simmer$new(name, verbose, mon, log_level)
 
 #' Reset a Simulator
 #'
