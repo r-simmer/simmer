@@ -14,21 +14,25 @@ namespace simmer {
   public:
     CLONEABLE(Log<T>)
 
-    Log(const T& message) : Activity("Log"), message(message) {}
+    Log(const T& message, int level)
+      : Activity("Log"), message(message), level(level) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      internal::print(brief, true, "message", "");
+      internal::print(brief, true, "message", "message", ARG(level));
     }
 
     double run(Arrival* arrival) {
-      Rcpp::Rcout << arrival->sim->now() << ": " << arrival->name << ": " <<
-        get<std::string>(message, arrival) << std::endl;
+      int log_level = arrival->sim->log_level;
+      if (log_level < 0 || (level >= 0 && log_level >= level))
+        Rcpp::Rcout << arrival->sim->now() << ": " << arrival->name << ": " <<
+          get<std::string>(message, arrival) << std::endl;
       return 0;
     }
 
   protected:
     T message;
+    int level;
   };
 
 } // namespace simmer

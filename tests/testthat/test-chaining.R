@@ -5,7 +5,7 @@ test_that("trajectory's method chaining works", {
     seize("one", 1) %>%
     release("one", 1) %>%
     timeout(function() 1) %>%
-    branch(function() 1, T, trajectory() %>% timeout(function() 1)) %>%
+    branch(function() 1, TRUE, trajectory() %>% timeout(function() 1)) %>%
     rollback(1) %>%
     seize("one", 1)
 

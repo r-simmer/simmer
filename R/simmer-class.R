@@ -2,11 +2,11 @@ Simmer <- R6Class("simmer",
   public = list(
     name = NA,
 
-    initialize = function(name="anonymous", verbose=FALSE, mon=monitor_mem()) {
-      check_args(name="string", verbose="flag", mon="monitor")
+    initialize = function(name="anonymous", verbose=FALSE, mon=monitor_mem(), log_level=0) {
+      check_args(name="string", verbose="flag", mon="monitor", log_level="number")
       self$name <- name
       private$mon <- mon
-      private$sim_obj <- Simulator__new(name, verbose, mon$get_xptr())
+      private$sim_obj <- Simulator__new(name, verbose, mon$get_xptr(), log_level)
       self
     },
 

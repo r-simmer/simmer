@@ -257,12 +257,12 @@ Wait__new <- function() {
     .Call(`_simmer_Wait__new`)
 }
 
-Log__new <- function(message) {
-    .Call(`_simmer_Log__new`, message)
+Log__new <- function(message, level) {
+    .Call(`_simmer_Log__new`, message, level)
 }
 
-Log__new_func <- function(message) {
-    .Call(`_simmer_Log__new_func`, message)
+Log__new_func <- function(message, level) {
+    .Call(`_simmer_Log__new_func`, message, level)
 }
 
 activity_get_count_ <- function(activity_) {
@@ -357,8 +357,8 @@ get_queue_count_selected_ <- function(sim_, id) {
     .Call(`_simmer_get_queue_count_selected_`, sim_, id)
 }
 
-Simulator__new <- function(name, verbose, mon) {
-    .Call(`_simmer_Simulator__new`, name, verbose, mon)
+Simulator__new <- function(name, verbose, mon, log_level) {
+    .Call(`_simmer_Simulator__new`, name, verbose, mon, log_level)
 }
 
 reset_ <- function(sim_) {

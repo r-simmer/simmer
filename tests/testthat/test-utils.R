@@ -6,7 +6,7 @@ func <- function() {
   C <- "asdf"
   D <- -2.1
   E <- function() 1
-  F <- trajectory() %>% timeout(1)
+  F <- trajectory()
   G <- schedule(c(1, 2), c(1, 1), 3)
   H <- c("asdf", "asdf")
   I <- c(1, Inf)

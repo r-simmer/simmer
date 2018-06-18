@@ -48,14 +48,14 @@ namespace simmer {
         if (mask & 2) {
           ret = SUCCESS;
           if (mask & 1)
-            selected = heads[1];
+            path = 1;
           else
-            selected = heads[0];
+            path = 0;
         } else arrival->terminate(false);
         break;
       default:
         if (mask & 1)
-          selected = heads[0];
+          path = 0;
         break;
       }
       return ret;

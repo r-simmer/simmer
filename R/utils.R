@@ -34,10 +34,9 @@ is_function <- function(name, env) {
 }
 
 is_trajectory <- function(name, env) {
-  check_traj <- function(traj) inherits(traj, "trajectory") & length(traj)
   if (name == "dots.")
-    all(sapply(env[[name]], check_traj))
-  else check_traj(env[[name]])
+    all(sapply(env[[name]], inherits, what="trajectory"))
+  else inherits(env[[name]], "trajectory")
 }
 
 is_numeric <- function(name, env) is.numeric(env[[name]])

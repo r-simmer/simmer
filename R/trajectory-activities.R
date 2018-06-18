@@ -483,10 +483,13 @@ wait.trajectory <- function(.trj) .trj$wait()
 #' @inheritParams seize
 #' @param message the message to display, accepts either a string or a callable object
 #' (a function) which must return a string.
+#' @param level debugging level. The \code{message} will be printed if, and only if,
+#' the \code{level} provided is less or equal to the \code{log_level} defined in the
+#' simulation environment (see \code{\link{simmer}}).
 #'
 #' @return Returns the trajectory object.
 #' @export
-log_ <- function(.trj, message) UseMethod("log_")
+log_ <- function(.trj, message, level=0) UseMethod("log_")
 
 #' @export
-log_.trajectory <- function(.trj, message) .trj$log(message)
+log_.trajectory <- function(.trj, message, level=0) .trj$log(message, level)

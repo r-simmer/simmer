@@ -1,21 +1,22 @@
 context("set_trajectory/set_source")
 
 test_that("we can set a new trajectory", {
-  t2 <- trajectory() %>%
-    timeout(2)
-  t1 <- trajectory() %>%
-    set_trajectory("dummy_gen", t2) %>%
-    set_trajectory("dummy_df", t2) %>%
-    timeout(1)
+  t <- trajectory() %>%
+    set_trajectory("dummy_gen", trajectory() %>% timeout(2)) %>%
+    set_trajectory("dummy_df", trajectory() %>% timeout(2)) %>%
+    timeout(4) %>%
+    set_trajectory("dummy_gen", trajectory()) %>%
+    set_trajectory("dummy_df", trajectory())
 
   env <- simmer(verbose = TRUE) %>%
-    add_generator("dummy_gen", t1, function() 1) %>%
-    add_dataframe("dummy_df", t1, data.frame(time=rep(1, 20)), batch=1) %>%
+    add_generator("dummy_gen", t, function() 1) %>%
+    add_dataframe("dummy_df", t, data.frame(time=rep(1, 20)), batch=1) %>%
     run(10)
   arr <- get_mon_arrivals(env)
+  arr <- arr[order(arr$start_time),]
 
-  expect_equal(arr$start_time, rep(c(1, 2, 3, 4, 5, 6, 7), each=2))
-  expect_equal(arr$end_time, rep(c(2, 4, 5, 6, 7, 8, 9), each=2))
+  expect_equal(arr$start_time, rep(1:9, each=2))
+  expect_equal(arr$activity_time, c(rep(4, 2), rep(2, 8), rep(0, 8)))
 })
 
 test_that("we can set a new source", {

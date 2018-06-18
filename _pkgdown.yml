@@ -101,3 +101,5 @@ navbar:
       href: https://github.com/r-simmer/simmer.optim
     - text: "simmer.json"
       href: https://github.com/r-simmer/simmer.json
+    - text: "simmer.mon"
+      href: https://github.com/r-simmer/simmer.mon
