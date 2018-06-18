@@ -80,8 +80,8 @@ namespace simmer {
   std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
     out << "[";
     if (!v.empty())
-      std::copy(v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
-    out << "\b\b]";
+      std::copy(v.begin(), v.end() - 1, std::ostream_iterator<T>(out, ", "));
+    out << *(v.end() - 1) << "]";
     return out;
   }
 
