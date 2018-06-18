@@ -11,6 +11,7 @@
 * Enhanced exception handling, with more informative error messages (#148).
 * Refactorisation of the printing methods and associated code (#149).
 * Allow empty trajectories in sources and activities with sub-trajectories (#151 closing #150).
+* Enable `RCPP_PROTECTED_EVAL` (Rcpp >= 0.12.17.3), which provides fast evaluation of R expressions by leveraging the new stack unwinding protection API (R >= 3.5.0).
 
 # simmer 3.8.0
 
