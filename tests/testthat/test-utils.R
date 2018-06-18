@@ -91,6 +91,15 @@ test_that("argument matching work as expected", {
   expect_error(check_args(var="flag"))
 })
 
+test_that("is_* checkers are searched in the simmer namespace only", {
+  arg_list <- list(1) # not defined
+  arg_numeric <- 1    # defined
+  assign("is_list", function(x) FALSE, pos=.GlobalEnv)
+  assign("is_numeric", function(x) FALSE, pos=.GlobalEnv)
+  on.exit(rm("is_list", "is_numeric", pos=.GlobalEnv))
+  expect_silent(check_args(arg_list = "list", arg_numeric = "numeric"))
+})
+
 test_that("envs_apply works", {
   env <- new.env()
   env$func <- function(x, y) data.frame(x=x, y=y)

@@ -60,12 +60,13 @@ get_caller <- function() {
 check_args <- function(..., env.=parent.frame()) {
   types <- list(...)
   msg <- NULL
+  ns <- getNamespace("simmer")
 
   for (var in names(types)) {
     check <- sapply(paste0("is_", sub(" ", "_", types[[var]])), function(func) {
-      if (!exists(func))
+      if (!exists(func, ns, inherits=FALSE))
        return(inherits(env.[[var]], sub("is_", "", func)))
-      do.call(func, args=list(var, env.), envir=env.)
+      do.call(ns[[func]], args=list(var, env.), envir=env.)
     })
     if (!any(check)) msg <- c(msg, paste0(
       "'", sub("dots.", "...", var), "' is not a valid ", paste0(types[[var]], collapse=" or ")))

@@ -13,6 +13,7 @@
 * Allow empty trajectories in sources and activities with sub-trajectories (#151 closing #150).
 * Enable `RCPP_PROTECTED_EVAL` (Rcpp >= 0.12.17.3), which provides fast evaluation of R expressions by leveraging the new stack unwinding protection API (R >= 3.5.0).
 * Replace backspace usage in vector's `ostream` method (2b2f43e).
+* Fix namespace clashes with `rlang` and `purrr` (#154).
 
 # simmer 3.8.0
 
