@@ -1,5 +1,7 @@
 # simmer 3.9.0
 
+* The `simmer` license has been changed to GPL >= 2.
+
 ## New features:
 
 * The C++ core has been refactorised into a header-only library under `inst/include` (#147 closing #145). Therefore, from now on it is possible to extend the C++ API from another package by listing `simmer` under the `LinkingTo` field in the DESCRIPTION file.
