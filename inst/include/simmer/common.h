@@ -1,3 +1,20 @@
+// Copyright (C) 2014-2018 Iñaki Ucar and Bart Smeets
+//
+// This file is part of simmer.
+//
+// simmer is free software: you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// simmer is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with simmer. If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef simmer__common_h
 #define simmer__common_h
 
@@ -80,8 +97,8 @@ namespace simmer {
   std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
     out << "[";
     if (!v.empty())
-      std::copy(v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
-    out << "\b\b]";
+      std::copy(v.begin(), v.end() - 1, std::ostream_iterator<T>(out, ", "));
+    out << *(v.end() - 1) << "]";
     return out;
   }
 
