@@ -19,7 +19,6 @@
 #define simmer__activity_arrival_h
 
 #include <simmer/activity.h>
-#include <simmer/activity/utils/functions.h>
 #include <simmer/process/batched.h>
 
 namespace simmer {

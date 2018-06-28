@@ -15,14 +15,39 @@
 // You should have received a copy of the GNU General Public License
 // along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef simmer__activity_utils_policy_h
-#define simmer__activity_utils_policy_h
+#ifndef simmer__activity_resource_internal_h
+#define simmer__activity_resource_internal_h
 
 #include <simmer/common.h>
 #include <simmer/simulator.h>
 #include <simmer/resource.h>
 
 namespace simmer { namespace internal {
+
+  // abstract class for resource retrieval
+  class ResGetter {
+  public:
+    BASE_CLONEABLE(ResGetter)
+
+    ResGetter(const std::string& activity, const std::string& resource, int id = -1)
+      : resource(resource), id(id), activity(activity) {}
+
+  protected:
+    std::string resource;
+    int id;
+
+    Resource* get_resource(Arrival* arrival) const {
+      Resource* selected = NULL;
+      if (id < 0)
+        selected = arrival->sim->get_resource(resource);
+      else selected = arrival->get_resource_selected(id);
+      if (!selected) Rcpp::stop("no resource selected");
+      return selected;
+    }
+
+  private:
+    std::string activity;
+  };
 
   class Policy {
     typedef Resource* (Policy::*method)(Simulator*, const VEC<std::string>&);

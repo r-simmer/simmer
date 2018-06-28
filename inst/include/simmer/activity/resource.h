@@ -20,9 +20,7 @@
 
 #include <simmer/activity.h>
 #include <simmer/activity/fork.h>
-#include <simmer/activity/utils/functions.h>
-#include <simmer/activity/utils/resgetter.h>
-#include <simmer/activity/utils/policy.h>
+#include <simmer/activity/resource_internal.h>
 
 namespace simmer {
 
