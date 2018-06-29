@@ -1,4 +1,4 @@
-# simmer 3.9.0
+# simmer 4.0.0
 
 * The `simmer` license has been changed to GPL >= 2.
 

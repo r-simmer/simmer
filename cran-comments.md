@@ -1,6 +1,8 @@
-## Minor release
+## Major release
 
-Several API improvements, documentation improvements and bug fixes.
+* The license has been changed to GPL >= 2.
+* The C++ core has been refactorised and exposed under `inst/include`.
+* Multiple enhancements and bug fixes.
 
 We haven't included any reference to the papers in the DESCRIPTION yet because they are still waiting to be published and there is no DOI assigned. We will add them in a future release.
 
@@ -8,8 +10,8 @@ Regarding the package title, Uwe asked us in our last submission to remove "for 
 
 ## Test environments
 
-* Fedora 27 + GCC + clang (local), R 3.4.4
-* Ubuntu 14.04 + GCC (on Travis-CI), R 3.3.3, 3.5.0, devel
+* Fedora 28 + GCC + clang (local), R 3.5.0
+* Ubuntu 14.04 + GCC (on Travis-CI), R 3.4.4, 3.5.0, devel
 * linux-x86_64-rocker-gcc-san (on r-hub)
 * ubuntu-rchk (on r-hub)
 * win-builder, R devel
