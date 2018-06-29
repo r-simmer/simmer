@@ -16,26 +16,10 @@ License: GPL (>= 2)
 Encoding: UTF-8
 URL: http://r-simmer.org, https://github.com/r-simmer/simmer
 BugReports: https://github.com/r-simmer/simmer/issues
-Depends:
-    R (>= 3.1.2)
-Imports:
-    Rcpp,
-    R6,
-    magrittr,
-    codetools,
-    utils
-Suggests:
-    simmer.plot,
-    parallel,
-    dplyr,
-    tidyr,
-    testthat,
-    knitr,
-    rmarkdown,
-    rticles
-LinkingTo:
-    Rcpp (>= 0.12.9),
-    BH (>= 1.62.0-1)
+Depends: R (>= 3.1.2)
+Imports: Rcpp, R6, magrittr, codetools, utils
+Suggests: simmer.plot, parallel, dplyr, tidyr, testthat, knitr, rmarkdown, rticles
+LinkingTo: Rcpp (>= 0.12.9), BH (>= 1.62.0-1)
 ByteCompile: yes
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
