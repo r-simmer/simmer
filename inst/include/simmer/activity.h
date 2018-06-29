@@ -1,4 +1,5 @@
-// Copyright (C) 2014-2018 Iñaki Ucar and Bart Smeets
+// Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
+// Copyright (C) 2016-2018 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -148,6 +149,17 @@ namespace simmer {
       print(brief, endl BOOST_PP_REPEAT(BOOST_PP_SUB(N, 1), PRINT_ARGS, 1));  \
     }
     BOOST_PP_REPEAT_FROM_TO(1, BOOST_PP_ADD(MAX_PRINT_ARGS, 1), PRINT_FUNC, ~)
+
+    template <typename T>
+    Fn<T(T, T)> get_op(char mod) {
+      switch(mod) {
+      case '+':
+        return BIND(std::plus<double>(), _1, _2);
+      case '*':
+        return BIND(std::multiplies<double>(), _1, _2);
+      }
+      return NULL;
+    }
 
   } // namespace internal
 

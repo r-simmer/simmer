@@ -32,6 +32,7 @@ system.time({
 })
 # (Simpy: 30 seconds)
 # 16 seconds with R 3.3.x
+# 4.8 seconds with R 3.5.0
 
 system.time({
   input <- data.frame(
@@ -50,5 +51,6 @@ system.time({
     run(10000, progress=progress::progress_bar$new()$update)
 })
 # 2.1 seconds with R 3.4.3
+# 2.4 seconds with R 3.5.0
 
 plot(env, "res", "usage", "server")
