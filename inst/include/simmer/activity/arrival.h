@@ -48,12 +48,10 @@ namespace simmer {
       if (ks.size() != vals.size())
         Rcpp::stop("number of keys and values don't match");
 
-      if (op) {
-        for (unsigned int i = 0; i < ks.size(); i++) {
-          double attr = arrival->get_attribute(ks[i], global);
-          if (ISNA(attr)) attr = init;
-          arrival->set_attribute(ks[i], op(attr, vals[i]), global);
-        }
+      if (op) for (unsigned int i = 0; i < ks.size(); i++) {
+        double attr = arrival->get_attribute(ks[i], global);
+        if (ISNA(attr)) attr = init;
+        arrival->set_attribute(ks[i], op(attr, vals[i]), global);
       } else for (unsigned int i = 0; i < ks.size(); i++)
         arrival->set_attribute(ks[i], vals[i], global);
 
