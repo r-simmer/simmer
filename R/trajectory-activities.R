@@ -195,22 +195,24 @@ timeout_from_global <- function(.trj, key) timeout_from_attribute(.trj, key, TRU
 #' must return numeric value(s).
 #' @param global if \code{TRUE}, the attribute will be global instead of per-arrival.
 #' @param mod if set, \code{values} modify the attributes rather than substituting them.
+#' @param init initial value, applied if \code{mod} is set and the attribute was
+#' not previously initialised. Useful for counters or indexes.
 #'
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{get_attribute}}.
 #' @export
-set_attribute <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"))
+set_attribute <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"), init=0)
   UseMethod("set_attribute")
 
 #' @export
-set_attribute.trajectory <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"))
-  .trj$set_attribute(keys, values, global, mod=mod)
+set_attribute.trajectory <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"), init=0)
+  .trj$set_attribute(keys, values, global, mod, init)
 
 #' @rdname set_attribute
 #' @details \code{set_global} is a shortcut for \code{set_attribute(global=TRUE)}.
 #' @export
-set_global <- function(.trj, keys, values, mod=c(NA, "+", "*"))
-  set_attribute(.trj, keys, values, TRUE, mod=mod)
+set_global <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=0)
+  set_attribute(.trj, keys, values, TRUE, mod, init)
 
 #' Activate/Deactivate Sources
 #'

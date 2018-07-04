@@ -121,35 +121,35 @@ SEXP Select__new_func(const Function& resources, const std::string& policy, int 
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new(const std::vector<std::string>& keys,
-                       const std::vector<double>& values, bool global, char mod)
+SEXP SetAttribute__new(const std::vector<std::string>& keys, const std::vector<double>& values,
+                       bool global, char mod, double init)
 {
   return XPtr<SetAttribute<VEC<std::string>, VEC<double> > >(
-      new SetAttribute<VEC<std::string>, VEC<double> >(keys, values, global, mod));
+      new SetAttribute<VEC<std::string>, VEC<double> >(keys, values, global, mod, init));
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new_func1(const Function& keys,
-                             const std::vector<double>& values, bool global, char mod)
+SEXP SetAttribute__new_func1(const Function& keys, const std::vector<double>& values,
+                             bool global, char mod, double init)
 {
   return XPtr<SetAttribute<Function, VEC<double> > >(
-      new SetAttribute<Function, VEC<double> >(keys, values, global, mod));
+      new SetAttribute<Function, VEC<double> >(keys, values, global, mod, init));
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new_func2(const std::vector<std::string>& keys,
-                             const Function& values, bool global, char mod)
+SEXP SetAttribute__new_func2(const std::vector<std::string>& keys, const Function& values,
+                             bool global, char mod, double init)
 {
   return XPtr<SetAttribute<VEC<std::string>, Function> >(
-      new SetAttribute<VEC<std::string>, Function>(keys, values, global, mod));
+      new SetAttribute<VEC<std::string>, Function>(keys, values, global, mod, init));
 }
 
 //[[Rcpp::export]]
-SEXP SetAttribute__new_func3(const Function& keys,
-                             const Function& values, bool global, char mod)
+SEXP SetAttribute__new_func3(const Function& keys, const Function& values,
+                             bool global, char mod, double init)
 {
   return XPtr<SetAttribute<Function, Function> >(
-      new SetAttribute<Function, Function>(keys, values, global, mod));
+      new SetAttribute<Function, Function>(keys, values, global, mod, init));
 }
 
 //[[Rcpp::export]]

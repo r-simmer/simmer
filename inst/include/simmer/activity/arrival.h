@@ -32,13 +32,13 @@ namespace simmer {
   public:
     CLONEABLE(SetAttribute<T COMMA U>)
 
-    SetAttribute(const T& keys, const U& values, bool global, char mod='N')
-      : Activity("SetAttribute"), keys(keys), values(values),
-        global(global), mod(mod), op(internal::get_op<double>(mod)) {}
+    SetAttribute(const T& keys, const U& values, bool global, char mod='N', double init=0)
+      : Activity("SetAttribute"), keys(keys), values(values), global(global),
+        mod(mod), op(internal::get_op<double>(mod)), init(init) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      internal::print(brief, true, ARG(keys), ARG(values), ARG(global), ARG(mod));
+      internal::print(brief, true, ARG(keys), ARG(values), ARG(global), ARG(mod), ARG(init));
     }
 
     double run(Arrival* arrival) {
@@ -51,6 +51,7 @@ namespace simmer {
       if (op) {
         for (unsigned int i = 0; i < ks.size(); i++) {
           double attr = arrival->get_attribute(ks[i], global);
+          if (ISNA(attr)) attr = init;
           arrival->set_attribute(ks[i], op(attr, vals[i]), global);
         }
       } else for (unsigned int i = 0; i < ks.size(); i++)
@@ -65,6 +66,7 @@ namespace simmer {
     bool global;
     char mod;
     Fn<double(double, double)> op;
+    double init;
   };
 
   /**

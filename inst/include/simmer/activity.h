@@ -21,7 +21,7 @@
 
 #include <simmer/common.h>
 
-#define MAX_PRINT_ARGS 4
+#define MAX_PRINT_ARGS 5
 #define ARG(arg) (#arg": "), arg
 
 namespace simmer {
