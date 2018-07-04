@@ -5,9 +5,10 @@
 \alias{set_global}
 \title{Set Attributes}
 \usage{
-set_attribute(.trj, keys, values, global = FALSE, mod = c(NA, "+", "*"))
+set_attribute(.trj, keys, values, global = FALSE, mod = c(NA, "+", "*"),
+  init = 0)
 
-set_global(.trj, keys, values, mod = c(NA, "+", "*"))
+set_global(.trj, keys, values, mod = c(NA, "+", "*"), init = 0)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -21,6 +22,9 @@ must return numeric value(s).}
 \item{global}{if \code{TRUE}, the attribute will be global instead of per-arrival.}
 
 \item{mod}{if set, \code{values} modify the attributes rather than substituting them.}
+
+\item{init}{initial value, applied if \code{mod} is set and the attribute was
+not previously initialised. Useful for counters or indexes.}
 }
 \value{
 Returns the trajectory object.
