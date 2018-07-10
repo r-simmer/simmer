@@ -133,9 +133,14 @@ namespace simmer {
       else if (endl) Rcpp::Rcout << std::endl;
     }
 
+    #define ARG_NAME_TYPE(N, D) const char*
+    #define ARG_VAL_TYPE(N, D) BOOST_PP_CAT(T, BOOST_PP_ADD(N, D))&
+    #define ARG_EMPTY_TYPE(N, D) BOOST_PP_EMPTY()
+
     #define PRINT_ARGS(Z, N, D) BOOST_PP_COMMA_IF(BOOST_PP_ADD(N, D))         \
-      BOOST_PP_IF(D,, const char*) BOOST_PP_CAT(n, BOOST_PP_ADD(N, D))        \
-      BOOST_PP_COMMA() BOOST_PP_IF(D,, BOOST_PP_CAT(T, BOOST_PP_ADD(N, D))&)  \
+      BOOST_PP_IF(D, ARG_EMPTY_TYPE, ARG_NAME_TYPE)(N, D)                     \
+      BOOST_PP_CAT(n, BOOST_PP_ADD(N, D)) BOOST_PP_COMMA()                    \
+      BOOST_PP_IF(D, ARG_EMPTY_TYPE, ARG_VAL_TYPE)(N, D)                      \
       BOOST_PP_CAT(v, BOOST_PP_ADD(N, D))
 
     #define NO_LAST_ARG(N) BOOST_PP_IF(BOOST_PP_SUB(N, 1), true, false)

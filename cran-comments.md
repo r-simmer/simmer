@@ -1,4 +1,6 @@
-## Major release
+## Re-submission of major release
+
+Trivial change to fix "empty macro argument" warning in pre-tests. Thus, version number unchanged unless otherwise requested.
 
 * The license has been changed to GPL >= 2.
 * The C++ core has been refactorised and exposed under `inst/include`.
