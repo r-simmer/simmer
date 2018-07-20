@@ -4,6 +4,7 @@
 
 * Rename `-DRCPP_PROTECTED_EVAL` (Rcpp >= 0.12.17.4) as `-DRCPP_USE_UNWIND_PROTECT` (6d27671).
 * Keep compilation quieter with `-DBOOST_NO_AUTO_PTR` (70328b6).
+* Improve `log_` print (7c2e3b1).
 
 # simmer 4.0.0
 
