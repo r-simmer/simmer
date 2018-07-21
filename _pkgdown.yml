@@ -61,6 +61,8 @@ reference:
 
 navbar:
   left:
+  - icon: fa-home
+    href: index.html
   - text: "Reference"
     icon: fa-gears
     href: reference/index.html
@@ -69,7 +71,7 @@ navbar:
     menu:
     - text: "Introduction to simmer"
       href: articles/simmer-01-introduction.html
-    - text: "JSS paper"
+    - text: "JSS paper (PDF)"
       href: articles/simmer-02-jss.pdf
     - text: "Advanced Trajectory Usage"
       href: articles/simmer-03-trajectories.html
