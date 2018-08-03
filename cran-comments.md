@@ -3,6 +3,7 @@
 Issues fixed:
 
 - ERROR on r-oldrel-windows: Tests run fine, but the R session was closed unexpectedly after the tests when `detach("package:simmer", unload=TRUE)` was called, not sure why. As a solution, the package is not unloaded anymore on Windows platforms.
+- WARN on Windows: since `rticles` v0.5, the compilation of JSS vignettes requires pandoc v2, which is not installed on Windows machines on CRAN. Now this vignette falls back to an HTML vignette if pandoc v2 is not found, thus solving the warning on Windows.
 
 We haven't included any reference to the papers in the DESCRIPTION yet because they are still waiting to be published and there is no DOI assigned. We will add them in a future release.
 

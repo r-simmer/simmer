@@ -38,7 +38,8 @@ preamble: >
   \usepackage{longtable}
   \usepackage{booktabs}
   \usepackage{subfig}
-output: rticles::jss_article
+output: if (packageVersion("rticles") < 0.5 || rmarkdown::pandoc_version() >= 2)
+  rticles::jss_article else rmarkdown::html_vignette
 classoption: nojss
 citation_package: natbib
 bibliography: jss.bib
