@@ -62,7 +62,7 @@ reference:
 navbar:
   left:
   - icon: fa-home
-    href: index.html
+    href: ./
   - text: "Reference"
     icon: fa-gears
     href: reference/index.html
@@ -92,6 +92,10 @@ navbar:
   - text: "News"
     icon: fa-newspaper-o
     href: news/index.html
+  - text: "GitHub"
+    icon: fa-github
+    href: https://github.com/r-simmer/simmer
+  right:
   - text: "Extensions"
     icon: fa-puzzle-piece
     menu:
