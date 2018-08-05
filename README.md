@@ -50,4 +50,4 @@ Please note that the package contains some C++ code and thus you need a developm
 
 You can purchase `simmer` hex stickers on Redbubble ([sticker 1](https://www.redbubble.com/es/people/puratura/works/32157547-simmer-des-for-r?p=sticker), [sticker 2](https://www.redbubble.com/es/people/puratura/works/32155608-simmer-des-for-r?p=sticker)). Browse there for more stuff such as T-shirts and mugs!
 
-<img src="http://r-simmer.org/images/simmer-hex-01.svg" alt="design1" width="150" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="http://r-simmer.org/images/simmer-hex-02.svg" alt="design2" width="150" />
+<img src="https://r-simmer.org/images/simmer-hex-01.svg" alt="design1" width="150" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://r-simmer.org/images/simmer-hex-02.svg" alt="design2" width="150" />
