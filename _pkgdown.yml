@@ -56,7 +56,7 @@ reference:
   - title: "Convenience functions"
     desc: "Helper methods for generators and resources"
     contents:
-    - at
+    - generators
     - schedule
 
 navbar:

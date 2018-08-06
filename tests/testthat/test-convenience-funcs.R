@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2017 Iñaki Ucar
+# Copyright (C) 2015-2018 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -145,4 +145,14 @@ test_that("schedule returns the correct values", {
   expect_equal(sch$intervals, c(0, 2, 1))
   expect_equal(sch$values, c(1, 2, 1))
   expect_equal(sch$period, 3)
+})
+
+test_that("when_activated returns the correct values", {
+  gen_func <- when_activated()
+  expect_equal(gen_func(), -1)
+  expect_equal(gen_func(), c(0, -1))
+
+  gen_func <- when_activated(5)
+  expect_equal(gen_func(), -1)
+  expect_equal(gen_func(), c(rep(0, 5), -1))
 })
