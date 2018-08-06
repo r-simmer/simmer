@@ -1,5 +1,5 @@
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2017 Iñaki Ucar
+# Copyright (C) 2016-2018 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -21,33 +21,38 @@
 #' These convenience functions facilitate the definition of generators of arrivals
 #' for some common cases.
 #'
+#' @return Returns a generator function (a closure).
+#' @seealso \code{\link{add_generator}}.
+#' @name generators
+#' @examples
+#' ## common to all examples below
+#' # some trajectory
+#' t0 <- trajectory() %>%
+#'   timeout(0)
+#' # some distribution
+#' distr <- function() runif(1, 1, 2)
+#'
+NULL
+
+#' @rdname generators
 #' @param ... a vector or multiple parameters of times at which to initiate an arrival.
 #'
 #' @details \code{\link{at}} generates arrivals at specific absolute times.
-#' \code{\link{from}} generates inter-arrivals following a given distribution
-#' with a specified start time. \code{\link{to}} generates inter-arrivals following
-#' a given distribution with a specified stop time. \code{\link{from_to}} is the
-#' union of the last two.
-#'
-#' @return Returns a generator function.
-#' @seealso \code{\link{add_generator}}.
 #' @export
-#'
 #' @examples
-#' t0 <- trajectory() %>%
-#'   timeout(0)
-#'
+#' # arrivals at 0, 1, 10, 30, 40 and 43
 #' simmer() %>%
 #'   add_generator("dummy", t0, at(0, c(1,10,30), 40, 43)) %>%
 #'   run(100) %>%
 #'   get_mon_arrivals()
+#'
 at <- function(...) {
   time_vec <- c(...)
   time_diffs <- c(time_vec[1], diff(time_vec))
   function() return(c(time_diffs, -1))
 }
 
-#' @rdname at
+#' @rdname generators
 #' @param start_time the time at which to launch the initial arrival.
 #' @param dist a function modelling the interarrival times.
 #' @param arrive if set to \code{TRUE} (default) the first arrival will be
@@ -56,15 +61,17 @@ at <- function(...) {
 #' (and the first arrival will most likely start at a time later than
 #' \code{start_time}).
 #'
+#' @details \code{\link{from}} generates inter-arrivals following a given distribution
+#' with a specified start time.
+#' union of the last two.
 #' @export
 #' @examples
-#' t0 <- trajectory() %>%
-#'   timeout(0)
-#'
+#' # apply distribution starting at 5 (and no end)
 #' simmer() %>%
-#'   add_generator("dummy", t0, from(5, function() runif(1, 1, 2))) %>%
+#'   add_generator("dummy", t0, from(5, distr)) %>%
 #'   run(10) %>%
 #'   get_mon_arrivals()
+#'
 from <- function(start_time, dist, arrive=TRUE) {
   started <- FALSE
   function() {
@@ -81,18 +88,19 @@ from <- function(start_time, dist, arrive=TRUE) {
   }
 }
 
-#' @rdname at
+#' @rdname generators
 #' @param stop_time the time at which to stop the generator.
 #'
+#' @details \code{\link{to}} generates inter-arrivals following a given
+#' distribution with a specified stop time.
 #' @export
 #' @examples
-#' t0 <- trajectory() %>%
-#'   timeout(0)
-#'
+#' # apply distribution until 5 (starting at 0)
 #' simmer() %>%
-#'   add_generator("dummy", t0, to(5, function() runif(1, 1, 2))) %>%
+#'   add_generator("dummy", t0, to(5, distr)) %>%
 #'   run(10) %>%
 #'   get_mon_arrivals()
+#'
 to <- function(stop_time, dist) {
   counter <- 0
   function() {
@@ -105,19 +113,18 @@ to <- function(stop_time, dist) {
   }
 }
 
-#' @rdname at
+#' @rdname generators
 #' @param every repeat with this time cycle.
 #'
+#' @details \code{\link{from_to}} is the union of \code{from} and \code{to}.
 #' @export
 #' @examples
-#' t0 <- trajectory() %>%
-#'   timeout(0)
-#'
-#' # from 8 to 16 h every 24 h:
+#' # apply distribution from 8 to 16 h every 24 h:
 #' simmer() %>%
-#'   add_generator("dummy", t0, from_to(8, 16, function() runif(1, 1, 2), every=24)) %>%
+#'   add_generator("dummy", t0, from_to(8, 16, distr, every=24)) %>%
 #'   run(48) %>%
 #'   get_mon_arrivals()
+#'
 from_to <- function(start_time, stop_time, dist, arrive=TRUE, every=NULL) {
   stopifnot(is.null(every) || every >= stop_time)
   started <- FALSE
