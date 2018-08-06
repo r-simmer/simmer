@@ -6,6 +6,7 @@
 \alias{from}
 \alias{to}
 \alias{from_to}
+\alias{when_activated}
 \title{Convenience Functions for Generators}
 \usage{
 at(...)
@@ -15,6 +16,8 @@ from(start_time, dist, arrive = TRUE)
 to(stop_time, dist)
 
 from_to(start_time, stop_time, dist, arrive = TRUE, every = NULL)
+
+when_activated(n = 1)
 }
 \arguments{
 \item{...}{a vector or multiple parameters of times at which to initiate an arrival.}
@@ -32,6 +35,8 @@ If set to \code{FALSE}, will initiate \code{dist} at \code{start_time}
 \item{stop_time}{the time at which to stop the generator.}
 
 \item{every}{repeat with this time cycle.}
+
+\item{n}{number of arrivals to generate when activated.}
 }
 \value{
 Returns a generator function (a closure).
@@ -51,6 +56,10 @@ union of the last two.
 distribution with a specified stop time.
 
 \code{\link{from_to}} is the union of \code{from} and \code{to}.
+
+\code{\link{when_activated}} sets up an initially inactive generator
+which generates \code{n} arrivals each time it is activated from any
+trajectory using the activity \code{\link{activate}}.
 }
 \examples{
 ## common to all examples below
@@ -82,6 +91,16 @@ simmer() \%>\%
 simmer() \%>\%
   add_generator("dummy", t0, from_to(8, 16, distr, every=24)) \%>\%
   run(48) \%>\%
+  get_mon_arrivals()
+
+# triggering arrivals on demand from a trajectory
+t1 <- trajectory() \%>\%
+  activate("dummy")
+
+simmer() \%>\%
+  add_generator("dummy", t0, when_activated()) \%>\%
+  add_generator("trigger", t1, at(2)) \%>\%
+  run() \%>\%
   get_mon_arrivals()
 
 }

@@ -159,3 +159,32 @@ from_to <- function(start_time, stop_time, dist, arrive=TRUE, every=NULL) {
     }
   }
 }
+
+#' @rdname generators
+#' @param n number of arrivals to generate when activated.
+#'
+#' @details \code{\link{when_activated}} sets up an initially inactive generator
+#' which generates \code{n} arrivals each time it is activated from any
+#' trajectory using the activity \code{\link{activate}}.
+#' @export
+#' @examples
+#' # triggering arrivals on demand from a trajectory
+#' t1 <- trajectory() %>%
+#'   activate("dummy")
+#'
+#' simmer() %>%
+#'   add_generator("dummy", t0, when_activated()) %>%
+#'   add_generator("trigger", t1, at(2)) %>%
+#'   run() %>%
+#'   get_mon_arrivals()
+#'
+when_activated <- function(n=1) {
+  first <- TRUE
+  function() {
+    if (first) {
+      first <<- FALSE
+      return(-1)
+    }
+    c(rep(0, n), -1)
+  }
+}
