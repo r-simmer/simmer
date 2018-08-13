@@ -20,5 +20,3 @@
 library(testthat)
 library(simmer)
 test_check("simmer")
-if (!"windows" %in% tolower(Sys.info()["sysname"]))
-  detach("package:simmer", unload = TRUE)
