@@ -16,9 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-.onUnload <- function (libpath) {
-  library.dynam.unload("simmer", libpath)
-}
+#.onUnload <- function (libpath) {
+#  library.dynam.unload("simmer", libpath)
+#}
 
 is_flag <- function(name, env)
   is.numeric(env[[name]]) || is.logical(env[[name]])
