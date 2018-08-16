@@ -6,6 +6,7 @@
 * Keep compilation quieter with `-DBOOST_NO_AUTO_PTR` (70328b6).
 * Improve `log_` print (7c2e3b1).
 * Add `when_activated()` convenience function to easily generate arrivals on demand from trajectories (#161 closing #160).
+* Enhance `schedule` printing (9c66285).
 
 # simmer 4.0.0
 
