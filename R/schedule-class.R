@@ -36,11 +36,13 @@ Schedule <- R6Class("schedule",
     },
 
     print = function() {
+      x <- format(c(private$timetable, private$values), justify="right")
+      timetable <- seq_along(private$timetable)
       cat(paste0(
-        "schedule\n",
-        "{ timetable: ", paste(private$timetable, collapse = " "),
-        " | period: ", ifelse(private$period > 0, private$period, Inf), " }\n",
-        "{ values: ", paste(private$values, collapse = " "), " }\n"
+        "schedule: period: ",
+        ifelse(private$period > 0, private$period, Inf), "\n",
+        "{ timetable: ", paste(x[timetable], collapse=" "), " }\n",
+        "{ values:    ", paste(x[-timetable], collapse=" "), " }\n"
       ))
       invisible(self)
     },
