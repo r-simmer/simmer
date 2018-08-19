@@ -19,7 +19,7 @@ must return attribute name(s).}
 \item{values}{numeric value(s) to set, or a callable object (a function) which
 must return numeric value(s).}
 
-\item{global}{if \code{TRUE}, the attribute will be global instead of per-arrival.}
+\item{global}{\code{global=TRUE} is deprecated. Use \code{*_global} instead.}
 
 \item{mod}{if set, \code{values} modify the attributes rather than substituting them.}
 
@@ -32,9 +32,7 @@ Returns the trajectory object.
 \description{
 Activity for modifying an arrival's attributes.
 }
-\details{
-\code{set_global} is a shortcut for \code{set_attribute(global=TRUE)}.
-}
 \seealso{
-\code{\link{get_attribute}}.
+\code{\link{get_attribute}}, \code{\link{get_global}},
+\code{\link{timeout_from_attribute}}, \code{\link{timeout_from_global}}.
 }

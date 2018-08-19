@@ -5,7 +5,7 @@ author:
     address: >
       Avda. de la Universidad, 30
       28911 Leganés (Madrid) Spain
-    email: inaki.ucar@uc3m.es
+    email: iucar@fedoraproject.org
   - name: Bart Smeets
     affiliation: dataroots
     address: >
@@ -308,7 +308,7 @@ There are many activities available. We will briefly review them by categorising
 
 ### Arrival properties
 
-Arrivals are able to store attributes and modify these using \code{set\_attribute()}. Attributes consist of pairs \code{(key, value)} (character and numeric respectively) which by default are set *per arrival* unless they are defined as \code{global}. As we said before, all activities support at least one dynamical parameter. In the case of \code{set\_attribute()}, both arguments, \code{keys} and \code{values}, can be vectors or functions returning vectors.
+Arrivals are able to store attributes and modify these using \code{set\_attribute()}. Attributes consist of pairs \code{(key, value)} (character and numeric respectively) which by default are set *per arrival* unless they are defined as global. As we said before, all activities support at least one dynamical parameter. In the case of \code{set\_attribute()}, both arguments, \code{keys} and \code{values}, can be vectors or functions returning vectors.
 
 Attributes can be retrieved in any \proglang{R} function by calling \code{get\_attribute()}, whose first argument must be a \code{simmer} object. For instance, the following trajectory prints \code{81}:
 

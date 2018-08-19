@@ -331,14 +331,15 @@ get_mon_resources.simmer <- function(.envs)
 #' given source.
 #'
 #' \code{get_name} returns the number of the running arrival. \code{get_attribute}
-#' returns a running arrival's attributes or global ones. If a provided key was
-#' not previously set, it returns a missing value. \code{get_global} is a shortcut
-#' for \code{get_attribute(global=TRUE)}. \code{get_prioritization} returns a
-#' running arrival's prioritization values. \code{get_name}, \code{get_attribute}
-#' and \code{get_prioritization} are meant to be used inside a trajectory; otherwise,
-#' there will be no arrival running and these functions will throw an error.
+#' returns a running arrival's attributes. If a provided key was not previously
+#' set, it returns a missing value. \code{get_global} returns a global attribute.
+#' \code{get_prioritization} returns a running arrival's prioritization values.
+#' \code{get_name}, \code{get_attribute} and \code{get_prioritization} are meant
+#' to be used inside a trajectory; otherwise, there will be no arrival running
+#' and these functions will throw an error.
 #'
-#' @seealso \code{\link{set_attribute}}, \code{\link{set_prioritization}}.
+#' @seealso \code{\link{set_attribute}}, \code{\link{set_global}},
+#' \code{\link{set_prioritization}}.
 #' @export
 get_n_generated <- function(.env, source) UseMethod("get_n_generated")
 
@@ -353,18 +354,27 @@ get_name <- function(.env) UseMethod("get_name")
 get_name.simmer <- function(.env) .env$get_name()
 
 #' @param keys the attribute name(s).
-#' @param global if \code{TRUE}, the attribute will be global instead of per-arrival.
+#' @inheritParams set_attribute
 #'
 #' @rdname get_n_generated
 #' @export
-get_attribute <- function(.env, keys, global=FALSE) UseMethod("get_attribute")
+get_attribute <- function(.env, keys, global=FALSE) {
+  if (global) {
+    .Deprecated("get_global", old="get_attribute(global=TRUE)")
+    get_global(.env, keys)
+  }
+  else UseMethod("get_attribute")
+}
 
 #' @export
-get_attribute.simmer <- function(.env, keys, global=FALSE) .env$get_attribute(keys, global)
+get_attribute.simmer <- function(.env, keys, global=FALSE) .env$get_attribute(keys)
 
 #' @rdname get_n_generated
 #' @export
-get_global <- function(.env, keys) get_attribute(.env, keys, TRUE)
+get_global <- function(.env, keys) UseMethod("get_global")
+
+#' @export
+get_global.simmer <- function(.env, keys) .env$get_global(keys)
 
 #' @rdname get_n_generated
 #' @export

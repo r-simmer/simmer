@@ -22,7 +22,7 @@ automatically coerced to positive).}
 \item{key}{the attribute name, or a callable object (a function) which
 must return the attribute name.}
 
-\item{global}{if \code{TRUE}, the attribute will be global instead of per-arrival.}
+\item{global}{\code{global=TRUE} is deprecated. Use \code{*_global} instead.}
 }
 \value{
 Returns the trajectory object.
@@ -30,7 +30,6 @@ Returns the trajectory object.
 \description{
 Activity for inserting delays and execute user-defined tasks.
 }
-\details{
-\code{timeout_from_global} is a shortcut for
-\code{timeout_from_attribute(global=TRUE)}.
+\seealso{
+\code{\link{set_attribute}}, \code{\link{set_global}}.
 }

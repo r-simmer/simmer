@@ -25,7 +25,7 @@ get_prioritization(.env)
 
 \item{keys}{the attribute name(s).}
 
-\item{global}{if \code{TRUE}, the attribute will be global instead of per-arrival.}
+\item{global}{\code{global=TRUE} is deprecated. Use \code{*_global} instead.}
 }
 \description{
 Getters for processes (sources and arrivals) number of arrivals generated
@@ -37,13 +37,14 @@ arrival or a global one, and prioritization values.
 given source.
 
 \code{get_name} returns the number of the running arrival. \code{get_attribute}
-returns a running arrival's attributes or global ones. If a provided key was
-not previously set, it returns a missing value. \code{get_global} is a shortcut
-for \code{get_attribute(global=TRUE)}. \code{get_prioritization} returns a
-running arrival's prioritization values. \code{get_name}, \code{get_attribute}
-and \code{get_prioritization} are meant to be used inside a trajectory; otherwise,
-there will be no arrival running and these functions will throw an error.
+returns a running arrival's attributes. If a provided key was not previously
+set, it returns a missing value. \code{get_global} returns a global attribute.
+\code{get_prioritization} returns a running arrival's prioritization values.
+\code{get_name}, \code{get_attribute} and \code{get_prioritization} are meant
+to be used inside a trajectory; otherwise, there will be no arrival running
+and these functions will throw an error.
 }
 \seealso{
-\code{\link{set_attribute}}, \code{\link{set_prioritization}}.
+\code{\link{set_attribute}}, \code{\link{set_global}},
+\code{\link{set_prioritization}}.
 }

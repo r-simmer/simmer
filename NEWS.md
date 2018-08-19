@@ -8,6 +8,7 @@
 * Add `when_activated()` convenience function to easily generate arrivals on demand from trajectories (#161 closing #160).
 * Enhance `schedule` printing (9c66285).
 * Fix generator-manager name clashing (#163).
+* Deprecate `set_attribute(global=TRUE)`, `get_attribute(global=TRUE)` and `timeout_from_attribute(global=TRUE)` (#164), the `*_global` versions should be used instead.
 
 # simmer 4.0.0
 

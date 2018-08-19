@@ -107,9 +107,9 @@ simmer(log_level = Inf) %>%
   run() %>% invisible
 ```
 
-### `set_attribute()`
+### `set_attribute()`, `set_global()`
 
-The `set_attribute(., keys, values, global)` method sets the `values` of an arrival's attributes `keys`. Both `keys` and `values` can be vectors (and their lengths must match) or functions returning vectors. But either way, the `values` stored can only be numeric.
+The `set_attribute(., keys, values)` method sets the `values` of an arrival's attributes `keys`. Both `keys` and `values` can be vectors (and their lengths must match) or functions returning vectors. But either way, the `values` stored can only be numeric.
 
 ```{r}
 patient_traj <- trajectory(name = "patient_trajectory") %>%
@@ -145,7 +145,7 @@ env %>% run()
 get_mon_attributes(env)
 ```
 
-Attributes are _per arrival_ by default (`global=FALSE`), meaning that each arrival has its own set of attributes, not visible by anyone else:
+Attributes are _per arrival_, meaning that each arrival has its own set of attributes, not visible by anyone else:
 
 ```{r}
 writer <- trajectory() %>%
@@ -162,7 +162,7 @@ env %>% run()
 get_mon_attributes(env)
 ```
 
-Thus, the reader in the example above returns `NA`, missing. However, attributes can also be global with `global=TRUE` or `set_global(., keys, values)`, a shortcut for `set_attributes(..., global=TRUE)`:
+Thus, the reader in the example above returns `NA`, missing. However, attributes can also be global with `set_global(., keys, values)`:
 
 ```{r}
 writer <- trajectory() %>%
@@ -170,7 +170,7 @@ writer <- trajectory() %>%
 
 reader <- trajectory() %>%
   log_(function() paste0(get_attribute(env, "my_key"), ", ", 
-                         get_attribute(env, "my_key", global = TRUE)))
+                         get_global(env, "my_key")))
 
 env <- simmer() %>%
   add_generator("writer", writer, at(0), mon = 2) %>%
@@ -219,7 +219,7 @@ Be aware that if you want the `timeout()`'s `task` parameter to be evaluated dyn
 
 Of course, this `task`, supplied as a function, may be as complex as you need and, for instance, it may check a resource's status, interact with other entities in your simulation model... The same applies to all the activities when they accept a function as a parameter.
 
-If you simply need a delay previously set as an attribute, you may use `timeout_from_attribute(., key, global=FALSE)`. Thus, the following timeouts are equivalent, but the second one is much simpler and faster:
+If you simply need a delay previously set as an attribute, you may use `timeout_from_attribute(., key)` (or `timeout_from_global(., key)` for a global attribute). Thus, the following timeouts are equivalent, but the second one is much simpler and faster:
 
 ```{r}
 traj <- trajectory() %>%

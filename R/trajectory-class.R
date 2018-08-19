@@ -181,20 +181,35 @@ Trajectory <- R6Class("trajectory",
       )
     },
 
-    set_attribute = function(keys, values, global=FALSE, mod=c(NA, "+", "*"), init=0) {
+    set_attribute = function(keys, values, mod=c(NA, "+", "*"), init=0) {
       check_args(
         keys = c("string vector", "function"),
         values = c("numeric", "function"),
-        global = "flag",
         init = "numeric"
       )
       mod <- match.arg(mod)
       switch(
         binarise(is.function(keys), is.function(values)),
-        private$add_activity(SetAttribute__new(keys, values, global, mod, init)),
-        private$add_activity(SetAttribute__new_func1(keys, values, global, mod, init)),
-        private$add_activity(SetAttribute__new_func2(keys, values, global, mod, init)),
-        private$add_activity(SetAttribute__new_func3(keys, values, global, mod, init))
+        private$add_activity(SetAttribute__new(keys, values, FALSE, mod, init)),
+        private$add_activity(SetAttribute__new_func1(keys, values, FALSE, mod, init)),
+        private$add_activity(SetAttribute__new_func2(keys, values, FALSE, mod, init)),
+        private$add_activity(SetAttribute__new_func3(keys, values, FALSE, mod, init))
+      )
+    },
+
+    set_global = function(keys, values, mod=c(NA, "+", "*"), init=0) {
+      check_args(
+        keys = c("string vector", "function"),
+        values = c("numeric", "function"),
+        init = "numeric"
+      )
+      mod <- match.arg(mod)
+      switch(
+        binarise(is.function(keys), is.function(values)),
+        private$add_activity(SetAttribute__new(keys, values, TRUE, mod, init)),
+        private$add_activity(SetAttribute__new_func1(keys, values, TRUE, mod, init)),
+        private$add_activity(SetAttribute__new_func2(keys, values, TRUE, mod, init)),
+        private$add_activity(SetAttribute__new_func3(keys, values, TRUE, mod, init))
       )
     },
 
