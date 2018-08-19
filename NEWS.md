@@ -7,6 +7,7 @@
 * Improve `log_` print (7c2e3b1).
 * Add `when_activated()` convenience function to easily generate arrivals on demand from trajectories (#161 closing #160).
 * Enhance `schedule` printing (9c66285).
+* Fix generator-manager name clashing (#163).
 
 # simmer 4.0.0
 

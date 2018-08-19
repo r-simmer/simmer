@@ -150,20 +150,23 @@ namespace simmer {
   inline bool Simulator::add_resource_manager(const std::string& name, const std::string& param,
                             const VEC<double>& duration, const VEC<int>& value, int period)
   {
-    if (process_map.find(name) != process_map.end())
-      Rcpp::stop("process '%s' already defined", name);
     EntMap::iterator search = resource_map.find(name);
     if (search == resource_map.end())
       Rcpp::stop("resource '%s' not found (typo?)", name);
-    Resource* res = static_cast<Resource*>(search->second);
+
+    std::string manager_name = name + "_" + param;
+    if (process_map.find(manager_name) != process_map.end())
+      Rcpp::stop("process '%s' already defined", manager_name);
+
     Manager* manager;
+    Resource* res = static_cast<Resource*>(search->second);
     if (param.compare("capacity") == 0)
-      manager = new Manager(this, name, param, duration, value, period,
+      manager = new Manager(this, manager_name, duration, value, period,
                             BIND(&Resource::set_capacity, res, _1));
     else
-      manager = new Manager(this, name, param, duration, value, period,
+      manager = new Manager(this, manager_name, duration, value, period,
                             BIND(&Resource::set_queue_size, res, _1));
-    process_map[name + "_" + param] = manager;
+    process_map[manager_name] = manager;
     manager->activate();
     return true;
   }
