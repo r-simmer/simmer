@@ -19,11 +19,18 @@ context("resource-schedule")
 
 test_that("a schedule name conflicts with a generator name", {
   env <- simmer(verbose = TRUE) %>%
-    add_generator("asdf", trajectory(), at(0))
+    add_generator("asdf", trajectory(), at(0)) %>%
+    add_generator("fdsa_capacity", trajectory(), at(0)) %>%
+    add_generator("fdsa_queue_size", trajectory(), at(0))
 
   expect_error(env %>%
-    add_resource("asdf", schedule(c(1, 2), c(1, 1)))
-  )
+    add_resource("fdsa", schedule(c(1, 2), c(1, 1))))
+  expect_error(env %>%
+    add_resource("fdsa", queue_size=schedule(c(1, 2), c(1, 1))))
+  expect_silent(env %>%
+    add_resource("asdf", schedule(c(1, 2), c(1, 1))))
+  expect_warning(env %>%
+    add_generator("asdf_capacity", trajectory(), at(0)))
 })
 
 test_that("a schedule cannot be created if the corresponding resource doesn't exist", {

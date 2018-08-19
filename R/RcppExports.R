@@ -73,20 +73,20 @@ Select__new_func <- function(resources, policy, id) {
     .Call(`_simmer_Select__new_func`, resources, policy, id)
 }
 
-SetAttribute__new <- function(keys, values, global, mod) {
-    .Call(`_simmer_SetAttribute__new`, keys, values, global, mod)
+SetAttribute__new <- function(keys, values, global, mod, init) {
+    .Call(`_simmer_SetAttribute__new`, keys, values, global, mod, init)
 }
 
-SetAttribute__new_func1 <- function(keys, values, global, mod) {
-    .Call(`_simmer_SetAttribute__new_func1`, keys, values, global, mod)
+SetAttribute__new_func1 <- function(keys, values, global, mod, init) {
+    .Call(`_simmer_SetAttribute__new_func1`, keys, values, global, mod, init)
 }
 
-SetAttribute__new_func2 <- function(keys, values, global, mod) {
-    .Call(`_simmer_SetAttribute__new_func2`, keys, values, global, mod)
+SetAttribute__new_func2 <- function(keys, values, global, mod, init) {
+    .Call(`_simmer_SetAttribute__new_func2`, keys, values, global, mod, init)
 }
 
-SetAttribute__new_func3 <- function(keys, values, global, mod) {
-    .Call(`_simmer_SetAttribute__new_func3`, keys, values, global, mod)
+SetAttribute__new_func3 <- function(keys, values, global, mod, init) {
+    .Call(`_simmer_SetAttribute__new_func3`, keys, values, global, mod, init)
 }
 
 Activate__new <- function(source) {
@@ -311,6 +311,10 @@ get_resources_ <- function(mon_) {
 
 get_n_generated_ <- function(sim_, name) {
     .Call(`_simmer_get_n_generated_`, sim_, name)
+}
+
+get_trajectory_ <- function(sim_, name) {
+    .Call(`_simmer_get_trajectory_`, sim_, name)
 }
 
 get_name_ <- function(sim_) {

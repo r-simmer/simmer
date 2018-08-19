@@ -54,12 +54,20 @@ namespace simmer { namespace internal {
     typedef UMAP<std::string, method> MethodMap;
 
   public:
-    explicit Policy(const std::string& policy) : name(policy) {
-      policies["shortest-queue"]    = &Policy::policy_shortest_queue;
-      policies["round-robin"]       = &Policy::policy_round_robin;
-      policies["first-available"]   = &Policy::policy_first_available;
-      policies["random"]            = &Policy::policy_random;
+    explicit Policy(const std::string& policy) : name(policy), rri(-1),
+      check_available(policy.find("-available") != std::string::npos)
+    {
+      policies["shortest-queue"]            = &Policy::policy_shortest_queue;
+      policies["shortest-queue-available"]  = &Policy::policy_shortest_queue;
+      policies["round-robin"]               = &Policy::policy_round_robin;
+      policies["round-robin-available"]     = &Policy::policy_round_robin;
+      policies["first-available"]           = &Policy::policy_first_available;
+      policies["random"]                    = &Policy::policy_random;
+      policies["random-available"]          = &Policy::policy_random;
     }
+
+    Policy(const Policy& o) : name(o.name), rri(-1),
+      check_available(o.check_available), policies(o.policies) {}
 
     friend std::ostream& operator<<(std::ostream& out, const Policy& policy) {
       out << policy.name;
@@ -74,48 +82,73 @@ namespace simmer { namespace internal {
 
   private:
     std::string name;
+    int rri;
+    bool check_available;
     MethodMap policies;
 
     Resource* policy_shortest_queue(Simulator* sim, const VEC<std::string>& resources) {
-      Resource* selected = sim->get_resource(resources[0]);
-      size_t n = resources.size();
-      for (size_t i = 1; i < n; i++) {
+      Resource* selected = NULL;
+      for (size_t i = 0; i < resources.size(); i++) {
         Resource* res = sim->get_resource(resources[i]);
-        if (res->get_server_count() + res->get_queue_count() <
+        if (check_available && !res->get_capacity())
+          continue;
+        if (!selected || res->get_server_count() + res->get_queue_count() <
           selected->get_server_count() + selected->get_queue_count())
           selected = res;
       }
+      if (!selected)
+        Rcpp::stop("policy '%s' found no resource available", name);
       return selected;
     }
 
     Resource* policy_round_robin(Simulator* sim, const VEC<std::string>& resources) {
-      static int i = -1;
-      if (++i >= (int)resources.size())
-        i = 0;
-      return sim->get_resource(resources[i]);
+      Resource* selected;
+      for (size_t i = 0; i < resources.size(); i++) {
+        if (++rri >= (int)resources.size())
+          rri = 0;
+        selected = sim->get_resource(resources[rri]);
+        if (!check_available || selected->get_capacity())
+          goto select;
+      }
+      Rcpp::stop("policy '%s' found no resource available", name);
+    select:
+      return selected;
     }
 
     Resource* policy_first_available(Simulator* sim, const VEC<std::string>& resources) {
-      size_t i, n = resources.size();
-      Resource* selected;
-      for (i = 0; i < n; i++) {
+      Resource* selected, * first_available = NULL;
+      for (size_t i = 0; i < resources.size(); i++) {
         selected = sim->get_resource(resources[i]);
-        if (selected->get_server_count() < selected->get_capacity())
+        if (!first_available && selected->get_capacity())
+          first_available = selected;
+        if (selected->get_capacity() < 0 ||
+            selected->get_server_count() < selected->get_capacity())
           goto select;
       }
-      for (i = 0; i < n; i++) {
+      for (size_t i = 0; i < resources.size(); i++) {
         selected = sim->get_resource(resources[i]);
-        if (selected->get_queue_count() < selected->get_queue_size())
+        if ((selected->get_queue_size() < 0 ||
+            (selected->get_queue_count() < selected->get_queue_size())) &&
+            (!check_available || selected->get_capacity()))
           goto select;
       }
-      return sim->get_resource(resources[0]);
-      select:
+      if (!first_available)
+        Rcpp::stop("policy '%s' found no resource available", name);
+      selected = first_available;
+    select:
         return selected;
     }
 
     Resource* policy_random(Simulator* sim, const VEC<std::string>& resources) {
-      int i = Rcpp::sample(resources.size(), 1)[0];
-      return sim->get_resource(resources[i-1]);
+      VEC<Resource*> available;
+      foreach_ (const std::string& name, resources) {
+        Resource* res = sim->get_resource(name);
+        if (!check_available || res->get_capacity())
+          available.push_back(res);
+      }
+      if (!available.size())
+        Rcpp::stop("policy '%s' found no resource available", name);
+      return available[Rcpp::sample(available.size(), 1)[0] - 1];
     }
   };
 

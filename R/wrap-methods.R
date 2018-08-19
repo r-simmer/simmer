@@ -51,32 +51,37 @@
 wrap <- function(.env) Wrap$new(.env)
 
 #' @export
-now.wrap <- function(.env) now.simmer(.env)
+now.wrap <- now.simmer
 
 #' @export
-peek.wrap <- function(.env, steps=1, verbose=FALSE) peek.simmer(.env, steps, verbose)
+peek.wrap <- peek.simmer
 
 #' @export
-get_mon_arrivals.wrap <- function(.envs, per_resource=FALSE, ongoing=FALSE)
-  get_mon_arrivals.simmer(.envs, per_resource, ongoing)
+get_mon_arrivals.wrap <- get_mon_arrivals.simmer
 
 #' @export
-get_mon_attributes.wrap <- function(.envs) get_mon_attributes.simmer(.envs)
+get_mon_attributes.wrap <- get_mon_attributes.simmer
 
 #' @export
-get_mon_resources.wrap <- function(.envs) get_mon_resources.simmer(.envs)
+get_mon_resources.wrap <- get_mon_resources.simmer
 
 #' @export
-get_n_generated.wrap <- function(.env, source) get_n_generated.simmer(.env, source)
+get_sources.wrap <- get_sources.simmer
 
 #' @export
-get_capacity.wrap <- function(.env, resource) get_capacity.simmer(.env, resource)
+get_resources.wrap <- get_resources.simmer
 
 #' @export
-get_queue_size.wrap <- function(.env, resource) get_queue_size.simmer(.env, resource)
+get_n_generated.wrap <- get_n_generated.simmer
 
 #' @export
-get_server_count.wrap <- function(.env, resource) get_server_count.simmer(.env, resource)
+get_capacity.wrap <- get_capacity.simmer
 
 #' @export
-get_queue_count.wrap <- function(.env, resource) get_queue_count.simmer(.env, resource)
+get_queue_size.wrap <- get_queue_size.simmer
+
+#' @export
+get_server_count.wrap <- get_server_count.simmer
+
+#' @export
+get_queue_count.wrap <- get_queue_count.simmer

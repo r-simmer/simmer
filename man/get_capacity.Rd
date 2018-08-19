@@ -41,5 +41,6 @@ Return a numeric value.
 Getters for resources: server capacity/count and queue size/count.
 }
 \seealso{
-\code{\link{set_capacity}}, \code{\link{set_queue_size}}.
+\code{\link{get_resources}}, \code{\link{set_capacity}},
+\code{\link{set_queue_size}}.
 }

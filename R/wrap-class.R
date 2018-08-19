@@ -92,7 +92,9 @@ Wrap <- R6Class("wrap",
       if (!(resource %in% names(private$res)))
         stop("resource '", resource, "' not found")
       private$queue_count[[resource]]
-    }
+    },
+    get_sources = function() { private$src },
+    get_resources = function() { private$res }
   ),
 
   private = list(

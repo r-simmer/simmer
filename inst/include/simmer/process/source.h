@@ -48,6 +48,8 @@ namespace simmer {
 
     int get_n_generated() const { return count; }
 
+    REnv get_trajectory() const { return trj; }
+
     virtual void set_source(const ANY& new_source) = 0;
 
     void set_trajectory(const REnv& new_trj) {

@@ -36,7 +36,10 @@ namespace simmer {
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      internal::print(brief, true, "message", "message", ARG(level));
+      std::ostringstream ss; ss << message;
+      std::string m = ss.str();
+      if (m.size() > 10) m = m.substr(0, 10) + "...";
+      internal::print(brief, true, "message: ", m, ARG(level));
     }
 
     double run(Arrival* arrival) {

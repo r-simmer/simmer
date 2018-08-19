@@ -5,7 +5,7 @@ author:
     address: >
       Avda. de la Universidad, 30
       28911 Leganés (Madrid) Spain
-    email: inaki.ucar@uc3m.es
+    email: iucar@fedoraproject.org
   - name: Bart Smeets
     affiliation: dataroots
     address: >
@@ -38,7 +38,8 @@ preamble: >
   \usepackage{longtable}
   \usepackage{booktabs}
   \usepackage{subfig}
-output: rticles::jss_article
+output: if (packageVersion("rticles") < 0.5 || rmarkdown::pandoc_version() >= 2)
+  rticles::jss_article else rmarkdown::html_vignette
 classoption: nojss
 citation_package: natbib
 bibliography: jss.bib
@@ -56,7 +57,7 @@ vignette: >
 ```{r, setup, include=FALSE}
 knitr::opts_chunk$set(fig.width=5, fig.height=3, warning=FALSE, message=FALSE)
 
-knitr::knit_hooks$set(chunk = function(x, options) {
+knitr::knit_hooks$set(document = function(x, options) {
   # fix line width
   x <- gsub("queue status: 0(Inf) }", "queue... }", x, fixed=TRUE)
   x
@@ -95,9 +96,11 @@ Let us illustrate this with a simple example taken from @Pidd:1988:Computer, Sec
 > 
 > In addition, an operator may be AWAY while attending to personal needs.
 
-![The job shop activity cycle diagram.\label{job-shop}](includes/jss-job-shop.pdf){width=80%}
+```{r job-shop, out.width='80%', echo=FALSE, fig.cap='The job shop activity cycle diagram.'}
+knitr::include_graphics("includes/jss-job-shop.pdf")
+```
 
-Figure \ref{job-shop} shows the activity cycle diagram for the considered system. Circles (READY, STOPPED, OK, WAITING) represent states of the machines or the operatives respectively, while rectangles (RUNNING, RETOOL, RESET, AWAY) represent activities that take some (random) time to complete. Two kind of processes can be identified: shop jobs, which use machines and degrade them, and personal tasks, which take operatives AWAY for some time. There is a natural way of simulating this system with \pkg{simmer} which consist in considering machines and operatives as resources, and describing the life cycles of shop jobs and personal tasks as trajectories.
+Figure \ref{fig:job-shop} shows the activity cycle diagram for the considered system. Circles (READY, STOPPED, OK, WAITING) represent states of the machines or the operatives respectively, while rectangles (RUNNING, RETOOL, RESET, AWAY) represent activities that take some (random) time to complete. Two kind of processes can be identified: shop jobs, which use machines and degrade them, and personal tasks, which take operatives AWAY for some time. There is a natural way of simulating this system with \pkg{simmer} which consist in considering machines and operatives as resources, and describing the life cycles of shop jobs and personal tasks as trajectories.
 
 First of all, let us instantiate a new simulation environment and define the completion time for the different activities as random draws from exponential distributions. Likewise, the interarrival times for jobs and tasks are defined (\code{NEW\_JOB}, \code{NEW\_TASK}), and we consider a probability of 0.2 for a machine to be worn after running a job (\code{CHECK\_JOB}).
 
@@ -162,7 +165,7 @@ aggregate(cbind(server, queue) ~ resource, get_mon_resources(env), mean)
 
 The development of the \pkg{simmer} package started in the second half of 2014. The initial need for a DES framework for \proglang{R} came up in projects related to process optimisation in healthcare facilities. Most of these cases involved patients following a clear trajectory through a care process. This background is not unimportant, as it lead to the adoption and implementation of a *trajectory* concept at the very core of \pkg{simmer}'s DES engine. This strong focus on clearly defined *trajectories* is somewhat innovative and, more importantly, very intuitive. Furthermore, this framework relies on a fast \proglang{C++} simulation core to boost performance and make DES modelling in \proglang{R} not only effective, but also efficient.
 
-Over time, the \pkg{simmer} package has seen significant improvements and has been at the forefront of DES for \proglang{R}. Although it is the most generic DES framework, it is however not the only \proglang{R} package which delivers such functionality. For example, the \pkg{SpaDES} package [@CRAN:SpaDES] focuses on spatially explicit discrete models, and the \pkg{queuecomputer} package [@CRAN:queuecomputer] implements an efficient method for simulating queues with arbitrary arrival and service times. Going beyond the \proglang{R} language, the direct competitors to \pkg{simmer} are \pkg{SimPy} [@SimPy] and \pkg{SimJulia} [@GitHub:SimJulia], built for respectively the \proglang{Python} and \proglang{Julia} languages.
+Over time, the \pkg{simmer} package has seen significant improvements and has been at the forefront of DES for \proglang{R}. Although it is the most generic DES framework, it is however not the only \proglang{R} package which delivers such functionality. For example, the \pkg{SpaDES} package [@CRAN:SpaDES] focuses on spatially explicit discrete models, and the \pkg{queuecomputer} package [@CRAN:queuecomputer] implements an efficient method for simulating queues with arbitrary arrival and service times. Going beyond the \proglang{R} language, the direct competitors to \pkg{simmer} are \pkg{SimPy} [@SimPy] and \pkg{SimJulia} [@GitHub:SimJulia], built for the \proglang{Python} and \proglang{Julia} languages.
 
 # The simulation core design
 
@@ -173,6 +176,8 @@ The core of any modern discrete-event simulator comprises two main components: a
 In fact, first attempts were made in pure \proglang{R} by these authors, and a  minimal process-based implementation with \pkg{R6} classes [@CRAN:R6] proved to be  unfeasible in terms of performance compared to similar approaches in pure \proglang{Python}. For this reason, it was decided to provide a robust and fast simulation core written in \proglang{C++}. The \proglang{R} API interfaces with this \proglang{C++} core by leveraging the \pkg{Rcpp} package [@Eddelbuettel:2011:Rcpp; @Eddelbuettel:2013:Rcpp], which has become one of the most popular ways of extending \proglang{R} packages  with \proglang{C} or \proglang{C++} code.
 
 The following sections are devoted to describe the simulation core architecture. First, we establish the DES terminology used in the rest of the paper. Then, the architectural choices made are discussed, as well as the event queue and the *simultaneity problem*,  an important topic that every DES framework has to deal with.
+
+\pagebreak
 
 ## Terminology
 
@@ -303,7 +308,7 @@ There are many activities available. We will briefly review them by categorising
 
 ### Arrival properties
 
-Arrivals are able to store attributes and modify these using \code{set\_attribute()}. Attributes consist of pairs \code{(key, value)} (character and numeric respectively) which by default are set *per arrival* unless they are defined as \code{global}. As we said before, all activities support at least one dynamical parameter. In the case of \code{set\_attribute()}, both arguments, \code{keys} and \code{values}, can be vectors or functions returning vectors.
+Arrivals are able to store attributes and modify these using \code{set\_attribute()}. Attributes consist of pairs \code{(key, value)} (character and numeric respectively) which by default are set *per arrival* unless they are defined as global. As we said before, all activities support at least one dynamical parameter. In the case of \code{set\_attribute()}, both arguments, \code{keys} and \code{values}, can be vectors or functions returning vectors.
 
 Attributes can be retrieved in any \proglang{R} function by calling \code{get\_attribute()}, whose first argument must be a \code{simmer} object. For instance, the following trajectory prints \code{81}:
 
@@ -320,13 +325,13 @@ traj <- trajectory() %>%
 
 Arrivals also hold a set of three prioritisation values for accessing resources:
 
-\code{priority}
+priority
   ~ A higher value equals higher priority. The default value is the minimum priority, which is 0.
 
-\code{preemptible}
+preemptible
   ~ If a preemptive resource is seized, this parameter establishes the minimum   incoming priority that can preempt this arrival (the activity is interrupted and another arrival with a \code{priority} greater than \code{preemptible} gains the resource). In any   case, \code{preemptible} must be equal or greater than \code{priority}, and   thus only higher priority arrivals can trigger preemption.
 
-\code{restart}
+restart
   ~ Whether the ongoing activity must be restarted after being preempted.
 
 These three values are established for all the arrivals created by a particular source, but they can also be dynamically changed on a per-arrival basis using the \code{set\_prioritization()} and \code{get\_prioritization()} activities, in the same way as attributes.
@@ -365,16 +370,16 @@ env <- simmer() %>%
 
 The value supplied to all these methods may be a dynamical parameter. On the other hand, the resource name must be fixed. There is a special mechanism to select resources dynamically: the \code{select()} activity. It marks a resource as selected for an arrival executing this activity given a set of \code{resources} and a \code{policy}. There are several policies implemented internally that can be accessed by name:
 
-\code{shortest-queue}
+shortest-queue
   ~ The resource with the shortest queue is selected.
 
-\code{round-robin}
+round-robin
   ~ Resources will be selected in a cyclical nature.
 
-\code{first-available}
+first-available
   ~ The first available resource is selected.
 
-\code{random}
+random
   ~ A resource is randomly selected.
 
 Its \code{resources} parameter is allowed to be dynamical, and there is also the possibility of defining custom policies. Once a resource is selected, there are special versions of the aforementioned activities for interacting with resources without specifying its name, such as \code{seize\_selected()}, \code{set\_capacity\_selected()} and so on.
@@ -422,6 +427,8 @@ env %>%
 ```
 
 Note that \code{clone()} is the only exception among all activities supporting sub-trajectories that does not accept a \code{continue} parameter. By default, all the clones continue in the main trajectory after this activity. To remove all of them except for one, the \code{synchronize()} activity may be used.
+
+\pagebreak
 
 ### Loops
 
@@ -551,13 +558,13 @@ In the case of generators, the interarrival \code{distribution} must return one 
 
 There are three methods for obtaining monitored data (if any) about arrivals, resources and attributes. They can be applied to a single simulation environment or to a list of environments, and the returning object is always a data frame, even if no data was found. Each processed simulation environment is treated as a different replication, and a numeric column named \code{replication} is added to every returned data frame with environment indexes as values.
 
-\code{get\_mon\_arrivals()}
+get\_mon\_arrivals()
   ~ Returns timing information per arrival: \code{name} of the arrival, \code{start_time}, \code{end_time}, \code{activity_time} (time not spent in resource queues) and a flag, \code{finished}, that indicates whether the arrival exhausted its activities (or was rejected). By default, this information is referred to the arrivals' entire lifetime, but it may be obtained on a per-resource basis by specifying \code{per_resource=TRUE}.
 
-\code{get\_mon\_resources()}
+get\_mon\_resources()
   ~ Returns state changes in resources: \code{resource} name, \code{time} instant of the event that triggered the state change, \code{server} count, \code{queue} count, \code{capacity}, \code{queue_size}, \code{system} count (\code{server} $+$ \code{queue}) and system \code{limit} (\code{capacity} $+$ \code{queue_size}).
 
-\code{get\_mon\_attributes()}
+get\_mon\_attributes()
   ~ Returns state changes in attributes: \code{name} of the attribute, \code{time} instant of the event that triggered the state change, name of \code{key} that identifies the attribute and \code{value}.
 
 \section[Modelling with simmer]{Modelling with \pkg{simmer}}

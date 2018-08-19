@@ -56,11 +56,13 @@ reference:
   - title: "Convenience functions"
     desc: "Helper methods for generators and resources"
     contents:
-    - at
+    - generators
     - schedule
 
 navbar:
   left:
+  - icon: fa-home
+    href: ./
   - text: "Reference"
     icon: fa-gears
     href: reference/index.html
@@ -69,7 +71,7 @@ navbar:
     menu:
     - text: "Introduction to simmer"
       href: articles/simmer-01-introduction.html
-    - text: "JSS paper"
+    - text: "JSS paper (PDF)"
       href: articles/simmer-02-jss.pdf
     - text: "Advanced Trajectory Usage"
       href: articles/simmer-03-trajectories.html
@@ -90,6 +92,10 @@ navbar:
   - text: "News"
     icon: fa-newspaper-o
     href: news/index.html
+  - text: "GitHub"
+    icon: fa-github
+    href: https://github.com/r-simmer/simmer
+  right:
   - text: "Extensions"
     icon: fa-puzzle-piece
     menu:

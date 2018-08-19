@@ -26,16 +26,16 @@ namespace simmer {
     typedef Fn<void(int)> Setter;
 
   public:
-    Manager(Simulator* sim, const std::string& name, const std::string& param,
-            const VEC<double>& duration, const VEC<int>& value, int period, const Setter& set)
-      : Process(sim, name, false, PRIORITY_MANAGER), param(param),
+    Manager(Simulator* sim, const std::string& name, const VEC<double>& duration,
+            const VEC<int>& value, int period, const Setter& set)
+      : Process(sim, name, false, PRIORITY_MANAGER),
         duration(duration), value(value), period(period), set(set), index(0) {}
 
     void reset() { index = 0; }
 
     void run() {
-      if (sim->verbose) sim->print("manager", name, "parameter", param,
-          MakeString() << value[index]);
+      if (sim->verbose)
+        sim->print("manager", name, MakeString() << value[index]);
 
       set(value[index]);
       index++;
@@ -53,7 +53,6 @@ namespace simmer {
     bool activate(double delay = 0) { return Process::activate(duration[index]); }
 
   private:
-    std::string param;
     VEC<double> duration;
     VEC<int> value;
     int period;

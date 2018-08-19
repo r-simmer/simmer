@@ -29,6 +29,12 @@ int get_n_generated_(SEXP sim_, const std::string& name) {
 }
 
 //[[Rcpp::export]]
+Environment get_trajectory_(SEXP sim_, const std::string& name) {
+  XPtr<Simulator> sim(sim_);
+  return sim->get_source(name)->get_trajectory();
+}
+
+//[[Rcpp::export]]
 std::string get_name_(SEXP sim_) {
   XPtr<Simulator> sim(sim_);
   return sim->get_running_arrival()->name;

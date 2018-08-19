@@ -245,8 +245,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // SetAttribute__new
-SEXP SetAttribute__new(const std::vector<std::string>& keys, const std::vector<double>& values, bool global, char mod);
-RcppExport SEXP _simmer_SetAttribute__new(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP, SEXP modSEXP) {
+SEXP SetAttribute__new(const std::vector<std::string>& keys, const std::vector<double>& values, bool global, char mod, double init);
+RcppExport SEXP _simmer_SetAttribute__new(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP, SEXP modSEXP, SEXP initSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -254,13 +254,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const std::vector<double>& >::type values(valuesSEXP);
     Rcpp::traits::input_parameter< bool >::type global(globalSEXP);
     Rcpp::traits::input_parameter< char >::type mod(modSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetAttribute__new(keys, values, global, mod));
+    Rcpp::traits::input_parameter< double >::type init(initSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetAttribute__new(keys, values, global, mod, init));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetAttribute__new_func1
-SEXP SetAttribute__new_func1(const Function& keys, const std::vector<double>& values, bool global, char mod);
-RcppExport SEXP _simmer_SetAttribute__new_func1(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP, SEXP modSEXP) {
+SEXP SetAttribute__new_func1(const Function& keys, const std::vector<double>& values, bool global, char mod, double init);
+RcppExport SEXP _simmer_SetAttribute__new_func1(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP, SEXP modSEXP, SEXP initSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -268,13 +269,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const std::vector<double>& >::type values(valuesSEXP);
     Rcpp::traits::input_parameter< bool >::type global(globalSEXP);
     Rcpp::traits::input_parameter< char >::type mod(modSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetAttribute__new_func1(keys, values, global, mod));
+    Rcpp::traits::input_parameter< double >::type init(initSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetAttribute__new_func1(keys, values, global, mod, init));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetAttribute__new_func2
-SEXP SetAttribute__new_func2(const std::vector<std::string>& keys, const Function& values, bool global, char mod);
-RcppExport SEXP _simmer_SetAttribute__new_func2(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP, SEXP modSEXP) {
+SEXP SetAttribute__new_func2(const std::vector<std::string>& keys, const Function& values, bool global, char mod, double init);
+RcppExport SEXP _simmer_SetAttribute__new_func2(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP, SEXP modSEXP, SEXP initSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -282,13 +284,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Function& >::type values(valuesSEXP);
     Rcpp::traits::input_parameter< bool >::type global(globalSEXP);
     Rcpp::traits::input_parameter< char >::type mod(modSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetAttribute__new_func2(keys, values, global, mod));
+    Rcpp::traits::input_parameter< double >::type init(initSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetAttribute__new_func2(keys, values, global, mod, init));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetAttribute__new_func3
-SEXP SetAttribute__new_func3(const Function& keys, const Function& values, bool global, char mod);
-RcppExport SEXP _simmer_SetAttribute__new_func3(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP, SEXP modSEXP) {
+SEXP SetAttribute__new_func3(const Function& keys, const Function& values, bool global, char mod, double init);
+RcppExport SEXP _simmer_SetAttribute__new_func3(SEXP keysSEXP, SEXP valuesSEXP, SEXP globalSEXP, SEXP modSEXP, SEXP initSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -296,7 +299,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Function& >::type values(valuesSEXP);
     Rcpp::traits::input_parameter< bool >::type global(globalSEXP);
     Rcpp::traits::input_parameter< char >::type mod(modSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetAttribute__new_func3(keys, values, global, mod));
+    Rcpp::traits::input_parameter< double >::type init(initSEXP);
+    rcpp_result_gen = Rcpp::wrap(SetAttribute__new_func3(keys, values, global, mod, init));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -963,6 +967,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_trajectory_
+Environment get_trajectory_(SEXP sim_, const std::string& name);
+RcppExport SEXP _simmer_get_trajectory_(SEXP sim_SEXP, SEXP nameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type name(nameSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_trajectory_(sim_, name));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_name_
 std::string get_name_(SEXP sim_);
 RcppExport SEXP _simmer_get_name_(SEXP sim_SEXP) {
@@ -1267,10 +1283,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_SetQueueSelected__new_func", (DL_FUNC) &_simmer_SetQueueSelected__new_func, 3},
     {"_simmer_Select__new", (DL_FUNC) &_simmer_Select__new, 3},
     {"_simmer_Select__new_func", (DL_FUNC) &_simmer_Select__new_func, 3},
-    {"_simmer_SetAttribute__new", (DL_FUNC) &_simmer_SetAttribute__new, 4},
-    {"_simmer_SetAttribute__new_func1", (DL_FUNC) &_simmer_SetAttribute__new_func1, 4},
-    {"_simmer_SetAttribute__new_func2", (DL_FUNC) &_simmer_SetAttribute__new_func2, 4},
-    {"_simmer_SetAttribute__new_func3", (DL_FUNC) &_simmer_SetAttribute__new_func3, 4},
+    {"_simmer_SetAttribute__new", (DL_FUNC) &_simmer_SetAttribute__new, 5},
+    {"_simmer_SetAttribute__new_func1", (DL_FUNC) &_simmer_SetAttribute__new_func1, 5},
+    {"_simmer_SetAttribute__new_func2", (DL_FUNC) &_simmer_SetAttribute__new_func2, 5},
+    {"_simmer_SetAttribute__new_func3", (DL_FUNC) &_simmer_SetAttribute__new_func3, 5},
     {"_simmer_Activate__new", (DL_FUNC) &_simmer_Activate__new, 1},
     {"_simmer_Activate__new_func", (DL_FUNC) &_simmer_Activate__new_func, 1},
     {"_simmer_Deactivate__new", (DL_FUNC) &_simmer_Deactivate__new, 1},
@@ -1327,6 +1343,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_get_attributes_", (DL_FUNC) &_simmer_get_attributes_, 1},
     {"_simmer_get_resources_", (DL_FUNC) &_simmer_get_resources_, 1},
     {"_simmer_get_n_generated_", (DL_FUNC) &_simmer_get_n_generated_, 2},
+    {"_simmer_get_trajectory_", (DL_FUNC) &_simmer_get_trajectory_, 2},
     {"_simmer_get_name_", (DL_FUNC) &_simmer_get_name_, 1},
     {"_simmer_get_attribute_", (DL_FUNC) &_simmer_get_attribute_, 3},
     {"_simmer_get_prioritization_", (DL_FUNC) &_simmer_get_prioritization_, 1},

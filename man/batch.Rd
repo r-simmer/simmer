@@ -5,7 +5,8 @@
 \alias{separate}
 \title{Batch/Separate Arrivals}
 \usage{
-batch(.trj, n, timeout = 0, permanent = FALSE, name = "", rule = NULL)
+batch(.trj, n, timeout = 0, permanent = FALSE, name = "",
+  rule = NULL)
 
 separate(.trj)
 }

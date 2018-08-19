@@ -1,5 +1,5 @@
 # Copyright (C) 2014 Bart Smeets
-# Copyright (C) 2015-2016 Iñaki Ucar
+# Copyright (C) 2015-2016,2018 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -19,4 +19,3 @@
 library(testthat)
 library(simmer)
 test_check("simmer")
-detach("package:simmer", unload = TRUE)

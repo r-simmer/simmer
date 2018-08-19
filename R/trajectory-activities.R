@@ -123,27 +123,43 @@ set_queue_size_selected.trajectory <- function(.trj, value, id=0, mod=c(NA, "+",
 #' its parameters (capacity or queue size).
 #'
 #' @inheritParams seize
-#' @param resources one or more resource names, or a callable object (a function) which
-#' must return one or more resource names.
-#' @param policy if \code{resources} is a character vector, this parameter determines
-#' the criteria for selecting a resource among the set of policies available:
-#' 'shortest-queue' selects the least busy resource, 'round-robin' selects the resources
-#' in order cyclically, 'first-available' selects the first resource available,
-#' and 'random' selects one at random.
+#' @param resources one or more resource names, or a callable object (a function)
+#' which must return one or more resource names.
+#' @param policy if \code{resources} is a character vector, this parameter
+#' determines the criteria for selecting a resource among the set of policies
+#' available (see details).
 #' @param id selection identifier for nested usage.
 #'
 #' @return Returns the trajectory object.
+#'
+#' @details The 'shortest-queue' policy selects the least busy resource;
+#' 'round-robin' selects resources in cyclical order; 'first-available' selects
+#' the first resource available, and 'random' selects a resource randomly.
+#'
+#' All the 'available'-ending policies ('first-available', but also
+#' 'shortest-queue-available', 'round-robin-available' and 'random-available')
+#' check for resource availability (i.e., whether the capacity is non-zero),
+#' and exclude from the selection producedure those resources with capacity set
+#' to zero. This means that, for these policies, an error will be raised if all
+#' resources are unavailable.
+#'
 #' @seealso \code{\link{seize_selected}}, \code{\link{release_selected}},
 #' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
 #' @export
-select <- function(.trj, resources, policy=c("shortest-queue", "round-robin",
-                                             "first-available", "random"), id=0)
-  UseMethod("select")
+select <- function(
+  .trj, resources,
+  policy=c("shortest-queue", "shortest-queue-available",
+          "round-robin", "round-robin-available",
+          "first-available", "random", "random-available"),
+  id=0) UseMethod("select")
 
 #' @export
-select.trajectory <- function(.trj, resources, policy=c("shortest-queue", "round-robin",
-                                             "first-available", "random"), id=0)
-  .trj$select(resources, policy, id)
+select.trajectory <- function(
+  .trj, resources,
+  policy=c("shortest-queue", "shortest-queue-available",
+           "round-robin", "round-robin-available",
+           "first-available", "random", "random-available"),
+  id=0) .trj$select(resources, policy, id)
 
 #' Delay
 #'
@@ -168,21 +184,28 @@ timeout.trajectory <- function(.trj, task) {
 #' @inheritParams set_attribute
 #' @param key the attribute name, or a callable object (a function) which
 #' must return the attribute name.
+#' @seealso \code{\link{set_attribute}}, \code{\link{set_global}}.
 #' @export
-timeout_from_attribute <- function(.trj, key, global=FALSE)
-  UseMethod("timeout_from_attribute")
+timeout_from_attribute <- function(.trj, key, global=FALSE) {
+  if (global) {
+    .Deprecated("timeout_from_global", old="timeout_from_attribute(global=TRUE)")
+    timeout_from_global(.trj, key)
+  }
+  else UseMethod("timeout_from_attribute")
+}
 
 #' @export
 timeout_from_attribute.trajectory <- function(.trj, key, global=FALSE) {
   check_args(key="string", global="flag")
-  .trj$timeout(key, global)
+  .trj$timeout(key, FALSE)
 }
 
 #' @rdname timeout
-#' @details \code{timeout_from_global} is a shortcut for
-#' \code{timeout_from_attribute(global=TRUE)}.
 #' @export
-timeout_from_global <- function(.trj, key) timeout_from_attribute(.trj, key, TRUE)
+timeout_from_global <- function(.trj, key) UseMethod("timeout_from_global")
+
+#' @export
+timeout_from_global <- function(.trj, key) .trj$timeout(key, TRUE)
 
 #' Set Attributes
 #'
@@ -193,24 +216,35 @@ timeout_from_global <- function(.trj, key) timeout_from_attribute(.trj, key, TRU
 #' must return attribute name(s).
 #' @param values numeric value(s) to set, or a callable object (a function) which
 #' must return numeric value(s).
-#' @param global if \code{TRUE}, the attribute will be global instead of per-arrival.
+#' @param global \code{global=TRUE} is deprecated. Use \code{*_global} instead.
 #' @param mod if set, \code{values} modify the attributes rather than substituting them.
+#' @param init initial value, applied if \code{mod} is set and the attribute was
+#' not previously initialised. Useful for counters or indexes.
 #'
 #' @return Returns the trajectory object.
-#' @seealso \code{\link{get_attribute}}.
+#' @seealso \code{\link{get_attribute}}, \code{\link{get_global}},
+#' \code{\link{timeout_from_attribute}}, \code{\link{timeout_from_global}}.
 #' @export
-set_attribute <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"))
-  UseMethod("set_attribute")
+set_attribute <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"), init=0) {
+  if (global) {
+    .Deprecated("set_global", old="set_attribute(global=TRUE)")
+    set_global(.trj, keys, values, mod, init)
+  }
+  else UseMethod("set_attribute")
+}
 
 #' @export
-set_attribute.trajectory <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"))
-  .trj$set_attribute(keys, values, global, mod=mod)
+set_attribute.trajectory <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"), init=0)
+  .trj$set_attribute(keys, values, mod, init)
 
 #' @rdname set_attribute
-#' @details \code{set_global} is a shortcut for \code{set_attribute(global=TRUE)}.
 #' @export
-set_global <- function(.trj, keys, values, mod=c(NA, "+", "*"))
-  set_attribute(.trj, keys, values, TRUE, mod=mod)
+set_global <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=0)
+  UseMethod("set_global")
+
+#' @export
+set_global.trajectory <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=0)
+  .trj$set_global(keys, values, mod, init)
 
 #' Activate/Deactivate Sources
 #'

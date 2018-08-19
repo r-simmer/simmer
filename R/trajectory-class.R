@@ -159,8 +159,12 @@ Trajectory <- R6Class("trajectory",
       )
     },
 
-    select = function(resources, policy=c("shortest-queue", "round-robin",
-                                          "first-available", "random"), id=0) {
+    select = function(resources,
+                      policy=c("shortest-queue", "shortest-queue-available",
+                               "round-robin", "round-robin-available",
+                               "first-available", "random", "random-available"),
+                      id=0)
+    {
       check_args(resources=c("string vector", "function"), id="number")
       policy <- match.arg(policy)
       switch(
@@ -181,19 +185,35 @@ Trajectory <- R6Class("trajectory",
       )
     },
 
-    set_attribute = function(keys, values, global=FALSE, mod=c(NA, "+", "*")) {
+    set_attribute = function(keys, values, mod=c(NA, "+", "*"), init=0) {
       check_args(
         keys = c("string vector", "function"),
         values = c("numeric", "function"),
-        global = "flag"
+        init = "numeric"
       )
       mod <- match.arg(mod)
       switch(
         binarise(is.function(keys), is.function(values)),
-        private$add_activity(SetAttribute__new(keys, values, global, mod)),
-        private$add_activity(SetAttribute__new_func1(keys, values, global, mod)),
-        private$add_activity(SetAttribute__new_func2(keys, values, global, mod)),
-        private$add_activity(SetAttribute__new_func3(keys, values, global, mod))
+        private$add_activity(SetAttribute__new(keys, values, FALSE, mod, init)),
+        private$add_activity(SetAttribute__new_func1(keys, values, FALSE, mod, init)),
+        private$add_activity(SetAttribute__new_func2(keys, values, FALSE, mod, init)),
+        private$add_activity(SetAttribute__new_func3(keys, values, FALSE, mod, init))
+      )
+    },
+
+    set_global = function(keys, values, mod=c(NA, "+", "*"), init=0) {
+      check_args(
+        keys = c("string vector", "function"),
+        values = c("numeric", "function"),
+        init = "numeric"
+      )
+      mod <- match.arg(mod)
+      switch(
+        binarise(is.function(keys), is.function(values)),
+        private$add_activity(SetAttribute__new(keys, values, TRUE, mod, init)),
+        private$add_activity(SetAttribute__new_func1(keys, values, TRUE, mod, init)),
+        private$add_activity(SetAttribute__new_func2(keys, values, TRUE, mod, init)),
+        private$add_activity(SetAttribute__new_func3(keys, values, TRUE, mod, init))
       )
     },
 
