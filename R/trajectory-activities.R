@@ -123,27 +123,43 @@ set_queue_size_selected.trajectory <- function(.trj, value, id=0, mod=c(NA, "+",
 #' its parameters (capacity or queue size).
 #'
 #' @inheritParams seize
-#' @param resources one or more resource names, or a callable object (a function) which
-#' must return one or more resource names.
-#' @param policy if \code{resources} is a character vector, this parameter determines
-#' the criteria for selecting a resource among the set of policies available:
-#' 'shortest-queue' selects the least busy resource, 'round-robin' selects the resources
-#' in order cyclically, 'first-available' selects the first resource available,
-#' and 'random' selects one at random.
+#' @param resources one or more resource names, or a callable object (a function)
+#' which must return one or more resource names.
+#' @param policy if \code{resources} is a character vector, this parameter
+#' determines the criteria for selecting a resource among the set of policies
+#' available (see details).
 #' @param id selection identifier for nested usage.
 #'
 #' @return Returns the trajectory object.
+#'
+#' @details The 'shortest-queue' policy selects the least busy resource;
+#' 'round-robin' selects resources in cyclical order; 'first-available' selects
+#' the first resource available, and 'random' selects a resource randomly.
+#'
+#' All the 'available'-ending policies ('first-available', but also
+#' 'shortest-queue-available', 'round-robin-available' and 'random-available')
+#' check for resource availability (i.e., whether the capacity is non-zero),
+#' and exclude from the selection producedure those resources with capacity set
+#' to zero. This means that, for these policies, an error will be raised if all
+#' resources are unavailable.
+#'
 #' @seealso \code{\link{seize_selected}}, \code{\link{release_selected}},
 #' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
 #' @export
-select <- function(.trj, resources, policy=c("shortest-queue", "round-robin",
-                                             "first-available", "random"), id=0)
-  UseMethod("select")
+select <- function(
+  .trj, resources,
+  policy=c("shortest-queue", "shortest-queue-available",
+          "round-robin", "round-robin-available",
+          "first-available", "random", "random-available"),
+  id=0) UseMethod("select")
 
 #' @export
-select.trajectory <- function(.trj, resources, policy=c("shortest-queue", "round-robin",
-                                             "first-available", "random"), id=0)
-  .trj$select(resources, policy, id)
+select.trajectory <- function(
+  .trj, resources,
+  policy=c("shortest-queue", "shortest-queue-available",
+           "round-robin", "round-robin-available",
+           "first-available", "random", "random-available"),
+  id=0) .trj$select(resources, policy, id)
 
 #' Delay
 #'

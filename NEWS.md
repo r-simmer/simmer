@@ -5,6 +5,7 @@
 * New getters (#159):
     * `get_sources()` and `get_resources()` retrieve a character vector of source/resource names defined in a simulation environment.
     * `get_trajectory()` retrieves a trajectory to which a given source is attached.
+* New resource selection policies: `shortest-queue-available`, `round-robin-available`, `random-available` (#156). These are the same as the existing non-`available` ones, but they exclude unavailable resources (capacity set to zero). Thus, if all resources are unavailable, an error is raised.
 
 ## Minor changes and fixes:
 

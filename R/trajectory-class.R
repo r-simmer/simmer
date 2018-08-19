@@ -159,8 +159,12 @@ Trajectory <- R6Class("trajectory",
       )
     },
 
-    select = function(resources, policy=c("shortest-queue", "round-robin",
-                                          "first-available", "random"), id=0) {
+    select = function(resources,
+                      policy=c("shortest-queue", "shortest-queue-available",
+                               "round-robin", "round-robin-available",
+                               "first-available", "random", "random-available"),
+                      id=0)
+    {
       check_args(resources=c("string vector", "function"), id="number")
       policy <- match.arg(policy)
       switch(
