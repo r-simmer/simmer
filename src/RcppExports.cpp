@@ -967,6 +967,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_trajectory_
+Environment get_trajectory_(SEXP sim_, const std::string& name);
+RcppExport SEXP _simmer_get_trajectory_(SEXP sim_SEXP, SEXP nameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type name(nameSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_trajectory_(sim_, name));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_name_
 std::string get_name_(SEXP sim_);
 RcppExport SEXP _simmer_get_name_(SEXP sim_SEXP) {
@@ -1331,6 +1343,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_get_attributes_", (DL_FUNC) &_simmer_get_attributes_, 1},
     {"_simmer_get_resources_", (DL_FUNC) &_simmer_get_resources_, 1},
     {"_simmer_get_n_generated_", (DL_FUNC) &_simmer_get_n_generated_, 2},
+    {"_simmer_get_trajectory_", (DL_FUNC) &_simmer_get_trajectory_, 2},
     {"_simmer_get_name_", (DL_FUNC) &_simmer_get_name_, 1},
     {"_simmer_get_attribute_", (DL_FUNC) &_simmer_get_attribute_, 3},
     {"_simmer_get_prioritization_", (DL_FUNC) &_simmer_get_prioritization_, 1},

@@ -38,13 +38,17 @@ test_that("a dist that returns a non-numeric value fails", {
 })
 
 test_that("generates the expected amount", {
+  t <- trajectory() %>% timeout(0)
   env <- simmer(verbose = TRUE) %>%
-    add_generator("customer", trajectory(), at(1:3)) %>%
+    add_generator("customer", t, at(1:3)) %>%
     run()
   arr <- get_mon_arrivals(env)
 
+  expect_equal(env %>% get_sources(), "customer")
   expect_error(env %>% get_n_generated("asdf"))
   expect_equal(env %>% get_n_generated("customer"), 3)
+  expect_error(env %>% get_trajectory("asdf"))
+  expect_equal(env %>% get_trajectory("customer"), t)
   expect_equal(arr$start_time, 1:3)
   expect_equal(arr$end_time, 1:3)
   expect_equal(arr$activity_time, rep(0, 3))

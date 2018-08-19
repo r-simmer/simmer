@@ -313,6 +313,10 @@ get_n_generated_ <- function(sim_, name) {
     .Call(`_simmer_get_n_generated_`, sim_, name)
 }
 
+get_trajectory_ <- function(sim_, name) {
+    .Call(`_simmer_get_trajectory_`, sim_, name)
+}
+
 get_name_ <- function(sim_) {
     .Call(`_simmer_get_name_`, sim_)
 }

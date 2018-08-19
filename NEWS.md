@@ -1,5 +1,11 @@
 # simmer 4.0.0.9000
 
+## New features:
+
+* New getters (#159):
+    * `get_sources()` and `get_resources()` retrieve a character vector of source/resource names defined in a simulation environment.
+    * `get_trajectory()` retrieves a trajectory to which a given source is attached.
+
 ## Minor changes and fixes:
 
 * Rename `-DRCPP_PROTECTED_EVAL` (Rcpp >= 0.12.17.4) as `-DRCPP_USE_UNWIND_PROTECT` (6d27671).

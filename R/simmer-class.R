@@ -212,6 +212,8 @@ Simmer <- R6Class("simmer",
 
     get_n_generated = function(source) get_n_generated_(private$sim_obj, source),
 
+    get_trajectory = function(source) get_trajectory_(private$sim_obj, source)[],
+
     get_name = function() get_name_(private$sim_obj),
 
     get_attribute = function(keys) get_attribute_(private$sim_obj, keys, FALSE),
@@ -260,7 +262,6 @@ Simmer <- R6Class("simmer",
       )
     },
 
-    # not exposed, internal use
     get_sources = function() { private$src },
     get_resources = function() { private$res }
   ),

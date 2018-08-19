@@ -49,14 +49,15 @@ Available methods by category:
 \item Simulation control: \code{\link{stepn}}, \code{\link{run}},
 \code{\link{now}}, \code{\link{peek}}, \code{\link{reset}}
 
-\item Resources: \code{\link{add_resource}}, \code{\link{get_capacity}},
-\code{\link{get_queue_size}}, \code{\link{get_server_count}},
-\code{\link{get_queue_count}}, \code{\link{get_capacity_selected}},
-\code{\link{get_queue_size_selected}}, \code{\link{get_server_count_selected}},
-\code{\link{get_queue_count_selected}}
+\item Resources: \code{\link{add_resource}}, \code{\link{get_resources}},
+\code{\link{get_capacity}}, \code{\link{get_queue_size}},
+\code{\link{get_server_count}}, \code{\link{get_queue_count}},
+\code{\link{get_capacity_selected}}, \code{\link{get_queue_size_selected}},
+\code{\link{get_server_count_selected}}, \code{\link{get_queue_count_selected}}
 
 \item Sources: \code{\link{add_generator}}, \code{\link{add_dataframe}},
-\code{\link{get_n_generated}}
+\code{\link{get_sources}}, \code{\link{get_n_generated}},
+\code{\link{get_trajectory}}
 
 \item Data retrieval: \code{\link{get_mon_arrivals}},
 \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}

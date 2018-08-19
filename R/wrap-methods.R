@@ -67,6 +67,12 @@ get_mon_attributes.wrap <- function(.envs) get_mon_attributes.simmer(.envs)
 get_mon_resources.wrap <- function(.envs) get_mon_resources.simmer(.envs)
 
 #' @export
+get_sources.wrap <- get_sources.simmer
+
+#' @export
+get_resources.wrap <- get_resources.simmer
+
+#' @export
 get_n_generated.wrap <- function(.env, source) get_n_generated.simmer(.env, source)
 
 #' @export

@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2015-2017 Iñaki Ucar
+# Copyright (C) 2015-2018 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -23,6 +23,7 @@ test_that("resources are correctly created", {
     add_resource("dummy", 5, Inf)
 
   expect_warning(env %>% add_resource("dummy"))
+  expect_equal(env %>% get_resources(), "dummy")
   expect_error(env %>% get_capacity("asdf"))
   expect_equal(env %>% get_capacity("dummy"), 5)
   expect_error(env %>% get_queue_size("asdf"))
