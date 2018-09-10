@@ -1,17 +1,19 @@
 ## Patch release
 
 The maintainer's address has changed. It is the same account, just a different
-alias. I'm sending confirmation from the previous address to CRAN-submissions.
+alias. I sent confirmation from the previous address to Uwe Ligges and 
+CRAN@r-project.org on September 7, 2018.
 
 Issues fixed:
 
 - ERROR on r-oldrel-windows: Tests run fine, but the R session was closed 
   unexpectedly after the tests when `detach("package:simmer", unload=TRUE)`
-  was called. The package is not unloaded anymore.
+  was called. The package is not unloaded anymore after the tests.
 - WARN on Windows: since `rticles` v0.5, the compilation of JSS vignettes
   requires pandoc v2, which is not installed on Windows machines on CRAN. Now
   this vignette falls back to an HTML vignette if pandoc v2 is not found, thus
   solving the warning on Windows.
+- Other minor fixes and enhancements.
 
 We haven't included any reference to the papers in the DESCRIPTION yet because
 they are still waiting to be published and there is no DOI assigned. We will add
