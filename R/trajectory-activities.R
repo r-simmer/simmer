@@ -139,7 +139,7 @@ set_queue_size_selected.trajectory <- function(.trj, value, id=0, mod=c(NA, "+",
 #' All the 'available'-ending policies ('first-available', but also
 #' 'shortest-queue-available', 'round-robin-available' and 'random-available')
 #' check for resource availability (i.e., whether the capacity is non-zero),
-#' and exclude from the selection producedure those resources with capacity set
+#' and exclude from the selection procedure those resources with capacity set
 #' to zero. This means that, for these policies, an error will be raised if all
 #' resources are unavailable.
 #'
