@@ -1,3 +1,10 @@
+# simmer 4.1.0
+
+## Minor changes and fixes:
+
+* Remove 3.8.0 and 4.0.1 deprecations (#170 addressing #165).
+* Fix `get_global` to work outside trajectories (#170 addressing #165).
+
 # simmer 4.0.1
 
 ## New features:
