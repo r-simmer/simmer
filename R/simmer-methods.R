@@ -388,16 +388,10 @@ get_name.simmer <- function(.env) .env$get_name()
 #'
 #' @rdname get_n_generated
 #' @export
-get_attribute <- function(.env, keys, global=FALSE) {
-  if (global) {
-    .Deprecated("get_global", old="get_attribute(global=TRUE)")
-    get_global(.env, keys)
-  }
-  else UseMethod("get_attribute")
-}
+get_attribute <- function(.env, keys) UseMethod("get_attribute")
 
 #' @export
-get_attribute.simmer <- function(.env, keys, global=FALSE) .env$get_attribute(keys)
+get_attribute.simmer <- function(.env, keys) .env$get_attribute(keys)
 
 #' @rdname get_n_generated
 #' @export

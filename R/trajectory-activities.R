@@ -186,17 +186,11 @@ timeout.trajectory <- function(.trj, task) {
 #' must return the attribute name.
 #' @seealso \code{\link{set_attribute}}, \code{\link{set_global}}.
 #' @export
-timeout_from_attribute <- function(.trj, key, global=FALSE) {
-  if (global) {
-    .Deprecated("timeout_from_global", old="timeout_from_attribute(global=TRUE)")
-    timeout_from_global(.trj, key)
-  }
-  else UseMethod("timeout_from_attribute")
-}
+timeout_from_attribute <- function(.trj, key) UseMethod("timeout_from_attribute")
 
 #' @export
-timeout_from_attribute.trajectory <- function(.trj, key, global=FALSE) {
-  check_args(key="string", global="flag")
+timeout_from_attribute.trajectory <- function(.trj, key) {
+  check_args(key="string")
   .trj$timeout(key, FALSE)
 }
 
@@ -216,7 +210,6 @@ timeout_from_global <- function(.trj, key) .trj$timeout(key, TRUE)
 #' must return attribute name(s).
 #' @param values numeric value(s) to set, or a callable object (a function) which
 #' must return numeric value(s).
-#' @param global \code{global=TRUE} is deprecated. Use \code{*_global} instead.
 #' @param mod if set, \code{values} modify the attributes rather than substituting them.
 #' @param init initial value, applied if \code{mod} is set and the attribute was
 #' not previously initialised. Useful for counters or indexes.
@@ -225,16 +218,11 @@ timeout_from_global <- function(.trj, key) .trj$timeout(key, TRUE)
 #' @seealso \code{\link{get_attribute}}, \code{\link{get_global}},
 #' \code{\link{timeout_from_attribute}}, \code{\link{timeout_from_global}}.
 #' @export
-set_attribute <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"), init=0) {
-  if (global) {
-    .Deprecated("set_global", old="set_attribute(global=TRUE)")
-    set_global(.trj, keys, values, mod, init)
-  }
-  else UseMethod("set_attribute")
-}
+set_attribute <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=0)
+  UseMethod("set_attribute")
 
 #' @export
-set_attribute.trajectory <- function(.trj, keys, values, global=FALSE, mod=c(NA, "+", "*"), init=0)
+set_attribute.trajectory <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=0)
   .trj$set_attribute(keys, values, mod, init)
 
 #' @rdname set_attribute
@@ -295,14 +283,6 @@ set_source <- function(.trj, source, object) UseMethod("set_source")
 #' @export
 set_source.trajectory <- function(.trj, source, object)
   .trj$set_source(source, object)
-
-#' @rdname set_trajectory
-#' @export
-set_distribution <- function(.trj, source, object) UseMethod("set_distribution") # nocov
-
-#' @export
-set_distribution.trajectory <- function(.trj, source, object) # nocov
-  .Deprecated("set_source") # nocov
 
 #' Set Prioritization Values
 #'
