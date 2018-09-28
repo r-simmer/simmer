@@ -45,8 +45,13 @@ NumericVector get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bo
   XPtr<Simulator> sim(sim_);
   NumericVector attrs;
 
-  foreach_ (const std::string& key, keys)
-    attrs.push_back(sim->get_running_arrival()->get_attribute(key, global));
+  if (global) {
+    foreach_ (const std::string& key, keys)
+      attrs.push_back(sim->get_attribute(key));
+  } else {
+    foreach_ (const std::string& key, keys)
+      attrs.push_back(sim->get_running_arrival()->get_attribute(key));
+  }
 
   return attrs;
 }
