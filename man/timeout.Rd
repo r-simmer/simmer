@@ -8,7 +8,7 @@
 \usage{
 timeout(.trj, task)
 
-timeout_from_attribute(.trj, key, global = FALSE)
+timeout_from_attribute(.trj, key)
 
 timeout_from_global(.trj, key)
 }
@@ -21,8 +21,6 @@ automatically coerced to positive).}
 
 \item{key}{the attribute name, or a callable object (a function) which
 must return the attribute name.}
-
-\item{global}{\code{global=TRUE} is deprecated. Use \code{*_global} instead.}
 }
 \value{
 Returns the trajectory object.

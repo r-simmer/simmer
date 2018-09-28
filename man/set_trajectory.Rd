@@ -3,14 +3,11 @@
 \name{set_trajectory}
 \alias{set_trajectory}
 \alias{set_source}
-\alias{set_distribution}
 \title{Set Source Parameters}
 \usage{
 set_trajectory(.trj, source, trajectory)
 
 set_source(.trj, source, object)
-
-set_distribution(.trj, source, object)
 }
 \arguments{
 \item{.trj}{the trajectory object.}

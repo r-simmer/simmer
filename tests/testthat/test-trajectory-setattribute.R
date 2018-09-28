@@ -132,3 +132,7 @@ test_that("attributes are automatically initialised with modifiers", {
 
   expect_equal(attr$value, c(1, 5))
 })
+
+test_that("get_global works outside a trajectory", {
+  expect_equal(get_global(simmer(), "test"), NA_real_)
+})

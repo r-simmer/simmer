@@ -15,7 +15,7 @@ get_trajectory(.env, source)
 
 get_name(.env)
 
-get_attribute(.env, keys, global = FALSE)
+get_attribute(.env, keys)
 
 get_global(.env, keys)
 
@@ -27,8 +27,6 @@ get_prioritization(.env)
 \item{source}{the name of the source.}
 
 \item{keys}{the attribute name(s).}
-
-\item{global}{\code{global=TRUE} is deprecated. Use \code{*_global} instead.}
 }
 \description{
 Getters for processes (sources and arrivals) number of arrivals generated
