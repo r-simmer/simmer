@@ -472,3 +472,10 @@ get_queue_count_selected <- function(.env, id=0) UseMethod("get_queue_count_sele
 
 #' @export
 get_queue_count_selected.simmer <- function(.env, id=0) .env$get_queue_count(NA, id)
+
+#' @rdname get_capacity
+#' @export
+get_selected <- function(.env, id=0) UseMethod("get_selected")
+
+#' @export
+get_selected.simmer <- function(.env, id=0) .env$get_selected(id)

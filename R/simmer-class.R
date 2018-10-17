@@ -262,6 +262,11 @@ Simmer <- R6Class("simmer",
       )
     },
 
+    get_selected = function(id=0) {
+      check_args(id="number")
+      get_selected_(private$sim_obj, id)
+    },
+
     get_sources = function() { private$src },
     get_resources = function() { private$res }
   ),

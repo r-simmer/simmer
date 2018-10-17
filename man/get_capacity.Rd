@@ -9,6 +9,7 @@
 \alias{get_server_count_selected}
 \alias{get_queue_count}
 \alias{get_queue_count_selected}
+\alias{get_selected}
 \title{Get Resource Parameters}
 \usage{
 get_capacity(.env, resource)
@@ -26,6 +27,8 @@ get_server_count_selected(.env, id = 0)
 get_queue_count(.env, resource)
 
 get_queue_count_selected(.env, id = 0)
+
+get_selected(.env, id = 0)
 }
 \arguments{
 \item{.env}{the simulation environment.}

@@ -69,3 +69,11 @@ int get_queue_count_selected_(SEXP sim_, int id) {
   XPtr<Simulator> sim(sim_);
   return sim->get_running_arrival()->get_resource_selected(id)->get_queue_count();
 }
+
+//[[Rcpp::export]]
+std::string get_selected_(SEXP sim_, int id) {
+  XPtr<Simulator> sim(sim_);
+  Resource* res = sim->get_running_arrival()->get_resource_selected(id);
+  if (!res) return "";
+  return res->name;
+}
