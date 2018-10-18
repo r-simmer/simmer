@@ -38,17 +38,17 @@ Simmer <- R6Class("simmer",
       for (name in names(private$mon$handlers)) cat(paste0(
         "  { ", name, ": ", private$mon$handlers[[name]], " }\n"
       ))
-      for (name in names(private$res)) cat(paste0(
+      for (name in names(private$resources)) cat(paste0(
         "{ Resource: ", name,
-        " | monitored: ", private$res[[name]][["mon"]],
+        " | monitored: ", private$resources[[name]][["mon"]],
         " | server status: ", self$get_server_count(name),
         "(", self$get_capacity(name), ")",
         " | queue status: ", self$get_queue_count(name),
         "(", self$get_queue_size(name), ") }\n"
       ))
-      for (name in names(private$src)) cat(paste0(
+      for (name in names(private$sources)) cat(paste0(
         "{ Source: ", name,
-        " | monitored: ", private$src[[name]][["mon"]],
+        " | monitored: ", private$sources[[name]][["mon"]],
         " | n_generated: ", self$get_n_generated(name), " }\n"
       ))
       invisible(self)
@@ -104,7 +104,7 @@ Simmer <- R6Class("simmer",
 
       ret <- add_resource_(private$sim_obj, name, capacity, queue_size, mon,
                            preemptive, preempt_order, queue_size_strict)
-      if (ret) private$res[[name]] <- c(mon=mon, preemptive=preemptive)
+      if (ret) private$resources[[name]] <- c(mon=mon, preemptive=preemptive)
 
       if (inherits(capacity_schedule, "schedule"))
         add_resource_manager_(private$sim_obj, name, "capacity",
@@ -133,7 +133,7 @@ Simmer <- R6Class("simmer",
       )
       ret <- add_generator_(private$sim_obj, name_prefix, trajectory[],
                             make_resetable(distribution), mon, priority, preemptible, restart)
-      if (ret) private$src[[name_prefix]] <- c(mon=mon)
+      if (ret) private$sources[[name_prefix]] <- c(mon=mon)
       self
     },
 
@@ -188,7 +188,7 @@ Simmer <- R6Class("simmer",
 
       ret <- add_dataframe_(private$sim_obj, name_prefix, trajectory[], data, mon, batch,
                             col_time, col_attributes, col_priority, col_preemptible, col_restart)
-      if (ret) private$src[[name_prefix]] <- c(mon=mon)
+      if (ret) private$sources[[name_prefix]] <- c(mon=mon)
       self
     },
 
@@ -210,9 +210,10 @@ Simmer <- R6Class("simmer",
       monitor_data
     },
 
-    get_n_generated = function(source) get_n_generated_(private$sim_obj, source),
+    get_n_generated = function(sources) get_n_generated_(private$sim_obj, sources),
 
-    get_trajectory = function(source) get_trajectory_(private$sim_obj, source)[],
+    get_trajectory = function(sources)
+      lapply(get_trajectory_(private$sim_obj, sources), "["),
 
     get_name = function() get_name_(private$sim_obj),
 
@@ -222,54 +223,57 @@ Simmer <- R6Class("simmer",
 
     get_prioritization = function() get_prioritization_(private$sim_obj),
 
-    get_capacity = function(resource, id=0) {
-      check_args(resource=c("string", "NA"), id="number")
+    get_capacity = function(resources, id=0) {
+      check_args(resources=c("string vector", "NULL"), id="numeric")
       ret <- switch(
-        binarise(is.na(resource)),
-        get_capacity_(private$sim_obj, resource),
+        binarise(is.null(resources)),
+        get_capacity_(private$sim_obj, resources),
         get_capacity_selected_(private$sim_obj, id)
       )
-      if (ret < 0) ret <- Inf
-      ret
+      replace(ret, ret < 0, Inf)
     },
 
-    get_queue_size = function(resource, id=0) {
-      check_args(resource=c("string", "NA"), id="number")
+    get_queue_size = function(resources, id=0) {
+      check_args(resources=c("string vector", "NULL"), id="numeric")
       ret <- switch(
-        binarise(is.na(resource)),
-        get_queue_size_(private$sim_obj, resource),
+        binarise(is.null(resources)),
+        get_queue_size_(private$sim_obj, resources),
         get_queue_size_selected_(private$sim_obj, id)
       )
-      if (ret < 0) ret <- Inf
-      ret
+      replace(ret, ret < 0, Inf)
     },
 
-    get_server_count = function(resource, id=0) {
-      check_args(resource=c("string", "NA"), id="number")
+    get_server_count = function(resources, id=0) {
+      check_args(resources=c("string vector", "NULL"), id="numeric")
       switch(
-        binarise(is.na(resource)),
-        get_server_count_(private$sim_obj, resource),
+        binarise(is.null(resources)),
+        get_server_count_(private$sim_obj, resources),
         get_server_count_selected_(private$sim_obj, id)
       )
     },
 
-    get_queue_count = function(resource, id=0) {
-      check_args(resource=c("string", "NA"), id="number")
+    get_queue_count = function(resources, id=0) {
+      check_args(resources=c("string vector", "NULL"), id="numeric")
       ret <- switch(
-        binarise(is.na(resource)),
-        get_queue_count_(private$sim_obj, resource),
+        binarise(is.null(resources)),
+        get_queue_count_(private$sim_obj, resources),
         get_queue_count_selected_(private$sim_obj, id)
       )
     },
 
-    get_sources = function() { private$src },
-    get_resources = function() { private$res }
+    get_selected = function(id=0) {
+      check_args(id="numeric")
+      get_selected_(private$sim_obj, id)
+    },
+
+    get_sources = function() { private$sources },
+    get_resources = function() { private$resources }
   ),
 
   private = list(
     sim_obj = NULL,
     mon = NULL,
-    res = list(),
-    src = list()
+    resources = list(),
+    sources = list()
   )
 )
