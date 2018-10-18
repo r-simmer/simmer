@@ -12,19 +12,19 @@
 \alias{get_selected}
 \title{Get Resource Parameters}
 \usage{
-get_capacity(.env, resource)
+get_capacity(.env, resources)
 
 get_capacity_selected(.env, id = 0)
 
-get_queue_size(.env, resource)
+get_queue_size(.env, resources)
 
 get_queue_size_selected(.env, id = 0)
 
-get_server_count(.env, resource)
+get_server_count(.env, resources)
 
 get_server_count_selected(.env, id = 0)
 
-get_queue_count(.env, resource)
+get_queue_count(.env, resources)
 
 get_queue_count_selected(.env, id = 0)
 
@@ -33,12 +33,14 @@ get_selected(.env, id = 0)
 \arguments{
 \item{.env}{the simulation environment.}
 
-\item{resource}{the name of the resource.}
+\item{resources}{one or more resource names.}
 
-\item{id}{selection identifier for nested usage.}
+\item{id}{selection identifier (a negative number causes the function to
+return the required parameter for all the selected resources).}
 }
 \value{
-Return a numeric value.
+Return a vector (character for \code{get_selected}, numeric for the
+rest of them).
 }
 \description{
 Getters for resources: server capacity/count and queue size/count.

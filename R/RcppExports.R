@@ -309,12 +309,12 @@ get_resources_ <- function(mon_) {
     .Call(`_simmer_get_resources_`, mon_)
 }
 
-get_n_generated_ <- function(sim_, name) {
-    .Call(`_simmer_get_n_generated_`, sim_, name)
+get_n_generated_ <- function(sim_, names) {
+    .Call(`_simmer_get_n_generated_`, sim_, names)
 }
 
-get_trajectory_ <- function(sim_, name) {
-    .Call(`_simmer_get_trajectory_`, sim_, name)
+get_trajectory_ <- function(sim_, names) {
+    .Call(`_simmer_get_trajectory_`, sim_, names)
 }
 
 get_name_ <- function(sim_) {
@@ -329,32 +329,32 @@ get_prioritization_ <- function(sim_) {
     .Call(`_simmer_get_prioritization_`, sim_)
 }
 
-get_capacity_ <- function(sim_, name) {
-    .Call(`_simmer_get_capacity_`, sim_, name)
+get_capacity_ <- function(sim_, names) {
+    .Call(`_simmer_get_capacity_`, sim_, names)
 }
 
 get_capacity_selected_ <- function(sim_, id) {
     .Call(`_simmer_get_capacity_selected_`, sim_, id)
 }
 
-get_queue_size_ <- function(sim_, name) {
-    .Call(`_simmer_get_queue_size_`, sim_, name)
+get_queue_size_ <- function(sim_, names) {
+    .Call(`_simmer_get_queue_size_`, sim_, names)
 }
 
 get_queue_size_selected_ <- function(sim_, id) {
     .Call(`_simmer_get_queue_size_selected_`, sim_, id)
 }
 
-get_server_count_ <- function(sim_, name) {
-    .Call(`_simmer_get_server_count_`, sim_, name)
+get_server_count_ <- function(sim_, names) {
+    .Call(`_simmer_get_server_count_`, sim_, names)
 }
 
 get_server_count_selected_ <- function(sim_, id) {
     .Call(`_simmer_get_server_count_selected_`, sim_, id)
 }
 
-get_queue_count_ <- function(sim_, name) {
-    .Call(`_simmer_get_queue_count_`, sim_, name)
+get_queue_count_ <- function(sim_, names) {
+    .Call(`_simmer_get_queue_count_`, sim_, names)
 }
 
 get_queue_count_selected_ <- function(sim_, id) {

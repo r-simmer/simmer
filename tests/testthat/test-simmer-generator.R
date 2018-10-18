@@ -48,7 +48,7 @@ test_that("generates the expected amount", {
   expect_error(env %>% get_n_generated("asdf"))
   expect_equal(env %>% get_n_generated("customer"), 3)
   expect_error(env %>% get_trajectory("asdf"))
-  expect_equal(env %>% get_trajectory("customer"), t)
+  expect_equal((env %>% get_trajectory("customer"))[[1]], t)
   expect_equal(arr$start_time, 1:3)
   expect_equal(arr$end_time, 1:3)
   expect_equal(arr$activity_time, rep(0, 3))

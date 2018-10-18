@@ -22,16 +22,23 @@
 using namespace Rcpp;
 using namespace simmer;
 
-//[[Rcpp::export]]
-int get_n_generated_(SEXP sim_, const std::string& name) {
+template <typename T>
+VEC<T> get_param(SEXP sim_, const VEC<std::string>& names, const Fn<T(Source*)>& param) {
   XPtr<Simulator> sim(sim_);
-  return sim->get_source(name)->get_n_generated();
+  VEC<T> out;
+  foreach_ (const std::string& name, names)
+    out.push_back(param(sim->get_source(name)));
+  return out;
 }
 
 //[[Rcpp::export]]
-Environment get_trajectory_(SEXP sim_, const std::string& name) {
-  XPtr<Simulator> sim(sim_);
-  return sim->get_source(name)->get_trajectory();
+std::vector<int> get_n_generated_(SEXP sim_, const std::vector<std::string>& names) {
+  return get_param<int>(sim_, names, boost::mem_fn(&Source::get_n_generated));
+}
+
+//[[Rcpp::export]]
+std::vector<Environment> get_trajectory_(SEXP sim_, const std::vector<std::string>& names) {
+  return get_param<Environment>(sim_, names, boost::mem_fn(&Source::get_trajectory));
 }
 
 //[[Rcpp::export]]
