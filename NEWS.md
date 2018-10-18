@@ -1,5 +1,10 @@
 # simmer 4.1.0
 
+## New features:
+
+* New getter `get_selected()` retrieves names of selected resources via the `select()` activity (#172 addressing #171).
+* Source and resource getters have been vectorised to retrieve parameters from multiple entities (as part of #172).
+
 ## Minor changes and fixes:
 
 * Remove 3.8.0 and 4.0.1 deprecations (#170 addressing #165).
