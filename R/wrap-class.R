@@ -25,21 +25,26 @@ Wrap <- R6Class("wrap",
       self$name <- env$name
       private$now_val <- env$now()
       private$peek_val <- env$peek(Inf, TRUE)
-      private$res <- env$get_resources()
-      private$src <- env$get_sources()
-      private$arrivals <- env$get_mon_arrivals(ongoing = TRUE)
-      private$arrivals_res <- env$get_mon_arrivals(TRUE, ongoing = TRUE)
-      private$attributes <- env$get_mon_attributes()
-      private$resources <- env$get_mon_resources()
-      for (name in names(private$src)) {
-        private$n_generated[[name]] <- env$get_n_generated(name)
+
+      private$resources <- env$get_resources()
+      private$sources <- env$get_sources()
+
+      private$mon_arrivals <- env$get_mon_arrivals(ongoing = TRUE)
+      private$mon_arrivals_res <- env$get_mon_arrivals(TRUE, ongoing = TRUE)
+      private$mon_attributes <- env$get_mon_attributes()
+      private$mon_resources <- env$get_mon_resources()
+
+      sources <- names(private$sources)
+      resources <- names(private$resources)
+      if (!is.null(sources))
+        private$n_generated[sources] <- env$get_n_generated(sources)
+      if (!is.null(resources)) {
+        private$capacity[resources] <- env$get_capacity(resources)
+        private$queue_size[resources] <- env$get_queue_size(resources)
+        private$server_count[resources] <- env$get_server_count(resources)
+        private$queue_count[resources] <- env$get_queue_count(resources)
       }
-      for (name in names(private$res)) {
-        private$capacity[[name]] <- env$get_capacity(name)
-        private$queue_size[[name]] <- env$get_queue_size(name)
-        private$server_count[[name]] <- env$get_server_count(name)
-        private$queue_count[[name]] <- env$get_queue_count(name)
-      }
+
       self
     },
 
@@ -58,58 +63,57 @@ Wrap <- R6Class("wrap",
     get_mon_arrivals = function(per_resource=FALSE, ongoing=FALSE) {
       if (per_resource) {
         if (!ongoing)
-          na.omit(private$arrivals_res)
-        else private$arrivals_res
+          na.omit(private$mon_arrivals_res)
+        else private$mon_arrivals_res
       } else {
         if (!ongoing)
-          na.omit(private$arrivals)
-        else private$arrivals
+          na.omit(private$mon_arrivals)
+        else private$mon_arrivals
       }
     },
-    get_mon_attributes = function() { private$attributes },
-    get_mon_resources = function() { private$resources },
-    get_n_generated = function(source) {
-      if (!(source %in% names(private$src)))
-        stop("source '", source, "' not found")
-      private$n_generated[[source]]
-    },
-    get_capacity = function(resource) {
-      if (!(resource %in% names(private$res)))
-        stop("resource '", resource, "' not found")
-      private$capacity[[resource]]
-    },
-    get_queue_size = function(resource) {
-      if (!(resource %in% names(private$res)))
-        stop("resource '", resource, "' not found")
-      private$queue_size[[resource]]
-    },
-    get_server_count = function(resource) {
-      if (!(resource %in% names(private$res)))
-        stop("resource '", resource, "' not found")
-      private$server_count[[resource]]
-    },
-    get_queue_count = function(resource) {
-      if (!(resource %in% names(private$res)))
-        stop("resource '", resource, "' not found")
-      private$queue_count[[resource]]
-    },
-    get_sources = function() { private$src },
-    get_resources = function() { private$res }
+    get_mon_attributes = function() { private$mon_attributes },
+    get_mon_resources = function() { private$mon_resources },
+
+    get_n_generated = function(sources)
+      unlist(private$n_generated[private$check(sources)], use.names=FALSE),
+
+    get_capacity = function(resources)
+      unlist(private$capacity[private$check(resources)], use.names=FALSE),
+
+    get_queue_size = function(resources)
+      unlist(private$queue_size[private$check(resources)], use.names=FALSE),
+
+    get_server_count = function(resources)
+      unlist(private$server_count[private$check(resources)], use.names=FALSE),
+
+    get_queue_count = function(resources)
+      unlist(private$queue_count[private$check(resources)], use.names=FALSE),
+
+    get_sources = function() { private$sources },
+    get_resources = function() { private$resources }
   ),
 
   private = list(
     now_val = NA,
     peek_val = NA,
-    res = NA,
-    src = NA,
-    arrivals = NA,
-    arrivals_res = NA,
-    attributes = NA,
     resources = NA,
+    sources = NA,
+    mon_arrivals = NA,
+    mon_arrivals_res = NA,
+    mon_attributes = NA,
+    mon_resources = NA,
     n_generated = list(),
     capacity = list(),
     queue_size = list(),
     server_count = list(),
-    queue_count = list()
+    queue_count = list(),
+
+    check = function(entities) {
+      comp <- as.character(substitute(entities))
+      found <- entities %in% names(private[[comp]])
+      if (any(!found))
+        stop(comp, " '", paste(entities[!found], collapse=", "), "' not found")
+      entities
+    }
   )
 )
