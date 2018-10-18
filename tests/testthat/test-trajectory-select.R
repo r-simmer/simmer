@@ -256,3 +256,22 @@ test_that("custom selection algorithms work", {
   expect_equal(res_ordered$queue, c(0, 0, 0, 1, 1, 1))
   expect_equal(res_ordered$resource, c("r3", "r2", "r1", "r3", "r2", "r1"))
 })
+
+test_that("selections can be retrieved", {
+  t <- trajectory() %>%
+    select("res0") %>%
+    select("res1", id=1) %>%
+    timeout(function() stop())  # break the execution
+
+  env <- simmer(verbose=TRUE) %>%
+    add_resource("res0") %>%
+    add_resource("res1") %>%
+    add_generator("dummy", t, at(0))
+
+  expect_error(run(env))
+
+  expect_equal(get_selected(env, id=-1), c("res0", "res1"))
+  expect_equal(get_selected(env, id=0), "res0")
+  expect_equal(get_selected(env, id=1), "res1")
+  expect_equal(get_selected(env, id=2), character(0))
+})
