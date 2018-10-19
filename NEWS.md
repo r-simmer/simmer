@@ -4,6 +4,7 @@
 
 * New getter `get_selected()` retrieves names of selected resources via the `select()` activity (#172 addressing #171).
 * Source and resource getters have been vectorised to retrieve parameters from multiple entities (as part of #172).
+* Simplify C++ `Simulator` interface for adding processes and resources (#162). The responsibility of building the objects has been moved to the caller.
 
 ## Minor changes and fixes:
 
