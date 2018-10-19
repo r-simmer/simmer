@@ -53,7 +53,8 @@ Available methods by category:
 \code{\link{get_capacity}}, \code{\link{get_queue_size}},
 \code{\link{get_server_count}}, \code{\link{get_queue_count}},
 \code{\link{get_capacity_selected}}, \code{\link{get_queue_size_selected}},
-\code{\link{get_server_count_selected}}, \code{\link{get_queue_count_selected}}
+\code{\link{get_server_count_selected}}, \code{\link{get_queue_count_selected}},
+\code{\link{get_selected}}
 
 \item Sources: \code{\link{add_generator}}, \code{\link{add_dataframe}},
 \code{\link{get_sources}}, \code{\link{get_n_generated}},

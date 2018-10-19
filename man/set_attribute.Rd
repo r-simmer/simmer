@@ -5,8 +5,7 @@
 \alias{set_global}
 \title{Set Attributes}
 \usage{
-set_attribute(.trj, keys, values, global = FALSE, mod = c(NA, "+",
-  "*"), init = 0)
+set_attribute(.trj, keys, values, mod = c(NA, "+", "*"), init = 0)
 
 set_global(.trj, keys, values, mod = c(NA, "+", "*"), init = 0)
 }
@@ -18,8 +17,6 @@ must return attribute name(s).}
 
 \item{values}{numeric value(s) to set, or a callable object (a function) which
 must return numeric value(s).}
-
-\item{global}{\code{global=TRUE} is deprecated. Use \code{*_global} instead.}
 
 \item{mod}{if set, \code{values} modify the attributes rather than substituting them.}
 

@@ -45,6 +45,7 @@ reference:
   - title: "Manage simulation environments"
     desc: "Methods for getting information about simulation components"
     contents:
+    - get_sources
     - get_n_generated
     - get_capacity
     - now

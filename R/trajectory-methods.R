@@ -45,7 +45,7 @@
 #' \code{\link{set_queue_size_selected}}
 #'
 #' \item Interaction with generators: \code{\link{activate}}, \code{\link{deactivate}},
-#' \code{\link{set_trajectory}}, \code{\link{set_distribution}}
+#' \code{\link{set_trajectory}}, \code{\link{set_source}}
 #'
 #' \item Branching: \code{\link{branch}}, \code{\link{clone}}, \code{\link{synchronize}}
 #'

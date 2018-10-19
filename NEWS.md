@@ -1,4 +1,17 @@
-# simmer 4.0.0.9000
+# simmer 4.1.0
+
+## New features:
+
+* New getter `get_selected()` retrieves names of selected resources via the `select()` activity (#172 addressing #171).
+* Source and resource getters have been vectorised to retrieve parameters from multiple entities (as part of #172).
+* Simplify C++ `Simulator` interface for adding processes and resources (#162). The responsibility of building the objects has been moved to the caller.
+
+## Minor changes and fixes:
+
+* Remove 3.8.0 and 4.0.1 deprecations (#170 addressing #165).
+* Fix `get_global` to work outside trajectories (#170 addressing #165).
+
+# simmer 4.0.1
 
 ## New features:
 

@@ -62,7 +62,14 @@ bool add_generator_(SEXP sim_, const std::string& name_prefix, const Environment
                     const Function& dist, int mon, int priority, int preemptible, bool restart)
 {
   XPtr<Simulator> sim(sim_);
-  return sim->add_generator(name_prefix, trj, dist, mon, priority, preemptible, restart);
+
+  simmer::Generator* gen = new simmer::Generator(
+    sim, name_prefix, mon, trj, dist, Order(priority, preemptible, restart));
+
+  bool ret = sim->add_process(gen);
+
+  if (!ret) delete gen;
+  return ret;
 }
 
 //[[Rcpp::export]]
@@ -74,10 +81,17 @@ bool add_dataframe_(SEXP sim_, const std::string& name_prefix, const Environment
                     const std::vector<std::string>& restart)
 {
   XPtr<Simulator> sim(sim_);
-  return sim->add_dataframe(name_prefix, trj, data, mon, batch, time, attrs,
-                            priority.empty() ? NONE : boost::make_optional(priority[0]),
-                            preemptible.empty() ? NONE : boost::make_optional(preemptible[0]),
-                            restart.empty() ? NONE : boost::make_optional(restart[0]));
+
+  DataSrc* gen = new DataSrc(
+    sim, name_prefix, mon, trj, data, batch, time, attrs,
+    priority.empty() ? NONE : boost::make_optional(priority[0]),
+    preemptible.empty() ? NONE : boost::make_optional(preemptible[0]),
+    restart.empty() ? NONE : boost::make_optional(restart[0]));
+
+  bool ret = sim->add_process(gen);
+
+  if (!ret) delete gen;
+  return ret;
 }
 
 //[[Rcpp::export]]
@@ -85,7 +99,24 @@ bool add_resource_(SEXP sim_, const std::string& name, int capacity, int queue_s
                    bool preemptive, const std::string& preempt_order, bool queue_size_strict)
 {
   XPtr<Simulator> sim(sim_);
-  return sim->add_resource(name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict);
+
+  Resource* res;
+  if (!preemptive) {
+    res = new PriorityRes<FIFO>(sim, name, mon, capacity,
+                                queue_size, queue_size_strict);
+  } else {
+    if (preempt_order.compare("fifo") == 0)
+      res = new PreemptiveRes<FIFO>(sim, name, mon, capacity,
+                                    queue_size, queue_size_strict);
+    else
+      res = new PreemptiveRes<LIFO>(sim, name, mon, capacity,
+                                    queue_size, queue_size_strict);
+  }
+
+  bool ret = sim->add_resource(res);
+
+  if (!ret) delete res;
+  return ret;
 }
 
 //[[Rcpp::export]]
@@ -93,7 +124,24 @@ bool add_resource_manager_(SEXP sim_, const std::string& name, const std::string
                            const std::vector<double>& intervals, const std::vector<int>& values, int period)
 {
   XPtr<Simulator> sim(sim_);
-  return sim->add_resource_manager(name, param, intervals, values, period);
+
+  Manager* manager;
+  Resource* res = sim->get_resource(name);
+  std::string manager_name = name + "_" + param;
+  if (param.compare("capacity") == 0)
+    manager = new Manager(sim, manager_name, intervals, values, period,
+                          BIND(&Resource::set_capacity, res, _1));
+  else
+    manager = new Manager(sim, manager_name, intervals, values, period,
+                          BIND(&Resource::set_queue_size, res, _1));
+
+  bool ret = sim->add_process(manager);
+
+  if (!ret) {
+    delete manager;
+    stop("resource '%s' was defined, but no schedule was attached", name);
+  }
+  return ret;
 }
 
 //[[Rcpp::export]]
