@@ -146,61 +146,9 @@ namespace simmer {
       if (flush) Rcpp::Rcout << std::endl;
     }
 
-    /**
-     * Add a generator of arrivals to the simulator.
-     * @param   name_prefix     prefix for the arrival names
-     * @param   trj             a user-defined R trajectory
-     * @param   dist            a user-defined R function that provides random numbers
-     * @param   mon             monitoring level
-     * @param   priority        arrival priority
-     * @param   preemptible     maximum priority that cannot cause preemption (>=priority)
-     * @param   restart         whether activity must be restarted after preemption
-     */
-    bool add_generator(const std::string& name_prefix, REnv trj, RFn dist,
-                       int mon, int priority, int preemptible, bool restart);
-
-    /**
-     * Attach arrivals from a data frame.
-     * @param   name_prefix     prefix for the arrival names
-     * @param   trj             a user-defined R trajectory
-     * @param   data            a user-supplied data frame
-     * @param   mon             monitoring level
-     * @param   time            column name
-     * @param   attrs           column names for attributes
-     * @param   priority        column name
-     * @param   preemptible     column name
-     * @param   restart         column name
-     */
-    bool add_dataframe(const std::string& name_prefix, REnv trj, RData data, int mon,
-                       int batch, const std::string& time, const VEC<std::string>& attrs,
-                       const OPT<std::string>& priority,
-                       const OPT<std::string>& preemptible,
-                       const OPT<std::string>& restart);
-
-    /**
-     * Add a resource to the simulator.
-     * @param   name              the name
-     * @param   capacity          server capacity (-1 means infinity)
-     * @param   queue_size        room in the queue (-1 means infinity)
-     * @param   mon               whether this entity must be monitored
-     * @param   preemptive        whether the resource is preemptive
-     * @param   preempt_order     fifo or lifo
-     * @param   queue_size_strict whether the queue size is a hard limit
-     */
-    bool add_resource(const std::string& name, int capacity, int queue_size, bool mon,
-                      bool preemptive, const std::string& preempt_order, bool queue_size_strict);
-
-    /**
-     * Add a process that manages the capacity or the queue_size of a resource
-     * given a scheduling.
-     * @param   name      the resource name
-     * @param   param     "capacity" or "queue_size"
-     * @param   duration  vector of durations until the next value change
-     * @param   value     vector of values
-     */
-    bool add_resource_manager(const std::string& name, const std::string& param,
-                              const VEC<double>& duration, const VEC<int>& value, int period);
-
+    bool add_process(Process* process);
+    bool add_resource(Resource* resource);
+    Process* get_process(const std::string& name) const;
     Source* get_source(const std::string& name) const;
     Resource* get_resource(const std::string& name) const;
     Arrival* get_running_arrival() const;

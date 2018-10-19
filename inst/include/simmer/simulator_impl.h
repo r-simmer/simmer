@@ -93,89 +93,37 @@ namespace simmer {
     );
   }
 
-  inline bool Simulator::add_generator(const std::string& name_prefix, REnv trj, RFn dist,
-                     int mon, int priority, int preemptible, bool restart)
-  {
-    if (process_map.find(name_prefix) != process_map.end()) {
-      Rcpp::warning("process '%s' already defined", name_prefix);
+  inline bool Simulator::add_process(Process* process) {
+    if (process_map.find(process->name) != process_map.end()) {
+      Rcpp::warning("process '%s' already defined", process->name);
       return false;
     }
-    Generator* gen = new Generator(this, name_prefix, mon, trj, dist,
-                                   Order(priority, preemptible, restart));
-    process_map[name_prefix] = gen;
-    gen->activate();
+    process_map[process->name] = process;
+    process->activate();
     return true;
   }
 
-  inline bool Simulator::add_dataframe(const std::string& name_prefix, REnv trj, RData data, int mon,
-                     int batch, const std::string& time, const VEC<std::string>& attrs,
-                     const OPT<std::string>& priority,
-                     const OPT<std::string>& preemptible,
-                     const OPT<std::string>& restart)
-  {
-    if (process_map.find(name_prefix) != process_map.end()) {
-      Rcpp::warning("process '%s' already defined", name_prefix);
+  inline bool Simulator::add_resource(Resource* resource) {
+    if (resource_map.find(resource->name) != resource_map.end()) {
+      Rcpp::warning("resource '%s' already defined", resource->name);
       return false;
     }
-    DataSrc* gen = new DataSrc(this, name_prefix, mon, trj, data, batch, time,
-                               attrs, priority, preemptible, restart);
-    process_map[name_prefix] = gen;
-    gen->activate();
+    resource_map[resource->name] = resource;
     return true;
   }
 
-  inline bool Simulator::add_resource(const std::string& name, int capacity, int queue_size, bool mon,
-                    bool preemptive, const std::string& preempt_order, bool queue_size_strict)
-  {
-    if (resource_map.find(name) != resource_map.end()) {
-      Rcpp::warning("resource '%s' already defined", name);
-      return false;
-    }
-    Resource* res;
-    if (!preemptive) {
-      res = new PriorityRes<FIFO>(this, name, mon, capacity,
-                                  queue_size, queue_size_strict);
-    } else {
-      if (preempt_order.compare("fifo") == 0)
-        res = new PreemptiveRes<FIFO>(this, name, mon, capacity,
-                                      queue_size, queue_size_strict);
-      else
-        res = new PreemptiveRes<LIFO>(this, name, mon, capacity,
-                                      queue_size, queue_size_strict);
-    }
-    resource_map[name] = res;
-    return true;
-  }
-
-  inline bool Simulator::add_resource_manager(const std::string& name, const std::string& param,
-                            const VEC<double>& duration, const VEC<int>& value, int period)
-  {
-    EntMap::iterator search = resource_map.find(name);
-    if (search == resource_map.end())
-      Rcpp::stop("resource '%s' not found (typo?)", name);
-
-    std::string manager_name = name + "_" + param;
-    if (process_map.find(manager_name) != process_map.end())
-      Rcpp::stop("process '%s' already defined", manager_name);
-
-    Manager* manager;
-    Resource* res = static_cast<Resource*>(search->second);
-    if (param.compare("capacity") == 0)
-      manager = new Manager(this, manager_name, duration, value, period,
-                            BIND(&Resource::set_capacity, res, _1));
-    else
-      manager = new Manager(this, manager_name, duration, value, period,
-                            BIND(&Resource::set_queue_size, res, _1));
-    process_map[manager_name] = manager;
-    manager->activate();
-    return true;
+  inline Process* Simulator::get_process(const std::string& name) const {
+    EntMap::const_iterator search = process_map.find(name);
+    if (search == process_map.end())
+      Rcpp::stop("process '%s' not found (typo?)", name);
+    return static_cast<Process*>(search->second);
   }
 
   inline Source* Simulator::get_source(const std::string& name) const {
-    EntMap::const_iterator search = process_map.find(name);
-    if (search == process_map.end())
-      Rcpp::stop("source '%s' not found (typo?)", name);
-    return static_cast<Source*>(search->second);
+    Source* src = dynamic_cast<Source*>(get_process(name));
+    if (!src)
+      Rcpp::stop("process '%s' exists, but it is not a source", name);
+    return src;
   }
 
   inline Resource* Simulator::get_resource(const std::string& name) const {
