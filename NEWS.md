@@ -9,7 +9,8 @@
 ## Minor changes and fixes:
 
 * Remove 3.8.0 and 4.0.1 deprecations (#170 addressing #165).
-* Fix `get_global` to work outside trajectories (#170 addressing #165).
+* Fix `get_global()` to work outside trajectories (#170 addressing #165).
+* Fix `rollback()` with an infinite amount (#173).
 
 # simmer 4.0.1
 

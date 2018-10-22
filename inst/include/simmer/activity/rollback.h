@@ -31,17 +31,16 @@ namespace simmer {
     CLONEABLE(Rollback)
 
     Rollback(int amount, int times, const OPT<RFn>& check = NONE)
-      : Activity("Rollback"), amount(std::abs(amount)),
-        times(times), check(check), cached(NULL), selected(NULL) {}
+      : Activity("Rollback"), amount(amount), times(times), check(check),
+        selected(NULL) {}
 
     Rollback(const Rollback& o)
       : Activity(o), amount(o.amount), times(o.times), check(o.check),
-        cached(NULL), selected(NULL) { pending.clear(); }
+        selected(NULL) { pending.clear(); }
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      if (!cached) cached = goback();
-      std::string amount = MakeString() << this->amount << " (" << cached->name << ")";
+      std::string amount = MakeString() << this->amount << " (" << goback()->name << ")";
       if (check) internal::print(brief, true, ARG(amount), ARG(*check));
       else internal::print(brief, true, ARG(amount), ARG(times));
     }
@@ -59,8 +58,7 @@ namespace simmer {
         }
         pending[arrival]--;
       }
-      if (!cached) cached = goback();
-      selected = cached;
+      selected = goback();
       return 0;
     }
 
@@ -77,7 +75,7 @@ namespace simmer {
     int amount;
     int times;
     OPT<RFn> check;
-    Activity* cached, *selected;
+    Activity* selected;
     UMAP<Arrival*, int> pending;
 
     Activity* goback() {
