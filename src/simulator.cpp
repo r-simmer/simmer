@@ -125,15 +125,15 @@ bool add_resource_manager_(SEXP sim_, const std::string& name, const std::string
 {
   XPtr<Simulator> sim(sim_);
 
-  Manager* manager;
+  Manager<int>* manager;
   Resource* res = sim->get_resource(name);
   std::string manager_name = name + "_" + param;
   if (param.compare("capacity") == 0)
-    manager = new Manager(sim, manager_name, intervals, values, period,
-                          BIND(&Resource::set_capacity, res, _1));
+    manager = new Manager<int>(sim, manager_name, intervals, values, period,
+                               BIND(&Resource::set_capacity, res, _1));
   else
-    manager = new Manager(sim, manager_name, intervals, values, period,
-                          BIND(&Resource::set_queue_size, res, _1));
+    manager = new Manager<int>(sim, manager_name, intervals, values, period,
+                               BIND(&Resource::set_queue_size, res, _1));
 
   bool ret = sim->add_process(manager);
 
@@ -141,6 +141,23 @@ bool add_resource_manager_(SEXP sim_, const std::string& name, const std::string
     delete manager;
     stop("resource '%s' was defined, but no schedule was attached", name);
   }
+  return ret;
+}
+
+//[[Rcpp::export]]
+bool add_global_manager_(SEXP sim_, const std::string& key,
+                         const std::vector<double>& intervals,
+                         const std::vector<double>& values, int period)
+{
+  XPtr<Simulator> sim(sim_);
+
+  Manager<double>* manager =
+    new Manager<double>(sim, key, intervals, values, period,
+                        BIND(&Simulator::set_attribute, sim.get(), key, _1));
+
+  bool ret = sim->add_process(manager);
+
+  if (!ret) delete manager;
   return ret;
 }
 

@@ -51,6 +51,15 @@ Simmer <- R6Class("simmer",
         " | monitored: ", private$sources[[name]][["mon"]],
         " | n_generated: ", self$get_n_generated(name), " }\n"
       ))
+      for (name in names(private$globals)) {
+        value <- private$globals[[name]]
+        is_schedule <- inherits(value, "schedule")
+        if (is_schedule) value <- value$get_schedule()$init
+        cat(paste0(
+          "{ Global: ", name, " | schedule: ", is_schedule,
+          " | initial value: ", value, " }\n"
+        ))
+      }
       invisible(self)
     },
 
@@ -192,6 +201,18 @@ Simmer <- R6Class("simmer",
       self
     },
 
+    add_global = function(key, value) {
+      check_args(key = "string", value = c("numeric", "schedule"))
+
+      ret <- if (inherits(value, "schedule"))
+        add_global_manager_(private$sim_obj, key, value$get_schedule()$intervals,
+                            value$get_schedule()$values, value$get_schedule()$period)
+      else add_global_manager_(private$sim_obj, key, 0, value, -1)
+
+      if (ret) private$globals[[key]] <- value
+      self
+    },
+
     get_mon_arrivals = function(per_resource=FALSE, ongoing=FALSE) {
       if (ongoing) record_ongoing_(private$sim_obj, per_resource)
       private$mon$get_arrivals(per_resource)
@@ -267,13 +288,15 @@ Simmer <- R6Class("simmer",
     },
 
     get_sources = function() { private$sources },
-    get_resources = function() { private$resources }
+    get_resources = function() { private$resources },
+    get_globals = function() { private$globals }
   ),
 
   private = list(
     sim_obj = NULL,
     mon = NULL,
     resources = list(),
-    sources = list()
+    sources = list(),
+    globals = list()
   )
 )

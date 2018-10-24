@@ -1264,6 +1264,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// add_global_manager_
+bool add_global_manager_(SEXP sim_, const std::string& key, const std::vector<double>& intervals, const std::vector<double>& values, int period);
+RcppExport SEXP _simmer_add_global_manager_(SEXP sim_SEXP, SEXP keySEXP, SEXP intervalsSEXP, SEXP valuesSEXP, SEXP periodSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type key(keySEXP);
+    Rcpp::traits::input_parameter< const std::vector<double>& >::type intervals(intervalsSEXP);
+    Rcpp::traits::input_parameter< const std::vector<double>& >::type values(valuesSEXP);
+    Rcpp::traits::input_parameter< int >::type period(periodSEXP);
+    rcpp_result_gen = Rcpp::wrap(add_global_manager_(sim_, key, intervals, values, period));
+    return rcpp_result_gen;
+END_RCPP
+}
 // record_ongoing_
 void record_ongoing_(SEXP sim_, bool per_resource);
 RcppExport SEXP _simmer_record_ongoing_(SEXP sim_SEXP, SEXP per_resourceSEXP) {
@@ -1378,6 +1393,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_add_dataframe_", (DL_FUNC) &_simmer_add_dataframe_, 11},
     {"_simmer_add_resource_", (DL_FUNC) &_simmer_add_resource_, 8},
     {"_simmer_add_resource_manager_", (DL_FUNC) &_simmer_add_resource_manager_, 6},
+    {"_simmer_add_global_manager_", (DL_FUNC) &_simmer_add_global_manager_, 5},
     {"_simmer_record_ongoing_", (DL_FUNC) &_simmer_record_ongoing_, 2},
     {NULL, NULL, 0}
 };

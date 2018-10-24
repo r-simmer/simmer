@@ -46,6 +46,8 @@
 #' \code{\link{get_sources}}, \code{\link{get_n_generated}},
 #' \code{\link{get_trajectory}}
 #'
+#' \item Globals: \code{\link{add_global}}, \code{\link{get_global}}.
+#'
 #' \item Data retrieval: \code{\link{get_mon_arrivals}},
 #' \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}
 #'
@@ -162,8 +164,10 @@ peek.simmer <- function(.env, steps=1, verbose=FALSE) .env$peek(steps, verbose)
 #'
 #' @inheritParams reset
 #' @param name the name of the resource.
-#' @param capacity the capacity of the server.
-#' @param queue_size the size of the queue.
+#' @param capacity the capacity of the server, either a numeric or a
+#' \code{\link{schedule}}, so that the value may change during the simulation.
+#' @param queue_size the size of the queue, either a numeric or a
+#' \code{\link{schedule}}, so that the value may change during the simulation.
 #' @param mon whether the simulator must monitor this resource or not.
 #' @param preemptive whether arrivals in the server can be preempted or not based
 #' on seize priorities.
@@ -283,6 +287,23 @@ add_dataframe.simmer <- function(.env, name_prefix, trajectory, data, mon=1, bat
                                  col_preemptible=col_priority, col_restart="restart")
   .env$add_dataframe(name_prefix, trajectory, data, mon, batch, col_time, time,
                      col_attributes, col_priority, col_preemptible, col_restart)
+
+#' Add a Global Attribute
+#'
+#' Attach a global variable to the simulation.
+#'
+#' @inheritParams reset
+#' @param key the attribute name.
+#' @param value the value to set, either a numeric or a \code{\link{schedule}},
+#' so that the global may change during the simulation.
+#'
+#' @return Returns the simulation environment.
+#' @seealso Convenience functions: \code{\link{schedule}}.
+#' @export
+add_global <- function(.env, key, value) UseMethod("add_global")
+
+#' @export
+add_global.simmer <- function(.env, key, value) .env$add_global(key, value)
 
 #' Monitoring Statistics
 #'

@@ -22,12 +22,13 @@
 
 namespace simmer {
 
+  template <typename T>
   class Manager : public Process {
-    typedef Fn<void(int)> Setter;
+    typedef Fn<void(T)> Setter;
 
   public:
     Manager(Simulator* sim, const std::string& name, const VEC<double>& duration,
-            const VEC<int>& value, int period, const Setter& set)
+            const VEC<T>& value, int period, const Setter& set)
       : Process(sim, name, false, PRIORITY_MANAGER),
         duration(duration), value(value), period(period), set(set), index(0) {}
 
@@ -54,7 +55,7 @@ namespace simmer {
 
   private:
     VEC<double> duration;
-    VEC<int> value;
+    VEC<T> value;
     int period;
     Setter set;
     size_t index;
