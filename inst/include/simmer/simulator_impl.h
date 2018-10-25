@@ -59,6 +59,7 @@ namespace simmer {
       if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
     event_queue.clear();
     event_map.clear();
+    attributes.clear();
     foreach_ (EntMap::value_type& itr, process_map) {
       static_cast<Process*>(itr.second)->reset();
       static_cast<Process*>(itr.second)->activate();
@@ -72,7 +73,6 @@ namespace simmer {
     unnamedb_map.clear();
     b_count = 0;
     signal_map.clear();
-    attributes.clear();
     mon->clear();
   }
 

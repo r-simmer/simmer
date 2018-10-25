@@ -116,12 +116,12 @@ Simmer <- R6Class("simmer",
       if (ret) private$resources[[name]] <- c(mon=mon, preemptive=preemptive)
 
       if (inherits(capacity_schedule, "schedule"))
-        add_resource_manager_(private$sim_obj, name, "capacity",
+        add_resource_manager_(private$sim_obj, name, "capacity", capacity,
                               capacity_schedule$get_schedule()$intervals,
                               capacity_schedule$get_schedule()$values,
                               capacity_schedule$get_schedule()$period)
       if (inherits(queue_size_schedule, "schedule"))
-        add_resource_manager_(private$sim_obj, name, "queue_size",
+        add_resource_manager_(private$sim_obj, name, "queue_size", queue_size,
                               queue_size_schedule$get_schedule()$intervals,
                               queue_size_schedule$get_schedule()$values,
                               queue_size_schedule$get_schedule()$period)
@@ -204,10 +204,15 @@ Simmer <- R6Class("simmer",
     add_global = function(key, value) {
       check_args(key = "string", value = c("numeric", "schedule"))
 
-      ret <- if (inherits(value, "schedule"))
-        add_global_manager_(private$sim_obj, key, value$get_schedule()$intervals,
-                            value$get_schedule()$values, value$get_schedule()$period)
-      else add_global_manager_(private$sim_obj, key, 0, value, -1)
+      intervals <- values <- numeric(0); period <- -1
+      if (inherits(value, "schedule")) {
+        intervals <- value$get_schedule()$intervals
+        values <- value$get_schedule()$values
+        period <- value$get_schedule()$period
+        value <- value$get_schedule()$init
+      }
+
+      ret <- add_global_manager_(private$sim_obj, key, value, intervals, values, period)
 
       if (ret) private$globals[[key]] <- value
       self

@@ -82,6 +82,29 @@ test_that("queue size changes", {
   expect_equal(limits$queue_size, c(1, 2, 3, 1, 2, 3))
 })
 
+test_that("initial value is restored when the environment is reset", {
+  inf_sch <- schedule(c(8, 16, 24), c(1, 2, 3), Inf)
+  fin_sch <- schedule(c(8, 16, 24), c(1, 2, 3), 24)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy", inf_sch)
+
+  expect_equal(get_capacity(env, "dummy"), 0)
+  run(env, 10)
+  expect_equal(get_capacity(env, "dummy"), 1)
+  reset(env)
+  expect_equal(get_capacity(env, "dummy"), 0)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy", fin_sch)
+
+  expect_equal(get_capacity(env, "dummy"), 3)
+  run(env, 10)
+  expect_equal(get_capacity(env, "dummy"), 1)
+  reset(env)
+  expect_equal(get_capacity(env, "dummy"), 3)
+})
+
 test_that("arrivals 1) are dequeued when resource's capacity increases and
                     2) remain in server when it decreases", {
   t <- trajectory() %>%
