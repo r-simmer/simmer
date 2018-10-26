@@ -41,7 +41,7 @@ namespace simmer {
 
     void run() {
       if (sim->verbose)
-        sim->print("manager", name, MakeString() << value[index]);
+        sim->print("manager", name, "value", MakeString() << value[index]);
 
       set(value[index]);
 
