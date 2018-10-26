@@ -13,6 +13,7 @@
 * Fix `get_global()` to work outside trajectories (#170 addressing #165).
 * Fix `rollback()` with an infinite amount (#173).
 * Fix and improve schedules and managers (as part of #174).
+* Fix `reset()` to avoid overwriting the simulation environment (#175).
 
 # simmer 4.0.1
 
