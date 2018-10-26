@@ -20,11 +20,19 @@
 context("basic simmer functionality")
 
 test_that("an empty environment behaves as expected", {
-  env <- simmer(verbose = TRUE) %>%
+  output <- paste0(
+    "simmer environment: SuperDuperSim | now: 0 | next: 0",
+    ".*Monitor: in memory.*",
+    ".*Resource: asdf | monitored: TRUE | server status: 0(1) | queue status: 0(Inf).*",
+    ".*Source: dummy | monitored: 1 | n_generated: 0.*",
+    ".*Global: test | schedule: FALSE | initial value: 3.*")
+
+  env <- simmer("SuperDuperSim", verbose = TRUE) %>%
+    add_global("test", 3) %>%
     add_resource("asdf") %>%
     add_generator("dummy", trajectory() %>% timeout(1), at(0))
 
-  expect_output(print(env))
+  expect_output(print(env), output)
 
   expect_is(env, "simmer")
   expect_equal(env %>% now(), 0)
@@ -58,17 +66,12 @@ test_that("the simulator is reset (1)", {
     run(4) %>%
     reset()
 
-  arrivals <- env %>% get_mon_arrivals()
-  arrivals_res <- env %>% get_mon_arrivals(TRUE)
-  resources <- env %>% get_mon_resources()
-  attributes <- env %>% get_mon_attributes()
-
   expect_equal(env %>% now(), 0)
   expect_equal(env %>% peek(), 0)
-  expect_equal(nrow(arrivals), 0)
-  expect_equal(nrow(arrivals_res), 0)
-  expect_equal(nrow(resources), 0)
-  expect_equal(nrow(attributes), 0)
+  expect_equal(nrow(get_mon_arrivals(env)), 0)
+  expect_equal(nrow(get_mon_arrivals(env, TRUE)), 0)
+  expect_equal(nrow(get_mon_resources(env)), 1)
+  expect_equal(nrow(get_mon_attributes(env)), 0)
 })
 
 test_that("the simulator is reset (2)", {
@@ -86,17 +89,12 @@ test_that("the simulator is reset (2)", {
 
   expect_silent(reset(env))
 
-  arrivals <- env %>% get_mon_arrivals()
-  arrivals_res <- env %>% get_mon_arrivals(TRUE)
-  resources <- env %>% get_mon_resources()
-  attributes <- env %>% get_mon_attributes()
-
   expect_equal(env %>% now(), 0)
   expect_equal(env %>% peek(), 0)
-  expect_equal(nrow(arrivals), 0)
-  expect_equal(nrow(arrivals_res), 0)
-  expect_equal(nrow(resources), 0)
-  expect_equal(nrow(attributes), 0)
+  expect_equal(nrow(get_mon_arrivals(env)), 0)
+  expect_equal(nrow(get_mon_arrivals(env, TRUE)), 0)
+  expect_equal(nrow(get_mon_resources(env)), 0)
+  expect_equal(nrow(get_mon_attributes(env)), 0)
 })
 
 test_that("the progress is reported", {
@@ -142,10 +140,11 @@ test_that("a stopped simulation can be resumed", {
 })
 
 test_that("there is verbose output", {
-  output <- paste0(".*(",
+  output <- paste0(
+    ".*(",
     ".*1.*arrival0.*Seize.*server",
     ".*1.*arrival0.*Release.*server",
-  ").*")
+    ").*")
 
   expect_output(
     env <- simmer(verbose = TRUE) %>%
