@@ -60,6 +60,8 @@ Available methods by category:
 \code{\link{get_sources}}, \code{\link{get_n_generated}},
 \code{\link{get_trajectory}}
 
+\item Globals: \code{\link{add_global}}, \code{\link{get_global}}.
+
 \item Data retrieval: \code{\link{get_mon_arrivals}},
 \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}
 

@@ -14,6 +14,7 @@ warnings_are_errors: true
 env:
   global:
     - _R_CHECK_CRAN_INCOMING_=FALSE
+    - secure: wAD2PyxJ8IdG4c4kh2fBbwaK8W8JTkAoVsK3ehH4yzUS5qYtctWhczmru34iWt+NxKzZGYqLyg7OPU0hPwgn8OUexUzHc7Yamms++5UObHklwkDqGfJXX+xKHv3AmgRwfjaBulWusNn7q6swn0Bl4j0dDiyD1o7Mz1VYtVUOOaU=
 
 r_github_packages:
   - r-lib/covr

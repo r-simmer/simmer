@@ -49,16 +49,16 @@ test_that("capacity & queue size change", {
     run(17) %>% reset() %>% run(49) %>%
     get_mon_resources()
 
-  expect_equal(limits$time, c(8, 16, 24))
-  expect_equal(limits$capacity, c(1, 2, 3))
+  expect_equal(limits$time, c(0, 8, 16, 24))
+  expect_equal(limits$capacity, c(0, 1, 2, 3))
 
   limits <- simmer(verbose = TRUE) %>%
     add_resource("dummy", fin_sch) %>%
     run(17) %>% reset() %>% run(49) %>%
     get_mon_resources()
 
-  expect_equal(limits$time, c(8, 16, 24, 32, 40, 48))
-  expect_equal(limits$capacity, c(1, 2, 3, 1, 2, 3))
+  expect_equal(limits$time, c(0, 8, 16, 24, 32, 40, 48))
+  expect_equal(limits$capacity, c(3, 1, 2, 3, 1, 2, 3))
 })
 
 test_that("queue size changes", {
@@ -70,16 +70,39 @@ test_that("queue size changes", {
     run(17) %>% reset() %>% run(49) %>%
     get_mon_resources()
 
-  expect_equal(limits$time, c(8, 16, 24))
-  expect_equal(limits$queue_size, c(1, 2, 3))
+  expect_equal(limits$time, c(0, 8, 16, 24))
+  expect_equal(limits$queue_size, c(0, 1, 2, 3))
 
   limits <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 1, fin_sch) %>%
     run(17) %>% reset() %>% run(49) %>%
     get_mon_resources()
 
-  expect_equal(limits$time, c(8, 16, 24, 32, 40, 48))
-  expect_equal(limits$queue_size, c(1, 2, 3, 1, 2, 3))
+  expect_equal(limits$time, c(0, 8, 16, 24, 32, 40, 48))
+  expect_equal(limits$queue_size, c(3, 1, 2, 3, 1, 2, 3))
+})
+
+test_that("initial value is restored when the environment is reset", {
+  inf_sch <- schedule(c(8, 16, 24), c(1, 2, 3), Inf)
+  fin_sch <- schedule(c(8, 16, 24), c(1, 2, 3), 24)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy", inf_sch)
+
+  expect_equal(get_capacity(env, "dummy"), 0)
+  run(env, 10)
+  expect_equal(get_capacity(env, "dummy"), 1)
+  reset(env)
+  expect_equal(get_capacity(env, "dummy"), 0)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy", fin_sch)
+
+  expect_equal(get_capacity(env, "dummy"), 3)
+  run(env, 10)
+  expect_equal(get_capacity(env, "dummy"), 1)
+  reset(env)
+  expect_equal(get_capacity(env, "dummy"), 3)
 })
 
 test_that("arrivals 1) are dequeued when resource's capacity increases and

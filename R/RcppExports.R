@@ -401,8 +401,12 @@ add_resource_ <- function(sim_, name, capacity, queue_size, mon, preemptive, pre
     .Call(`_simmer_add_resource_`, sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict)
 }
 
-add_resource_manager_ <- function(sim_, name, param, intervals, values, period) {
-    .Call(`_simmer_add_resource_manager_`, sim_, name, param, intervals, values, period)
+add_resource_manager_ <- function(sim_, name, param, init, intervals, values, period) {
+    .Call(`_simmer_add_resource_manager_`, sim_, name, param, init, intervals, values, period)
+}
+
+add_global_manager_ <- function(sim_, key, init, intervals, values, period) {
+    .Call(`_simmer_add_global_manager_`, sim_, key, init, intervals, values, period)
 }
 
 record_ongoing_ <- function(sim_, per_resource) {

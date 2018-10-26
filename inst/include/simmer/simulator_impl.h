@@ -53,27 +53,32 @@ namespace simmer {
 
   inline void Simulator::reset() {
     now_ = 0;
+
     foreach_ (EntMap::value_type& itr, resource_map)
       static_cast<Resource*>(itr.second)->reset();
     foreach_ (PQueue::value_type& itr, event_queue)
       if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
+
     event_queue.clear();
     event_map.clear();
+    attributes.clear();
+    mon->clear();
+
     foreach_ (EntMap::value_type& itr, process_map) {
       static_cast<Process*>(itr.second)->reset();
       static_cast<Process*>(itr.second)->activate();
     }
+
     foreach_ (NamBMap::value_type& itr, namedb_map)
       if (itr.second) delete itr.second;
     foreach_ (UnnBMap::value_type& itr, unnamedb_map)
       if (itr.second) delete itr.second;
-    arrival_map.clear();
+
     namedb_map.clear();
     unnamedb_map.clear();
-    b_count = 0;
+    arrival_map.clear();
     signal_map.clear();
-    attributes.clear();
-    mon->clear();
+    b_count = 0;
   }
 
   inline RData Simulator::peek(int steps) const {
