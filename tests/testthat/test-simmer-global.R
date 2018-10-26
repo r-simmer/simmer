@@ -26,6 +26,13 @@ test_that("globals are correctly initialised and managed", {
     add_global("b_inf_sch", inf_sch) %>%
     add_global("c_fin_sch", fin_sch)
 
+  output <- paste0(
+    ".*Global: a_fixed | schedule: FALSE | initial value: 5\\.5.*",
+    ".*Global: b_inf_sch | schedule: TRUE | initial value: 0.*",
+    ".*Global: c_fin_sch | schedule: TRUE | initial value: 3.*")
+
+  expect_output(print(env), output)
+
   expect_equal(get_global(env, "a_fixed"), 5.5)
   expect_equal(get_global(env, "b_inf_sch"), 0)
   expect_equal(get_global(env, "c_fin_sch"), 3)
