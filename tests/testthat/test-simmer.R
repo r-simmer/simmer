@@ -25,10 +25,10 @@ test_that("an empty environment behaves as expected", {
     ".*Monitor: in memory.*",
     ".*Resource: asdf | monitored: TRUE | server status: 0(1) | queue status: 0(Inf).*",
     ".*Source: dummy | monitored: 1 | n_generated: 0.*",
-    ".*Global: test | schedule: FALSE | initial value: 3.*")
+    ".*Global: test | schedule: TRUE | initial value: 3.*")
 
   env <- simmer("SuperDuperSim", verbose = TRUE) %>%
-    add_global("test", 3) %>%
+    add_global("test", schedule(c(8, 16, 24), 1:3, period=24)) %>%
     add_resource("asdf") %>%
     add_generator("dummy", trajectory() %>% timeout(1), at(0))
 
