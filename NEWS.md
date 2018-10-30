@@ -5,11 +5,15 @@
 * New getter `get_selected()` retrieves names of selected resources via the `select()` activity (#172 addressing #171).
 * Source and resource getters have been vectorised to retrieve parameters from multiple entities (as part of #172).
 * Simplify C++ `Simulator` interface for adding processes and resources (#162). The responsibility of building the objects has been moved to the caller.
+* New `add_global()` method to attach global attributes to a simulation environment (#174 addressing #158).
 
 ## Minor changes and fixes:
 
 * Remove 3.8.0 and 4.0.1 deprecations (#170 addressing #165).
-* Fix `get_global` to work outside trajectories (#170 addressing #165).
+* Fix `get_global()` to work outside trajectories (#170 addressing #165).
+* Fix `rollback()` with an infinite amount (#173).
+* Fix and improve schedules and managers (as part of #174).
+* Fix `reset()` to avoid overwriting the simulation environment (#175).
 
 # simmer 4.0.1
 

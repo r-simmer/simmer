@@ -13,9 +13,11 @@ add_resource(.env, name, capacity = 1, queue_size = Inf, mon = TRUE,
 
 \item{name}{the name of the resource.}
 
-\item{capacity}{the capacity of the server.}
+\item{capacity}{the capacity of the server, either a numeric or a
+\code{\link{schedule}}, so that the value may change during the simulation.}
 
-\item{queue_size}{the size of the queue.}
+\item{queue_size}{the size of the queue, either a numeric or a
+\code{\link{schedule}}, so that the value may change during the simulation.}
 
 \item{mon}{whether the simulator must monitor this resource or not.}
 

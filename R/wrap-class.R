@@ -28,6 +28,7 @@ Wrap <- R6Class("wrap",
 
       private$resources <- env$get_resources()
       private$sources <- env$get_sources()
+      private$globals <- env$get_globals()
 
       private$mon_arrivals <- env$get_mon_arrivals(ongoing = TRUE)
       private$mon_arrivals_res <- env$get_mon_arrivals(TRUE, ongoing = TRUE)
@@ -98,6 +99,7 @@ Wrap <- R6Class("wrap",
     peek_val = NA,
     resources = NA,
     sources = NA,
+    globals = NA,
     mon_arrivals = NA,
     mon_arrivals_res = NA,
     mon_attributes = NA,

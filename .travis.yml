@@ -12,6 +12,7 @@ env:
   global:
     - _R_CHECK_CRAN_INCOMING_=FALSE
     - secure: "y6dn6JypVJq42dKJLqBT5WGiezaLjx27REgEECM1+pGzxmhAzmHDQtlHXYTIMZeqjV7eyDJm1FTEct/DPvuuO5okk9IqWPtM0NDkhaDhC27y5+BhE1VubAq0HkXAK4kwJ61jGY2hi+6YTasmwOyYA9bdSMfh9giFQVFGCqSUW4Q="
+    - secure: wAD2PyxJ8IdG4c4kh2fBbwaK8W8JTkAoVsK3ehH4yzUS5qYtctWhczmru34iWt+NxKzZGYqLyg7OPU0hPwgn8OUexUzHc7Yamms++5UObHklwkDqGfJXX+xKHv3AmgRwfjaBulWusNn7q6swn0Bl4j0dDiyD1o7Mz1VYtVUOOaU=
 
 r_github_packages:
   - r-lib/covr

@@ -108,8 +108,13 @@ envs_apply <- function(envs, method, ...) {
 
 #' @importFrom codetools findGlobals
 make_resetable <- function(func) {
+  # find globals and get init values
   init <- sapply(findGlobals(func, merge=FALSE)$variables,
                  get0, envir=environment(func), simplify=FALSE)
+  # avoid simulator overwrite in some circumstances
+  init <- init[!sapply(init, function(x) is.null(x) | inherits(x, "simmer"))]
+
+  # attach reset attribute
   env <- list2env(list(init=init, env=environment(func)))
   attr(func, "reset") <- function() {
     for (i in ls(init, all.names = TRUE))

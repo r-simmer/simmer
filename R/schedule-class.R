@@ -58,21 +58,18 @@ Schedule <- R6Class("schedule",
     schedule = NA,
 
     compose_periodic = function() {
-      intervals <- c(private$timetable[1], diff(private$timetable),
-                     private$timetable[1] + private$period - private$timetable[private$n])
-      values <- c(private$values, private$values[1])
-      if (private$timetable[1] == 0) init <- private$values[1]
-      else init <- private$values[private$n]
       private$schedule <- list(
-        init = init,
-        intervals = intervals,
-        values = values,
+        init = if (private$timetable[1] == 0)
+          private$values[1] else private$values[private$n],
+        intervals = c(private$timetable[1], diff(private$timetable),
+                      private$timetable[1] + private$period - private$timetable[private$n]),
+        values = c(private$values, private$values[1]),
         period = private$period)
     },
 
     compose_non_periodic = function() {
       private$schedule <- list(
-        init = 0,
+        init = if (private$timetable[1] == 0) private$values[1] else 0,
         intervals = c(private$timetable[1], diff(private$timetable)),
         values = private$values,
         period = private$period)
