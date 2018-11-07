@@ -11,7 +11,11 @@ Description: A process-oriented and trajectory-based Discrete-Event Simulation
     architecture encloses a robust and fast simulation core written in 'C++' with
     automatic monitoring capabilities. It provides a rich and flexible R API that
     revolves around the concept of trajectory, a common path in the simulation
-    model for entities of the same type.
+    model for entities of the same type. Documentation about 'simmer' is provided
+    by several vignettes included in this package, via the paper by Ucar, Smeets
+    & Azcorra (2018, <arXiv:1705.09746>), and the paper by Ucar, Hernández, 
+    Serrano & Azcorra (2018, <doi:10.1109/MCOM.2018.1700960>);
+    see 'citation("simmer")' for details.
 License: GPL (>= 2)
 Encoding: UTF-8
 URL: http://r-simmer.org, https://github.com/r-simmer/simmer
@@ -21,5 +25,5 @@ Imports: Rcpp, R6, magrittr, codetools, utils
 Suggests: simmer.plot, parallel, dplyr, tidyr, testthat, knitr, rmarkdown, rticles
 LinkingTo: Rcpp (>= 0.12.9), BH (>= 1.62.0-1)
 ByteCompile: yes
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
