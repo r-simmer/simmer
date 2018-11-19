@@ -25,6 +25,7 @@
 #define REnv  Rcpp::Environment
 #define RData Rcpp::DataFrame
 #define RNum  Rcpp::NumericVector
+#define RInt  Rcpp::IntegerVector
 #define RStr  Rcpp::CharacterVector
 #define RBool Rcpp::LogicalVector
 

@@ -1,3 +1,9 @@
+# simmer 4.1.1
+
+## Minor changes and fixes:
+
+* Fix performance issues in data sources (#176).
+
 # simmer 4.1.0
 
 ## New features:
