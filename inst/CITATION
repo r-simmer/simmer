@@ -22,5 +22,9 @@ bibentry(
   year    = "2018",
   journal = "IEEE Communications Magazine",
   doi     = "10.1109/MCOM.2018.1700960",
-  volume  = "Early Access"
+  issn    = "0163-6804",
+  volume  = "56",
+  number  = "11",
+  pages   = "145-151",
+  month   = "November"
 )
