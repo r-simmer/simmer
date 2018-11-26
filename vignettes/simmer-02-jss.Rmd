@@ -651,13 +651,12 @@ mm1.envs <- mclapply(1:100, function(i) {
 
 With all these replicas, we could, for instance, perform a t-test over $N$, the average number of customers in the system:
 
-```{r, mm1-replication-test, eval=requireNamespace("dplyr", quietly=TRUE)}
+```{r, mm1-replication-test}
 mm1.data <-
   get_mon_arrivals(mm1.envs) %>%
-  dplyr::group_by(replication) %>%
-  dplyr::summarise(mean = mean(end_time - start_time))
+  aggregate(end_time - start_time ~ replication, data=., mean)
 
-t.test(mm1.data[["mean"]])
+t.test(mm1.data[[2]])
 ```
 
 ## Best practices

@@ -15,7 +15,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = T, comment = "#>", 
                       fig.width = 6, fig.height = 4, fig.align = "center")
 
-required <- c("simmer.plot", "dplyr", "tidyr")
+required <- c("simmer.plot")
 
 if (!all(sapply(required, requireNamespace, quietly = TRUE)))
   knitr::opts_chunk$set(eval = FALSE)
@@ -92,9 +92,8 @@ states <- c("hungry", "eating")
 
 philosophers_gantt <- function(env, size=15) env %>%
   get_mon_arrivals(per_resource=TRUE) %>%
-  tidyr::separate(name, c("philosopher", "index")) %>%
-  dplyr::group_by(philosopher, end_time) %>%
-  dplyr::mutate(state = factor(states, states)) %>%
+  transform(philosopher = sub("_[0-9]*", "", name),
+            state = factor(states, states)) %>%
   ggplot(aes(y=philosopher, yend=philosopher)) + xlab("time") +
   geom_segment(aes(x=start_time, xend=end_time, color=state), size=size)
 ```

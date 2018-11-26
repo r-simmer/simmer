@@ -14,11 +14,6 @@ vignette: >
 ```{r, cache = FALSE, include=FALSE}
 knitr::opts_chunk$set(collapse = T, comment = "#>",
                       fig.width = 6, fig.height = 4, fig.align = "center")
-
-required <- c("dplyr")
-
-if (!all(sapply(required, requireNamespace, quietly = TRUE)))
-  knitr::opts_chunk$set(eval = FALSE)
 ```
 
 ## Introduction
@@ -64,7 +59,7 @@ bank <-
   add_generator("Customer", customer, at(5))
 
 bank %>% run(until = 100)
-bank %>% get_mon_arrivals
+bank %>% get_mon_arrivals()
 ```
 
 The short trace printed out by the `get_mon_arrivals` function shows the result.
@@ -99,7 +94,7 @@ bank <-
   add_generator("Customer", customer, at(rexp(1, 1/5)))
 
 bank %>% run(until = 100)
-bank %>% get_mon_arrivals
+bank %>% get_mon_arrivals()
 ```
 
 The trace shows that the customer now arrives at time 7.839305. Changing the
@@ -191,7 +186,7 @@ bank <-
   add_generator("Customer", customer, at(2, 5, 12))
 
 bank %>% run(until = 400)
-bank %>% get_mon_arrivals
+bank %>% get_mon_arrivals()
 ```
 
 Alternatively, we can create three different customer trajectories for the three
@@ -233,7 +228,7 @@ bank <-
   add_generator("Evelyn", Evelyn, at(12))
 
 bank %>% run(until = 400)
-bank %>% get_mon_arrivals
+bank %>% get_mon_arrivals()
 ```
 
 Again, the simulations finish before the 400 specified in the `run` function.
@@ -265,7 +260,7 @@ bank <-
   add_generator("Customer", customer, from_to(0, 41, function() {10}))
 
 bank %>% run(until = 400)
-bank %>% get_mon_arrivals
+bank %>% get_mon_arrivals()
 ```
 
 ### Many random customers
@@ -305,7 +300,7 @@ bank <-
   add_generator("Customer", customer, function() {c(0, rexp(4, 1/10), -1)})
 
 bank %>% run(until = 400)
-bank %>% get_mon_arrivals
+bank %>% get_mon_arrivals()
 ```
 
 ## A Service counter
@@ -336,7 +331,7 @@ step is complete, the `release` function causes the customer to make the counter
 available to other customers in the queue.
 
 Since the activity trace does not produce the waiting time by default, this is
-calculated and appended using the `mutate` function in the dplyr package.
+calculated and appended using the `transform` function.
 
 ```{r, message = FALSE}
 library(simmer)
@@ -362,8 +357,8 @@ bank <-
 
 bank %>% run(until = 400)
 bank %>%
-  get_mon_arrivals %>%
-  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
+  get_mon_arrivals() %>%
+  transform(waiting_time = end_time - start_time - activity_time)
 ```
 
 Examining the trace we see that the first two customers get instant service but
@@ -404,8 +399,8 @@ bank <-
 
 bank %>% run(until = 400)
 bank %>%
-  get_mon_arrivals %>%
-  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
+  get_mon_arrivals() %>%
+  transform(waiting_time = end_time - start_time - activity_time)
 ```
 
 This model with random arrivals and exponential service times is an example of
@@ -453,8 +448,8 @@ bank <-
 
 bank %>% run(until = 400)
 bank %>%
-  get_mon_arrivals %>%
-  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
+  get_mon_arrivals() %>%
+  transform(waiting_time = end_time - start_time - activity_time)
 ```
 
 The waiting times in this model are much shorter than those for the single
@@ -499,12 +494,12 @@ bank <-
 
 bank %>% run(until = 400)
 bank %>%
-  get_mon_arrivals %>%
-  dplyr::mutate(service_start_time = end_time - activity_time) %>%
-  dplyr::arrange(start_time)
+  get_mon_arrivals() %>%
+  transform(service_start_time = end_time - activity_time) %>%
+  .[order(.$start_time),]
 bank %>%
-  get_mon_resources %>%
-  dplyr::arrange(time)
+  get_mon_resources() %>%
+  .[order(.$time),]
 ```
 
 The results show that the customers chose the counter with the smallest number.
@@ -519,7 +514,7 @@ We now demonstrate how to calculate average waiting times for our customers.  In
 the original SimPy version of this tutorial, this involved using 'Monitors'.  In
 simmer, data is returned by the `get_mon_*` family of functions, as has already
 been demonstrated.  Here, we simply summarise the data frame returned by the
-`get_mon_arrivals` function, using functions from the `dplyr` package.
+`get_mon_arrivals` function, using standard R functions.
 
 We also increase the number of customers to 50 (find the number '49' in the
 code.code).
@@ -544,8 +539,8 @@ bank %>% run(until = 1000)
 
 result <-
   bank %>%
-  get_mon_arrivals %>%
-  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
+  get_mon_arrivals() %>%
+  transform(waiting_time = end_time - start_time - activity_time)
 ```
 
 The average waiting time for 50 customers in this 2-counter system is more
@@ -594,8 +589,8 @@ mclapply(c(393943, 100005, 777999555, 319999772), function(the_seed) {
   bank %>% run(until = 400)
   result <-
     bank %>%
-    get_mon_arrivals %>%
-    dplyr::mutate(waiting_time = end_time - start_time - activity_time)
+    get_mon_arrivals() %>%
+    transform(waiting_time = end_time - start_time - activity_time)
   paste("Average wait for ", sum(result$finished), " completions was ",
         mean(result$waiting_time), "minutes.")
 }) %>% unlist()
