@@ -181,6 +181,11 @@ peek.simmer <- function(.env, steps=1, verbose=FALSE) .env$peek(steps, verbose)
 #' preempted arrivals go to a dedicated queue, so that \code{queue_size} may be
 #' exceeded. If this option is \code{TRUE}, preempted arrivals go to the standard
 #' queue, and the maximum \code{queue_size} is guaranteed (rejection may occur).
+#' Whenever an arrival is rejected (due to a server drop or a queue drop), it
+#' will set the \code{finished} flag to \code{FALSE} in the output of
+#' \code{\link{get_mon_arrivals}}. Unfinished arrivals can be handled with a
+#' drop-out trajectory that can be set using the \code{\link{handle_unfinished}}
+#' activity.
 #'
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \code{\link{schedule}}.

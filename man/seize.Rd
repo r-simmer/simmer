@@ -22,17 +22,23 @@ release_selected(.trj, amount = 1, id = 0)
 
 \item{resource}{the name of the resource.}
 
-\item{amount}{the amount to seize/release, accepts either a numeric or a callable
-object (a function) which must return a numeric.}
+\item{amount}{the amount to seize/release, accepts either a numeric or a
+callable object (a function) which must return a numeric.}
 
 \item{continue}{a boolean (if \code{post.seize} OR \code{reject} is defined)
 or a pair of booleans (if \code{post.seize} AND \code{reject} are defined; if
 only one value is provided, it will be recycled) to indicate whether these
 subtrajectories should continue to the next activity in the main trajectory.}
 
-\item{post.seize}{an optional trajectory object which will be followed after a successful seize.}
+\item{post.seize}{an optional trajectory object which will be followed after
+a successful seize.}
 
-\item{reject}{an optional trajectory object which will be followed if the arrival is rejected.}
+\item{reject}{an optional trajectory object which will be followed if the
+arrival is rejected. Note that if the arrival is accepted (either in the
+queue or in the server) and then it is dropped afterwards due to preemption
+or resource shrinkage, then this trajectory won't be executed. Instead, see
+\code{\link{handle_unfinished}} for another, more general, method for
+handling all kinds of unfinished arrivals.}
 
 \item{id}{selection identifier for nested usage.}
 }

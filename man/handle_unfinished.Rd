@@ -17,6 +17,9 @@ Returns the trajectory object.
 }
 \description{
 Activity for setting a drop-out trajectory for unfinished arrivals, i.e.,
-those dropped from a resource (due to preemption or resource shrinkage) or
-those that \code{\link{leave}} a trajectory.
+those dropped from a resource (due to preemption, resource shrinkage or a
+rejected \code{\link{seize}}) or those that \code{\link{leave}} a trajectory.
+}
+\seealso{
+\code{\link{leave}}, \code{\link{set_capacity}}
 }

@@ -30,5 +30,5 @@ Returns the trajectory object.
 Activities for setting or unsetting a timer or a signal after which the arrival will abandon.
 }
 \seealso{
-\code{\link{send}}
+\code{\link{send}}, \code{\link{leave}}
 }
