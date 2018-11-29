@@ -165,6 +165,10 @@ Leave__new <- function(prob) {
     .Call(`_simmer_Leave__new`, prob)
 }
 
+HandleUnfinished__new <- function(trj) {
+    .Call(`_simmer_HandleUnfinished__new`, trj)
+}
+
 Leave__new_func <- function(prob) {
     .Call(`_simmer_Leave__new_func`, prob)
 }

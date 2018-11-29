@@ -359,6 +359,23 @@ leave <- function(.trj, prob) UseMethod("leave")
 #' @export
 leave.trajectory <- function(.trj, prob) .trj$leave(prob)
 
+#' Handle Unfinished Arrivals
+#'
+#' Activity for setting a drop-out trajectory for unfinished arrivals, i.e.,
+#' those dropped from a resource (due to preemption or resource shrinkage) or
+#' those that \code{\link{leave}} a trajectory.
+#'
+#' @inheritParams seize
+#' @param handler trajectory object to handle unfinished arrivals. A \code{NULL}
+#' value will unset the drop-out trajectory.
+#'
+#' @return Returns the trajectory object.
+#' @export
+handle_unfinished <- function(.trj, handler) UseMethod("handle_unfinished")
+
+#' @export
+handle_unfinished.trajectory <- function(.trj, handler) .trj$handle_unfinished(handler)
+
 #' Renege on some Condition
 #'
 #' Activities for setting or unsetting a timer or a signal after which the arrival will abandon.

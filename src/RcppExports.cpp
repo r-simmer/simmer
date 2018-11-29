@@ -526,6 +526,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// HandleUnfinished__new
+SEXP HandleUnfinished__new(const std::vector<Environment>& trj);
+RcppExport SEXP _simmer_HandleUnfinished__new(SEXP trjSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<Environment>& >::type trj(trjSEXP);
+    rcpp_result_gen = Rcpp::wrap(HandleUnfinished__new(trj));
+    return rcpp_result_gen;
+END_RCPP
+}
 // Leave__new_func
 SEXP Leave__new_func(const Function& prob);
 RcppExport SEXP _simmer_Leave__new_func(SEXP probSEXP) {
@@ -1335,6 +1346,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_Rollback__new", (DL_FUNC) &_simmer_Rollback__new, 2},
     {"_simmer_Rollback__new_func", (DL_FUNC) &_simmer_Rollback__new_func, 2},
     {"_simmer_Leave__new", (DL_FUNC) &_simmer_Leave__new, 1},
+    {"_simmer_HandleUnfinished__new", (DL_FUNC) &_simmer_HandleUnfinished__new, 1},
     {"_simmer_Leave__new_func", (DL_FUNC) &_simmer_Leave__new_func, 1},
     {"_simmer_Clone__new", (DL_FUNC) &_simmer_Clone__new, 2},
     {"_simmer_Clone__new_func", (DL_FUNC) &_simmer_Clone__new_func, 2},
