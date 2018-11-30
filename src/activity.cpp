@@ -61,6 +61,16 @@ SEXP Release__new_func(const std::string& resource, const Function& amount) {
 }
 
 //[[Rcpp::export]]
+SEXP ReleaseAll__new(const std::string& resource) {
+  return XPtr<Release<int> >(new Release<int>(resource));
+}
+
+//[[Rcpp::export]]
+SEXP ReleaseAll__new_void() {
+  return XPtr<Release<int> >(new Release<int>());
+}
+
+//[[Rcpp::export]]
 SEXP ReleaseSelected__new(int id, int amount) {
   return XPtr<Release<int> >(new Release<int>(id, amount));
 }
@@ -68,6 +78,11 @@ SEXP ReleaseSelected__new(int id, int amount) {
 //[[Rcpp::export]]
 SEXP ReleaseSelected__new_func(int id, const Function& amount) {
   return XPtr<Release<Function> >(new Release<Function>(id, amount));
+}
+
+//[[Rcpp::export]]
+SEXP ReleaseSelectedAll__new(int id) {
+  return XPtr<Release<int> >(new Release<int>(id));
 }
 
 //[[Rcpp::export]]

@@ -154,6 +154,13 @@ namespace simmer {
     Arrival* get_running_arrival() const;
     void record_ongoing(bool per_resource) const;
 
+    VEC<std::string> get_resources() const {
+      VEC<std::string> out;
+      foreach_ (const EntMap::value_type& itr, resource_map)
+        out.push_back(itr.first);
+      return out;
+    }
+
     Batched** get_batch(Activity* ptr, const std::string& id) {
       if (id.size()) {
         if (namedb_map.find(id) == namedb_map.end())

@@ -5,6 +5,8 @@
 \alias{seize_selected}
 \alias{release}
 \alias{release_selected}
+\alias{release_all}
+\alias{release_selected_all}
 \title{Seize/Release Resources}
 \usage{
 seize(.trj, resource, amount = 1, continue = NULL, post.seize = NULL,
@@ -16,6 +18,10 @@ seize_selected(.trj, amount = 1, id = 0, continue = NULL,
 release(.trj, resource, amount = 1)
 
 release_selected(.trj, amount = 1, id = 0)
+
+release_all(.trj, resource)
+
+release_selected_all(.trj, id = 0)
 }
 \arguments{
 \item{.trj}{the trajectory object.}

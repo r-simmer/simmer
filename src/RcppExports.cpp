@@ -90,6 +90,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ReleaseAll__new
+SEXP ReleaseAll__new(const std::string& resource);
+RcppExport SEXP _simmer_ReleaseAll__new(SEXP resourceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type resource(resourceSEXP);
+    rcpp_result_gen = Rcpp::wrap(ReleaseAll__new(resource));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ReleaseAll__new_void
+SEXP ReleaseAll__new_void();
+RcppExport SEXP _simmer_ReleaseAll__new_void() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(ReleaseAll__new_void());
+    return rcpp_result_gen;
+END_RCPP
+}
 // ReleaseSelected__new
 SEXP ReleaseSelected__new(int id, int amount);
 RcppExport SEXP _simmer_ReleaseSelected__new(SEXP idSEXP, SEXP amountSEXP) {
@@ -111,6 +132,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type id(idSEXP);
     Rcpp::traits::input_parameter< const Function& >::type amount(amountSEXP);
     rcpp_result_gen = Rcpp::wrap(ReleaseSelected__new_func(id, amount));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ReleaseSelectedAll__new
+SEXP ReleaseSelectedAll__new(int id);
+RcppExport SEXP _simmer_ReleaseSelectedAll__new(SEXP idSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type id(idSEXP);
+    rcpp_result_gen = Rcpp::wrap(ReleaseSelectedAll__new(id));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1311,8 +1343,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_SeizeSelected__new_func", (DL_FUNC) &_simmer_SeizeSelected__new_func, 5},
     {"_simmer_Release__new", (DL_FUNC) &_simmer_Release__new, 2},
     {"_simmer_Release__new_func", (DL_FUNC) &_simmer_Release__new_func, 2},
+    {"_simmer_ReleaseAll__new", (DL_FUNC) &_simmer_ReleaseAll__new, 1},
+    {"_simmer_ReleaseAll__new_void", (DL_FUNC) &_simmer_ReleaseAll__new_void, 0},
     {"_simmer_ReleaseSelected__new", (DL_FUNC) &_simmer_ReleaseSelected__new, 2},
     {"_simmer_ReleaseSelected__new_func", (DL_FUNC) &_simmer_ReleaseSelected__new_func, 2},
+    {"_simmer_ReleaseSelectedAll__new", (DL_FUNC) &_simmer_ReleaseSelectedAll__new, 1},
     {"_simmer_SetCapacity__new", (DL_FUNC) &_simmer_SetCapacity__new, 3},
     {"_simmer_SetCapacity__new_func", (DL_FUNC) &_simmer_SetCapacity__new_func, 3},
     {"_simmer_SetCapacitySelected__new", (DL_FUNC) &_simmer_SetCapacitySelected__new, 3},

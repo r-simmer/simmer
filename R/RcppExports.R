@@ -25,12 +25,24 @@ Release__new_func <- function(resource, amount) {
     .Call(`_simmer_Release__new_func`, resource, amount)
 }
 
+ReleaseAll__new <- function(resource) {
+    .Call(`_simmer_ReleaseAll__new`, resource)
+}
+
+ReleaseAll__new_void <- function() {
+    .Call(`_simmer_ReleaseAll__new_void`)
+}
+
 ReleaseSelected__new <- function(id, amount) {
     .Call(`_simmer_ReleaseSelected__new`, id, amount)
 }
 
 ReleaseSelected__new_func <- function(id, amount) {
     .Call(`_simmer_ReleaseSelected__new_func`, id, amount)
+}
+
+ReleaseSelectedAll__new <- function(id) {
+    .Call(`_simmer_ReleaseSelectedAll__new`, id)
 }
 
 SetCapacity__new <- function(resource, value, mod) {
