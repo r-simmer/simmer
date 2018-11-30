@@ -59,6 +59,8 @@ namespace simmer {
     * @return  SUCCESS, ENQUEUE, REJECT
     */
     int seize(Arrival* arrival, int amount) {
+      if (!amount) return SUCCESS;
+
       int status;
       // serve now
       if (first_in_line(arrival->order.get_priority()) &&
@@ -92,6 +94,8 @@ namespace simmer {
     * @return  SUCCESS
     */
     int release(Arrival* arrival, int amount) {
+      if (!amount) return SUCCESS;
+
       remove_from_server(arrival, amount);
       arrival->unregister_entity(this);
 
