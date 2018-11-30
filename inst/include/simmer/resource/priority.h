@@ -49,6 +49,13 @@ namespace simmer {
       server_map.clear();
     }
 
+    int get_seized(Arrival* arrival) const {
+      typename ServerMap::const_iterator search = server_map.find(arrival);
+      if (search != server_map.end())
+        return search->second->amount;
+      return 0;
+    }
+
   protected:
     T server;
     ServerMap server_map;

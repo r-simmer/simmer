@@ -162,6 +162,8 @@ namespace simmer {
     int get_server_count() const { return server_count; }
     int get_queue_count() const { return queue_count; }
 
+    virtual int get_seized(Arrival* arrival) const = 0;
+
   protected:
     int capacity;
     int queue_size;
