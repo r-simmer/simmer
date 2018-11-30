@@ -256,6 +256,11 @@ SEXP Leave__new(double prob) {
 }
 
 //[[Rcpp::export]]
+SEXP HandleUnfinished__new(const std::vector<Environment>& trj) {
+  return XPtr<HandleUnfinished>(new HandleUnfinished(trj));
+}
+
+//[[Rcpp::export]]
 SEXP Leave__new_func(const Function& prob) {
   return XPtr<Leave<Function> >(new Leave<Function>(prob));
 }

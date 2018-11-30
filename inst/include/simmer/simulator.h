@@ -141,8 +141,8 @@ namespace simmer {
     {
       Rcpp::Rcout <<
         FMT(10, right) << now_ << " |" <<
-        FMT(12, right) << e_type + ": " << FMT(15, left) << e_name << "|" <<
-        FMT(12, right) << a_type + ": " << FMT(15, left) << a_name << "| " << trail;
+        FMT(12, right) << e_type + ": " << FMT(17, left) << e_name << "|" <<
+        FMT(12, right) << a_type + ": " << FMT(17, left) << a_name << "| " << trail;
       if (flush) Rcpp::Rcout << std::endl;
     }
 

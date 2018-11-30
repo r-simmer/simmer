@@ -1,9 +1,17 @@
 # simmer 4.1.1
 
+## New features:
+
+- New `handle_unfinished()` activity sets a drop-out trajectory for unfinished
+  arrivals, i.e., those dropped from a resource (due to preemption, resource
+  shrinkage or a rejected `seize`) or those that `leave` a trajectory (#178
+  addressing #177).
+
 ## Minor changes and fixes:
 
 - Fix performance issues in data sources (#176).
 - Update CITATION.
+- Fix monitored activity for preempted arrivals (as part of #178).
 
 # simmer 4.1.0
 

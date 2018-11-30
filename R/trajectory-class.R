@@ -292,6 +292,12 @@ Trajectory <- R6Class("trajectory",
       )
     },
 
+    handle_unfinished = function(handler) {
+      check_args(handler=c("trajectory", "NULL"))
+      traj <- as.list(c(handler[]))
+      private$add_activity(HandleUnfinished__new(traj))
+    },
+
     renege_in = function(t, out=NULL) {
       check_args(t=c("number", "function"), out=c("trajectory", "NULL"))
       traj <- as.list(c(out[]))

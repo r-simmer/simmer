@@ -24,14 +24,20 @@
 #' @param .trj the trajectory object.
 #' @inheritParams select
 #' @param resource the name of the resource.
-#' @param amount the amount to seize/release, accepts either a numeric or a callable
-#' object (a function) which must return a numeric.
+#' @param amount the amount to seize/release, accepts either a numeric or a
+#' callable object (a function) which must return a numeric.
 #' @param continue a boolean (if \code{post.seize} OR \code{reject} is defined)
 #' or a pair of booleans (if \code{post.seize} AND \code{reject} are defined; if
 #' only one value is provided, it will be recycled) to indicate whether these
 #' subtrajectories should continue to the next activity in the main trajectory.
-#' @param post.seize an optional trajectory object which will be followed after a successful seize.
-#' @param reject an optional trajectory object which will be followed if the arrival is rejected.
+#' @param post.seize an optional trajectory object which will be followed after
+#' a successful seize.
+#' @param reject an optional trajectory object which will be followed if the
+#' arrival is rejected. Note that if the arrival is accepted (either in the
+#' queue or in the server) and then it is dropped afterwards due to preemption
+#' or resource shrinkage, then this trajectory won't be executed. Instead, see
+#' \code{\link{handle_unfinished}} for another, more general, method for
+#' handling all kinds of unfinished arrivals.
 #'
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{select}}, \code{\link{set_capacity}}, \code{\link{set_queue_size}},
@@ -353,11 +359,36 @@ rollback.trajectory <- function(.trj, amount, times=Inf, check=NULL) .trj$rollba
 #' @param prob a probability or a function returning a probability.
 #'
 #' @return Returns the trajectory object.
+#'
+#' @details Arrivals that leave the trajectory will set the \code{finished} flag
+#' to \code{FALSE} in the output of \code{\link{get_mon_arrivals}}. Unfinished
+#' arrivals can be handled with a drop-out trajectory that can be set using the
+#' \code{\link{handle_unfinished}} activity.
+#'
+#' @seealso \code{\link{handle_unfinished}}, \code{\link{renege_in}}
 #' @export
 leave <- function(.trj, prob) UseMethod("leave")
 
 #' @export
 leave.trajectory <- function(.trj, prob) .trj$leave(prob)
+
+#' Handle Unfinished Arrivals
+#'
+#' Activity for setting a drop-out trajectory for unfinished arrivals, i.e.,
+#' those dropped from a resource (due to preemption, resource shrinkage or a
+#' rejected \code{\link{seize}}) or those that \code{\link{leave}} a trajectory.
+#'
+#' @inheritParams seize
+#' @param handler trajectory object to handle unfinished arrivals. A \code{NULL}
+#' value will unset the drop-out trajectory.
+#'
+#' @return Returns the trajectory object.
+#' @seealso \code{\link{leave}}, \code{\link{set_capacity}}
+#' @export
+handle_unfinished <- function(.trj, handler) UseMethod("handle_unfinished")
+
+#' @export
+handle_unfinished.trajectory <- function(.trj, handler) .trj$handle_unfinished(handler)
 
 #' Renege on some Condition
 #'
@@ -379,7 +410,7 @@ renege_in.trajectory <- function(.trj, t, out=NULL) .trj$renege_in(t, out)
 #' (a function) which must return a string.
 #'
 #' @rdname renege_in
-#' @seealso \code{\link{send}}
+#' @seealso \code{\link{send}}, \code{\link{leave}}
 #' @export
 renege_if <- function(.trj, signal, out=NULL) UseMethod("renege_if")
 
