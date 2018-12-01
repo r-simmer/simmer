@@ -106,15 +106,15 @@ namespace simmer {
     }
 
     double run(Arrival* arrival) {
-      if (Resource* res = get_resource(arrival)) {
+      Resource* res = get_resource(arrival);
+      if (res) {
         if (*amount)
           return res->release(arrival, std::abs(get<int>(*amount, arrival)));
         return res->release(arrival, res->get_seized(arrival));
       }
 
-      VEC<std::string> resources = arrival->sim->get_resources();
-      foreach_ (const std::string& resource, resources) {
-        Resource* res = arrival->sim->get_resource(resource);
+      foreach_ (const std::string& resource, arrival->sim->get_resources()) {
+        res = arrival->sim->get_resource(resource);
         res->release(arrival, res->get_seized(arrival));
       }
       return 0;
