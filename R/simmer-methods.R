@@ -40,13 +40,14 @@
 #' \code{\link{get_server_count}}, \code{\link{get_queue_count}},
 #' \code{\link{get_capacity_selected}}, \code{\link{get_queue_size_selected}},
 #' \code{\link{get_server_count_selected}}, \code{\link{get_queue_count_selected}},
+#' \code{\link{get_seized}}, \code{\link{get_seized_selected}},
 #' \code{\link{get_selected}}
 #'
 #' \item Sources: \code{\link{add_generator}}, \code{\link{add_dataframe}},
 #' \code{\link{get_sources}}, \code{\link{get_n_generated}},
 #' \code{\link{get_trajectory}}
 #'
-#' \item Globals: \code{\link{add_global}}, \code{\link{get_global}}.
+#' \item Globals: \code{\link{add_global}}, \code{\link{get_global}}
 #'
 #' \item Data retrieval: \code{\link{get_mon_arrivals}},
 #' \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}
@@ -501,6 +502,20 @@ get_queue_count_selected <- function(.env, id=0) UseMethod("get_queue_count_sele
 
 #' @export
 get_queue_count_selected.simmer <- function(.env, id=0) .env$get_queue_count(NULL, id)
+
+#' @rdname get_capacity
+#' @export
+get_seized <- function(.env, resources) UseMethod("get_seized")
+
+#' @export
+get_seized.simmer <- function(.env, resources) .env$get_seized(resources)
+
+#' @rdname get_capacity
+#' @export
+get_seized_selected <- function(.env, id=0) UseMethod("get_seized_selected")
+
+#' @export
+get_seized_selected.simmer <- function(.env, id=0) .env$get_seized(NULL, id)
 
 #' @rdname get_capacity
 #' @export

@@ -377,6 +377,14 @@ get_queue_count_selected_ <- function(sim_, id) {
     .Call(`_simmer_get_queue_count_selected_`, sim_, id)
 }
 
+get_seized_ <- function(sim_, names) {
+    .Call(`_simmer_get_seized_`, sim_, names)
+}
+
+get_seized_selected_ <- function(sim_, id) {
+    .Call(`_simmer_get_seized_selected_`, sim_, id)
+}
+
 get_selected_ <- function(sim_, id) {
     .Call(`_simmer_get_selected_`, sim_, id)
 }

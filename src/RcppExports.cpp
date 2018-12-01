@@ -1153,6 +1153,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_seized_
+std::vector<int> get_seized_(SEXP sim_, const std::vector<std::string>& names);
+RcppExport SEXP _simmer_get_seized_(SEXP sim_SEXP, SEXP namesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type names(namesSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_seized_(sim_, names));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_seized_selected_
+std::vector<int> get_seized_selected_(SEXP sim_, int id);
+RcppExport SEXP _simmer_get_seized_selected_(SEXP sim_SEXP, SEXP idSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< int >::type id(idSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_seized_selected_(sim_, id));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_selected_
 std::vector<std::string> get_selected_(SEXP sim_, int id);
 RcppExport SEXP _simmer_get_selected_(SEXP sim_SEXP, SEXP idSEXP) {
@@ -1431,6 +1455,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_get_server_count_selected_", (DL_FUNC) &_simmer_get_server_count_selected_, 2},
     {"_simmer_get_queue_count_", (DL_FUNC) &_simmer_get_queue_count_, 2},
     {"_simmer_get_queue_count_selected_", (DL_FUNC) &_simmer_get_queue_count_selected_, 2},
+    {"_simmer_get_seized_", (DL_FUNC) &_simmer_get_seized_, 2},
+    {"_simmer_get_seized_selected_", (DL_FUNC) &_simmer_get_seized_selected_, 2},
     {"_simmer_get_selected_", (DL_FUNC) &_simmer_get_selected_, 2},
     {"_simmer_Simulator__new", (DL_FUNC) &_simmer_Simulator__new, 4},
     {"_simmer_reset_", (DL_FUNC) &_simmer_reset_, 1},

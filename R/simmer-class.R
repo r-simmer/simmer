@@ -287,6 +287,15 @@ Simmer <- R6Class("simmer",
       )
     },
 
+    get_seized = function(resources, id=0) {
+      check_args(resources=c("string vector", "NULL"), id="numeric")
+      ret <- switch(
+        binarise(is.null(resources)),
+        get_seized_(private$sim_obj, resources),
+        get_seized_selected_(private$sim_obj, id)
+      )
+    },
+
     get_selected = function(id=0) {
       check_args(id="numeric")
       get_selected_(private$sim_obj, id)

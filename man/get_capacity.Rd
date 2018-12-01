@@ -9,6 +9,8 @@
 \alias{get_server_count_selected}
 \alias{get_queue_count}
 \alias{get_queue_count_selected}
+\alias{get_seized}
+\alias{get_seized_selected}
 \alias{get_selected}
 \title{Get Resource Parameters}
 \usage{
@@ -27,6 +29,10 @@ get_server_count_selected(.env, id = 0)
 get_queue_count(.env, resources)
 
 get_queue_count_selected(.env, id = 0)
+
+get_seized(.env, resources)
+
+get_seized_selected(.env, id = 0)
 
 get_selected(.env, id = 0)
 }
