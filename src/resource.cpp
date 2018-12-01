@@ -35,14 +35,8 @@ template <typename T>
 VEC<T> get_param(SEXP sim_, int id, const Fn<T(Resource*)>& param) {
   XPtr<Simulator> sim(sim_);
   VEC<T> out;
-  if (id >= 0) {
-    if (Resource* r = sim->get_running_arrival()->get_resource_selected(id))
-      out.push_back(param(r));
-  } else {
-    int i = 0;
-    while (Resource* r = sim->get_running_arrival()->get_resource_selected(i++))
-      out.push_back(param(r));
-  }
+  if (Resource* r = sim->get_running_arrival()->get_resource_selected(id))
+    out.push_back(param(r));
   return out;
 }
 

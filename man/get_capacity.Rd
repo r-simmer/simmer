@@ -41,15 +41,15 @@ get_selected(.env, id = 0)
 
 \item{resources}{one or more resource names.}
 
-\item{id}{selection identifier (a negative number causes the function to
-return the required parameter for all the selected resources).}
+\item{id}{selection identifier for nested usage.}
 }
 \value{
 Return a vector (character for \code{get_selected}, numeric for the
 rest of them).
 }
 \description{
-Getters for resources: server capacity/count and queue size/count.
+Getters for resources: server capacity/count and queue size/count, seized
+amount and selected resources.
 }
 \seealso{
 \code{\link{get_resources}}, \code{\link{set_capacity}},

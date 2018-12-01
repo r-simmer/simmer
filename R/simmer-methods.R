@@ -437,12 +437,12 @@ get_prioritization.simmer <- function(.env) .env$get_prioritization()
 
 #' Get Resource Parameters
 #'
-#' Getters for resources: server capacity/count and queue size/count.
+#' Getters for resources: server capacity/count and queue size/count, seized
+#' amount and selected resources.
 #'
 #' @inheritParams reset
+#' @inheritParams select
 #' @param resources one or more resource names.
-#' @param id selection identifier (a negative number causes the function to
-#' return the required parameter for all the selected resources).
 #'
 #' @return Return a vector (character for \code{get_selected}, numeric for the
 #' rest of them).
