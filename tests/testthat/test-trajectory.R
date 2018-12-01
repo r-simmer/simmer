@@ -50,6 +50,8 @@ t0 <- trajectory(verbose = TRUE) %>%
   untrap(function() "asdf") %>%
   wait() %>%
   log_(function() "asdf") %>%
+  release_all() %>%
+  release_selected_all() %>%
   release_selected(1) %>%
   release("nurse", 1)
 
@@ -93,6 +95,8 @@ trajs <- c(
   trajectory(verbose = TRUE) %>% untrap(function() "asdf"),
   trajectory(verbose = TRUE) %>% wait(),
   trajectory(verbose = TRUE) %>% log_(function() "asdf"),
+  trajectory(verbose = TRUE) %>% release_all(),
+  trajectory(verbose = TRUE) %>% release_selected_all(),
   trajectory(verbose = TRUE) %>% release_selected(1),
   trajectory(verbose = TRUE) %>% release("nurse", 1)
 )
