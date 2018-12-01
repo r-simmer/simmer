@@ -407,20 +407,17 @@ SEXP Log__new_func(const Function& message, int level) {
 
 //[[Rcpp::export]]
 int activity_get_count_(SEXP activity_) {
-  XPtr<Activity> activity(activity_);
-  return activity->count;
+  return XPtr<Activity>(activity_)->count;
 }
 
 //[[Rcpp::export]]
 void activity_print_(SEXP activity_, int indent, bool verbose) {
-  XPtr<Activity> activity(activity_);
-  return activity->print(indent, verbose);
+  return XPtr<Activity>(activity_)->print(indent, verbose);
 }
 
 //[[Rcpp::export]]
 SEXP activity_get_next_(SEXP activity_) {
-  XPtr<Activity> activity(activity_);
-  Activity* the_next = activity->get_next();
+  Activity* the_next = XPtr<Activity>(activity_)->get_next();
   if (the_next)
     return XPtr<Activity>(the_next, false);
   return R_NilValue;
@@ -428,8 +425,7 @@ SEXP activity_get_next_(SEXP activity_) {
 
 //[[Rcpp::export]]
 SEXP activity_get_prev_(SEXP activity_) {
-  XPtr<Activity> activity(activity_);
-  Activity* the_prev = activity->get_prev();
+  Activity* the_prev = XPtr<Activity>(activity_)->get_prev();
   if (the_prev)
     return XPtr<Activity>(the_prev, false);
   return R_NilValue;
@@ -445,6 +441,5 @@ void activity_chain_(SEXP first_, SEXP second_) {
 
 //[[Rcpp::export]]
 SEXP activity_clone_(SEXP activity_) {
-  XPtr<Activity> activity(activity_);
-  return XPtr<Activity>(activity->clone());
+  return XPtr<Activity>(XPtr<Activity>(activity_)->clone());
 }

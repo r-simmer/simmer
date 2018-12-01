@@ -43,8 +43,7 @@ std::vector<Environment> get_trajectory_(SEXP sim_, const std::vector<std::strin
 
 //[[Rcpp::export]]
 std::string get_name_(SEXP sim_) {
-  XPtr<Simulator> sim(sim_);
-  return sim->get_running_arrival()->name;
+  return XPtr<Simulator>(sim_)->get_running_arrival()->name;
 }
 
 //[[Rcpp::export]]
@@ -65,8 +64,7 @@ NumericVector get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bo
 
 //[[Rcpp::export]]
 IntegerVector get_prioritization_(SEXP sim_) {
-  XPtr<Simulator> sim(sim_);
-  Arrival* a = sim->get_running_arrival();
+  Arrival* a = XPtr<Simulator>(sim_)->get_running_arrival();
   return IntegerVector::create(
     a->order.get_priority(), a->order.get_preemptible(), (int)a->order.get_restart()
   );

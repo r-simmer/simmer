@@ -36,18 +36,15 @@ SEXP CsvMonitor__new(const std::string& ends_path, const std::string& releases_p
 
 //[[Rcpp::export]]
 DataFrame get_arrivals_(SEXP mon_, bool per_resource) {
-  XPtr<MemMonitor> mon(mon_);
-  return mon->get_arrivals(per_resource);
+  return XPtr<MemMonitor>(mon_)->get_arrivals(per_resource);
 }
 
 //[[Rcpp::export]]
 DataFrame get_attributes_(SEXP mon_) {
-  XPtr<MemMonitor> mon(mon_);
-  return mon->get_attributes();
+  return XPtr<MemMonitor>(mon_)->get_attributes();
 }
 
 //[[Rcpp::export]]
 DataFrame get_resources_(SEXP mon_) {
-  XPtr<MemMonitor> mon(mon_);
-  return mon->get_resources();
+  return XPtr<MemMonitor>(mon_)->get_resources();
 }

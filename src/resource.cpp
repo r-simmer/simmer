@@ -82,14 +82,14 @@ std::vector<int> get_queue_count_selected_(SEXP sim_, int id) {
 
 //[[Rcpp::export]]
 std::vector<int> get_seized_(SEXP sim_, const std::vector<std::string>& names) {
-  return get_param<int>(sim_, names, BIND(
-      &Resource::get_seized, _1, XPtr<Simulator>(sim_)->get_running_arrival()));
+  Arrival* arrival = XPtr<Simulator>(sim_)->get_running_arrival();
+  return get_param<int>(sim_, names, BIND(&Resource::get_seized, _1, arrival));
 }
 
 //[[Rcpp::export]]
 std::vector<int> get_seized_selected_(SEXP sim_, int id) {
-  return get_param<int>(sim_, id, BIND(
-      &Resource::get_seized, _1, XPtr<Simulator>(sim_)->get_running_arrival()));
+  Arrival* arrival = XPtr<Simulator>(sim_)->get_running_arrival();
+  return get_param<int>(sim_, id, BIND(&Resource::get_seized, _1, arrival));
 }
 
 std::string get_name(Resource* res) { return res->name; }
