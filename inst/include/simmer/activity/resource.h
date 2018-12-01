@@ -112,7 +112,8 @@ namespace simmer {
         return res->release(arrival, res->get_seized(arrival));
       }
 
-      foreach_ (const std::string& resource, arrival->sim->get_resources()) {
+      VEC<std::string> resources = arrival->sim->get_resources();
+      foreach_ (const std::string& resource, resources) {
         Resource* res = arrival->sim->get_resource(resource);
         res->release(arrival, res->get_seized(arrival));
       }
