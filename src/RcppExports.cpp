@@ -872,6 +872,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// StopIf__new
+SEXP StopIf__new(bool condition);
+RcppExport SEXP _simmer_StopIf__new(SEXP conditionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type condition(conditionSEXP);
+    rcpp_result_gen = Rcpp::wrap(StopIf__new(condition));
+    return rcpp_result_gen;
+END_RCPP
+}
+// StopIf__new_func
+SEXP StopIf__new_func(const Function& condition);
+RcppExport SEXP _simmer_StopIf__new_func(SEXP conditionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Function& >::type condition(conditionSEXP);
+    rcpp_result_gen = Rcpp::wrap(StopIf__new_func(condition));
+    return rcpp_result_gen;
+END_RCPP
+}
 // activity_get_count_
 int activity_get_count_(SEXP activity_);
 RcppExport SEXP _simmer_activity_get_count_(SEXP activity_SEXP) {
@@ -1431,6 +1453,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_Wait__new", (DL_FUNC) &_simmer_Wait__new, 0},
     {"_simmer_Log__new", (DL_FUNC) &_simmer_Log__new, 2},
     {"_simmer_Log__new_func", (DL_FUNC) &_simmer_Log__new_func, 2},
+    {"_simmer_StopIf__new", (DL_FUNC) &_simmer_StopIf__new, 1},
+    {"_simmer_StopIf__new_func", (DL_FUNC) &_simmer_StopIf__new_func, 1},
     {"_simmer_activity_get_count_", (DL_FUNC) &_simmer_activity_get_count_, 1},
     {"_simmer_activity_print_", (DL_FUNC) &_simmer_activity_print_, 3},
     {"_simmer_activity_get_next_", (DL_FUNC) &_simmer_activity_get_next_, 1},

@@ -31,7 +31,7 @@
 #' Available activities by category:
 #' \itemize{
 #'
-#' \item Debugging: \code{\link{log_}}
+#' \item Debugging: \code{\link{log_}}, \code{\link{stop_if}}
 #'
 #' \item Delays: \code{\link{timeout}}, \code{\link{timeout_from_attribute}},
 #' \code{\link{timeout_from_global}}

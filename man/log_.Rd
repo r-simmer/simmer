@@ -2,9 +2,12 @@
 % Please edit documentation in R/trajectory-activities.R
 \name{log_}
 \alias{log_}
-\title{Logging}
+\alias{stop_if}
+\title{Debugging}
 \usage{
 log_(.trj, message, level = 0)
+
+stop_if(.trj, condition)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -20,5 +23,6 @@ simulation environment (see \code{\link{simmer}}).}
 Returns the trajectory object.
 }
 \description{
-Activity for displaying messages preceded by the simulation time and the name of the arrival.
+Activities for displaying messages preceded by the simulation time and the
+name of the arrival, and for stopping the simulation given some condition.
 }

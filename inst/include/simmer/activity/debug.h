@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef simmer__activity_log_h
-#define simmer__activity_log_h
+#ifndef simmer__activity_debug_h
+#define simmer__activity_debug_h
 
 #include <simmer/activity.h>
 #include <simmer/process/arrival.h>
@@ -53,6 +53,32 @@ namespace simmer {
   protected:
     T message;
     int level;
+  };
+
+  /**
+   * Set a breakpoint based on some condition.
+   */
+  template <typename T>
+  class StopIf : public Activity {
+  public:
+    CLONEABLE(StopIf<T>)
+
+    StopIf(const T& condition)
+      : Activity("StopIf"), condition(condition) {}
+
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      internal::print(brief, true, ARG(condition));
+    }
+
+    double run(Arrival* arrival) {
+      if (get<bool>(condition, arrival))
+        arrival->sim->request_stop();
+      return 0;
+    }
+
+  protected:
+    T condition;
   };
 
 } // namespace simmer
