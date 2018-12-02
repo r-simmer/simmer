@@ -35,14 +35,8 @@ template <typename T>
 VEC<T> get_param(SEXP sim_, int id, const Fn<T(Resource*)>& param) {
   XPtr<Simulator> sim(sim_);
   VEC<T> out;
-  if (id >= 0) {
-    if (Resource* r = sim->get_running_arrival()->get_resource_selected(id))
-      out.push_back(param(r));
-  } else {
-    int i = 0;
-    while (Resource* r = sim->get_running_arrival()->get_resource_selected(i++))
-      out.push_back(param(r));
-  }
+  if (Resource* r = sim->get_running_arrival()->get_resource_selected(id))
+    out.push_back(param(r));
   return out;
 }
 
@@ -84,6 +78,18 @@ std::vector<int> get_queue_count_(SEXP sim_, const std::vector<std::string>& nam
 //[[Rcpp::export]]
 std::vector<int> get_queue_count_selected_(SEXP sim_, int id) {
   return get_param<int>(sim_, id, boost::mem_fn(&Resource::get_queue_count));
+}
+
+//[[Rcpp::export]]
+std::vector<int> get_seized_(SEXP sim_, const std::vector<std::string>& names) {
+  Arrival* arrival = XPtr<Simulator>(sim_)->get_running_arrival();
+  return get_param<int>(sim_, names, BIND(&Resource::get_seized, _1, arrival));
+}
+
+//[[Rcpp::export]]
+std::vector<int> get_seized_selected_(SEXP sim_, int id) {
+  Arrival* arrival = XPtr<Simulator>(sim_)->get_running_arrival();
+  return get_param<int>(sim_, id, BIND(&Resource::get_seized, _1, arrival));
 }
 
 std::string get_name(Resource* res) { return res->name; }

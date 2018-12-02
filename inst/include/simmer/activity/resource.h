@@ -41,7 +41,7 @@ namespace simmer {
     Seize(int id, const T& amount, const VEC<bool>& cont,
           const VEC<REnv>& trj, unsigned short mask)
       : Fork("Seize", cont, trj),
-        internal::ResGetter("Seize", "[]", id), amount(amount), mask(mask) {}
+        internal::ResGetter("Seize", id), amount(amount), mask(mask) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
@@ -50,8 +50,8 @@ namespace simmer {
     }
 
     double run(Arrival* arrival) {
-      return select_path(
-        arrival, get_resource(arrival)->seize(arrival, std::abs(get<int>(amount, arrival))));
+      return select_path(arrival, get_resource(arrival)->
+                         seize(arrival, std::abs(get<int>(amount, arrival))));
     }
 
   protected:
@@ -86,25 +86,41 @@ namespace simmer {
   public:
     CLONEABLE(Release<T>)
 
-    Release(const std::string& resource, const T& amount)
+    Release()
+      : Activity("Release", PRIORITY_RELEASE),
+        internal::ResGetter("Release"), amount(NONE) {}
+
+    Release(const std::string& resource, const OPT<T>& amount = NONE)
       : Activity("Release", PRIORITY_RELEASE),
         internal::ResGetter("Release", resource), amount(amount) {}
 
-    Release(int id, const T& amount)
+    Release(int id, const OPT<T>& amount = NONE)
       : Activity("Release", PRIORITY_RELEASE),
-        internal::ResGetter("Release", "[]", id), amount(amount) {}
+        internal::ResGetter("Release", id), amount(amount) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      internal::print(brief, true, ARG(resource), ARG(amount));
+      if (amount)
+        internal::print(brief, true, ARG(resource), "amount: ", *amount);
+      else internal::print(brief, true, ARG(resource), "amount: ", "all");
     }
 
     double run(Arrival* arrival) {
-      return get_resource(arrival)->release(arrival, std::abs(get<int>(amount, arrival)));
+      if (Resource* res = get_resource(arrival)) {
+        if (amount)
+          return res->release(arrival, std::abs(get<int>(*amount, arrival)));
+        return res->release(arrival, res->get_seized(arrival));
+      }
+
+      foreach_ (const std::string& resource, arrival->sim->get_resources()) {
+        Resource* res = arrival->sim->get_resource(resource);
+        res->release(arrival, res->get_seized(arrival));
+      }
+      return 0;
     }
 
   protected:
-    T amount;
+    OPT<T> amount;
   };
 
   /**
@@ -120,7 +136,7 @@ namespace simmer {
         value(value), mod(mod), op(internal::get_op<double>(mod)) {}
 
     SetCapacity(int id, const T& value, char mod='N')
-      : Activity("SetCapacity"), internal::ResGetter("SetCapacity", "[]", id),
+      : Activity("SetCapacity"), internal::ResGetter("SetCapacity", id),
         value(value), mod(mod), op(internal::get_op<double>(mod)) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
@@ -161,7 +177,7 @@ namespace simmer {
         value(value), mod(mod), op(internal::get_op<double>(mod)) {}
 
     SetQueue(int id, const T& value, char mod='N')
-      : Activity("SetQueue"), internal::ResGetter("SetQueue", "[]", id),
+      : Activity("SetQueue"), internal::ResGetter("SetQueue", id),
         value(value), mod(mod), op(internal::get_op<double>(mod)) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {

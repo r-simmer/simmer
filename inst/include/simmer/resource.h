@@ -59,6 +59,8 @@ namespace simmer {
     * @return  SUCCESS, ENQUEUE, REJECT
     */
     int seize(Arrival* arrival, int amount) {
+      if (!amount) return SUCCESS;
+
       int status;
       // serve now
       if (first_in_line(arrival->order.get_priority()) &&
@@ -92,6 +94,8 @@ namespace simmer {
     * @return  SUCCESS
     */
     int release(Arrival* arrival, int amount) {
+      if (!amount) return SUCCESS;
+
       remove_from_server(arrival, amount);
       arrival->unregister_entity(this);
 
@@ -157,6 +161,8 @@ namespace simmer {
     int get_queue_size() const { return queue_size; }
     int get_server_count() const { return server_count; }
     int get_queue_count() const { return queue_count; }
+
+    virtual int get_seized(Arrival* arrival) const = 0;
 
   protected:
     int capacity;

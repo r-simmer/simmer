@@ -6,12 +6,17 @@
   arrivals, i.e., those dropped from a resource (due to preemption, resource
   shrinkage or a rejected `seize`) or those that `leave` a trajectory (#178
   addressing #177).
+- New `release_all()` and `release_selected_all()` activities automatically
+  retrieve the amount of resources seized and release it (#180 addressing #25).
+- New `get_seized()` and `get_seized_selected()` getters allow an arrival to
+  retrieve the amount of resources seized (#180 addressing #179).
 
 ## Minor changes and fixes:
 
 - Fix performance issues in data sources (#176).
 - Update CITATION.
 - Fix monitored activity for preempted arrivals (as part of #178).
+- Fix seizes/releases with a null amount (as part of #180).
 
 # simmer 4.1.0
 

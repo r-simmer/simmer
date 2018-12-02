@@ -73,6 +73,20 @@ release_selected <- function(.trj, amount=1, id=0) UseMethod("release_selected")
 #' @export
 release_selected.trajectory <- function(.trj, amount=1, id=0) .trj$release(NA, amount, id)
 
+#' @rdname seize
+#' @export
+release_all <- function(.trj, resource) UseMethod("release_all")
+
+#' @export
+release_all.trajectory <- function(.trj, resource) .trj$release(resource, NA)
+
+#' @rdname seize
+#' @export
+release_selected_all <- function(.trj, id=0) UseMethod("release_selected_all")
+
+#' @export
+release_selected_all.trajectory <- function(.trj, id=0) .trj$release(NA, NA, id)
+
 #' Set Resource Parameters
 #'
 #' Activities for modifying a resource's server capacity or queue size, by name
