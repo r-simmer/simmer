@@ -199,11 +199,18 @@ namespace simmer {
   }
 
   inline std::string Simulator::format(Process* process, const char* append) {
-    Arrival* arrival = dynamic_cast<Arrival*>(process);
+    std::stringstream context;
+    if (Arrival* arrival = dynamic_cast<Arrival*>(process)) {
+      context << " in [";
+      if (Activity* prev = arrival->get_activity()->get_prev())
+        context << prev->name;
+      context << "]->" << arrival->get_activity()->name << "->[";
+      if (Activity* next = arrival->get_activity()->get_next())
+        context << next->name;
+      context << "]";
+    }
     return tfm::format(
-      "'%s' at %.2f%s:\n %s", process->name, now_,
-      arrival ? " in '" + arrival->get_activity()->name + "'" : "", append
-    );
+      "'%s' at %.2f%s:\n %s", process->name, now_, context.str(), append);
   }
 
 } // namespace simmer
