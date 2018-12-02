@@ -89,13 +89,13 @@ namespace simmer {
       }
 
       delay = activity->run(this);
-      if (delay == REJECT)
+      if (delay == STATUS_REJECT)
         goto end;
       activity = activity->get_next();
-      if (delay == ENQUEUE)
+      if (delay == STATUS_ENQUEUE)
         goto end;
 
-      if (delay != BLOCK) {
+      if (delay != STATUS_BLOCK) {
         set_busy(sim->now() + delay);
         update_activity(delay);
       }

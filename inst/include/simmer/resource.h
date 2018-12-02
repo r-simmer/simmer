@@ -56,10 +56,10 @@ namespace simmer {
     * @param   arrival  a pointer to the arrival trying to seize resources
     * @param   amount   the amount of resources needed
     *
-    * @return  SUCCESS, ENQUEUE, REJECT
+    * @return  STATUS_SUCCESS, STATUS_ENQUEUE, STATUS_REJECT
     */
     int seize(Arrival* arrival, int amount) {
-      if (!amount) return SUCCESS;
+      if (!amount) return STATUS_SUCCESS;
 
       int status;
       // serve now
@@ -67,17 +67,17 @@ namespace simmer {
           room_in_server(amount, arrival->order.get_priority()))
       {
         insert_in_server(arrival, amount);
-        status = SUCCESS;
+        status = STATUS_SUCCESS;
       }
       // enqueue
       else if (room_in_queue(amount, arrival->order.get_priority())) {
         insert_in_queue(arrival, amount);
-        status = ENQUEUE;
+        status = STATUS_ENQUEUE;
       }
       // reject
       else {
         if (sim->verbose) print(arrival->name, "REJECT");
-        return REJECT;
+        return STATUS_REJECT;
       }
 
       arrival->register_entity(this);
@@ -91,10 +91,10 @@ namespace simmer {
     * @param   arrival a pointer to the arrival that releases resources
     * @param   amount  the amount of resources released
     *
-    * @return  SUCCESS
+    * @return  STATUS_SUCCESS
     */
     int release(Arrival* arrival, int amount) {
-      if (!amount) return SUCCESS;
+      if (!amount) return STATUS_SUCCESS;
 
       remove_from_server(arrival, amount);
       arrival->unregister_entity(this);
@@ -105,7 +105,7 @@ namespace simmer {
                             PRIORITY_RELEASE_POST);
       task->activate();
 
-      return SUCCESS;
+      return STATUS_SUCCESS;
     }
 
     bool erase(Arrival* arrival, bool stay = false) {
@@ -179,7 +179,7 @@ namespace simmer {
 
       if (is_monitored())
         sim->mon->record_resource(name, sim->now(), server_count, queue_count, capacity, queue_size);
-      return SUCCESS;
+      return STATUS_SUCCESS;
     }
 
     void print(const std::string& arrival, const std::string& status) const {

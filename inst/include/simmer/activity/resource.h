@@ -60,9 +60,9 @@ namespace simmer {
 
     int select_path(Arrival* arrival, int ret) {
       switch (ret) {
-      case REJECT:
+      case STATUS_REJECT:
         if (mask & 2) {
-          ret = SUCCESS;
+          ret = STATUS_SUCCESS;
           if (mask & 1)
             path = 1;
           else
@@ -154,7 +154,7 @@ namespace simmer {
         get_resource(arrival)->set_capacity((ret == R_PosInf) ? -1 : (int) ret);
 
       if (arrival->is_paused())
-        return ENQUEUE;
+        return STATUS_ENQUEUE;
       return 0;
     }
 

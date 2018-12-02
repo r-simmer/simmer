@@ -72,10 +72,10 @@
 #define PRIORITY_TRAP           -1
 #define PRIORITY_MIN            std::numeric_limits<int>::max()
 
-#define SUCCESS    0
-#define ENQUEUE   -1
-#define REJECT    -2
-#define BLOCK     std::numeric_limits<double>::infinity()
+#define STATUS_SUCCESS    0
+#define STATUS_ENQUEUE   -1
+#define STATUS_REJECT    -2
+#define STATUS_BLOCK     std::numeric_limits<double>::infinity()
 
 #define COMMA ,
 
