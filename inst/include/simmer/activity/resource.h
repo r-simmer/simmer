@@ -107,7 +107,7 @@ namespace simmer {
 
     double run(Arrival* arrival) {
       if (Resource* res = get_resource(arrival)) {
-        if (*amount)
+        if (amount)
           return res->release(arrival, std::abs(get<int>(*amount, arrival)));
         return res->release(arrival, res->get_seized(arrival));
       }

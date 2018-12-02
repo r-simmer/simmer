@@ -270,7 +270,7 @@ test_that("arrivals don't jump the queue if there is room in the server (2)", {
 })
 
 test_that("unknown amounts can be released", {
-  random <- function() sample.int(10, 1)
+  random <- function() sample(10, 1)
   t <- trajectory() %>%
     seize("res1", random) %>%
     set_attribute("res1", function() get_seized(env, "res1")) %>%
