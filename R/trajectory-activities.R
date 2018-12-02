@@ -565,6 +565,7 @@ wait.trajectory <- function(.trj) .trj$wait()
 #' @param level debugging level. The \code{message} will be printed if, and only if,
 #' the \code{level} provided is less or equal to the \code{log_level} defined in the
 #' simulation environment (see \code{\link{simmer}}).
+#' @param condition a boolean or a function returning a boolean.
 #'
 #' @return Returns the trajectory object.
 #' @export

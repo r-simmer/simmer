@@ -18,6 +18,8 @@ stop_if(.trj, condition)
 \item{level}{debugging level. The \code{message} will be printed if, and only if,
 the \code{level} provided is less or equal to the \code{log_level} defined in the
 simulation environment (see \code{\link{simmer}}).}
+
+\item{condition}{a boolean or a function returning a boolean.}
 }
 \value{
 Returns the trajectory object.
