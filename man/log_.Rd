@@ -2,9 +2,12 @@
 % Please edit documentation in R/trajectory-activities.R
 \name{log_}
 \alias{log_}
-\title{Logging}
+\alias{stop_if}
+\title{Debugging}
 \usage{
 log_(.trj, message, level = 0)
+
+stop_if(.trj, condition)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -15,10 +18,13 @@ log_(.trj, message, level = 0)
 \item{level}{debugging level. The \code{message} will be printed if, and only if,
 the \code{level} provided is less or equal to the \code{log_level} defined in the
 simulation environment (see \code{\link{simmer}}).}
+
+\item{condition}{a boolean or a function returning a boolean.}
 }
 \value{
 Returns the trajectory object.
 }
 \description{
-Activity for displaying messages preceded by the simulation time and the name of the arrival.
+Activities for displaying messages preceded by the simulation time and the
+name of the arrival, and for setting conditional breakpoints.
 }

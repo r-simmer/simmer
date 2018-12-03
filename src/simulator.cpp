@@ -29,32 +29,27 @@ SEXP Simulator__new(const std::string& name, bool verbose, SEXP mon, int log_lev
 
 //[[Rcpp::export]]
 void reset_(SEXP sim_) {
-  XPtr<Simulator> sim(sim_);
-  sim->reset();
+  XPtr<Simulator>(sim_)->reset();
 }
 
 //[[Rcpp::export]]
 double now_(SEXP sim_) {
-  XPtr<Simulator> sim(sim_);
-  return sim->now();
+  return XPtr<Simulator>(sim_)->now();
 }
 
 //[[Rcpp::export]]
 DataFrame peek_(SEXP sim_, int steps) {
-  XPtr<Simulator> sim(sim_);
-  return sim->peek(steps);
+  return XPtr<Simulator>(sim_)->peek(steps);
 }
 
 //[[Rcpp::export]]
 void stepn_(SEXP sim_, unsigned int n) {
-  XPtr<Simulator> sim(sim_);
-  sim->step(n);
+  XPtr<Simulator>(sim_)->step(n);
 }
 
 //[[Rcpp::export]]
 void run_(SEXP sim_, double until) {
-  XPtr<Simulator> sim(sim_);
-  sim->run(until);
+  XPtr<Simulator>(sim_)->run(until);
 }
 
 //[[Rcpp::export]]
@@ -165,6 +160,5 @@ bool add_global_manager_(SEXP sim_, const std::string& key, double init,
 
 //[[Rcpp::export]]
 void record_ongoing_(SEXP sim_, bool per_resource) {
-  XPtr<Simulator> sim(sim_);
-  sim->record_ongoing(per_resource);
+  XPtr<Simulator>(sim_)->record_ongoing(per_resource);
 }

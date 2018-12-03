@@ -125,7 +125,7 @@ namespace simmer {
         delete arrival;
       else
         arrival->terminate(true);
-      return REJECT;
+      return STATUS_REJECT;
     }
 
   protected:

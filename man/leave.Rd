@@ -17,3 +17,12 @@ Returns the trajectory object.
 \description{
 Activity for leaving the trajectory with some probability.
 }
+\details{
+Arrivals that leave the trajectory will set the \code{finished} flag
+to \code{FALSE} in the output of \code{\link{get_mon_arrivals}}. Unfinished
+arrivals can be handled with a drop-out trajectory that can be set using the
+\code{\link{handle_unfinished}} activity.
+}
+\seealso{
+\code{\link{handle_unfinished}}, \code{\link{renege_in}}
+}

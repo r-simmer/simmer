@@ -65,13 +65,13 @@ namespace simmer {
     Arrival(Simulator* sim, const std::string& name, int mon, Order order,
             Activity* first_activity, int priority = 0)
       : Process(sim, name, mon, priority), order(order), paused(false),
-        clones(new int(0)), activity(first_activity), timer(NULL), batch(NULL)
-        { init(); }
+        clones(new int(0)), activity(first_activity), timer(NULL),
+        dropout(NULL), batch(NULL) { init(); }
 
     Arrival(const Arrival& o)
       : Process(o), order(o.order), paused(o.paused), clones(o.clones),
-        activity(NULL), attributes(o.attributes), timer(NULL), batch(NULL)
-        { init(); }
+        activity(NULL), attributes(o.attributes), timer(NULL),
+        dropout(NULL), batch(NULL) { init(); }
 
     ~Arrival() { reset(); }
 
@@ -89,13 +89,13 @@ namespace simmer {
       }
 
       delay = activity->run(this);
-      if (delay == REJECT)
+      if (delay == STATUS_REJECT)
         goto end;
       activity = activity->get_next();
-      if (delay == ENQUEUE)
+      if (delay == STATUS_ENQUEUE)
         goto end;
 
-      if (delay != BLOCK) {
+      if (delay != STATUS_BLOCK) {
         set_busy(sim->now() + delay);
         update_activity(delay);
       }
@@ -186,6 +186,8 @@ namespace simmer {
       batch = NULL;
     }
 
+    void set_dropout(Activity* next) { dropout = next; }
+
     void set_renege(double timeout, Activity* next) {
       cancel_renege();
       timer = new Task(sim, "Renege-Timer",
@@ -222,6 +224,7 @@ namespace simmer {
     SelMap selected;      /**< selected resource */
     Task* timer;          /**< timer that triggers reneging */
     std::string signal;   /**< signal that triggers reneging */
+    Activity* dropout;    /**< drop-out trajectory */
     Batched* batch;       /**< batch that contains this arrival */
     ResMSet resources;    /**< resources that contain this arrival */
 

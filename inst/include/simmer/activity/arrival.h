@@ -133,7 +133,7 @@ namespace simmer {
       (*ptr)->insert(arrival);
       if ((int)(*ptr)->size() == n)
         trigger(arrival->sim, *ptr);
-      return REJECT;
+      return STATUS_REJECT;
     }
 
   protected:
@@ -197,7 +197,7 @@ namespace simmer {
       Batched* batched = dynamic_cast<Batched*>(arrival);
       if (!batched || !batched->pop_all(get_next()))
         return 0;
-      return REJECT;
+      return STATUS_REJECT;
     }
   };
 

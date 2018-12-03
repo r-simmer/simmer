@@ -31,7 +31,7 @@
 #' Available activities by category:
 #' \itemize{
 #'
-#' \item Debugging: \code{\link{log_}}
+#' \item Debugging: \code{\link{log_}}, \code{\link{stop_if}}
 #'
 #' \item Delays: \code{\link{timeout}}, \code{\link{timeout_from_attribute}},
 #' \code{\link{timeout_from_global}}
@@ -40,9 +40,10 @@
 #' \code{\link{set_prioritization}}
 #'
 #' \item Interaction with resources: \code{\link{select}}, \code{\link{seize}},
-#' \code{\link{release}}, \code{\link{seize_selected}}, \code{\link{release_selected}},
-#' \code{\link{set_capacity}}, \code{\link{set_queue_size}}, \code{\link{set_capacity_selected}},
-#' \code{\link{set_queue_size_selected}}
+#' \code{\link{release}}, \code{\link{release_all}}, \code{\link{seize_selected}},
+#' \code{\link{release_selected}}, \code{\link{release_selected_all}},
+#' \code{\link{set_capacity}}, \code{\link{set_queue_size}},
+#' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}
 #'
 #' \item Interaction with generators: \code{\link{activate}}, \code{\link{deactivate}},
 #' \code{\link{set_trajectory}}, \code{\link{set_source}}
@@ -56,8 +57,8 @@
 #' \item Asynchronous programming: \code{\link{send}}, \code{\link{trap}},
 #' \code{\link{untrap}}, \code{\link{wait}}
 #'
-#' \item Reneging: \code{\link{leave}}, \code{\link{renege_in}}, \code{\link{renege_if}},
-#' \code{\link{renege_abort}}
+#' \item Reneging: \code{\link{leave}}, \code{\link{handle_unfinished}},
+#' \code{\link{renege_in}}, \code{\link{renege_if}}, \code{\link{renege_abort}}
 #'
 #' }
 #'

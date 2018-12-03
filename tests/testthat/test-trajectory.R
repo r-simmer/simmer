@@ -25,6 +25,7 @@ t0 <- trajectory(verbose = TRUE) %>%
   timeout(function() rnorm(1, 15)) %>%
   timeout_from_attribute("asdf") %>%
   leave(0) %>%
+  handle_unfinished(trajectory()) %>%
   branch(function() 1, T, trajectory(verbose = TRUE) %>% timeout(function() 1)) %>%
   set_attribute("dummy", 1) %>%
   set_prioritization(function() c(0, 0, FALSE)) %>%
@@ -49,6 +50,9 @@ t0 <- trajectory(verbose = TRUE) %>%
   untrap(function() "asdf") %>%
   wait() %>%
   log_(function() "asdf") %>%
+  stop_if(function() 1) %>%
+  release_all() %>%
+  release_selected_all() %>%
   release_selected(1) %>%
   release("nurse", 1)
 
@@ -59,6 +63,7 @@ trajs <- c(
   trajectory(verbose = TRUE) %>% timeout(function() rnorm(1, 15)),
   trajectory(verbose = TRUE) %>% timeout_from_attribute("asdf"),
   trajectory(verbose = TRUE) %>% leave(0),
+  trajectory(verbose = TRUE) %>% handle_unfinished(trajectory(verbose = TRUE)),
   trajectory(verbose = TRUE) %>% branch(function() 1, T,
                                         trajectory(verbose = TRUE) %>%
                                           timeout(function() 1)),
@@ -91,6 +96,9 @@ trajs <- c(
   trajectory(verbose = TRUE) %>% untrap(function() "asdf"),
   trajectory(verbose = TRUE) %>% wait(),
   trajectory(verbose = TRUE) %>% log_(function() "asdf"),
+  trajectory(verbose = TRUE) %>% stop_if(function() 1),
+  trajectory(verbose = TRUE) %>% release_all(),
+  trajectory(verbose = TRUE) %>% release_selected_all(),
   trajectory(verbose = TRUE) %>% release_selected(1),
   trajectory(verbose = TRUE) %>% release("nurse", 1)
 )

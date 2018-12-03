@@ -80,7 +80,7 @@ namespace simmer {
      */
     Simulator(const std::string& name, bool verbose, Monitor* mon, int log_level)
       : name(name), verbose(verbose), mon(mon), log_level(log_level), now_(0),
-        process_(NULL), b_count(0) {}
+        process_(NULL), stop_(false), b_count(0) {}
 
     ~Simulator();
 
@@ -135,14 +135,16 @@ namespace simmer {
       mon->flush();
     }
 
+    void request_stop() { stop_ = true; }
+
     void print(const std::string& e_type,      const std::string& e_name,
                const std::string& a_type = "", const std::string& a_name = "",
                const std::string& trail = "",  bool flush=true) const
     {
       Rcpp::Rcout <<
         FMT(10, right) << now_ << " |" <<
-        FMT(12, right) << e_type + ": " << FMT(15, left) << e_name << "|" <<
-        FMT(12, right) << a_type + ": " << FMT(15, left) << a_name << "| " << trail;
+        FMT(12, right) << e_type + ": " << FMT(17, left) << e_name << "|" <<
+        FMT(12, right) << a_type + ": " << FMT(17, left) << a_name << "| " << trail;
       if (flush) Rcpp::Rcout << std::endl;
     }
 
@@ -153,6 +155,13 @@ namespace simmer {
     Resource* get_resource(const std::string& name) const;
     Arrival* get_running_arrival() const;
     void record_ongoing(bool per_resource) const;
+
+    VEC<std::string> get_resources() const {
+      VEC<std::string> out;
+      foreach_ (const EntMap::value_type& itr, resource_map)
+        out.push_back(itr.first);
+      return out;
+    }
 
     Batched** get_batch(Activity* ptr, const std::string& id) {
       if (id.size()) {
@@ -215,6 +224,7 @@ namespace simmer {
   private:
     double now_;              /**< simulation time */
     Process* process_;        /**< running process */
+    bool stop_;               /**< stop flag */
     PQueue event_queue;       /**< the event queue */
     EntMap resource_map;      /**< map of resources */
     EntMap process_map;       /**< map of processes */
@@ -230,6 +240,8 @@ namespace simmer {
      * Process the next event. Only one step, a giant leap for mankind.
      */
     bool _step(double until = -1);
+
+    std::string format(Process* process, const char* append);
   };
 
 } // namespace simmer

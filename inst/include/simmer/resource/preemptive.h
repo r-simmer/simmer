@@ -88,7 +88,6 @@ namespace simmer {
       typename T::iterator first = server.begin();
       if (first == server.end())
         return count;
-      first->arrival->pause();
       if (sim->verbose) print(first->arrival->name, "PREEMPT");
       count += first->amount;
       server_count -= first->amount;
@@ -96,10 +95,15 @@ namespace simmer {
       if (queue_size_strict) {
         if (!room_in_queue(first->amount, first->priority())) {
           if (sim->verbose) print(first->arrival->name, "REJECT");
+          first->arrival->stop();
           first->arrival->unregister_entity(this);
           first->arrival->terminate(false);
-        } else insert_in_queue(first->arrival, first->amount);
+        } else {
+          first->arrival->pause();
+          insert_in_queue(first->arrival, first->amount);
+        }
       } else {
+        first->arrival->pause();
         preempted_map[first->arrival] = preempted.insert(*first);
         queue_count += first->amount;
       }

@@ -15,7 +15,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = T, comment = "#>",
                       fig.width = 6, fig.height = 4, fig.align = "center")
 
-required <- c("simmer.plot", "dplyr")
+required <- c("simmer.plot")
 
 if (!all(sapply(required, requireNamespace, quietly = TRUE)))
   knitr::opts_chunk$set(eval = FALSE)
@@ -55,7 +55,7 @@ priority of 0, we create and activate one special customer, Guido, with priority
 1 who arrives at time 23. This is to ensure that he arrives after Customer2.
 
 Since the activity trace does not produce the waiting time by default, this is
-calculated and appended using the `mutate` function in the dplyr package.
+calculated and appended using the `transform` function.
 
 ```{r, message = FALSE}
 library(simmer)
@@ -84,8 +84,8 @@ bank <-
 
 bank %>% run(until = 400)
 bank %>%
-  get_mon_arrivals %>%
-  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
+  get_mon_arrivals() %>%
+  transform(waiting_time = end_time - start_time - activity_time)
 ```
 
 The output above displays the number of customers in the queue just as each one
@@ -131,8 +131,8 @@ bank <-
 
 bank %>% run(until = 400)
 bank %>%
-  get_mon_arrivals %>%
-  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
+  get_mon_arrivals() %>%
+  transform(waiting_time = end_time - start_time - activity_time)
 ```
 
 Though Guido arrives at the same time, 23, he no longer has to wait and
@@ -380,16 +380,11 @@ bank <- simmer()
 
 customer <-
   trajectory("Customer's path") %>%
-  log_(function() {
-         capacity <-
-           get_mon_resources(bank) %>%
-           dplyr::filter(resource == "door") %>%
-           .$capacity
-         if (length(capacity) == 0 || tail(capacity, 1) == 0) {
-           return("Here I am but the door is shut.")
-         }
-         "Here I am and the door is open."
-       }) %>%
+  log_(function()
+    if (get_capacity(bank, "door") == 0)
+      "Here I am but the door is shut."
+    else "Here I am and the door is open."
+  ) %>%
   seize("door") %>%
   log_("I can go in!") %>%
   release("door") %>%
@@ -417,8 +412,8 @@ bank <-
 
 bank %>% run(until = maxTime)
 bank %>%
-  get_mon_arrivals %>%
-  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
+  get_mon_arrivals() %>%
+  transform(waiting_time = end_time - start_time - activity_time)
 ```
 
 The output above programs shows how the first two customers have to wait until
@@ -482,8 +477,8 @@ bank %>%
 
 bank %>% run(until = maxTime)
 bank %>%
-  get_mon_arrivals %>%
-  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
+  get_mon_arrivals() %>%
+  transform(waiting_time = end_time - start_time - activity_time)
 ```
 
 The output run for this program shows how the first two customers have to wait
@@ -535,8 +530,8 @@ bank %>%
 
 bank %>% run(until = maxTime)
 bank %>%
-  get_mon_arrivals %>%
-  dplyr::mutate(waiting_time = end_time - start_time - activity_time)
+  get_mon_arrivals() %>%
+  transform(waiting_time = end_time - start_time - activity_time)
 ```
 
 This second method gives the same output as the first.
@@ -641,7 +636,7 @@ bank <-
 bank %>% run(until = 400)
 customer_monitor <-
   get_mon_arrivals(bank) %>%
-  dplyr::mutate(wait = end_time - start_time - activity_time)
+  transform(wait = end_time - start_time - activity_time)
 mean_waiting_time <- mean(customer_monitor$wait)
 
 resource_monitor <- get_mon_resources(bank)

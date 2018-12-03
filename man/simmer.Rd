@@ -54,13 +54,14 @@ Available methods by category:
 \code{\link{get_server_count}}, \code{\link{get_queue_count}},
 \code{\link{get_capacity_selected}}, \code{\link{get_queue_size_selected}},
 \code{\link{get_server_count_selected}}, \code{\link{get_queue_count_selected}},
+\code{\link{get_seized}}, \code{\link{get_seized_selected}},
 \code{\link{get_selected}}
 
 \item Sources: \code{\link{add_generator}}, \code{\link{add_dataframe}},
 \code{\link{get_sources}}, \code{\link{get_n_generated}},
 \code{\link{get_trajectory}}
 
-\item Globals: \code{\link{add_global}}, \code{\link{get_global}}.
+\item Globals: \code{\link{add_global}}, \code{\link{get_global}}
 
 \item Data retrieval: \code{\link{get_mon_arrivals}},
 \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}

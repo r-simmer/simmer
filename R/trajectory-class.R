@@ -125,11 +125,19 @@ Trajectory <- R6Class("trajectory",
     },
 
     release = function(resource, amount=1, id=0) {
-      check_args(resource=c("string", "NA"), amount=c("number", "function"), id="number")
+      if (missing(resource))
+        return(private$add_activity(ReleaseAll__new_void()))
+      check_args(
+        resource = c("string", "NA"),
+        amount = c("number", "function", "NA"),
+        id = "number"
+      )
       switch(
-        binarise(is.na(resource), is.function(amount)),
+        binarise(is.na(resource), is.na(amount), is.function(amount)),
         private$add_activity(Release__new(resource, amount)),
         private$add_activity(ReleaseSelected__new(id, amount)),
+        private$add_activity(ReleaseAll__new(resource)),
+        private$add_activity(ReleaseSelectedAll__new(id)),
         private$add_activity(Release__new_func(resource, amount)),
         private$add_activity(ReleaseSelected__new_func(id, amount))
       )
@@ -292,6 +300,12 @@ Trajectory <- R6Class("trajectory",
       )
     },
 
+    handle_unfinished = function(handler) {
+      check_args(handler=c("trajectory", "NULL"))
+      traj <- as.list(c(handler[]))
+      private$add_activity(HandleUnfinished__new(traj))
+    },
+
     renege_in = function(t, out=NULL) {
       check_args(t=c("number", "function"), out=c("trajectory", "NULL"))
       traj <- as.list(c(out[]))
@@ -391,6 +405,15 @@ Trajectory <- R6Class("trajectory",
         binarise(is.function(message)),
         private$add_activity(Log__new(message, level)),
         private$add_activity(Log__new_func(message, level))
+      )
+    },
+
+    stop_if = function(condition) {
+      check_args(condition=c("logical", "function"))
+      switch(
+        binarise(is.function(condition)),
+        private$add_activity(StopIf__new(condition)),
+        private$add_activity(StopIf__new_func(condition))
       )
     }
   ),

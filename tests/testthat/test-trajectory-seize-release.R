@@ -268,3 +268,36 @@ test_that("arrivals don't jump the queue if there is room in the server (2)", {
   expect_equal(arrs_ordered$end_time, c(20, 11, 21))
   expect_equal(arrs_ordered$activity_time, c(10, 10, 10))
 })
+
+test_that("unknown amounts can be released", {
+  random <- function() sample(10, 1)
+  t <- trajectory() %>%
+    seize("res1", random) %>%
+    set_attribute("res1", function() get_seized(env, "res1")) %>%
+    seize("res2", random) %>%
+    set_attribute("res2", function() get_seized(env, "res2")) %>%
+    select("res3", id=0) %>%
+    seize_selected(random, id=0) %>%
+    set_attribute("res3", function() get_seized_selected(env, id=0)) %>%
+    select("res4", id=1) %>%
+    seize_selected(random, id=1) %>%
+    set_attribute("res4", function() get_seized_selected(env, id=1)) %>%
+    timeout(1) %>%
+    release_all("res1") %>%
+    release_selected_all(id=0) %>%
+    release_all()
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("res1", 10) %>%
+    add_resource("res2", 10) %>%
+    add_resource("res3", 10) %>%
+    add_resource("res4", 10) %>%
+    add_generator("dummy", t, at(0), mon=2)
+
+  run(env, 1)
+  expect_true(all(get_server_count(env, paste0("res", 1:4)) > rep(0, 4)))
+  expect_equal(get_server_count(env, paste0("res", 1:4)),
+               get_mon_attributes(env)$value)
+  run(env)
+  expect_equal(get_server_count(env, paste0("res", 1:4)), rep(0, 4))
+})

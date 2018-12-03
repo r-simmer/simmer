@@ -5,6 +5,8 @@
 \alias{seize_selected}
 \alias{release}
 \alias{release_selected}
+\alias{release_all}
+\alias{release_selected_all}
 \title{Seize/Release Resources}
 \usage{
 seize(.trj, resource, amount = 1, continue = NULL, post.seize = NULL,
@@ -16,23 +18,33 @@ seize_selected(.trj, amount = 1, id = 0, continue = NULL,
 release(.trj, resource, amount = 1)
 
 release_selected(.trj, amount = 1, id = 0)
+
+release_all(.trj, resource)
+
+release_selected_all(.trj, id = 0)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
 
 \item{resource}{the name of the resource.}
 
-\item{amount}{the amount to seize/release, accepts either a numeric or a callable
-object (a function) which must return a numeric.}
+\item{amount}{the amount to seize/release, accepts either a numeric or a
+callable object (a function) which must return a numeric.}
 
 \item{continue}{a boolean (if \code{post.seize} OR \code{reject} is defined)
 or a pair of booleans (if \code{post.seize} AND \code{reject} are defined; if
 only one value is provided, it will be recycled) to indicate whether these
 subtrajectories should continue to the next activity in the main trajectory.}
 
-\item{post.seize}{an optional trajectory object which will be followed after a successful seize.}
+\item{post.seize}{an optional trajectory object which will be followed after
+a successful seize.}
 
-\item{reject}{an optional trajectory object which will be followed if the arrival is rejected.}
+\item{reject}{an optional trajectory object which will be followed if the
+arrival is rejected. Note that if the arrival is accepted (either in the
+queue or in the server) and then it is dropped afterwards due to preemption
+or resource shrinkage, then this trajectory won't be executed. Instead, see
+\code{\link{handle_unfinished}} for another, more general, method for
+handling all kinds of unfinished arrivals.}
 
 \item{id}{selection identifier for nested usage.}
 }

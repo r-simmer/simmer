@@ -26,6 +26,12 @@
 namespace simmer {
 
   inline void Arrival::terminate(bool finished) {
+    if (!finished && dropout) {
+      activity = dropout;
+      sim->schedule(0, this, priority);
+      return;
+    }
+
     foreach_ (ResMSet::value_type& itr, resources) {
       Rcpp::warning("'%s': leaving without releasing '%s'", name, itr->name);
       itr->erase(this, true);

@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Iñaki Ucar and Bart Smeets
+// Copyright (C) 2018 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -27,7 +27,7 @@
 
 #include <simmer/activity.h>
 #include <simmer/activity/fork.h>
-#include <simmer/activity/log.h>
+#include <simmer/activity/debug.h>
 #include <simmer/activity/timeout.h>
 #include <simmer/activity/arrival.h>
 #include <simmer/activity/resource.h>

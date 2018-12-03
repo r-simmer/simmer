@@ -29,8 +29,15 @@ namespace simmer { namespace internal {
   public:
     BASE_CLONEABLE(ResGetter)
 
-    ResGetter(const std::string& activity, const std::string& resource, int id = -1)
-      : resource(resource), id(id), activity(activity) {}
+    ResGetter(const std::string& activity)
+      : resource(MakeString() << "[all]"), id(-2), activity(activity) {}
+
+    ResGetter(const std::string& activity, const std::string& resource)
+      : resource(resource), id(-1), activity(activity) {}
+
+    ResGetter(const std::string& activity, int id)
+      : resource(MakeString() << "[" << id << "]"),
+        id(std::abs(id)), activity(activity) {}
 
   protected:
     std::string resource;
@@ -38,7 +45,8 @@ namespace simmer { namespace internal {
 
     Resource* get_resource(Arrival* arrival) const {
       Resource* selected = NULL;
-      if (id < 0)
+      if (id == -2) return selected;
+      if (id == -1)
         selected = arrival->sim->get_resource(resource);
       else selected = arrival->get_resource_selected(id);
       if (!selected) Rcpp::stop("no resource selected");

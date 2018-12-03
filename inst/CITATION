@@ -7,7 +7,8 @@ bibentry(
               person("Arturo", "Azcorra")),
   year    = "2018",
   journal = "Journal of Statistical Software",
-  volume  = "accepted for publication"
+  volume  = "accepted for publication",
+  url     = "https://arxiv.org/abs/1705.09746"
 )
 
 bibentry(
@@ -20,5 +21,10 @@ bibentry(
               person("Arturo", "Azcorra")),
   year    = "2018",
   journal = "IEEE Communications Magazine",
-  volume  = "accepted for publication"
+  doi     = "10.1109/MCOM.2018.1700960",
+  issn    = "0163-6804",
+  volume  = "56",
+  number  = "11",
+  pages   = "145-151",
+  month   = "November"
 )

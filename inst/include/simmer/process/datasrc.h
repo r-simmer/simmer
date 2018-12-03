@@ -27,16 +27,15 @@ namespace simmer {
   class DataSrc : public Source {
   public:
     DataSrc(Simulator* sim, const std::string& name_prefix, int mon,
-            const REnv& trj, RData data, int batch, const std::string& time,
-            const VEC<std::string>& attrs, const OPT<std::string>& priority,
-            const OPT<std::string>& preemptible, const OPT<std::string>& restart)
+            const REnv& trj, RData data, int batch, const std::string& col_time,
+            const VEC<std::string>& col_attrs, const OPT<std::string>& col_priority,
+            const OPT<std::string>& col_preemptible, const OPT<std::string>& col_restart)
       : Source(sim, name_prefix, mon, trj, Order()), source(data), batch(batch),
-        col_time(time), col_attrs(attrs), col_priority(priority),
-        col_preemptible(preemptible), col_restart(restart) {}
+        col_time(col_time), col_attrs(col_attrs), col_priority(col_priority),
+        col_preemptible(col_preemptible), col_restart(col_restart) { set_source(data); }
 
     void run() {
       double delay = 0;
-      RNum col, time = source[col_time];
       int i = 0;
 
       while (i++ != batch) {
@@ -46,23 +45,15 @@ namespace simmer {
 
         Arrival* arrival = new_arrival(delay);
 
-        for (size_t j = 0; j < col_attrs.size(); ++j) {
-          col = source[col_attrs[j]];
-          arrival->set_attribute(col_attrs[j], col[count-1]);
-        }
+        for (size_t j = 0; j < col_attrs.size(); ++j)
+          arrival->set_attribute(col_attrs[j], attrs[j][count-1]);
 
-        if (col_priority) {
-          col = source[*col_priority];
-          arrival->order.set_priority(col[count-1]);
-        }
-        if (col_preemptible) {
-          col = source[*col_preemptible];
-          arrival->order.set_preemptible(col[count-1]);
-        }
-        if (col_restart) {
-          col = source[*col_restart];
-          arrival->order.set_restart(col[count-1]);
-        }
+        if (col_priority)
+          arrival->order.set_priority(priority[count-1]);
+        if (col_preemptible)
+          arrival->order.set_preemptible(preemptible[count-1]);
+        if (col_restart)
+          arrival->order.set_restart(restart[count-1]);
 
         // schedule the arrival
         sim->schedule(delay, arrival,
@@ -70,27 +61,35 @@ namespace simmer {
                         first_activity->priority : count);
       }
       // schedule the generator
-      sim->schedule(delay, this, priority);
+      sim->schedule(delay, this, Source::priority);
     }
 
     void set_source(const ANY& new_source) {
       if (new_source.type() != typeid(RData))
         Rcpp::stop("data frame required");
-      source = boost::any_cast<RData>(new_source);
+      RData df = boost::any_cast<RData>(new_source);
 
-      VEC<std::string> n = source.names();
-      if (std::find(n.begin(), n.end(), col_time) == n.end())
+      if (!df.containsElementNamed(col_time.c_str()))
         Rcpp::stop("column '%s' not present", col_time);
-      if (col_priority && std::find(n.begin(), n.end(), *col_priority) == n.end())
-        Rcpp::stop("column '%s' not present", *col_priority);
-      if (col_preemptible && std::find(n.begin(), n.end(), *col_preemptible) == n.end())
-        Rcpp::stop("column '%s' not present", *col_preemptible);
-      if (col_restart && std::find(n.begin(), n.end(), *col_restart) == n.end())
-        Rcpp::stop("column '%s' not present", *col_restart);
-      for (size_t i = 0; i < col_attrs.size(); ++i) {
-        if (std::find(n.begin(), n.end(), col_attrs[i]) == n.end())
-          Rcpp::stop("column '%s' not present", col_attrs[i]);
+      foreach_ (const std::string& col_attr, col_attrs) {
+        if (!df.containsElementNamed(col_attr.c_str()))
+          Rcpp::stop("column '%s' not present", col_attr);
       }
+      if (col_priority && !df.containsElementNamed((*col_priority).c_str()))
+        Rcpp::stop("column '%s' not present", *col_priority);
+      if (col_preemptible && !df.containsElementNamed((*col_preemptible).c_str()))
+        Rcpp::stop("column '%s' not present", *col_preemptible);
+      if (col_restart && !df.containsElementNamed((*col_restart).c_str()))
+        Rcpp::stop("column '%s' not present", *col_restart);
+
+      source = df;
+      time = source[col_time];
+      attrs.clear();
+      foreach_ (const std::string& col_attr, col_attrs)
+        attrs.push_back(source[col_attr]);
+      if (col_priority) priority = source[*col_priority];
+      if (col_preemptible) preemptible = source[*col_preemptible];
+      if (col_restart) restart = source[*col_restart];
     }
 
   private:
@@ -101,6 +100,11 @@ namespace simmer {
     OPT<std::string> col_priority;
     OPT<std::string> col_preemptible;
     OPT<std::string> col_restart;
+    RNum time;
+    VEC<RNum> attrs;
+    RInt priority;
+    RInt preemptible;
+    RBool restart;
   };
 
 } // namespace simmer

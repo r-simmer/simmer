@@ -15,7 +15,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = T, comment = "#>", 
                       fig.width = 6, fig.height = 4, fig.align = "center")
 
-required <- c("simmer.plot", "dplyr")
+required <- c("simmer.plot")
 
 if (!all(sapply(required, requireNamespace, quietly = TRUE)))
   knitr::opts_chunk$set(eval = FALSE)
@@ -51,12 +51,8 @@ mm23.env <- simmer() %>%
 There are rejections when the queue is full.
 
 ```{r}
-mm23.arrivals <- get_mon_arrivals(mm23.env)
-
-rejection_rate <- mm23.arrivals %>%
-  dplyr::summarise(rejection_rate = sum(!finished)/length(finished)) %>%
-  dplyr::pull(rejection_rate)
-rejection_rate
+get_mon_arrivals(mm23.env) %>%
+  with(sum(!finished) / length(finished))
 ```
 
 By solving the balance equations for this system, we obtain the following:
@@ -77,7 +73,7 @@ div <- 1 / c(1, 1, factorial(2) * 2^(2:3-2))
 mm23.N <- sum(0:3 * rho^(0:3) * div) / sum(rho^(0:3) * div)
 
 # Evolution of the average number of customers in the system
-plot(mm23.env, "resources", "usage", "server", items="system") +
+plot(get_mon_resources(mm23.env), "usage", "server", items="system") +
   geom_hline(yintercept=mm23.N)
 ```
 
@@ -149,15 +145,14 @@ In the analysis, we filter arrivals from generator 1 that reach queues 3 and 4, 
 
 ```{r}
 res <- get_mon_arrivals(env, per_resource = TRUE) %>%
-  dplyr::select(name, resource) %>%
-  dplyr::filter(resource %in% c("md1_3", "md1_4"))
-arr <- get_mon_arrivals(env) %>%
-  dplyr::mutate(waiting_time = end_time - (start_time + activity_time),
-                generator = regmatches(name, regexpr("arrival[[:digit:]]", name))) %>%
-  dplyr::left_join(res) %>%
-  dplyr::group_by(generator, resource)
+  subset(resource %in% c("md1_3", "md1_4"), select=c("name", "resource"))
 
-dplyr::summarise(arr, average = sum(waiting_time) / n())
+arr <- get_mon_arrivals(env) %>%
+  transform(waiting_time = end_time - (start_time + activity_time)) %>%
+  transform(generator = regmatches(name, regexpr("arrival[[:digit:]]", name))) %>%
+  merge(res)
+
+aggregate(waiting_time ~ generator + resource, arr, function(x) sum(x)/length(x))
 get_n_generated(env, "arrival1_") + get_n_generated(env, "arrival4_")
-dplyr::count(arr)
+aggregate(waiting_time ~ generator + resource, arr, length)
 ```

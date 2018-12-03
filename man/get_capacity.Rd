@@ -9,6 +9,8 @@
 \alias{get_server_count_selected}
 \alias{get_queue_count}
 \alias{get_queue_count_selected}
+\alias{get_seized}
+\alias{get_seized_selected}
 \alias{get_selected}
 \title{Get Resource Parameters}
 \usage{
@@ -28,6 +30,10 @@ get_queue_count(.env, resources)
 
 get_queue_count_selected(.env, id = 0)
 
+get_seized(.env, resources)
+
+get_seized_selected(.env, id = 0)
+
 get_selected(.env, id = 0)
 }
 \arguments{
@@ -35,15 +41,15 @@ get_selected(.env, id = 0)
 
 \item{resources}{one or more resource names.}
 
-\item{id}{selection identifier (a negative number causes the function to
-return the required parameter for all the selected resources).}
+\item{id}{selection identifier for nested usage.}
 }
 \value{
 Return a vector (character for \code{get_selected}, numeric for the
 rest of them).
 }
 \description{
-Getters for resources: server capacity/count and queue size/count.
+Getters for resources: server capacity/count and queue size/count, seized
+amount and selected resources.
 }
 \seealso{
 \code{\link{get_resources}}, \code{\link{set_capacity}},

@@ -41,11 +41,36 @@ namespace simmer {
       if (Rcpp::runif(1)[0] > get<double>(prob, arrival))
         return 0;
       arrival->terminate(false);
-      return REJECT;
+      return STATUS_REJECT;
     }
 
   protected:
     T prob;
+  };
+
+  /**
+   * Set a path to handle unfinished arrivals (from 'leave' or resources)
+   */
+  class HandleUnfinished : public Fork {
+  public:
+    CLONEABLE(HandleUnfinished)
+
+    HandleUnfinished(const VEC<REnv>& trj)
+      : Fork("HandleUnfinished", VEC<bool>(trj.size(), false), trj) {}
+
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      internal::print(brief, false);
+      Fork::print(indent, verbose, brief);
+    }
+
+    double run(Arrival* arrival) {
+      Activity* next = NULL;
+      if (heads.size())
+        next = heads[0];
+      arrival->set_dropout(next);
+      return 0;
+    }
   };
 
 } // namespace simmer

@@ -186,17 +186,31 @@ namespace simmer {
     try {
       process_->run();
     } catch (std::exception &ex) {
-      Arrival* arrival = dynamic_cast<Arrival*>(process_);
-      throw Rcpp::exception(tfm::format(
-        "'%s' at %.2f%s:\n %s",
-        process_->name, now_,
-        arrival ? " in '" + arrival->get_activity()->name + "'" : "",
-        ex.what()).c_str(), false
-      );
+      throw Rcpp::exception(format(ev->process, ex.what()).c_str(), false);
     }
     process_ = NULL;
     event_queue.erase(ev);
+    if (stop_) {
+      Rf_warningcall_immediate(R_NilValue, format(
+          ev->process, "execution stopped by a breakpoint").c_str());
+      return stop_ = false;
+    }
     return true;
+  }
+
+  inline std::string Simulator::format(Process* process, const char* append) {
+    std::stringstream context;
+    if (Arrival* arrival = dynamic_cast<Arrival*>(process)) {
+      context << " in [";
+      if (Activity* prev = arrival->get_activity()->get_prev())
+        context << prev->name;
+      context << "]->" << arrival->get_activity()->name << "->[";
+      if (Activity* next = arrival->get_activity()->get_next())
+        context << next->name;
+      context << "]";
+    }
+    return tfm::format(
+      "'%s' at %.2f%s:\n %s", process->name, now_, context.str(), append);
   }
 
 } // namespace simmer

@@ -40,13 +40,14 @@
 #' \code{\link{get_server_count}}, \code{\link{get_queue_count}},
 #' \code{\link{get_capacity_selected}}, \code{\link{get_queue_size_selected}},
 #' \code{\link{get_server_count_selected}}, \code{\link{get_queue_count_selected}},
+#' \code{\link{get_seized}}, \code{\link{get_seized_selected}},
 #' \code{\link{get_selected}}
 #'
 #' \item Sources: \code{\link{add_generator}}, \code{\link{add_dataframe}},
 #' \code{\link{get_sources}}, \code{\link{get_n_generated}},
 #' \code{\link{get_trajectory}}
 #'
-#' \item Globals: \code{\link{add_global}}, \code{\link{get_global}}.
+#' \item Globals: \code{\link{add_global}}, \code{\link{get_global}}
 #'
 #' \item Data retrieval: \code{\link{get_mon_arrivals}},
 #' \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}}
@@ -181,6 +182,11 @@ peek.simmer <- function(.env, steps=1, verbose=FALSE) .env$peek(steps, verbose)
 #' preempted arrivals go to a dedicated queue, so that \code{queue_size} may be
 #' exceeded. If this option is \code{TRUE}, preempted arrivals go to the standard
 #' queue, and the maximum \code{queue_size} is guaranteed (rejection may occur).
+#' Whenever an arrival is rejected (due to a server drop or a queue drop), it
+#' will set the \code{finished} flag to \code{FALSE} in the output of
+#' \code{\link{get_mon_arrivals}}. Unfinished arrivals can be handled with a
+#' drop-out trajectory that can be set using the \code{\link{handle_unfinished}}
+#' activity.
 #'
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \code{\link{schedule}}.
@@ -431,12 +437,12 @@ get_prioritization.simmer <- function(.env) .env$get_prioritization()
 
 #' Get Resource Parameters
 #'
-#' Getters for resources: server capacity/count and queue size/count.
+#' Getters for resources: server capacity/count and queue size/count, seized
+#' amount and selected resources.
 #'
 #' @inheritParams reset
+#' @inheritParams select
 #' @param resources one or more resource names.
-#' @param id selection identifier (a negative number causes the function to
-#' return the required parameter for all the selected resources).
 #'
 #' @return Return a vector (character for \code{get_selected}, numeric for the
 #' rest of them).
@@ -496,6 +502,20 @@ get_queue_count_selected <- function(.env, id=0) UseMethod("get_queue_count_sele
 
 #' @export
 get_queue_count_selected.simmer <- function(.env, id=0) .env$get_queue_count(NULL, id)
+
+#' @rdname get_capacity
+#' @export
+get_seized <- function(.env, resources) UseMethod("get_seized")
+
+#' @export
+get_seized.simmer <- function(.env, resources) .env$get_seized(resources)
+
+#' @rdname get_capacity
+#' @export
+get_seized_selected <- function(.env, id=0) UseMethod("get_seized_selected")
+
+#' @export
+get_seized_selected.simmer <- function(.env, id=0) .env$get_seized(NULL, id)
 
 #' @rdname get_capacity
 #' @export
