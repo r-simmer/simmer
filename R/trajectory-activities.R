@@ -557,7 +557,7 @@ wait.trajectory <- function(.trj) .trj$wait()
 #' Debugging
 #'
 #' Activities for displaying messages preceded by the simulation time and the
-#' name of the arrival, and for stopping the simulation given some condition.
+#' name of the arrival, and for setting conditional breakpoints.
 #'
 #' @inheritParams seize
 #' @param message the message to display, accepts either a string or a callable object

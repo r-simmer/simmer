@@ -1,4 +1,4 @@
-# simmer 4.1.1
+# simmer 4.2.0
 
 ## New features:
 
@@ -10,6 +10,7 @@
   retrieve the amount of resources seized and release it (#180 addressing #25).
 - New `get_seized()` and `get_seized_selected()` getters allow an arrival to
   retrieve the amount of resources seized (#180 addressing #179).
+- New `stop_if()` activity sets a conditional breakpoint (#181 addressing #100).
 
 ## Minor changes and fixes:
 
@@ -17,6 +18,8 @@
 - Update CITATION.
 - Fix monitored activity for preempted arrivals (as part of #178).
 - Fix seizes/releases with a null amount (as part of #180).
+- Rename internal status codes (as part of #181).
+- Provide more context on error or warning (as part of #181).
 
 # simmer 4.1.0
 
