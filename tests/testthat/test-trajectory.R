@@ -50,6 +50,7 @@ t0 <- trajectory(verbose = TRUE) %>%
   untrap(function() "asdf") %>%
   wait() %>%
   log_(function() "asdf") %>%
+  stop_if(function() 1) %>%
   release_all() %>%
   release_selected_all() %>%
   release_selected(1) %>%
@@ -95,6 +96,7 @@ trajs <- c(
   trajectory(verbose = TRUE) %>% untrap(function() "asdf"),
   trajectory(verbose = TRUE) %>% wait(),
   trajectory(verbose = TRUE) %>% log_(function() "asdf"),
+  trajectory(verbose = TRUE) %>% stop_if(function() 1),
   trajectory(verbose = TRUE) %>% release_all(),
   trajectory(verbose = TRUE) %>% release_selected_all(),
   trajectory(verbose = TRUE) %>% release_selected(1),

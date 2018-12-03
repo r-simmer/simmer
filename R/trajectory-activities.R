@@ -554,9 +554,10 @@ wait <- function(.trj) UseMethod("wait")
 #' @export
 wait.trajectory <- function(.trj) .trj$wait()
 
-#' Logging
+#' Debugging
 #'
-#' Activity for displaying messages preceded by the simulation time and the name of the arrival.
+#' Activities for displaying messages preceded by the simulation time and the
+#' name of the arrival, and for setting conditional breakpoints.
 #'
 #' @inheritParams seize
 #' @param message the message to display, accepts either a string or a callable object
@@ -564,6 +565,7 @@ wait.trajectory <- function(.trj) .trj$wait()
 #' @param level debugging level. The \code{message} will be printed if, and only if,
 #' the \code{level} provided is less or equal to the \code{log_level} defined in the
 #' simulation environment (see \code{\link{simmer}}).
+#' @param condition a boolean or a function returning a boolean.
 #'
 #' @return Returns the trajectory object.
 #' @export
@@ -571,3 +573,10 @@ log_ <- function(.trj, message, level=0) UseMethod("log_")
 
 #' @export
 log_.trajectory <- function(.trj, message, level=0) .trj$log(message, level)
+
+#' @rdname log_
+#' @export
+stop_if <- function(.trj, condition) UseMethod("stop_if")
+
+#' @export
+stop_if.trajectory <- function(.trj, condition) .trj$stop_if(condition)

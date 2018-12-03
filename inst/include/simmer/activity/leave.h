@@ -41,7 +41,7 @@ namespace simmer {
       if (Rcpp::runif(1)[0] > get<double>(prob, arrival))
         return 0;
       arrival->terminate(false);
-      return REJECT;
+      return STATUS_REJECT;
     }
 
   protected:

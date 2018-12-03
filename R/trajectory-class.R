@@ -406,6 +406,15 @@ Trajectory <- R6Class("trajectory",
         private$add_activity(Log__new(message, level)),
         private$add_activity(Log__new_func(message, level))
       )
+    },
+
+    stop_if = function(condition) {
+      check_args(condition=c("logical", "function"))
+      switch(
+        binarise(is.function(condition)),
+        private$add_activity(StopIf__new(condition)),
+        private$add_activity(StopIf__new_func(condition))
+      )
     }
   ),
 

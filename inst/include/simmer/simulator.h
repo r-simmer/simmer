@@ -80,7 +80,7 @@ namespace simmer {
      */
     Simulator(const std::string& name, bool verbose, Monitor* mon, int log_level)
       : name(name), verbose(verbose), mon(mon), log_level(log_level), now_(0),
-        process_(NULL), b_count(0) {}
+        process_(NULL), stop_(false), b_count(0) {}
 
     ~Simulator();
 
@@ -134,6 +134,8 @@ namespace simmer {
         if (++nsteps % 100000 == 0) Rcpp::checkUserInterrupt();
       mon->flush();
     }
+
+    void request_stop() { stop_ = true; }
 
     void print(const std::string& e_type,      const std::string& e_name,
                const std::string& a_type = "", const std::string& a_name = "",
@@ -222,6 +224,7 @@ namespace simmer {
   private:
     double now_;              /**< simulation time */
     Process* process_;        /**< running process */
+    bool stop_;               /**< stop flag */
     PQueue event_queue;       /**< the event queue */
     EntMap resource_map;      /**< map of resources */
     EntMap process_map;       /**< map of processes */
@@ -237,6 +240,8 @@ namespace simmer {
      * Process the next event. Only one step, a giant leap for mankind.
      */
     bool _step(double until = -1);
+
+    std::string format(Process* process, const char* append);
   };
 
 } // namespace simmer

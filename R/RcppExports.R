@@ -281,6 +281,14 @@ Log__new_func <- function(message, level) {
     .Call(`_simmer_Log__new_func`, message, level)
 }
 
+StopIf__new <- function(condition) {
+    .Call(`_simmer_StopIf__new`, condition)
+}
+
+StopIf__new_func <- function(condition) {
+    .Call(`_simmer_StopIf__new_func`, condition)
+}
+
 activity_get_count_ <- function(activity_) {
     .Call(`_simmer_activity_get_count_`, activity_)
 }

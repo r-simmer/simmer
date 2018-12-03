@@ -406,6 +406,16 @@ SEXP Log__new_func(const Function& message, int level) {
 }
 
 //[[Rcpp::export]]
+SEXP StopIf__new(bool condition) {
+  return XPtr<StopIf<bool> >(new StopIf<bool>(condition));
+}
+
+//[[Rcpp::export]]
+SEXP StopIf__new_func(const Function& condition) {
+  return XPtr<StopIf<Function> >(new StopIf<Function>(condition));
+}
+
+//[[Rcpp::export]]
 int activity_get_count_(SEXP activity_) {
   return XPtr<Activity>(activity_)->count;
 }

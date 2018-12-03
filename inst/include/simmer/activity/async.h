@@ -83,7 +83,7 @@ namespace simmer {
         arrival->set_activity(pending[arrival]);
         pending.erase(arrival);
         arrival->activate();
-        return REJECT;
+        return STATUS_REJECT;
       }
       arrival->sim->subscribe(get<VEC<std::string> >(signals, arrival), arrival,
                               BIND(&Trap::launch_handler, this, arrival));
@@ -151,7 +151,7 @@ namespace simmer {
       internal::print(brief, true);
     }
 
-    double run(Arrival* arrival) { return BLOCK; }
+    double run(Arrival* arrival) { return STATUS_BLOCK; }
   };
 
 } // namespace simmer
