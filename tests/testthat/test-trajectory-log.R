@@ -1,4 +1,4 @@
-# Copyright (C) 2016 Iñaki Ucar
+# Copyright (C) 2016,2018 Iñaki Ucar
 #
 # This file is part of simmer.
 #
