@@ -20,6 +20,8 @@
 - Fix seizes/releases with a null amount (as part of #180).
 - Rename internal status codes (as part of #181).
 - Provide more context on error or warning (as part of #181).
+- Extend the `Queueing Systems` vignette with a section about state-dependent
+  service rates.
 
 # simmer 4.1.0
 
