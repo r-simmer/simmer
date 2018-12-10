@@ -22,6 +22,7 @@
 - Provide more context on error or warning (as part of #181).
 - Extend the `Queueing Systems` vignette with a section about state-dependent
   service rates.
+- Fix performance issues in getters (#183).
 
 # simmer 4.1.0
 

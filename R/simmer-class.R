@@ -78,7 +78,6 @@ Simmer <- R6Class("simmer",
     },
 
     stepn = function(n=1) {
-      check_args(n="number")
       stepn_(private$sim_obj, n)
       self
     },
@@ -250,7 +249,6 @@ Simmer <- R6Class("simmer",
     get_prioritization = function() get_prioritization_(private$sim_obj),
 
     get_capacity = function(resources, id=0) {
-      check_args(resources=c("string vector", "NULL"), id="number")
       ret <- switch(
         binarise(is.null(resources)),
         get_capacity_(private$sim_obj, resources),
@@ -260,7 +258,6 @@ Simmer <- R6Class("simmer",
     },
 
     get_queue_size = function(resources, id=0) {
-      check_args(resources=c("string vector", "NULL"), id="number")
       ret <- switch(
         binarise(is.null(resources)),
         get_queue_size_(private$sim_obj, resources),
@@ -270,7 +267,6 @@ Simmer <- R6Class("simmer",
     },
 
     get_server_count = function(resources, id=0) {
-      check_args(resources=c("string vector", "NULL"), id="number")
       switch(
         binarise(is.null(resources)),
         get_server_count_(private$sim_obj, resources),
@@ -279,7 +275,6 @@ Simmer <- R6Class("simmer",
     },
 
     get_queue_count = function(resources, id=0) {
-      check_args(resources=c("string vector", "NULL"), id="number")
       ret <- switch(
         binarise(is.null(resources)),
         get_queue_count_(private$sim_obj, resources),
@@ -288,7 +283,6 @@ Simmer <- R6Class("simmer",
     },
 
     get_seized = function(resources, id=0) {
-      check_args(resources=c("string vector", "NULL"), id="number")
       ret <- switch(
         binarise(is.null(resources)),
         get_seized_(private$sim_obj, resources),
@@ -297,7 +291,6 @@ Simmer <- R6Class("simmer",
     },
 
     get_selected = function(id=0) {
-      check_args(id="number")
       get_selected_(private$sim_obj, id)
     },
 
