@@ -149,7 +149,7 @@ Let us consider the following network of queues (example taken from [Grotto Netw
 
 There are three exponential generators ($\lambda_1$, $\lambda_2$, $\lambda_4$) that inject messages with exponential size of mean 100 bytes. There are four M/D/1 queues with a deterministic rate equal to 220 bytes/s. There is a 25\% probability that messages from $\lambda_1$ are dropped before the second queue, and a fork 35/65\% for the output of the second queue to reach queues 3 and 4. We are interested, for instance, in the accumulated waiting time for messages entering queue 1 and exiting queue 3 or 4.
 
-The original author of this example, Greg M. Bernstein, simulated this problem with [this Python code](http://www.grotto-networking.com/files/DESPython/QueueNet2.py). We'll start by setting up the main constants and a couple of functions to set the message size and seize an M/D/1 queue:
+We'll start by setting up the main constants and a couple of functions to set the message size and seize an M/D/1 queue:
 
 ```{r}
 mean_pkt_size <- 100        # bytes
