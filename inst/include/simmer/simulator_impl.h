@@ -1,6 +1,6 @@
 // Copyright (C) 2014-2015 Bart Smeets
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -182,19 +182,19 @@ namespace simmer {
     }
     now_ = ev->time;
     process_ = ev->process;
-    event_map.erase(ev->process);
+    event_map.erase(process_);
     try {
       process_->run();
     } catch (std::exception &ex) {
-      throw Rcpp::exception(format(ev->process, ex.what()).c_str(), false);
+      throw Rcpp::exception(format(process_, ex.what()).c_str(), false);
     }
-    process_ = NULL;
     event_queue.erase(ev);
     if (stop_) {
       Rf_warningcall_immediate(R_NilValue, format(
-          ev->process, "execution stopped by a breakpoint").c_str());
+          process_, "execution stopped by a breakpoint").c_str());
       return stop_ = false;
     }
+    process_ = NULL;
     return true;
   }
 
