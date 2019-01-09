@@ -1,6 +1,7 @@
-## Minor release
+## Patch release
 
-Several new features, improvements and bug fixes.
+Fixes current issues on clang-ASAN and gcc-ASAN. Apologies for such a short time
+between releases. I should have checked better before the previous submission.
 
 Regarding the package title, Uwe asked us in a past submission to remove
 "for R" because it is redundant. If it is not an issue, we would like to keep

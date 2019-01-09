@@ -1,3 +1,9 @@
+# simmer 4.2.1
+
+## Minor changes and fixes:
+
+- Fix memtest notes on CRAN (e741686).
+
 # simmer 4.2.0
 
 ## New features:
