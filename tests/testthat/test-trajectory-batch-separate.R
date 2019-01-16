@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2017 Iñaki Ucar
+# Copyright (C) 2016-2017,2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -359,4 +359,16 @@ test_that("seizes across nested batches are correctly reported", {
   expect_equal(arr_res$start_time, c(0, 0, 0))
   expect_equal(arr_res$end_time, c(1, 2, 3))
   expect_equal(arr_res$activity_time, c(1, 2, 3))
+})
+
+test_that("an infinite timeout is equivalent to a disabled timeout", {
+  t <- trajectory() %>%
+    batch(2, timeout = Inf)
+
+  arr <- simmer(verbose = TRUE) %>%
+    add_generator("dummy", t, at(0, 2)) %>%
+    run() %>%
+    get_mon_arrivals()
+
+  expect_equal(arr$end_time, c(2, 2))
 })

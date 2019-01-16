@@ -1,3 +1,9 @@
+# simmer 4.2.2
+
+## Minor changes and fixes:
+
+- Fix batches with an infinite timeout (#184).
+
 # simmer 4.2.1
 
 ## Minor changes and fixes:
