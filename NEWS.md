@@ -3,6 +3,7 @@
 ## Minor changes and fixes:
 
 - Fix batches with an infinite timeout (#184).
+- Fix preemption for arrivals previously stopped by a signal (#187).
 
 # simmer 4.2.1
 

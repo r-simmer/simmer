@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2017 Iñaki Ucar
+# Copyright (C) 2016-2017,2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -216,4 +216,32 @@ test_that("preemption works in non-saturated multi-server resources", {
   expect_equal(arr$start_time, c(0, 0, 0, 1, 0, 0))
   expect_equal(arr$end_time, c(10, 10, 10, 11, 19, 19))
   expect_equal(arr$activity_time, rep(10, 6))
+})
+
+test_that("preemption works properly for a previously stopped arrival", {
+  new_timeout <- trajectory() %>%
+    timeout(1)
+
+  customer <- trajectory() %>%
+    seize("res") %>%
+    trap("signal", new_timeout) %>%
+    timeout(5) %>%
+    release("res")
+
+  blocker <- trajectory() %>%
+    send("signal") %>%
+    seize("res") %>%
+    timeout(20) %>%
+    release("res")
+
+  arr <- simmer(verbose=TRUE) %>%
+    add_resource("res", preemptive=TRUE) %>%
+    add_generator("customer", customer, at(0)) %>%
+    add_generator("blocker", blocker, at(2), priority=10) %>%
+    run() %>%
+    get_mon_arrivals()
+
+  expect_equal(arr$start_time, c(2, 0))
+  expect_equal(arr$end_time, c(22, 23))
+  expect_equal(arr$activity_time, c(20, 3))
 })
