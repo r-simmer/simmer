@@ -165,6 +165,8 @@ namespace simmer {
       foreach_ (const HandlerMap::value_type& itr, signal_map[signal]) {
         if (!itr.second.first)
           continue;
+        if (is_scheduled(itr.first))
+          unsubscribe(itr.first);
         Task* task = new Task(this, "Handler", itr.second.second, PRIORITY_SIGNAL);
         task->activate();
       }
