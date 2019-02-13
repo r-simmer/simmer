@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -65,9 +65,15 @@ namespace simmer {
 
     Trap(const T& signals, const VEC<REnv>& trj, bool interruptible)
       : Fork("Trap", VEC<bool>(trj.size(), false), trj, PRIORITY_TRAP),
-        signals(signals), interruptible(interruptible) {}
+        signals(signals), interruptible(interruptible)
+    {
+      if (tails.size() && tails[0])
+        tails[0]->set_next(this);
+    }
 
     Trap(const Trap& o) : Fork(o), signals(o.signals), interruptible(o.interruptible) {
+      if (tails.size() && tails[0])
+        tails[0]->set_next(this);
       pending.clear();
     }
 
@@ -78,10 +84,11 @@ namespace simmer {
     }
 
     double run(Arrival* arrival) {
-      if (!interruptible && pending.find(arrival) != pending.end()) {
-        arrival->sim->subscribe(arrival);
-        arrival->set_activity(pending[arrival]);
-        pending.erase(arrival);
+      if (pending.find(arrival) != pending.end()) {
+        arrival->set_activity(pending[arrival].back());
+        pending[arrival].pop_back();
+        if (pending[arrival].empty())
+          pending.erase(arrival);
         arrival->activate();
         return STATUS_REJECT;
       }
@@ -93,22 +100,18 @@ namespace simmer {
   protected:
     T signals;
     bool interruptible;
-    UMAP<Arrival*, Activity*> pending;
+    UMAP<Arrival*, VEC<Activity*> > pending;
 
     void launch_handler(Arrival* arrival) {
       if (!arrival->sim->is_scheduled(arrival))
         return;
       arrival->stop();
       if (heads.size() && heads[0]) {
-        if (!interruptible) {
-          arrival->sim->unsubscribe(arrival);
-          pending[arrival] = arrival->get_activity();
-          tails[0]->set_next(this);
-        } else {
-          tails[0]->set_next(arrival->get_activity());
-        }
+        pending[arrival].push_back(arrival->get_activity());
         arrival->set_activity(heads[0]);
       }
+      if (interruptible || heads.empty())
+        arrival->sim->subscribe(arrival);
       arrival->activate();
     }
   };

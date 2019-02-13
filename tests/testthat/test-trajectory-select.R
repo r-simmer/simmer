@@ -270,7 +270,6 @@ test_that("selections can be retrieved", {
 
   expect_error(run(env))
 
-  expect_equal(get_selected(env, id=-1), "res1")
   expect_equal(get_selected(env, id=0), "res0")
   expect_equal(get_selected(env, id=1), "res1")
   expect_equal(get_selected(env, id=2), character(0))

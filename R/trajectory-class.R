@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2015 Bart Smeets
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -347,7 +347,7 @@ Trajectory <- R6Class("trajectory",
     batch = function(n, timeout=0, permanent=FALSE, name="", rule=NULL) {
       check_args(
         n = "number",
-        timeout = c("number", "function"),
+        timeout = c("numeric", "function"),
         permanent = "flag",
         name = "string",
         rule = c("function", "NULL")

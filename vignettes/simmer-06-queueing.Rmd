@@ -37,14 +37,14 @@ This is the simulation of an M/M/2/3 system (2 server, 1 position in queue). Not
 lambda <- 3
 mu <- 4
 
-mm23.trajectory <- trajectory() %>%
+m.queue <- trajectory() %>%
   seize("server", amount=1) %>%
   timeout(function() rexp(1, mu)) %>%
   release("server", amount=1)
 
 mm23.env <- simmer() %>%
   add_resource("server", capacity=2, queue_size=1) %>%
-  add_generator("arrival", mm23.trajectory, function() rexp(1, lambda)) %>%
+  add_generator("arrival", m.queue, function() rexp(1, lambda)) %>%
   run(until=2000)
 ```
 
@@ -77,6 +77,70 @@ plot(get_mon_resources(mm23.env), "usage", "server", items="system") +
   geom_hline(yintercept=mm23.N)
 ```
 
+## State-dependent service rates
+
+In many practical queueing scenarios, the speed of the server depends on the state of the system. Here we consider a multi-server resource that is able to distribute the processing capacity evenly among the arrivals. This means that if, for example, `capacity=2` and there is a single arrival in the server, it would be served twice as fast.
+
+In terms of a simulation model, a state-dependent service rate implies that the time spent in the server must be asynchronously updated each time an arrival seizes or releases the resource. In consequence, first we need to define a trajectory that updates a running service delay and restarts the new time left to release the resource. The following trajectory assumes that three attributes are available:
+
+- `start`: simulation time at which the arrival started the last `timeout` activity.
+- `multiplier`: distribution of the processing capacity.
+- `delay`: service delay applied to the last `timeout` activity.
+
+The new delay is the time left scaled by the last and new multipliers.
+
+```{r}
+update.delay <- trajectory() %>%
+  set_attribute(c("start", "multiplier", "delay"), function() {
+    # previous multiplier, service time left
+    multiplier <- get_attribute(env, "multiplier")
+    left <- sum(get_attribute(env, c("start", "delay"))) - now(env)
+    # distribute processing capacity
+    new_multiplier <- capacity / get_server_count(env, "sd.server")
+    # return new values
+    c(now(env), new_multiplier, left * multiplier / new_multiplier)
+  }) %>%
+  timeout_from_attribute("delay")
+```
+
+The main trajectory below first seizes the server and initialises the three attributes. Then, the arrivals need to follow the `update.delay` trajectory and must be interrupted at any given time to re-run it, thus re-computing the service time left. In `simmer`, this can be done with some signaling (see `help(trap)`): a signal is subscribed and `update.delay` is registered as a handler. The first `send` signals the arriving entity, causing all the arrivals to execute the handler. Eventually, the handler finishes and the execution path returns to unregister the handler, release the server and signal the departing entity.
+
+```{r}
+sd.queue <- trajectory() %>%
+  seize("sd.server") %>%
+  # initialisation
+  set_attribute(c("start", "multiplier", "delay"), function()
+    c(now(env), 1, rexp(1, mu))) %>%
+  # set the handler and trigger it
+  trap("update delay", handler=update.delay) %>%
+  send("update delay") %>%
+  # returning point
+  untrap("update delay") %>%
+  release("sd.server") %>%
+  send("update delay")
+```
+
+In the following, we compare an M/M/2 with this state-dependent system. Both systems are fed with the same interarrival times and, as expected, the average resource usage is significantly reduced.
+
+```{r}
+lambda <- mu <- 4
+capacity <- 2
+arrivals <- data.frame(time=rexp(2000*lambda, lambda))
+
+env <- simmer() %>%
+  # M/M/2
+  add_resource("server", capacity) %>%
+  add_dataframe("arrival", m.queue, arrivals) %>%
+  # state-dependent service rate
+  add_resource("sd.server", capacity) %>%
+  add_dataframe("sd.arrival", sd.queue, arrivals)
+
+env %>%
+  run() %>%
+  get_mon_resources() %>%
+  plot(metric="usage", c("server", "sd.server"))
+```
+
 ## Queueing Networks
 
 Let us consider the following network of queues (example taken from [Grotto Networking](http://www.grotto-networking.com/DiscreteEventPython.html#NetQueues)):
@@ -85,7 +149,7 @@ Let us consider the following network of queues (example taken from [Grotto Netw
 
 There are three exponential generators ($\lambda_1$, $\lambda_2$, $\lambda_4$) that inject messages with exponential size of mean 100 bytes. There are four M/D/1 queues with a deterministic rate equal to 220 bytes/s. There is a 25\% probability that messages from $\lambda_1$ are dropped before the second queue, and a fork 35/65\% for the output of the second queue to reach queues 3 and 4. We are interested, for instance, in the accumulated waiting time for messages entering queue 1 and exiting queue 3 or 4.
 
-The original author of this example, Greg M. Bernstein, simulated this problem with [this Python code](http://www.grotto-networking.com/files/DESPython/QueueNet2.py). We'll start by setting up the main constants and a couple of functions to set the message size and seize an M/D/1 queue:
+We'll start by setting up the main constants and a couple of functions to set the message size and seize an M/D/1 queue:
 
 ```{r}
 mean_pkt_size <- 100        # bytes

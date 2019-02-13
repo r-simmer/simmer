@@ -1,15 +1,7 @@
-## Minor release
+## Patch release
 
-Several improvements and bug fixes, deprecations removed, and some refactoring
-of the C++ core.
-
-Current issues on CRAN:
-
-- FAIL on r-release-linux: since today (2018-11-07). The output from R check
-  suddenly stops at "checking package dependencies". It affects many other
-  packages, so it seems a false positive.
-- WARN on r-oldrel-windows: Vignettes cannot be re-built due to an ERROR in
-  'stringi' that affects all packages using 'knitr' as VignetteBuilder.
+Fixes current issues on clang-ASAN and gcc-ASAN. Apologies for such a short time
+between releases. I should have checked better before the previous submission.
 
 Regarding the package title, Uwe asked us in a past submission to remove
 "for R" because it is redundant. If it is not an issue, we would like to keep

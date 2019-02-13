@@ -22,23 +22,25 @@
 using namespace Rcpp;
 using namespace simmer;
 
-template <typename T>
-VEC<T> get_param(SEXP sim_, const VEC<std::string>& names, const Fn<T(Source*)>& param) {
+template <int RTYPE, typename T>
+Vector<RTYPE> get_param(SEXP sim_, const VEC<std::string>& names,
+                        const Fn<T(Source*)>& param)
+{
   XPtr<Simulator> sim(sim_);
-  VEC<T> out;
-  foreach_ (const std::string& name, names)
-    out.push_back(param(sim->get_source(name)));
+  Vector<RTYPE> out(names.size());
+  for (int i = 0; i < out.size(); i++)
+    out[i] = param(sim->get_source(names[i]));
   return out;
 }
 
 //[[Rcpp::export]]
-std::vector<int> get_n_generated_(SEXP sim_, const std::vector<std::string>& names) {
-  return get_param<int>(sim_, names, boost::mem_fn(&Source::get_n_generated));
+SEXP get_n_generated_(SEXP sim_, const std::vector<std::string>& names) {
+  return get_param<INTSXP,int>(sim_, names, boost::mem_fn(&Source::get_n_generated));
 }
 
 //[[Rcpp::export]]
-std::vector<Environment> get_trajectory_(SEXP sim_, const std::vector<std::string>& names) {
-  return get_param<Environment>(sim_, names, boost::mem_fn(&Source::get_trajectory));
+SEXP get_trajectory_(SEXP sim_, const std::vector<std::string>& names) {
+  return get_param<VECSXP,Environment>(sim_, names, boost::mem_fn(&Source::get_trajectory));
 }
 
 //[[Rcpp::export]]
@@ -47,23 +49,23 @@ std::string get_name_(SEXP sim_) {
 }
 
 //[[Rcpp::export]]
-NumericVector get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bool global) {
+SEXP get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bool global) {
   XPtr<Simulator> sim(sim_);
-  NumericVector attrs;
+  NumericVector attrs(keys.size());
 
   if (global) {
-    foreach_ (const std::string& key, keys)
-      attrs.push_back(sim->get_attribute(key));
+    for (int i = 0; i < attrs.size(); i++)
+      attrs[i] = sim->get_attribute(keys[i]);
   } else {
-    foreach_ (const std::string& key, keys)
-      attrs.push_back(sim->get_running_arrival()->get_attribute(key));
+    for (int i = 0; i < attrs.size(); i++)
+      attrs[i] = sim->get_running_arrival()->get_attribute(keys[i]);
   }
 
   return attrs;
 }
 
 //[[Rcpp::export]]
-IntegerVector get_prioritization_(SEXP sim_) {
+SEXP get_prioritization_(SEXP sim_) {
   Arrival* a = XPtr<Simulator>(sim_)->get_running_arrival();
   return IntegerVector::create(
     a->order.get_priority(), a->order.get_preemptible(), (int)a->order.get_restart()

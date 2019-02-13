@@ -1021,7 +1021,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_n_generated_
-std::vector<int> get_n_generated_(SEXP sim_, const std::vector<std::string>& names);
+SEXP get_n_generated_(SEXP sim_, const std::vector<std::string>& names);
 RcppExport SEXP _simmer_get_n_generated_(SEXP sim_SEXP, SEXP namesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1033,7 +1033,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_trajectory_
-std::vector<Environment> get_trajectory_(SEXP sim_, const std::vector<std::string>& names);
+SEXP get_trajectory_(SEXP sim_, const std::vector<std::string>& names);
 RcppExport SEXP _simmer_get_trajectory_(SEXP sim_SEXP, SEXP namesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1056,7 +1056,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_attribute_
-NumericVector get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bool global);
+SEXP get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bool global);
 RcppExport SEXP _simmer_get_attribute_(SEXP sim_SEXP, SEXP keysSEXP, SEXP globalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1069,7 +1069,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_prioritization_
-IntegerVector get_prioritization_(SEXP sim_);
+SEXP get_prioritization_(SEXP sim_);
 RcppExport SEXP _simmer_get_prioritization_(SEXP sim_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1080,7 +1080,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_capacity_
-std::vector<int> get_capacity_(SEXP sim_, const std::vector<std::string>& names);
+SEXP get_capacity_(SEXP sim_, const std::vector<std::string>& names);
 RcppExport SEXP _simmer_get_capacity_(SEXP sim_SEXP, SEXP namesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1092,7 +1092,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_capacity_selected_
-std::vector<int> get_capacity_selected_(SEXP sim_, int id);
+SEXP get_capacity_selected_(SEXP sim_, int id);
 RcppExport SEXP _simmer_get_capacity_selected_(SEXP sim_SEXP, SEXP idSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1104,7 +1104,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_queue_size_
-std::vector<int> get_queue_size_(SEXP sim_, const std::vector<std::string>& names);
+SEXP get_queue_size_(SEXP sim_, const std::vector<std::string>& names);
 RcppExport SEXP _simmer_get_queue_size_(SEXP sim_SEXP, SEXP namesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1116,7 +1116,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_queue_size_selected_
-std::vector<int> get_queue_size_selected_(SEXP sim_, int id);
+SEXP get_queue_size_selected_(SEXP sim_, int id);
 RcppExport SEXP _simmer_get_queue_size_selected_(SEXP sim_SEXP, SEXP idSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1128,7 +1128,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_server_count_
-std::vector<int> get_server_count_(SEXP sim_, const std::vector<std::string>& names);
+SEXP get_server_count_(SEXP sim_, const std::vector<std::string>& names);
 RcppExport SEXP _simmer_get_server_count_(SEXP sim_SEXP, SEXP namesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1140,7 +1140,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_server_count_selected_
-std::vector<int> get_server_count_selected_(SEXP sim_, int id);
+SEXP get_server_count_selected_(SEXP sim_, int id);
 RcppExport SEXP _simmer_get_server_count_selected_(SEXP sim_SEXP, SEXP idSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1152,7 +1152,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_queue_count_
-std::vector<int> get_queue_count_(SEXP sim_, const std::vector<std::string>& names);
+SEXP get_queue_count_(SEXP sim_, const std::vector<std::string>& names);
 RcppExport SEXP _simmer_get_queue_count_(SEXP sim_SEXP, SEXP namesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1164,7 +1164,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_queue_count_selected_
-std::vector<int> get_queue_count_selected_(SEXP sim_, int id);
+SEXP get_queue_count_selected_(SEXP sim_, int id);
 RcppExport SEXP _simmer_get_queue_count_selected_(SEXP sim_SEXP, SEXP idSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1176,7 +1176,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_seized_
-std::vector<int> get_seized_(SEXP sim_, const std::vector<std::string>& names);
+SEXP get_seized_(SEXP sim_, const std::vector<std::string>& names);
 RcppExport SEXP _simmer_get_seized_(SEXP sim_SEXP, SEXP namesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1188,7 +1188,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_seized_selected_
-std::vector<int> get_seized_selected_(SEXP sim_, int id);
+SEXP get_seized_selected_(SEXP sim_, int id);
 RcppExport SEXP _simmer_get_seized_selected_(SEXP sim_SEXP, SEXP idSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -1200,7 +1200,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_selected_
-std::vector<std::string> get_selected_(SEXP sim_, int id);
+SEXP get_selected_(SEXP sim_, int id);
 RcppExport SEXP _simmer_get_selected_(SEXP sim_SEXP, SEXP idSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

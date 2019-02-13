@@ -1,3 +1,18 @@
+# simmer 4.2.2
+
+## Minor changes and fixes:
+
+- Fix batches with an infinite timeout (#184).
+- Fix preemption for arrivals previously stopped by a signal (#187).
+- Fix handler loop for two consecutive signals (#188).
+- Fix incorrect handler linking (#189).
+
+# simmer 4.2.1
+
+## Minor changes and fixes:
+
+- Fix memtest notes on CRAN (e741686).
+
 # simmer 4.2.0
 
 ## New features:
@@ -20,6 +35,9 @@
 - Fix seizes/releases with a null amount (as part of #180).
 - Rename internal status codes (as part of #181).
 - Provide more context on error or warning (as part of #181).
+- Extend the `Queueing Systems` vignette with a section about state-dependent
+  service rates.
+- Fix performance issues in getters (#183).
 
 # simmer 4.1.0
 

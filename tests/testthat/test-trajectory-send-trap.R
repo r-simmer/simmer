@@ -1,4 +1,4 @@
-# Copyright (C) 2016,2018 Iñaki Ucar
+# Copyright (C) 2016,2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -367,4 +367,50 @@ test_that("an arrival cannot trap its own previously broadcasted signal", {
   arr <- get_mon_arrivals(env)
 
   expect_equal(arr$end_time, c(1, 1, 1))
+})
+
+test_that("two consecutive signals execute a single handler", {
+  new_timeout <- trajectory() %>%
+    timeout(1)
+
+  customer <- trajectory() %>%
+    trap("signal", new_timeout) %>%
+    timeout(5)
+
+  blocker <- trajectory() %>%
+    send("signal") %>%
+    send("signal")
+
+  arr <- simmer(verbose=TRUE) %>%
+    add_generator("customer", customer, at(0)) %>%
+    add_generator("blocker", blocker, at(2)) %>%
+    run(10) %>%
+    get_mon_arrivals()
+
+  expect_equal(arr$start_time, c(2, 0))
+  expect_equal(arr$end_time, c(2, 3))
+  expect_equal(arr$activity_time, c(0, 3))
+})
+
+test_that("handler linking is done per arrival", {
+  new_timeout <- trajectory() %>%
+    timeout(10)
+
+  customer <- trajectory() %>%
+    trap("signal", new_timeout) %>%
+    timeout(5) %>%
+    timeout(5)
+
+  signal <- trajectory() %>%
+    send("signal")
+
+  arr <- simmer(verbose=TRUE) %>%
+    add_generator("customer", customer, at(0, 5)) %>%
+    add_generator("signal", signal, at(6)) %>%
+    run() %>%
+    get_mon_arrivals()
+
+  expect_equal(arr$start_time, c(6, 0, 5))
+  expect_equal(arr$end_time, c(6, 16, 21))
+  expect_equal(arr$activity_time, c(0, 16, 16))
 })
