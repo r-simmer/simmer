@@ -101,23 +101,27 @@ peek.wrap <- function(.env, steps=1, verbose=FALSE) {
 }
 
 #' @export
-get_mon_arrivals.wrap <- function(.env, per_resource=FALSE, ongoing=FALSE) {
-  if (per_resource) {
-    if (!ongoing)
-      na.omit(.env$mon_arrivals_res)
-    else .env$mon_arrivals_res
-  } else {
-    if (!ongoing)
-      na.omit(.env$mon_arrivals)
-    else .env$mon_arrivals
-  }
+get_mon_arrivals.wrap <- function(.envs, per_resource=FALSE, ongoing=FALSE) {
+  envs_apply(.envs, function(x) {
+    if (per_resource) {
+      if (!ongoing)
+        stats::na.omit(x$mon_arrivals_res)
+      else x$mon_arrivals_res
+    } else {
+      if (!ongoing)
+        stats::na.omit(x$mon_arrivals)
+      else x$mon_arrivals
+    }
+  })
 }
 
 #' @export
-get_mon_attributes.wrap <- function(.env) .env$mon_attributes
+get_mon_attributes.wrap <- function(.envs)
+  envs_apply(.envs, function(x) x$mon_attributes)
 
 #' @export
-get_mon_resources.wrap <- function(.env) .env$mon_resources
+get_mon_resources.wrap <- function(.envs)
+  envs_apply(.envs, function(x) x$mon_resources)
 
 #' @export
 get_sources.wrap <- get_sources.simmer

@@ -504,9 +504,9 @@ get_mon_arrivals <- function(.envs, per_resource=FALSE, ongoing=FALSE)
 
 #' @export
 get_mon_arrivals.simmer <- function(.envs, per_resource=FALSE, ongoing=FALSE) {
-  envs_apply(.envs, function() {
-    if (ongoing) record_ongoing_(.envs$sim_obj, per_resource)
-    .envs$mon$get_arrivals(per_resource)
+  envs_apply(.envs, function(x) {
+    if (ongoing) record_ongoing_(x$sim_obj, per_resource)
+    x$mon$get_arrivals(per_resource)
   })
 }
 
@@ -517,7 +517,7 @@ get_mon_attributes <- function(.envs)
 
 #' @export
 get_mon_attributes.simmer <- function(.envs) {
-  envs_apply(.envs, function() .envs$mon$get_attributes())
+  envs_apply(.envs, function(x) x$mon$get_attributes())
 }
 
 #' @rdname get_mon
@@ -527,8 +527,8 @@ get_mon_resources <- function(.envs)
 
 #' @export
 get_mon_resources.simmer <- function(.envs) {
-  envs_apply(.envs, function() {
-    monitor_data <- .envs$mon$get_resources()
+  envs_apply(.envs, function(x) {
+    monitor_data <- x$mon$get_resources()
     monitor_data$capacity <-
       replace(monitor_data$capacity, monitor_data$capacity == -1, Inf)
     monitor_data$queue_size <-

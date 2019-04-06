@@ -61,18 +61,8 @@ is_numeric <- function(name, env) is.numeric(env[[name]])
 is_NA <- function(name, env) is.na(env[[name]])
 is_NULL <- function(name, env) is.null(env[[name]])
 
-get_caller <- function(n=0) {
-  repeat {
-    n <- n + 1
-    caller <- try(
-      match.call(sys.function(sys.parent(n)), sys.call(sys.parent(n))),
-      silent = TRUE
-    )
-    if (inherits(caller, "try-error")) next;
-    caller <- as.character(caller)[[1]]
-    if (!grepl("\\$", caller)) break;
-  }
-  sub("\\.[[:alpha:]]+$", "", caller)
+get_caller <- function(n=1) {
+  sub("\\.[[:alpha:]]+$", "", as.character(sys.call(-n-1))[[1]])
 }
 
 check_args <- function(..., env.=parent.frame()) {
@@ -91,7 +81,7 @@ check_args <- function(..., env.=parent.frame()) {
   }
 
   if (length(msg))
-    stop(get_caller(1), ": ", paste0(msg, collapse=", "), call.=FALSE)
+    stop(get_caller(2), ": ", paste0(msg, collapse=", "), call.=FALSE)
 }
 
 envs_apply <- function(envs, method, ...) {
@@ -99,7 +89,7 @@ envs_apply <- function(envs, method, ...) {
   args <- list(...)
 
   do.call(rbind, lapply(1:length(envs), function(i) {
-    stats <- do.call(method, args)
+    stats <- do.call(method, c(envs[i], args))
     if (nrow(stats)) stats$replication <- i
     else cbind(stats, data.frame(replication = character()))
     stats

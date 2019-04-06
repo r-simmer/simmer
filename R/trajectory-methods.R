@@ -118,12 +118,10 @@ print.trajectory <- function(x, indent=0, verbose=x$verbose, ...) {
 }
 
 add_activity <- function(x, activity) {
-  caller <- match.call(sys.function(-2), sys.call(-2))
-  caller <- as.character(caller)[[1]]
   if (!is.null(x$ptrs))
     activity_chain_(x$tail(), activity)
   x$ptrs <- c(x$ptrs, activity)
-  x$names <- c(x$names, caller)
+  x$names <- c(x$names, get_caller())
   x$n_activities <- x$n_activities + activity_get_count_(activity)
   x
 }
@@ -324,7 +322,7 @@ join.trajectory <- function(...) {
     stopifnot(inherits(i, "trajectory"))
 
     i <- i$clone()
-    if (!is.null(i$head()) && !is.null(i$tail()))
+    if (!is.null(new$tail()) && !is.null(i$head()))
       activity_chain_(new$tail(), i$head())
 
     new$ptrs <- c(new$ptrs, i$ptrs)
