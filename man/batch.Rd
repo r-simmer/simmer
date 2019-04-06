@@ -15,15 +15,17 @@ separate(.trj)
 
 \item{n}{batch size, accepts a numeric.}
 
-\item{timeout}{set an optional timer which triggers batches every \code{timeout} time
-units even if the batch size has not been fulfilled, accepts a numeric or a callable
-object (a function) which must return a numeric (0 = disabled).}
+\item{timeout}{set an optional timer which triggers batches every
+\code{timeout} time units even if the batch size has not been fulfilled,
+accepts a numeric or a callable object (a function) which must return a
+numeric (0 = disabled).}
 
 \item{permanent}{if \code{TRUE}, batches cannot be split.}
 
-\item{name}{optional string. Unnamed batches from different \code{batch} activities are
-independent. However, if you want to feed arrivals from different trajectories into a
-same batch, you need to specify a common name across all your \code{batch} activities.}
+\item{name}{optional string. Unnamed batches from different \code{batch}
+activities are independent. However, if you want to feed arrivals from
+different trajectories into a same batch, you need to specify a common name
+across all your \code{batch} activities.}
 
 \item{rule}{an optional callable object (a function) which will be applied to
 every arrival to determine whether it should be included into the batch, thus}

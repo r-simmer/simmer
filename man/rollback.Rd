@@ -9,7 +9,8 @@ rollback(.trj, amount, times = Inf, check = NULL)
 \arguments{
 \item{.trj}{the trajectory object.}
 
-\item{amount}{the amount of activities (of the same or parent trajectories) to roll back.}
+\item{amount}{the amount of activities (of the same or parent trajectories)
+to roll back.}
 
 \item{times}{the number of repetitions until an arrival may continue.}
 
@@ -21,5 +22,6 @@ function to check whether the rollback must be done or not.}
 Returns the trajectory object.
 }
 \description{
-Activity for going backwards to a previous point in the trajectory. Useful to implement loops.
+Activity for going backwards to a previous point in the trajectory. Useful to
+implement loops.
 }

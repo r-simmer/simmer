@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2015-2018 Iñaki Ucar
+# Copyright (C) 2015-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -61,8 +61,8 @@ is_numeric <- function(name, env) is.numeric(env[[name]])
 is_NA <- function(name, env) is.na(env[[name]])
 is_NULL <- function(name, env) is.null(env[[name]])
 
-get_caller <- function() {
-  n <- 1; repeat {
+get_caller <- function(n=0) {
+  repeat {
     n <- n + 1
     caller <- try(
       match.call(sys.function(sys.parent(n)), sys.call(sys.parent(n))),
@@ -91,7 +91,7 @@ check_args <- function(..., env.=parent.frame()) {
   }
 
   if (length(msg))
-    stop(get_caller(), ": ", paste0(msg, collapse=", "), call.=FALSE)
+    stop(get_caller(1), ": ", paste0(msg, collapse=", "), call.=FALSE)
 }
 
 envs_apply <- function(envs, method, ...) {
@@ -99,7 +99,7 @@ envs_apply <- function(envs, method, ...) {
   args <- list(...)
 
   do.call(rbind, lapply(1:length(envs), function(i) {
-    stats <- do.call(eval(parse(text = method), envs[[i]]), args)
+    stats <- do.call(method, args)
     if (nrow(stats)) stats$replication <- i
     else cbind(stats, data.frame(replication = character()))
     stats

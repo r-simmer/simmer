@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2015 Bart Smeets
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -66,7 +66,8 @@
 #' \itemize{
 #' \item Extract or Replace Parts of a Trajectory: \code{\link{Extract.trajectory}}
 #' \item Join Trajectories: \code{\link{join}}
-#' \item Number of Activities in a Trajectory: \code{\link{length.trajectory}}, \code{\link{get_n_activities}}
+#' \item Number of Activities in a Trajectory: \code{\link{length.trajectory}},
+#' \code{\link{get_n_activities}}
 #' }
 #' @export
 #'
@@ -89,24 +90,117 @@
 #' x[c(3, 4)] <- x[2]
 #' x
 #'
-trajectory <- function(name="anonymous", verbose=FALSE) Trajectory$new(name, verbose)
+trajectory <- function(name="anonymous", verbose=FALSE) {
+  check_args(name="string", verbose="flag")
+
+  env <- list2env(list(
+    name = name,
+    verbose = verbose,
+    n_activities = 0,
+    names = NULL,
+    ptrs = NULL
+  ))
+  env$head <- function() env$ptrs[[1]]
+  env$tail <- function() env$ptrs[[length(env)]]
+  env$clone <- function() subset.trajectory(env)
+
+  class(env) <- "trajectory"
+  env
+}
+
+#' @export
+print.trajectory <- function(x, indent=0, verbose=x$verbose, ...) {
+  margin <- paste(rep(" ", indent), collapse = "")
+  cat(paste0(margin, "trajectory: ", x$name, ", ",
+             x$n_activities, " activities\n"))
+  lapply(x$ptrs, function(i) activity_print_(i, indent, verbose))
+  invisible(x)
+}
+
+add_activity <- function(x, activity) {
+  caller <- match.call(sys.function(-2), sys.call(-2))
+  caller <- as.character(caller)[[1]]
+  if (!is.null(x$ptrs))
+    activity_chain_(x$tail(), activity)
+  x$ptrs <- c(x$ptrs, activity)
+  x$names <- c(x$names, caller)
+  x$n_activities <- x$n_activities + activity_get_count_(activity)
+  x
+}
+
+get_parts <- function(x, i, double=FALSE) {
+  if (missing(i)) {
+    parts <- seq_len(length(x))
+  } else {
+    stopifnot(length(i) <= length(x))
+    if (is.null(i)) i <- 0
+    if (is.logical(i)) {
+      parts <- which(rep_len(i, length(x)))
+    } else if (is.character(i)) {
+      parts <- which(x$names %in% i)
+      if (double) parts <- parts[[1]]
+    } else if (is.numeric(i)) {
+      i <- i[!is.na(i)]
+      if (any(i < 0) && any(i > 0))
+        stop("only 0's may be mixed with negative subscripts")
+      i <- as.integer(i)
+      i <- i[i != 0]
+      if (any(i < 0))
+        parts <- seq_len(length(x))[i]
+      else parts <- i
+    } else stop("invalid subscript type '", typeof(i), "'")
+  }
+  parts
+}
+
+subset.trajectory <- function(x, i, double=FALSE) {
+  new <- trajectory(x$name, x$verbose)
+  parts <- get_parts(x, i, double)
+  if (length(parts)) {
+    new$ptrs <- sapply(parts, function(i) {
+      new_ptr <- activity_clone_(x$ptrs[[i]])
+      new$n_activities <- new$n_activities + activity_get_count_(new_ptr)
+      new_ptr
+    })
+    mapply(activity_chain_, new$ptrs[-length(new$ptrs)], new$ptrs[-1])
+    new$names <- x$names[parts]
+  }
+  new
+}
+
+split.trajectory <- function(x)
+  lapply(seq_len(length(x)), function(i) subset.trajectory(x, i))
+
+replace.trajectory <- function(x, i, value, double=FALSE) {
+  stopifnot(inherits(value, "trajectory"))
+  if (!length(x)) x
+  else {
+    parts <- get_parts(x, i, double)
+    new <- split.trajectory(x)
+    new[parts] <- split.trajectory(value)
+    new <- join(new)
+    new$verbose <- x$verbose
+    new
+  }
+}
 
 #' Extract or Replace Parts of a Trajectory
 #'
 #' Operators acting on trajectories to extract or replace parts.
 #'
 #' @param x the trajectory object.
-#' @param i indices specifying elements to extract. Indices are \code{numeric} or \code{character}
-#' or \code{logical} vectors or empty (missing) or \code{NULL}.
+#' @param i indices specifying elements to extract. Indices are \code{numeric}
+#' or \code{character} or \code{logical} vectors or empty (missing) or \code{NULL}.
 #'
-#' Numeric values are coerced to integer as by \code{\link{as.integer}} (and hence truncated towards
-#' zero). Negative integers indicate elements/slices to leave out the selection.
+#' Numeric values are coerced to integer as by \code{\link{as.integer}} (and
+#' hence truncated towards zero). Negative integers indicate elements/slices to
+#' leave out the selection.
 #'
-#' Character vectors will be matched to the names of the activities in the trajectory as by
-#' \code{\link{\%in\%}}.
+#' Character vectors will be matched to the names of the activities in the
+#' trajectory as by \code{\link{\%in\%}}.
 #'
-#' Logical vectors indicate elements/slices to select. Such vectors are recycled if necessary to
-#' match the corresponding extent.
+#' Logical vectors indicate elements/slices to select. Such vectors are recycled
+#' if necessary to match the corresponding extent.
 #'
 #' An empty index will return the whole trajectory.
 #'
@@ -114,7 +208,8 @@ trajectory <- function(name="anonymous", verbose=FALSE) Trajectory$new(name, ver
 #' @param value another trajectory object.
 #'
 #' @return Returns a new trajectory object.
-#' @seealso \code{\link{length.trajectory}}, \code{\link{get_n_activities}}, \code{\link{join}}.
+#' @seealso \code{\link{length.trajectory}}, \code{\link{get_n_activities}},
+#' \code{\link{join}}.
 #'
 #' @name Extract.trajectory
 #' @export
@@ -132,21 +227,21 @@ trajectory <- function(name="anonymous", verbose=FALSE) Trajectory$new(name, ver
 #' x[c(FALSE, TRUE)] <- x[c(TRUE, FALSE)] # replacing
 #' x
 #'
-`[.trajectory` <- function(x, i) x$subset(i)
+`[.trajectory` <- function(x, i) subset.trajectory(x, i)
 
 #' @rdname Extract.trajectory
 #' @export
 `[[.trajectory` <- function(x, i) {
   stopifnot(length(i) == 1L)
   stopifnot(is.character(i) | (is.numeric(i) & i > 0))
-  x$subset(i, double=TRUE)
+  subset.trajectory(x, i, double=TRUE)
 }
 
 #' @rdname Extract.trajectory
 #' @export
 `[<-.trajectory` <- function(x, i, value) {
   stopifnot(inherits(value, "trajectory"))
-  x$replace(i, value)
+  replace.trajectory(x, i, value)
 }
 
 #' @rdname Extract.trajectory
@@ -156,7 +251,7 @@ trajectory <- function(name="anonymous", verbose=FALSE) Trajectory$new(name, ver
   stopifnot(inherits(value, "trajectory"))
   stopifnot(length(value) == 1L)
   stopifnot(is.character(i) | (is.numeric(i) & i > 0))
-  x$replace(i, value, double=TRUE)
+  replace.trajectory(x, i, value, double=TRUE)
 }
 
 #' Number of Activities in a Trajectory
@@ -184,14 +279,14 @@ trajectory <- function(name="anonymous", verbose=FALSE) Trajectory$new(name, ver
 #' length(x)
 #' get_n_activities(x)
 #'
-length.trajectory <- function(x) x$length()
+length.trajectory <- function(x) length(x$ptrs)
 
 #' @rdname length.trajectory
 #' @export
 get_n_activities <- function(x) UseMethod("get_n_activities")
 
 #' @export
-get_n_activities.trajectory <- function(x) x$get_n_activities()
+get_n_activities.trajectory <- function(x) x$n_activities
 
 #' Join Trajectories
 #'
@@ -223,9 +318,21 @@ join <- function(...) UseMethod("join", c(...)[[1]])
 #' @export
 join.trajectory <- function(...) {
   traj <- c(...)
-  for (i in traj[-1]) traj[[1]] <- traj[[1]]$join(i)
-  traj[[1]]
+  new <- traj[[1]]$clone()
+
+  for (i in traj[-1]) {
+    stopifnot(inherits(i, "trajectory"))
+
+    i <- i$clone()
+    if (!is.null(i$head()) && !is.null(i$tail()))
+      activity_chain_(new$tail(), i$head())
+
+    new$ptrs <- c(new$ptrs, i$ptrs)
+    new$names <- c(new$names, i$names)
+    new$n_activities <- new$n_activities + i$n_activities
+  }
+  new
 }
 
 #' @export
-rep.trajectory <- function(x, ...) x$rep(...)
+rep.trajectory <- function(x, ...) join(rep(split.trajectory(x), ...))

@@ -19,17 +19,18 @@
 \arguments{
 \item{x}{the trajectory object.}
 
-\item{i}{indices specifying elements to extract. Indices are \code{numeric} or \code{character}
-or \code{logical} vectors or empty (missing) or \code{NULL}.
+\item{i}{indices specifying elements to extract. Indices are \code{numeric}
+or \code{character} or \code{logical} vectors or empty (missing) or \code{NULL}.
 
-Numeric values are coerced to integer as by \code{\link{as.integer}} (and hence truncated towards
-zero). Negative integers indicate elements/slices to leave out the selection.
+Numeric values are coerced to integer as by \code{\link{as.integer}} (and
+hence truncated towards zero). Negative integers indicate elements/slices to
+leave out the selection.
 
-Character vectors will be matched to the names of the activities in the trajectory as by
-\code{\link{\%in\%}}.
+Character vectors will be matched to the names of the activities in the
+trajectory as by \code{\link{\%in\%}}.
 
-Logical vectors indicate elements/slices to select. Such vectors are recycled if necessary to
-match the corresponding extent.
+Logical vectors indicate elements/slices to select. Such vectors are recycled
+if necessary to match the corresponding extent.
 
 An empty index will return the whole trajectory.
 
@@ -58,5 +59,6 @@ x
 
 }
 \seealso{
-\code{\link{length.trajectory}}, \code{\link{get_n_activities}}, \code{\link{join}}.
+\code{\link{length.trajectory}}, \code{\link{get_n_activities}},
+\code{\link{join}}.
 }
