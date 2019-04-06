@@ -1,4 +1,4 @@
-# Copyright (C) 2018 Iñaki Ucar
+# Copyright (C) 2018-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -14,54 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
-
-Monitor <- R6Class("monitor",
-  public = list(
-    name = NA,
-
-    initialize = function(name, xptr,
-                          get_arrivals, get_attributes, get_resources,
-                          handlers=NULL, finalize=function() {})
-    {
-      check_args(
-        name = "string",
-        xptr = "externalptr",
-        get_arrivals = "function",
-        get_attributes = "function",
-        get_resources = "function",
-        handlers = c("list", "NULL"),
-        finalize = "function"
-      )
-      self$name <- name
-      private$xptr <- xptr
-      self$get_arrivals <- function(...) get_arrivals(private$xptr, ...)
-      self$get_attributes <- function(...) get_attributes(private$xptr, ...)
-      self$get_resources <- function(...) get_resources(private$xptr, ...)
-      self$handlers <- handlers
-      self$finalize <- finalize
-      self
-    },
-
-    get_arrivals = NULL,
-    get_attributes = NULL,
-    get_resources = NULL,
-    handlers = NULL,
-    finalize = NULL,
-
-    print = function() {
-      cat(paste0("simmer monitor: ", self$name, "\n"))
-      for (name in names(self$handlers))
-        cat(paste0("{ ", name, ": ", self$handlers[[name]], " }\n"))
-      invisible(self)
-    },
-
-    get_xptr = function() { private$xptr }
-  ),
-
-  private = list(
-    xptr = NULL
-  )
-)
 
 #' Create a Monitor
 #'
@@ -94,7 +46,38 @@ Monitor <- R6Class("monitor",
 #' @export
 monitor <- function(name, xptr, get_arrivals, get_attributes, get_resources,
                     handlers=NULL, finalize=function() {})
-  Monitor$new(name, xptr, get_arrivals, get_attributes, get_resources, handlers, finalize)
+{
+  check_args(
+    name = "string",
+    xptr = "externalptr",
+    get_arrivals = "function",
+    get_attributes = "function",
+    get_resources = "function",
+    handlers = c("list", "NULL"),
+    finalize = "function"
+  )
+
+  env <- list2env(list(
+    name = name,
+    xptr = xptr,
+    handlers = handlers,
+    finalize = finalize
+  ))
+  env$get_arrivals <- function(...) get_arrivals(env$xptr, ...)
+  env$get_attributes <- function(...) get_attributes(env$xptr, ...)
+  env$get_resources <- function(...) get_resources(env$xptr, ...)
+
+  class(env) <- "monitor"
+  env
+}
+
+#' @export
+print.monitor <- function(x, ...) {
+  cat(paste0("simmer monitor: ", x$name, "\n"))
+  for (name in names(x$handlers))
+    cat(paste0("{ ", name, ": ", x$handlers[[name]], " }\n"))
+  invisible(x)
+}
 
 #' @details The in-memory monitor is enabled by default (\code{memory_mem}),
 #' and it should the fastest.

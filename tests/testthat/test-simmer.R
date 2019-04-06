@@ -1,6 +1,6 @@
 # Copyright (C) 2015-2016 Iñaki Ucar
 # Copyright (C) 2016 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -160,8 +160,8 @@ test_that("we can force some errors (just to complete coverage)", {
   env <- simmer(verbose = TRUE) %>%
     add_resource("dummy") %>%
     add_generator("dummy", trajectory(), function() 1, mon = 1000)
-  env$.__enclos_env__$private$sim_obj <- NULL
-  env$.__enclos_env__$private$mon$.__enclos_env__$private$xptr <- NULL
+  env$sim_obj <- NULL
+  env$mon$xptr <- NULL
 
   expect_error(env %>% reset())
   expect_error(env %>% now())
@@ -173,7 +173,7 @@ test_that("we can force some errors (just to complete coverage)", {
   expect_error(env %>% get_mon_resources())
 
   sch <- schedule(c(1, 2), c(1, 2), Inf)
-  sch$.__enclos_env__$private$schedule$period <- "asdf"
+  sch$schedule$period <- "asdf"
   expect_error(simmer(verbose = TRUE) %>% add_resource("dummy", sch))
 
   env <- simmer(verbose = TRUE)

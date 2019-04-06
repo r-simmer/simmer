@@ -1,3 +1,9 @@
+# simmer 4.3.0
+
+## Minor changes and fixes:
+
+- Drop R6 as a dependency (#193 addressing #190).
+
 # simmer 4.2.2
 
 ## Minor changes and fixes:

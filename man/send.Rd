@@ -18,11 +18,12 @@ wait(.trj)
 \arguments{
 \item{.trj}{the trajectory object.}
 
-\item{signals}{signal or list of signals, accepts either a string, a list of strings or a
-callable object (a function) which must return a string or a list of strings.}
+\item{signals}{signal or list of signals, accepts either a string, a list of
+strings or a callable object (a function) which must return a string or a
+list of strings.}
 
-\item{delay}{optional timeout to trigger the signals, accepts either a numeric or a callable
-object (a function) which must return a numeric.}
+\item{delay}{optional timeout to trigger the signals, accepts either a
+numeric or a callable object (a function) which must return a numeric.}
 
 \item{handler}{optional trajectory object to handle a signal received.}
 
@@ -32,13 +33,14 @@ object (a function) which must return a numeric.}
 Returns the trajectory object.
 }
 \description{
-These activities enable asynchronous programming. \code{send()} broadcasts a signal or a list
-of signals. Arrivals can subscribe to signals and (optionally) assign a handler with
-\code{trap()}. Note that, while inside a batch, all the signals subscribed before entering
-the batch are ignored. Upon a signal reception, the arrival stops the current activity and
-executes the handler (if provided). Then, the execution returns to the activity following the
-point of the interruption. \code{untrap()} can be used to unsubscribe from signals.
-\code{wait()} blocks until a signal is received.
+These activities enable asynchronous programming. \code{send()} broadcasts a
+signal or a list of signals. Arrivals can subscribe to signals and (optionally)
+assign a handler with \code{trap()}. Note that, while inside a batch, all the
+signals subscribed before entering the batch are ignored. Upon a signal
+reception, the arrival stops the current activity and executes the handler
+(if provided). Then, the execution returns to the activity following the
+point of the interruption. \code{untrap()} can be used to unsubscribe from
+signals. \code{wait()} blocks until a signal is received.
 }
 \seealso{
 \code{\link{renege_if}}

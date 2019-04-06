@@ -114,8 +114,7 @@ namespace simmer {
     }
 
     inline int get_n_activities(const REnv& trajectory) {
-      RFn method = trajectory["get_n_activities"];
-      return Rcpp::as<int>(method());
+      return Rcpp::as<int>(trajectory["n_activities"]);
     }
 
     inline REnv clone(const REnv& trajectory) {
@@ -124,8 +123,8 @@ namespace simmer {
     }
 
     inline void print(const REnv& trajectory, unsigned int indent, bool verbose) {
-      RFn method = trajectory["print"];
-      method(indent, verbose);
+      RFn method = REnv::base_env()["print"];
+      method(trajectory, indent, verbose);
     }
 
     inline void print(bool brief, bool endl) {

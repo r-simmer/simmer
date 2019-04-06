@@ -1,5 +1,5 @@
 # Copyright (C) 2014 Bart Smeets
-# Copyright (C) 2017-2018 Iñaki Ucar
+# Copyright (C) 2017-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -51,7 +51,6 @@
 #'
 #' @useDynLib simmer, .registration=TRUE
 #' @importFrom Rcpp evalCpp
-#' @importFrom R6 R6Class
 NULL
 
 #' @importFrom magrittr %>%

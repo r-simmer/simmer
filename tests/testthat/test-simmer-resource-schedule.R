@@ -1,4 +1,4 @@
-# Copyright (C) 2016,2018 Iñaki Ucar
+# Copyright (C) 2016,2018-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -34,7 +34,7 @@ test_that("a schedule name conflicts with a generator name", {
 })
 
 test_that("a schedule cannot be created if the corresponding resource doesn't exist", {
-  ptr <- simmer()$.__enclos_env__$private$sim_obj
+  ptr <- simmer()$sim_obj
   expect_error(add_resource_manager_(ptr, "name", "capacity", c(0, 1), c(0, 1), -1))
 })
 
