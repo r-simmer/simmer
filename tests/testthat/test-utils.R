@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2018 Iñaki Ucar
+# Copyright (C) 2017-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -119,9 +119,9 @@ test_that("is_* checkers are searched in the simmer namespace only", {
 
 test_that("envs_apply works", {
   env <- new.env()
-  env$func <- function(x, y) data.frame(x=x, y=y)
-  df <- envs_apply(list(env, env), "func", 1, 2)
-  expect_equal(df, data.frame(x=c(1, 1), y=c(2, 2), replication=c(1, 2)))
+  func <- function(env, x, y) data.frame(x=x, y=y)
+  df <- envs_apply(list(env, env), func, 1, 2)
+  expect_equal(df, data.frame(x=c(1, 1), y=c(2, 2), replication=1:2))
 })
 
 test_that("a function can be reset", {

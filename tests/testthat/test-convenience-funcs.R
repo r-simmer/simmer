@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2018 Iñaki Ucar
+# Copyright (C) 2015-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -128,19 +128,19 @@ test_that("schedule returns the correct values", {
   expect_error(schedule(c(2, 1), c(1, 2),  1))
   expect_error(schedule(c(0, 1), c(1, 2),  1))
 
-  sch <- schedule(c(1, 3), c(1, 2), Inf)$get_schedule()
+  sch <- schedule(c(1, 3), c(1, 2), Inf)$schedule
   expect_equal(sch$init, 0)
   expect_equal(sch$intervals, c(1, 2))
   expect_equal(sch$values, c(1, 2))
   expect_equal(sch$period, -1)
 
-  sch <- schedule(c(1, 3), c(1, 2), 3)$get_schedule()
+  sch <- schedule(c(1, 3), c(1, 2), 3)$schedule
   expect_equal(sch$init, 2)
   expect_equal(sch$intervals, c(1, 2, 1))
   expect_equal(sch$values, c(1, 2, 1))
   expect_equal(sch$period, 3)
 
-  sch <- schedule(c(0, 2), c(1, 2), 3)$get_schedule()
+  sch <- schedule(c(0, 2), c(1, 2), 3)$schedule
   expect_equal(sch$init, 1)
   expect_equal(sch$intervals, c(0, 2, 1))
   expect_equal(sch$values, c(1, 2, 1))

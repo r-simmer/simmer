@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -26,8 +26,9 @@
 #'
 #' @return Returns a simulation wrapper.
 #' @seealso Methods for dealing with a simulation wrapper:
-#' \code{\link{get_mon_arrivals}}, \code{\link{get_mon_attributes}}, \code{\link{get_mon_resources}},
-#' \code{\link{get_n_generated}}, \code{\link{get_capacity}}, \code{\link{get_queue_size}},
+#' \code{\link{get_mon_arrivals}}, \code{\link{get_mon_attributes}},
+#' \code{\link{get_mon_resources}}, \code{\link{get_n_generated}},
+#' \code{\link{get_capacity}}, \code{\link{get_queue_size}},
 #' \code{\link{get_server_count}}, \code{\link{get_queue_count}}.
 #' @export
 #'
@@ -48,22 +49,79 @@
 #'     wrap()
 #' })
 #' }
-wrap <- function(.env) Wrap$new(.env)
+wrap <- function(.env) {
+  check_args(.env="simmer")
+
+  env <- list2env(list(
+    name = .env$name,
+    now_val = now(.env),
+    peek_val = peek(.env, Inf, TRUE),
+    resources = .env$resources,
+    sources = .env$sources,
+    globals = .env$globals,
+    mon_arrivals = get_mon_arrivals(.env, ongoing = TRUE),
+    mon_arrivals_res = get_mon_arrivals(.env, TRUE, ongoing = TRUE),
+    mon_attributes = get_mon_attributes(.env),
+    mon_resources = get_mon_resources(.env),
+    n_generated = list(),
+    capacity = list(),
+    queue_size = list(),
+    server_count = list(),
+    queue_count = list()
+  ))
+
+  sources <- names(env$sources)
+  resources <- names(env$resources)
+  if (!is.null(sources))
+    env$n_generated[sources] <- get_n_generated(.env, sources)
+  if (!is.null(resources)) {
+    env$capacity[resources] <- get_capacity(.env, resources)
+    env$queue_size[resources] <- get_queue_size(.env, resources)
+    env$server_count[resources] <- get_server_count(.env, resources)
+    env$queue_count[resources] <- get_queue_count(.env, resources)
+  }
+
+  class(env) <- "wrap"
+  env
+}
 
 #' @export
-now.wrap <- now.simmer
+print.wrap <- print.simmer
 
 #' @export
-peek.wrap <- peek.simmer
+now.wrap <- function(.env) .env$now_val
 
 #' @export
-get_mon_arrivals.wrap <- get_mon_arrivals.simmer
+peek.wrap <- function(.env, steps=1, verbose=FALSE) {
+  check_args(steps="number", verbose="flag")
+  steps <- min(steps, nrow(.env$peek_val))
+  ret <- .env$peek_val[0:steps, ]
+  if (!verbose) ret$time
+  else ret # nocov
+}
 
 #' @export
-get_mon_attributes.wrap <- get_mon_attributes.simmer
+get_mon_arrivals.wrap <- function(.envs, per_resource=FALSE, ongoing=FALSE) {
+  envs_apply(.envs, function(x) {
+    if (per_resource) {
+      if (!ongoing)
+        stats::na.omit(x$mon_arrivals_res)
+      else x$mon_arrivals_res
+    } else {
+      if (!ongoing)
+        stats::na.omit(x$mon_arrivals)
+      else x$mon_arrivals
+    }
+  })
+}
 
 #' @export
-get_mon_resources.wrap <- get_mon_resources.simmer
+get_mon_attributes.wrap <- function(.envs)
+  envs_apply(.envs, function(x) x$mon_attributes)
+
+#' @export
+get_mon_resources.wrap <- function(.envs)
+  envs_apply(.envs, function(x) x$mon_resources)
 
 #' @export
 get_sources.wrap <- get_sources.simmer
@@ -71,17 +129,30 @@ get_sources.wrap <- get_sources.simmer
 #' @export
 get_resources.wrap <- get_resources.simmer
 
-#' @export
-get_n_generated.wrap <- get_n_generated.simmer
+check.wrap <- function(.env, entities) {
+  comp <- as.character(substitute(entities))
+  found <- entities %in% names(.env[[comp]])
+  if (any(!found))
+    stop(comp, " '", paste(entities[!found], collapse=", "), "' not found")
+  entities
+}
 
 #' @export
-get_capacity.wrap <- get_capacity.simmer
+get_n_generated.wrap <- function(.env, sources)
+  unlist(.env$n_generated[check.wrap(.env, sources)], use.names=FALSE)
 
 #' @export
-get_queue_size.wrap <- get_queue_size.simmer
+get_capacity.wrap <- function(.env, resources)
+  unlist(.env$capacity[check.wrap(.env, resources)], use.names=FALSE)
 
 #' @export
-get_server_count.wrap <- get_server_count.simmer
+get_queue_size.wrap <- function(.env, resources)
+  unlist(.env$queue_size[check.wrap(.env, resources)], use.names=FALSE)
 
 #' @export
-get_queue_count.wrap <- get_queue_count.simmer
+get_server_count.wrap <- function(.env, resources)
+  unlist(.env$server_count[check.wrap(.env, resources)], use.names=FALSE)
+
+#' @export
+get_queue_count.wrap <- function(.env, resources)
+  unlist(.env$queue_count[check.wrap(.env, resources)], use.names=FALSE)

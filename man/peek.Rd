@@ -11,7 +11,8 @@ peek(.env, steps = 1, verbose = FALSE)
 
 \item{steps}{number of steps to peek.}
 
-\item{verbose}{show additional information (i.e., the name of the process) about future events.}
+\item{verbose}{show additional information (i.e., the name of the process)
+about future events.}
 }
 \value{
 Returns numeric values if \code{verbose=F} and a data frame otherwise.

@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2015 Bart Smeets
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -47,45 +47,105 @@ seize <- function(.trj, resource, amount=1, continue=NULL, post.seize=NULL, reje
   UseMethod("seize")
 
 #' @export
-seize.trajectory <- function(.trj, resource, amount=1, continue=NULL, post.seize=NULL, reject=NULL)
-  .trj$seize(resource, amount, 0, continue, post.seize, reject)
+seize.trajectory <- function(.trj, resource, amount=1,
+                             continue=NULL, post.seize=NULL, reject=NULL)
+{
+  continue <- recycle(continue, length(c(post.seize, reject)))
+  stopifnot(length(continue) == length(c(post.seize, reject)))
+  if (!length(continue)) continue <- TRUE
+  check_args(
+    resource = "string",
+    amount = c("number", "function"),
+    continue = "flag",
+    post.seize = c("trajectory", "NULL"),
+    reject = c("trajectory", "NULL")
+  )
+  trj <- as.list(c(post.seize[], reject[]))
+  mask <- sum(c(1, 2) * !sapply(list(post.seize, reject), is.null))
+  switch(
+    binarise(is.function(amount)),
+    add_activity(.trj, Seize__new(resource, amount, continue, trj, mask)),
+    add_activity(.trj, Seize__new_func(resource, amount, continue, trj, mask))
+  )
+}
 
 #' @rdname seize
 #' @export
-seize_selected <- function(.trj, amount=1, id=0, continue=NULL, post.seize=NULL, reject=NULL)
+seize_selected <- function(.trj, amount=1, id=0,continue=NULL, post.seize=NULL, reject=NULL)
   UseMethod("seize_selected")
 
 #' @export
-seize_selected.trajectory <- function(.trj, amount=1, id=0, continue=NULL, post.seize=NULL, reject=NULL)
-  .trj$seize(NA, amount, id, continue, post.seize, reject)
+seize_selected.trajectory <- function(.trj, amount=1, id=0,
+                                      continue=NULL, post.seize=NULL, reject=NULL)
+{
+  continue <- recycle(continue, length(c(post.seize, reject)))
+  stopifnot(length(continue) == length(c(post.seize, reject)))
+  if (!length(continue)) continue <- TRUE
+  check_args(
+    amount = c("number", "function"),
+    id = "number",
+    continue = "flag",
+    post.seize = c("trajectory", "NULL"),
+    reject = c("trajectory", "NULL")
+  )
+  trj <- as.list(c(post.seize[], reject[]))
+  mask <- sum(c(1, 2) * !sapply(list(post.seize, reject), is.null))
+  switch(
+    binarise(is.function(amount)),
+    add_activity(.trj, SeizeSelected__new(id, amount, continue, trj, mask)),
+    add_activity(.trj, SeizeSelected__new_func(id, amount, continue, trj, mask))
+  )
+}
 
 #' @rdname seize
 #' @export
 release <- function(.trj, resource, amount=1) UseMethod("release")
 
 #' @export
-release.trajectory <- function(.trj, resource, amount=1) .trj$release(resource, amount)
+release.trajectory <- function(.trj, resource, amount=1) {
+  check_args(resource="string", amount=c("number", "function"))
+  switch(
+    binarise(is.function(amount)),
+    add_activity(.trj, Release__new(resource, amount)),
+    add_activity(.trj, Release__new_func(resource, amount))
+  )
+}
 
 #' @rdname seize
 #' @export
 release_selected <- function(.trj, amount=1, id=0) UseMethod("release_selected")
 
 #' @export
-release_selected.trajectory <- function(.trj, amount=1, id=0) .trj$release(NA, amount, id)
+release_selected.trajectory <- function(.trj, amount=1, id=0) {
+  check_args(amount=c("number", "function"), id="number")
+  switch(
+    binarise(is.function(amount)),
+    add_activity(.trj, ReleaseSelected__new(id, amount)),
+    add_activity(.trj, ReleaseSelected__new_func(id, amount))
+  )
+}
 
 #' @rdname seize
 #' @export
 release_all <- function(.trj, resource) UseMethod("release_all")
 
 #' @export
-release_all.trajectory <- function(.trj, resource) .trj$release(resource, NA)
+release_all.trajectory <- function(.trj, resource) {
+  if (missing(resource))
+    return(add_activity(.trj, ReleaseAll__new_void()))
+  check_args(resource="string")
+  add_activity(.trj, ReleaseAll__new(resource))
+}
 
 #' @rdname seize
 #' @export
 release_selected_all <- function(.trj, id=0) UseMethod("release_selected_all")
 
 #' @export
-release_selected_all.trajectory <- function(.trj, id=0) .trj$release(NA, NA, id)
+release_selected_all.trajectory <- function(.trj, id=0) {
+  check_args(id="number")
+  add_activity(.trj, ReleaseSelectedAll__new(id))
+}
 
 #' Set Resource Parameters
 #'
@@ -107,8 +167,15 @@ set_capacity <- function(.trj, resource, value, mod=c(NA, "+", "*"))
   UseMethod("set_capacity")
 
 #' @export
-set_capacity.trajectory <- function(.trj, resource, value, mod=c(NA, "+", "*"))
-  .trj$set_capacity(resource, value, mod=mod)
+set_capacity.trajectory <- function(.trj, resource, value, mod=c(NA, "+", "*")) {
+  check_args(resource="string", value=c("numeric", "function"))
+  mod <- match.arg(mod)
+  switch(
+    binarise(is.function(value)),
+    add_activity(.trj, SetCapacity__new(resource, value, mod)),
+    add_activity(.trj, SetCapacity__new_func(resource, value, mod))
+  )
+}
 
 #' @rdname set_capacity
 #' @export
@@ -116,8 +183,15 @@ set_capacity_selected <- function(.trj, value, id=0, mod=c(NA, "+", "*"))
   UseMethod("set_capacity_selected")
 
 #' @export
-set_capacity_selected.trajectory <- function(.trj, value, id=0, mod=c(NA, "+", "*"))
-  .trj$set_capacity(NA, value, id, mod=mod)
+set_capacity_selected.trajectory <- function(.trj, value, id=0, mod=c(NA, "+", "*")) {
+  check_args(value=c("numeric", "function"), id="number")
+  mod <- match.arg(mod)
+  switch(
+    binarise(is.function(value)),
+    add_activity(.trj, SetCapacitySelected__new(id, value, mod)),
+    add_activity(.trj, SetCapacitySelected__new_func(id, value, mod))
+  )
+}
 
 #' @rdname set_capacity
 #' @export
@@ -125,8 +199,15 @@ set_queue_size <- function(.trj, resource, value, mod=c(NA, "+", "*"))
   UseMethod("set_queue_size")
 
 #' @export
-set_queue_size.trajectory <- function(.trj, resource, value, mod=c(NA, "+", "*"))
-  .trj$set_queue_size(resource, value, mod=mod)
+set_queue_size.trajectory <- function(.trj, resource, value, mod=c(NA, "+", "*")) {
+  check_args(resource="string", value=c("numeric", "function"))
+  mod <- match.arg(mod)
+  switch(
+    binarise(is.function(value)),
+    add_activity(.trj, SetQueue__new(resource, value, mod)),
+    add_activity(.trj, SetQueue__new_func(resource, value, mod))
+  )
+}
 
 #' @rdname set_capacity
 #' @export
@@ -134,8 +215,15 @@ set_queue_size_selected <- function(.trj, value, id=0, mod=c(NA, "+", "*"))
   UseMethod("set_queue_size_selected")
 
 #' @export
-set_queue_size_selected.trajectory <- function(.trj, value, id=0, mod=c(NA, "+", "*"))
-  .trj$set_queue_size(NA, value, id, mod=mod)
+set_queue_size_selected.trajectory <- function(.trj, value, id=0, mod=c(NA, "+", "*")) {
+  check_args(value=c("numeric", "function"), id="number")
+  mod <- match.arg(mod)
+  switch(
+    binarise(is.function(value)),
+    add_activity(.trj, SetQueueSelected__new(id, value, mod)),
+    add_activity(.trj, SetQueueSelected__new_func(id, value, mod))
+  )
+}
 
 #' Select Resources
 #'
@@ -179,7 +267,16 @@ select.trajectory <- function(
   policy=c("shortest-queue", "shortest-queue-available",
            "round-robin", "round-robin-available",
            "first-available", "random", "random-available"),
-  id=0) .trj$select(resources, policy, id)
+  id=0)
+{
+  check_args(resources=c("string vector", "function"), id="number")
+  policy <- match.arg(policy)
+  switch(
+    binarise(is.function(resources)),
+    add_activity(.trj, Select__new(resources, policy, id)),
+    add_activity(.trj, Select__new_func(resources, policy, id))
+  )
+}
 
 #' Delay
 #'
@@ -197,7 +294,11 @@ timeout <- function(.trj, task) UseMethod("timeout")
 #' @export
 timeout.trajectory <- function(.trj, task) {
   check_args(task=c("numeric", "function"))
-  .trj$timeout(task)
+  switch(
+    binarise(is.function(task)),
+    add_activity(.trj, Timeout__new(task)),
+    add_activity(.trj, Timeout__new_func(task))
+  )
 }
 
 #' @rdname timeout
@@ -211,7 +312,7 @@ timeout_from_attribute <- function(.trj, key) UseMethod("timeout_from_attribute"
 #' @export
 timeout_from_attribute.trajectory <- function(.trj, key) {
   check_args(key="string")
-  .trj$timeout(key, FALSE)
+  add_activity(.trj, Timeout__new_attr(key, FALSE))
 }
 
 #' @rdname timeout
@@ -219,7 +320,10 @@ timeout_from_attribute.trajectory <- function(.trj, key) {
 timeout_from_global <- function(.trj, key) UseMethod("timeout_from_global")
 
 #' @export
-timeout_from_global <- function(.trj, key) .trj$timeout(key, TRUE)
+timeout_from_global <- function(.trj, key) {
+  check_args(key="string")
+  add_activity(.trj, Timeout__new_attr(key, TRUE))
+}
 
 #' Set Attributes
 #'
@@ -242,8 +346,21 @@ set_attribute <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=0)
   UseMethod("set_attribute")
 
 #' @export
-set_attribute.trajectory <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=0)
-  .trj$set_attribute(keys, values, mod, init)
+set_attribute.trajectory <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=0) {
+  check_args(
+    keys = c("string vector", "function"),
+    values = c("numeric", "function"),
+    init = "numeric"
+  )
+  mod <- match.arg(mod)
+  switch(
+    binarise(is.function(keys), is.function(values)),
+    add_activity(.trj, SetAttribute__new(keys, values, FALSE, mod, init)),
+    add_activity(.trj, SetAttribute__new_func1(keys, values, FALSE, mod, init)),
+    add_activity(.trj, SetAttribute__new_func2(keys, values, FALSE, mod, init)),
+    add_activity(.trj, SetAttribute__new_func3(keys, values, FALSE, mod, init))
+  )
+}
 
 #' @rdname set_attribute
 #' @export
@@ -251,8 +368,21 @@ set_global <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=0)
   UseMethod("set_global")
 
 #' @export
-set_global.trajectory <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=0)
-  .trj$set_global(keys, values, mod, init)
+set_global.trajectory <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=0) {
+  check_args(
+    keys = c("string vector", "function"),
+    values = c("numeric", "function"),
+    init = "numeric"
+  )
+  mod <- match.arg(mod)
+  switch(
+    binarise(is.function(keys), is.function(values)),
+    add_activity(.trj, SetAttribute__new(keys, values, TRUE, mod, init)),
+    add_activity(.trj, SetAttribute__new_func1(keys, values, TRUE, mod, init)),
+    add_activity(.trj, SetAttribute__new_func2(keys, values, TRUE, mod, init)),
+    add_activity(.trj, SetAttribute__new_func3(keys, values, TRUE, mod, init))
+  )
+}
 
 #' Activate/Deactivate Sources
 #'
@@ -267,14 +397,28 @@ set_global.trajectory <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=
 activate <- function(.trj, source) UseMethod("activate")
 
 #' @export
-activate.trajectory <- function(.trj, source) .trj$activate(source)
+activate.trajectory <- function(.trj, source) {
+  check_args(source=c("string", "function"))
+  switch(
+    binarise(is.function(source)),
+    add_activity(.trj, Activate__new(source)),
+    add_activity(.trj, Activate__new_func(source))
+  )
+}
 
 #' @rdname activate
 #' @export
 deactivate <- function(.trj, source) UseMethod("deactivate")
 
 #' @export
-deactivate.trajectory <- function(.trj, source) .trj$deactivate(source)
+deactivate.trajectory <- function(.trj, source) {
+  check_args(source=c("string", "function"))
+  switch(
+    binarise(is.function(source)),
+    add_activity(.trj, Deactivate__new(source)),
+    add_activity(.trj, Deactivate__new_func(source))
+  )
+}
 
 #' Set Source Parameters
 #'
@@ -290,8 +434,14 @@ deactivate.trajectory <- function(.trj, source) .trj$deactivate(source)
 set_trajectory <- function(.trj, source, trajectory) UseMethod("set_trajectory")
 
 #' @export
-set_trajectory.trajectory <- function(.trj, source, trajectory)
-  .trj$set_trajectory(source, trajectory)
+set_trajectory.trajectory <- function(.trj, source, trajectory) {
+  check_args(source=c("string", "function"), trajectory="trajectory")
+  switch(
+    binarise(is.function(source)),
+    add_activity(.trj, SetTraj__new(source, trajectory[])),
+    add_activity(.trj, SetTraj__new_func(source, trajectory[]))
+  )
+}
 
 #' @rdname set_trajectory
 #' @param object a function modelling the interarrival times (if the source type
@@ -301,8 +451,16 @@ set_trajectory.trajectory <- function(.trj, source, trajectory)
 set_source <- function(.trj, source, object) UseMethod("set_source")
 
 #' @export
-set_source.trajectory <- function(.trj, source, object)
-  .trj$set_source(source, object)
+set_source.trajectory <- function(.trj, source, object) {
+  check_args(source=c("string", "function"), object=c("function", "data.frame"))
+  switch(
+    binarise(is.function(source), is.function(object)),
+    add_activity(.trj, SetSourceDF__new(source, object)),
+    add_activity(.trj, SetSourceDF__new_func(source, object)),
+    add_activity(.trj, SetSourceFn__new(source, make_resetable(object))),
+    add_activity(.trj, SetSourceFn__new_func(source, make_resetable(object)))
+  )
+}
 
 #' Set Prioritization Values
 #'
@@ -322,8 +480,15 @@ set_prioritization <- function(.trj, values, mod=c(NA, "+", "*"))
   UseMethod("set_prioritization")
 
 #' @export
-set_prioritization.trajectory <- function(.trj, values, mod=c(NA, "+", "*"))
-  .trj$set_prioritization(values, mod=mod)
+set_prioritization.trajectory <- function(.trj, values, mod=c(NA, "+", "*")) {
+  check_args(values=c("number vector", "function"))
+  mod <- match.arg(mod)
+  switch(
+    binarise(is.function(values)),
+    add_activity(.trj, SetPrior__new(values, mod)),
+    add_activity(.trj, SetPrior__new_func(values, mod))
+  )
+}
 
 #' Fork the Trajectory Path
 #'
@@ -345,14 +510,22 @@ set_prioritization.trajectory <- function(.trj, values, mod=c(NA, "+", "*"))
 branch <- function(.trj, option, continue, ...) UseMethod("branch")
 
 #' @export
-branch.trajectory <- function(.trj, option, continue, ...) .trj$branch(option, continue, ...)
+branch.trajectory <- function(.trj, option, continue, ...) {
+  dots. <- c(...)
+  check_args(option="function", continue="flag", dots.="trajectory")
+  continue <- recycle(continue, length(dots.))
+  stopifnot(length(continue) == length(dots.))
+  add_activity(.trj, Branch__new(option, continue, sapply(dots., `[`)))
+}
 
 #' Rollback a Number of Activities
 #'
-#' Activity for going backwards to a previous point in the trajectory. Useful to implement loops.
+#' Activity for going backwards to a previous point in the trajectory. Useful to
+#' implement loops.
 #'
 #' @inheritParams seize
-#' @param amount the amount of activities (of the same or parent trajectories) to roll back.
+#' @param amount the amount of activities (of the same or parent trajectories)
+#' to roll back.
 #' @param times the number of repetitions until an arrival may continue.
 #' @param check a callable object (a function) which must return a boolean. If
 #' present, the \code{times} parameter is ignored, and the activity uses this
@@ -363,7 +536,14 @@ branch.trajectory <- function(.trj, option, continue, ...) .trj$branch(option, c
 rollback <- function(.trj, amount, times=Inf, check=NULL) UseMethod("rollback")
 
 #' @export
-rollback.trajectory <- function(.trj, amount, times=Inf, check=NULL) .trj$rollback(amount, times, check)
+rollback.trajectory <- function(.trj, amount, times=Inf, check=NULL) {
+  check_args(amount="number", times="number", check=c("function", "NULL"))
+  switch(
+    binarise(is.function(check)),
+    add_activity(.trj, Rollback__new(amount, times)),
+    add_activity(.trj, Rollback__new_func(amount, check))
+  )
+}
 
 #' Leave the Trajectory
 #'
@@ -384,7 +564,14 @@ rollback.trajectory <- function(.trj, amount, times=Inf, check=NULL) .trj$rollba
 leave <- function(.trj, prob) UseMethod("leave")
 
 #' @export
-leave.trajectory <- function(.trj, prob) .trj$leave(prob)
+leave.trajectory <- function(.trj, prob) {
+  check_args(prob=c("number", "function"))
+  switch(
+    binarise(is.function(prob)),
+    add_activity(.trj, Leave__new(prob)),
+    add_activity(.trj, Leave__new_func(prob))
+  )
+}
 
 #' Handle Unfinished Arrivals
 #'
@@ -402,15 +589,20 @@ leave.trajectory <- function(.trj, prob) .trj$leave(prob)
 handle_unfinished <- function(.trj, handler) UseMethod("handle_unfinished")
 
 #' @export
-handle_unfinished.trajectory <- function(.trj, handler) .trj$handle_unfinished(handler)
+handle_unfinished.trajectory <- function(.trj, handler) {
+  check_args(handler=c("trajectory", "NULL"))
+  traj <- as.list(c(handler[]))
+  add_activity(.trj, HandleUnfinished__new(traj))
+}
 
 #' Renege on some Condition
 #'
-#' Activities for setting or unsetting a timer or a signal after which the arrival will abandon.
+#' Activities for setting or unsetting a timer or a signal after which the
+#' arrival will abandon.
 #'
 #' @inheritParams seize
-#' @param t timeout to trigger reneging, accepts either a numeric or a callable object
-#' (a function) which must return a numeric.
+#' @param t timeout to trigger reneging, accepts either a numeric or a callable
+#' object (a function) which must return a numeric.
 #' @param out optional sub-trajectory in case of reneging.
 #'
 #' @return Returns the trajectory object.
@@ -418,10 +610,18 @@ handle_unfinished.trajectory <- function(.trj, handler) .trj$handle_unfinished(h
 renege_in <- function(.trj, t, out=NULL) UseMethod("renege_in")
 
 #' @export
-renege_in.trajectory <- function(.trj, t, out=NULL) .trj$renege_in(t, out)
+renege_in.trajectory <- function(.trj, t, out=NULL) {
+  check_args(t=c("number", "function"), out=c("trajectory", "NULL"))
+  traj <- as.list(c(out[]))
+  switch(
+    binarise(is.function(t)),
+    add_activity(.trj, RenegeIn__new(t, traj)),
+    add_activity(.trj, RenegeIn__new_func(t, traj))
+  )
+}
 
-#' @param signal signal to trigger reneging, accepts either a string or a callable object
-#' (a function) which must return a string.
+#' @param signal signal to trigger reneging, accepts either a string or a
+#' callable object (a function) which must return a string.
 #'
 #' @rdname renege_in
 #' @seealso \code{\link{send}}, \code{\link{leave}}
@@ -429,14 +629,22 @@ renege_in.trajectory <- function(.trj, t, out=NULL) .trj$renege_in(t, out)
 renege_if <- function(.trj, signal, out=NULL) UseMethod("renege_if")
 
 #' @export
-renege_if.trajectory <- function(.trj, signal, out=NULL) .trj$renege_if(signal, out)
+renege_if.trajectory <- function(.trj, signal, out=NULL) {
+  check_args(signal=c("string", "function"), out=c("trajectory", "NULL"))
+  traj <- as.list(c(out[]))
+  switch(
+    binarise(is.function(signal)),
+    add_activity(.trj, RenegeIf__new(signal, traj)),
+    add_activity(.trj, RenegeIf__new_func(signal, traj))
+  )
+}
 
 #' @rdname renege_in
 #' @export
 renege_abort <- function(.trj) UseMethod("renege_abort")
 
 #' @export
-renege_abort.trajectory <- function(.trj) .trj$renege_abort()
+renege_abort.trajectory <- function(.trj) add_activity(.trj, RenegeAbort__new())
 
 #' Clone/Synchronize Arrivals
 #'
@@ -455,7 +663,16 @@ renege_abort.trajectory <- function(.trj) .trj$renege_abort()
 clone <- function(.trj, n, ...) UseMethod("clone")
 
 #' @export
-clone.trajectory <- function(.trj, n, ...) .trj$replicate(n, ...)
+clone.trajectory <- function(.trj, n, ...) {
+  dots. <- c(...)
+  check_args(n=c("number", "function"), dots.="trajectory")
+  trj <- sapply(dots., `[`)
+  switch(
+    binarise(is.function(n)),
+    add_activity(.trj, Clone__new(n, trj)),
+    add_activity(.trj, Clone__new_func(n, trj))
+  )
+}
 
 #' @inheritParams seize
 #' @param wait if \code{FALSE}, all clones but the first to arrive are removed.
@@ -468,7 +685,10 @@ clone.trajectory <- function(.trj, n, ...) .trj$replicate(n, ...)
 synchronize <- function(.trj, wait=TRUE, mon_all=FALSE) UseMethod("synchronize")
 
 #' @export
-synchronize.trajectory <- function(.trj, wait=TRUE, mon_all=FALSE) .trj$synchronize(wait, mon_all)
+synchronize.trajectory <- function(.trj, wait=TRUE, mon_all=FALSE) {
+  check_args(wait="flag", mon_all="flag")
+  add_activity(.trj, Synchronize__new(wait, mon_all))
+}
 
 #' Batch/Separate Arrivals
 #'
@@ -477,24 +697,41 @@ synchronize.trajectory <- function(.trj, wait=TRUE, mon_all=FALSE) .trj$synchron
 #'
 #' @inheritParams seize
 #' @param n batch size, accepts a numeric.
-#' @param timeout set an optional timer which triggers batches every \code{timeout} time
-#' units even if the batch size has not been fulfilled, accepts a numeric or a callable
-#' object (a function) which must return a numeric (0 = disabled).
+#' @param timeout set an optional timer which triggers batches every
+#' \code{timeout} time units even if the batch size has not been fulfilled,
+#' accepts a numeric or a callable object (a function) which must return a
+#' numeric (0 = disabled).
 #' @param permanent if \code{TRUE}, batches cannot be split.
-#' @param name optional string. Unnamed batches from different \code{batch} activities are
-#' independent. However, if you want to feed arrivals from different trajectories into a
-#' same batch, you need to specify a common name across all your \code{batch} activities.
+#' @param name optional string. Unnamed batches from different \code{batch}
+#' activities are independent. However, if you want to feed arrivals from
+#' different trajectories into a same batch, you need to specify a common name
+#' across all your \code{batch} activities.
 #' @param rule an optional callable object (a function) which will be applied to
 #' every arrival to determine whether it should be included into the batch, thus
 #  it must return a boolean.
 #'
 #' @return Returns the trajectory object.
 #' @export
-batch <- function(.trj, n, timeout=0, permanent=FALSE, name="", rule=NULL) UseMethod("batch")
+batch <- function(.trj, n, timeout=0, permanent=FALSE, name="", rule=NULL)
+  UseMethod("batch")
 
 #' @export
-batch.trajectory <- function(.trj, n, timeout=0, permanent=FALSE, name="", rule=NULL)
-  .trj$batch(n, timeout, permanent, name, rule)
+batch.trajectory <- function(.trj, n, timeout=0, permanent=FALSE, name="", rule=NULL) {
+  check_args(
+    n = "number",
+    timeout = c("numeric", "function"),
+    permanent = "flag",
+    name = "string",
+    rule = c("function", "NULL")
+  )
+  switch(
+    binarise(is.function(timeout), is.function(rule)),
+    add_activity(.trj, Batch__new(n, timeout, permanent, name)),
+    add_activity(.trj, Batch__new_func1(n, timeout, permanent, name)),
+    add_activity(.trj, Batch__new_func2(n, timeout, permanent, name, rule)),
+    add_activity(.trj, Batch__new_func3(n, timeout, permanent, name, rule))
+  )
+}
 
 #' @inheritParams seize
 #'
@@ -503,23 +740,25 @@ batch.trajectory <- function(.trj, n, timeout=0, permanent=FALSE, name="", rule=
 separate <- function(.trj) UseMethod("separate")
 
 #' @export
-separate.trajectory <- function(.trj) .trj$separate()
+separate.trajectory <- function(.trj) add_activity(.trj, Separate__new())
 
 #' Inter-arrival Communication
 #'
-#' These activities enable asynchronous programming. \code{send()} broadcasts a signal or a list
-#' of signals. Arrivals can subscribe to signals and (optionally) assign a handler with
-#' \code{trap()}. Note that, while inside a batch, all the signals subscribed before entering
-#' the batch are ignored. Upon a signal reception, the arrival stops the current activity and
-#' executes the handler (if provided). Then, the execution returns to the activity following the
-#' point of the interruption. \code{untrap()} can be used to unsubscribe from signals.
-#' \code{wait()} blocks until a signal is received.
+#' These activities enable asynchronous programming. \code{send()} broadcasts a
+#' signal or a list of signals. Arrivals can subscribe to signals and (optionally)
+#' assign a handler with \code{trap()}. Note that, while inside a batch, all the
+#' signals subscribed before entering the batch are ignored. Upon a signal
+#' reception, the arrival stops the current activity and executes the handler
+#' (if provided). Then, the execution returns to the activity following the
+#' point of the interruption. \code{untrap()} can be used to unsubscribe from
+#' signals. \code{wait()} blocks until a signal is received.
 #'
 #' @inheritParams seize
-#' @param signals signal or list of signals, accepts either a string, a list of strings or a
-#' callable object (a function) which must return a string or a list of strings.
-#' @param delay optional timeout to trigger the signals, accepts either a numeric or a callable
-#' object (a function) which must return a numeric.
+#' @param signals signal or list of signals, accepts either a string, a list of
+#' strings or a callable object (a function) which must return a string or a
+#' list of strings.
+#' @param delay optional timeout to trigger the signals, accepts either a
+#' numeric or a callable object (a function) which must return a numeric.
 #'
 #' @return Returns the trajectory object.
 #' @seealso \code{\link{renege_if}}
@@ -527,7 +766,16 @@ separate.trajectory <- function(.trj) .trj$separate()
 send <- function(.trj, signals, delay=0) UseMethod("send")
 
 #' @export
-send.trajectory <- function(.trj, signals, delay=0) .trj$send(signals, delay)
+send.trajectory <- function(.trj, signals, delay=0) {
+  check_args(signals=c("string vector", "function"), delay=c("number", "function"))
+  switch(
+    binarise(is.function(signals), is.function(delay)),
+    add_activity(.trj, Send__new(signals, delay)),
+    add_activity(.trj, Send__new_func1(signals, delay)),
+    add_activity(.trj, Send__new_func2(signals, delay)),
+    add_activity(.trj, Send__new_func3(signals, delay))
+  )
+}
 
 #' @param handler optional trajectory object to handle a signal received.
 #' @param interruptible whether the handler can be interrupted by signals.
@@ -537,22 +785,40 @@ send.trajectory <- function(.trj, signals, delay=0) .trj$send(signals, delay)
 trap <- function(.trj, signals, handler=NULL, interruptible=TRUE) UseMethod("trap")
 
 #' @export
-trap.trajectory <- function(.trj, signals, handler=NULL, interruptible=TRUE)
-  .trj$trap(signals, handler, interruptible)
+trap.trajectory <- function(.trj, signals, handler=NULL, interruptible=TRUE) {
+  check_args(
+    signals = c("string vector", "function"),
+    handler = c("trajectory", "NULL"),
+    interruptible = "flag"
+  )
+  traj <- as.list(c(handler[]))
+  switch(
+    binarise(is.function(signals)),
+    add_activity(.trj, Trap__new(signals, traj, interruptible)),
+    add_activity(.trj, Trap__new_func(signals, traj, interruptible))
+  )
+}
 
 #' @rdname send
 #' @export
 untrap <- function(.trj, signals) UseMethod("untrap")
 
 #' @export
-untrap.trajectory <- function(.trj, signals) .trj$untrap(signals)
+untrap.trajectory <- function(.trj, signals) {
+  check_args(signals=c("string vector", "function"))
+  switch(
+    binarise(is.function(signals)),
+    add_activity(.trj, UnTrap__new(signals)),
+    add_activity(.trj, UnTrap__new_func(signals))
+  )
+}
 
 #' @rdname send
 #' @export
 wait <- function(.trj) UseMethod("wait")
 
 #' @export
-wait.trajectory <- function(.trj) .trj$wait()
+wait.trajectory <- function(.trj) add_activity(.trj, Wait__new())
 
 #' Debugging
 #'
@@ -572,11 +838,25 @@ wait.trajectory <- function(.trj) .trj$wait()
 log_ <- function(.trj, message, level=0) UseMethod("log_")
 
 #' @export
-log_.trajectory <- function(.trj, message, level=0) .trj$log(message, level)
+log_.trajectory <- function(.trj, message, level=0) {
+  check_args(message=c("string", "function"), level="number")
+  switch(
+    binarise(is.function(message)),
+    add_activity(.trj, Log__new(message, level)),
+    add_activity(.trj, Log__new_func(message, level))
+  )
+}
 
 #' @rdname log_
 #' @export
 stop_if <- function(.trj, condition) UseMethod("stop_if")
 
 #' @export
-stop_if.trajectory <- function(.trj, condition) .trj$stop_if(condition)
+stop_if.trajectory <- function(.trj, condition) {
+  check_args(condition=c("logical", "function"))
+  switch(
+    binarise(is.function(condition)),
+    add_activity(.trj, StopIf__new(condition)),
+    add_activity(.trj, StopIf__new_func(condition))
+  )
+}

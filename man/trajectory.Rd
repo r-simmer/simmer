@@ -78,6 +78,7 @@ Manage trajectories:
 \itemize{
 \item Extract or Replace Parts of a Trajectory: \code{\link{Extract.trajectory}}
 \item Join Trajectories: \code{\link{join}}
-\item Number of Activities in a Trajectory: \code{\link{length.trajectory}}, \code{\link{get_n_activities}}
+\item Number of Activities in a Trajectory: \code{\link{length.trajectory}},
+\code{\link{get_n_activities}}
 }
 }

@@ -15,19 +15,20 @@ renege_abort(.trj)
 \arguments{
 \item{.trj}{the trajectory object.}
 
-\item{t}{timeout to trigger reneging, accepts either a numeric or a callable object
-(a function) which must return a numeric.}
+\item{t}{timeout to trigger reneging, accepts either a numeric or a callable
+object (a function) which must return a numeric.}
 
 \item{out}{optional sub-trajectory in case of reneging.}
 
-\item{signal}{signal to trigger reneging, accepts either a string or a callable object
-(a function) which must return a string.}
+\item{signal}{signal to trigger reneging, accepts either a string or a
+callable object (a function) which must return a string.}
 }
 \value{
 Returns the trajectory object.
 }
 \description{
-Activities for setting or unsetting a timer or a signal after which the arrival will abandon.
+Activities for setting or unsetting a timer or a signal after which the
+arrival will abandon.
 }
 \seealso{
 \code{\link{send}}, \code{\link{leave}}

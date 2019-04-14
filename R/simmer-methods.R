@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2015 Bart Smeets
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -74,8 +74,56 @@
 #' env %>% peek()          # time for the next event
 #' env %>% stepn()         # execute next event
 #'
-simmer <- function(name="anonymous", verbose=FALSE, mon=monitor_mem(), log_level=0)
-  Simmer$new(name, verbose, mon, log_level)
+simmer <- function(name="anonymous", verbose=FALSE, mon=monitor_mem(), log_level=0) {
+  check_args(name="string", verbose="flag", mon="monitor", log_level="number")
+
+  env <- list2env(list(
+    name = name,
+    mon = mon,
+    resources = list(),
+    sources = list(),
+    globals = list(),
+    sim_obj = Simulator__new(name, verbose, mon$xptr, log_level)
+  ))
+
+  class(env) <- "simmer"
+  env
+}
+
+#' @export
+print.simmer <- function(x, ...) {
+  cat(paste0(
+    "simmer environment: ", x$name,
+    " | now: ", now(x), " | next: ", peek(x), "\n",
+    "{ Monitor: ", x$mon$name, " }\n"
+  ))
+  for (name in names(x$mon$handlers)) cat(paste0(
+    "  { ", name, ": ", x$mon$handlers[[name]], " }\n"
+  ))
+  for (name in names(x$resources)) cat(paste0(
+    "{ Resource: ", name,
+    " | monitored: ", x$resources[[name]][["mon"]],
+    " | server status: ", get_server_count(x, name),
+    "(", get_capacity(x, name), ")",
+    " | queue status: ", get_queue_count(x, name),
+    "(", get_queue_size(x, name), ") }\n"
+  ))
+  for (name in names(x$sources)) cat(paste0(
+    "{ Source: ", name,
+    " | monitored: ", x$sources[[name]][["mon"]],
+    " | n_generated: ", get_n_generated(x, name), " }\n"
+  ))
+  for (name in names(x$globals)) {
+    value <- x$globals[[name]]
+    is_schedule <- inherits(value, "schedule")
+    if (is_schedule) value <- value$schedule$init
+    cat(paste0(
+      "{ Global: ", name, " | schedule: ", is_schedule,
+      " | initial value: ", value, " }\n"
+    ))
+  }
+  invisible(x)
+}
 
 #' Reset a Simulator
 #'
@@ -90,7 +138,10 @@ simmer <- function(name="anonymous", verbose=FALSE, mon=monitor_mem(), log_level
 reset <- function(.env) UseMethod("reset")
 
 #' @export
-reset.simmer <- function(.env) .env$reset()
+reset.simmer <- function(.env) {
+  reset_(.env$sim_obj)
+  .env
+}
 
 #' Run a Simulation
 #'
@@ -114,11 +165,11 @@ run.simmer <- function(.env, until=Inf, progress=NULL, steps=10) {
   if (is.function(progress)) {
     progress(0)
     for (i in seq(until/steps, until, until/steps)) {
-      .env$run(until=i)
+      run_(.env$sim_obj, i)
       progress(i/until)
     }
-    .env
-  } else .env$run(until=until)
+  } else run_(.env$sim_obj, until)
+  .env
 }
 
 #' @rdname run
@@ -127,7 +178,10 @@ run.simmer <- function(.env, until=Inf, progress=NULL, steps=10) {
 stepn <- function(.env, n=1) UseMethod("stepn")
 
 #' @export
-stepn.simmer <- function(.env, n=1) .env$stepn(n)
+stepn.simmer <- function(.env, n=1) {
+  stepn_(.env$sim_obj, n)
+  .env
+}
 
 #' Simulation Time
 #'
@@ -141,7 +195,7 @@ stepn.simmer <- function(.env, n=1) .env$stepn(n)
 now <- function(.env) UseMethod("now")
 
 #' @export
-now.simmer <- function(.env) .env$now()
+now.simmer <- function(.env) now_(.env$sim_obj)
 
 #' Peek Next Events
 #'
@@ -149,7 +203,8 @@ now.simmer <- function(.env) .env$now()
 #'
 #' @inheritParams reset
 #' @param steps number of steps to peek.
-#' @param verbose show additional information (i.e., the name of the process) about future events.
+#' @param verbose show additional information (i.e., the name of the process)
+#' about future events.
 #'
 #' @return Returns numeric values if \code{verbose=F} and a data frame otherwise.
 #' @seealso \code{\link{now}}.
@@ -157,7 +212,12 @@ now.simmer <- function(.env) .env$now()
 peek <- function(.env, steps=1, verbose=FALSE) UseMethod("peek")
 
 #' @export
-peek.simmer <- function(.env, steps=1, verbose=FALSE) .env$peek(steps, verbose)
+peek.simmer <- function(.env, steps=1, verbose=FALSE) {
+  check_args(steps="number", verbose="flag")
+  ret <- peek_(.env$sim_obj, steps)
+  if (!verbose) ret$time
+  else ret # nocov
+}
 
 #' Add a Resource
 #'
@@ -191,14 +251,52 @@ peek.simmer <- function(.env, steps=1, verbose=FALSE) .env$peek(steps, verbose)
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \code{\link{schedule}}.
 #' @export
-add_resource <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE,
-                         preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE)
+add_resource <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE,
+                         preemptive=FALSE, preempt_order=c("fifo", "lifo"),
+                         queue_size_strict=FALSE)
   UseMethod("add_resource")
 
 #' @export
-add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE, preemptive=FALSE,
-                                preempt_order=c("fifo", "lifo"), queue_size_strict=FALSE)
-  .env$add_resource(name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict)
+add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE,
+                                preemptive=FALSE, preempt_order=c("fifo", "lifo"),
+                                queue_size_strict=FALSE)
+{
+  check_args(
+    name = "string",
+    capacity = c("number", "schedule"),
+    queue_size = c("number", "schedule"),
+    mon = "flag",
+    preemptive = "flag",
+    queue_size_strict = "flag"
+  )
+  preempt_order <- match.arg(preempt_order)
+
+  if (inherits(capacity, "schedule")) {
+    capacity_schedule <- capacity
+    capacity <- capacity_schedule$schedule$init
+  } else capacity_schedule <- NA
+
+  if (inherits(queue_size, "schedule")) {
+    queue_size_schedule <- queue_size
+    queue_size <- queue_size_schedule$schedule$init
+  } else queue_size_schedule <- NA
+
+  ret <- add_resource_(.env$sim_obj, name, capacity, queue_size, mon,
+                       preemptive, preempt_order, queue_size_strict)
+  if (ret) .env$resources[[name]] <- c(mon=mon, preemptive=preemptive)
+
+  if (inherits(capacity_schedule, "schedule"))
+    add_resource_manager_(.env$sim_obj, name, "capacity", capacity,
+                          capacity_schedule$schedule$intervals,
+                          capacity_schedule$schedule$values,
+                          capacity_schedule$schedule$period)
+  if (inherits(queue_size_schedule, "schedule"))
+    add_resource_manager_(.env$sim_obj, name, "queue_size", queue_size,
+                          queue_size_schedule$schedule$intervals,
+                          queue_size_schedule$schedule$values,
+                          queue_size_schedule$schedule$period)
+  .env
+}
 
 #' Add a Generator
 #'
@@ -235,7 +333,22 @@ add_generator <- function(.env, name_prefix, trajectory, distribution, mon=1,
 #' @export
 add_generator.simmer <- function(.env, name_prefix, trajectory, distribution, mon=1,
                                  priority=0, preemptible=priority, restart=FALSE)
-  .env$add_generator(name_prefix, trajectory, distribution, mon, priority, preemptible, restart)
+{
+  check_args(
+    name_prefix = "string",
+    trajectory = "trajectory",
+    distribution = "function",
+    mon = "flag",
+    priority = "number",
+    preemptible = "number",
+    restart = "flag"
+  )
+  ret <- add_generator_(.env$sim_obj, name_prefix, trajectory[],
+                        make_resetable(distribution), mon,
+                        priority, preemptible, restart)
+  if (ret) .env$sources[[name_prefix]] <- c(mon=mon)
+  .env
+}
 
 #' Add a Data Frame
 #'
@@ -291,8 +404,56 @@ add_dataframe.simmer <- function(.env, name_prefix, trajectory, data, mon=1, bat
                                  col_time="time", time=c("interarrival", "absolute"),
                                  col_attributes=NULL, col_priority="priority",
                                  col_preemptible=col_priority, col_restart="restart")
-  .env$add_dataframe(name_prefix, trajectory, data, mon, batch, col_time, time,
-                     col_attributes, col_priority, col_preemptible, col_restart)
+{
+  check_args(
+    name_prefix = "string",
+    trajectory = "trajectory",
+    data = "data.frame",
+    mon = "flag",
+    batch = "number",
+    col_time = "string",
+    col_attributes = c("string vector", "NULL"),
+    col_priority = c("string", "NULL"),
+    col_preemptible = c("string", "NULL"),
+    col_restart = c("string", "NULL")
+  )
+  time <- match.arg(time)
+
+  col_attributes <- as.character(col_attributes)
+  col_priority <- intersect(col_priority, names(data))
+  col_preemptible <- intersect(col_preemptible, names(data))
+  col_restart <- intersect(col_restart, names(data))
+  col_names <- c(col_time, col_priority, col_preemptible, col_restart, col_attributes)
+  col_undef <- setdiff(col_names, names(data))
+
+  if (length(col_undef))
+    stop(get_caller(), ": columns '", paste0(col_undef, collapse="', '"),
+         "' are not defined in ", as.character(substitute(data)), call.=FALSE)
+
+  if (!length(col_attributes)) {
+    col_attributes <- setdiff(names(data), col_names)
+    col_names <- c(col_names, col_attributes)
+  }
+
+  for (col_name in col_names) {
+    if (!(is.numeric(data[[col_name]]) || is.logical(data[[col_name]])))
+      stop(get_caller(), ": column '", col_name, "' is not numeric", call.=FALSE)
+  }
+
+  if (any(is.na(data[[col_time]])) || any(data[[col_time]] < 0))
+    stop(get_caller(), ": time must be positive", call.=FALSE)
+
+  if (time == "absolute") {
+    if (is.unsorted(data[[col_time]]))
+      stop(get_caller(), ": unsorted absolute time provided", call.=FALSE)
+    data[[col_time]] <- c(data[[col_time]][1], diff(data[[col_time]]))
+  }
+
+  ret <- add_dataframe_(.env$sim_obj, name_prefix, trajectory[], data, mon, batch,
+                        col_time, col_attributes, col_priority, col_preemptible, col_restart)
+  if (ret) .env$sources[[name_prefix]] <- c(mon=mon)
+  .env
+}
 
 #' Add a Global Attribute
 #'
@@ -309,7 +470,22 @@ add_dataframe.simmer <- function(.env, name_prefix, trajectory, data, mon=1, bat
 add_global <- function(.env, key, value) UseMethod("add_global")
 
 #' @export
-add_global.simmer <- function(.env, key, value) .env$add_global(key, value)
+add_global.simmer <- function(.env, key, value) {
+  check_args(key = "string", value = c("numeric", "schedule"))
+
+  intervals <- values <- numeric(0); period <- -1
+  if (inherits(value, "schedule")) {
+    intervals <- value$schedule$intervals
+    values <- value$schedule$values
+    period <- value$schedule$period
+    value <- value$schedule$init
+  }
+
+  ret <- add_global_manager_(.env$sim_obj, key, value, intervals, values, period)
+
+  if (ret) .env$globals[[key]] <- value
+  .env
+}
 
 #' Monitoring Statistics
 #'
@@ -327,8 +503,12 @@ get_mon_arrivals <- function(.envs, per_resource=FALSE, ongoing=FALSE)
   UseMethod("get_mon_arrivals", unlist(list(.envs))[[1]])
 
 #' @export
-get_mon_arrivals.simmer <- function(.envs, per_resource=FALSE, ongoing=FALSE)
-  envs_apply(.envs, "get_mon_arrivals", per_resource, ongoing)
+get_mon_arrivals.simmer <- function(.envs, per_resource=FALSE, ongoing=FALSE) {
+  envs_apply(.envs, function(x) {
+    if (ongoing) record_ongoing_(x$sim_obj, per_resource)
+    x$mon$get_arrivals(per_resource)
+  })
+}
 
 #' @rdname get_mon
 #' @export
@@ -336,7 +516,9 @@ get_mon_attributes <- function(.envs)
   UseMethod("get_mon_attributes", unlist(list(.envs))[[1]])
 
 #' @export
-get_mon_attributes.simmer <- function(.envs) envs_apply(.envs, "get_mon_attributes")
+get_mon_attributes.simmer <- function(.envs) {
+  envs_apply(.envs, function(x) x$mon$get_attributes())
+}
 
 #' @rdname get_mon
 #' @export
@@ -344,8 +526,18 @@ get_mon_resources <- function(.envs)
   UseMethod("get_mon_resources", unlist(list(.envs))[[1]])
 
 #' @export
-get_mon_resources.simmer <- function(.envs)
-  envs_apply(.envs, "get_mon_resources")
+get_mon_resources.simmer <- function(.envs) {
+  envs_apply(.envs, function(x) {
+    monitor_data <- x$mon$get_resources()
+    monitor_data$capacity <-
+      replace(monitor_data$capacity, monitor_data$capacity == -1, Inf)
+    monitor_data$queue_size <-
+      replace(monitor_data$queue_size, monitor_data$queue_size == -1, Inf)
+    monitor_data$system <- monitor_data$server + monitor_data$queue
+    monitor_data$limit <- monitor_data$capacity + monitor_data$queue_size
+    monitor_data
+  })
+}
 
 #' Get Sources and Resources Defined
 #'
@@ -358,14 +550,14 @@ get_mon_resources.simmer <- function(.envs)
 get_sources <- function(.env) UseMethod("get_sources")
 
 #' @export
-get_sources.simmer <- function(.env) names(.env$get_sources())
+get_sources.simmer <- function(.env) names(.env$sources)
 
 #' @rdname get_sources
 #' @export
 get_resources <- function(.env) UseMethod("get_resources")
 
 #' @export
-get_resources.simmer <- function(.env) names(.env$get_resources())
+get_resources.simmer <- function(.env) names(.env$resources)
 
 #' Get Process Parameters
 #'
@@ -395,21 +587,25 @@ get_resources.simmer <- function(.env) names(.env$get_resources())
 get_n_generated <- function(.env, sources) UseMethod("get_n_generated")
 
 #' @export
-get_n_generated.simmer <- function(.env, sources) .env$get_n_generated(sources)
+get_n_generated.simmer <- function(.env, sources) {
+  get_n_generated_(.env$sim_obj, sources)
+}
 
 #' @rdname get_n_generated
 #' @export
 get_trajectory <- function(.env, sources) UseMethod("get_trajectory")
 
 #' @export
-get_trajectory.simmer <- function(.env, sources) .env$get_trajectory(sources)
+get_trajectory.simmer <- function(.env, sources) {
+  lapply(get_trajectory_(.env$sim_obj, sources), "[")
+}
 
 #' @rdname get_n_generated
 #' @export
 get_name <- function(.env) UseMethod("get_name")
 
 #' @export
-get_name.simmer <- function(.env) .env$get_name()
+get_name.simmer <- function(.env) get_name_(.env$sim_obj)
 
 #' @param keys the attribute name(s).
 #' @inheritParams set_attribute
@@ -419,21 +615,25 @@ get_name.simmer <- function(.env) .env$get_name()
 get_attribute <- function(.env, keys) UseMethod("get_attribute")
 
 #' @export
-get_attribute.simmer <- function(.env, keys) .env$get_attribute(keys)
+get_attribute.simmer <- function(.env, keys) {
+  get_attribute_(.env$sim_obj, keys, FALSE)
+}
 
 #' @rdname get_n_generated
 #' @export
 get_global <- function(.env, keys) UseMethod("get_global")
 
 #' @export
-get_global.simmer <- function(.env, keys) .env$get_global(keys)
+get_global.simmer <- function(.env, keys) {
+  get_attribute_(.env$sim_obj, keys, TRUE)
+}
 
 #' @rdname get_n_generated
 #' @export
 get_prioritization <- function(.env) UseMethod("get_prioritization")
 
 #' @export
-get_prioritization.simmer <- function(.env) .env$get_prioritization()
+get_prioritization.simmer <- function(.env) get_prioritization_(.env$sim_obj)
 
 #' Get Resource Parameters
 #'
@@ -452,74 +652,98 @@ get_prioritization.simmer <- function(.env) .env$get_prioritization()
 get_capacity <- function(.env, resources) UseMethod("get_capacity")
 
 #' @export
-get_capacity.simmer <- function(.env, resources) .env$get_capacity(resources)
+get_capacity.simmer <- function(.env, resources) {
+  ret <- get_capacity_(.env$sim_obj, resources)
+  replace(ret, ret < 0, Inf)
+}
 
 #' @rdname get_capacity
 #' @export
 get_capacity_selected <- function(.env, id=0) UseMethod("get_capacity_selected")
 
 #' @export
-get_capacity_selected.simmer <- function(.env, id=0) .env$get_capacity(NULL, id)
+get_capacity_selected.simmer <- function(.env, id=0) {
+  ret <- get_capacity_selected_(.env$sim_obj, id)
+  replace(ret, ret < 0, Inf)
+}
 
 #' @rdname get_capacity
 #' @export
 get_queue_size <- function(.env, resources) UseMethod("get_queue_size")
 
 #' @export
-get_queue_size.simmer <- function(.env, resources) .env$get_queue_size(resources)
+get_queue_size.simmer <- function(.env, resources) {
+  ret <- get_queue_size_(.env$sim_obj, resources)
+  replace(ret, ret < 0, Inf)
+}
 
 #' @rdname get_capacity
 #' @export
 get_queue_size_selected <- function(.env, id=0) UseMethod("get_queue_size_selected")
 
 #' @export
-get_queue_size_selected.simmer <- function(.env, id=0) .env$get_queue_size(NULL, id)
+get_queue_size_selected.simmer <- function(.env, id=0) {
+  ret <- get_queue_size_selected_(.env$sim_obj, id)
+  replace(ret, ret < 0, Inf)
+}
 
 #' @rdname get_capacity
 #' @export
 get_server_count <- function(.env, resources) UseMethod("get_server_count")
 
 #' @export
-get_server_count.simmer <- function(.env, resources) .env$get_server_count(resources)
+get_server_count.simmer <- function(.env, resources) {
+  get_server_count_(.env$sim_obj, resources)
+}
 
 #' @rdname get_capacity
 #' @export
 get_server_count_selected <- function(.env, id=0) UseMethod("get_server_count_selected")
 
 #' @export
-get_server_count_selected.simmer <- function(.env, id=0) .env$get_server_count(NULL, id)
+get_server_count_selected.simmer <- function(.env, id=0) {
+  get_server_count_selected_(.env$sim_obj, id)
+}
 
 #' @rdname get_capacity
 #' @export
 get_queue_count <- function(.env, resources) UseMethod("get_queue_count")
 
 #' @export
-get_queue_count.simmer <- function(.env, resources) .env$get_queue_count(resources)
+get_queue_count.simmer <- function(.env, resources) {
+  get_queue_count_(.env$sim_obj, resources)
+}
 
 #' @rdname get_capacity
 #' @export
 get_queue_count_selected <- function(.env, id=0) UseMethod("get_queue_count_selected")
 
 #' @export
-get_queue_count_selected.simmer <- function(.env, id=0) .env$get_queue_count(NULL, id)
+get_queue_count_selected.simmer <- function(.env, id=0) {
+  get_queue_count_selected_(.env$sim_obj, id)
+}
 
 #' @rdname get_capacity
 #' @export
 get_seized <- function(.env, resources) UseMethod("get_seized")
 
 #' @export
-get_seized.simmer <- function(.env, resources) .env$get_seized(resources)
+get_seized.simmer <- function(.env, resources) {
+  get_seized_(.env$sim_obj, resources)
+}
 
 #' @rdname get_capacity
 #' @export
 get_seized_selected <- function(.env, id=0) UseMethod("get_seized_selected")
 
 #' @export
-get_seized_selected.simmer <- function(.env, id=0) .env$get_seized(NULL, id)
+get_seized_selected.simmer <- function(.env, id=0) {
+  get_seized_selected_(.env$sim_obj, id)
+}
 
 #' @rdname get_capacity
 #' @export
 get_selected <- function(.env, id=0) UseMethod("get_selected")
 
 #' @export
-get_selected.simmer <- function(.env, id=0) .env$get_selected(id)
+get_selected.simmer <- function(.env, id=0) get_selected_(.env$sim_obj, id)
