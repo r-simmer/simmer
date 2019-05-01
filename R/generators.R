@@ -54,7 +54,9 @@ at <- function(...) {
 
 #' @rdname generators
 #' @param start_time the time at which to launch the initial arrival.
-#' @param dist a function modelling the interarrival times.
+#' @param dist a function modelling the interarrival times. It is supposed to be
+#' an infinite source of values \code{>= 0} (e.g., \code{rexp} and the like). If
+#' the function provided returns any negative value, the behaviour is undefined.
 #' @param arrive if set to \code{TRUE} (default) the first arrival will be
 #' generated at \code{start_time} and will follow \code{dist} from then on.
 #' If set to \code{FALSE}, will initiate \code{dist} at \code{start_time}
@@ -78,13 +80,16 @@ from <- function(start_time, dist, arrive=TRUE) {
     if (!started) {
       started <<- TRUE
       if (arrive) {
-        return(start_time)
+        dt <- start_time
       } else {
-        return(start_time + dist())
+        dt <- dist()
+        if (dt[1] >= 0)
+          dt[1] <- dt[1] + start_time
       }
     } else {
-      return(dist())
+      dt <- dist()
     }
+    dt
   }
 }
 
@@ -138,7 +143,8 @@ from_to <- function(start_time, stop_time, dist, arrive=TRUE, every=NULL) {
           dt <- start_time - init
         } else {
           dt <- dist()
-          dt[1] <- dt[1] + start_time - init
+          if (dt[1] >= 0)
+            dt[1] <- dt[1] + start_time - init
         }
       } else {
         dt <- dist()
