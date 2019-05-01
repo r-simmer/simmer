@@ -3,6 +3,7 @@
 ## Minor changes and fixes:
 
 - Drop R6 as a dependency (#193 addressing #190).
+- Small fix in `from` and `from_to` + documentation update (75a9569).
 
 # simmer 4.2.2
 
