@@ -25,7 +25,8 @@ Returns the trajectory object.
 }
 \description{
 Activity for selecting a resource for a subsequent seize/release or setting
-its parameters (capacity or queue size).
+its parameters (capacity or queue size). Resources must be defined in the
+simulation environment (see \code{\link{add_resource}}).
 }
 \details{
 The 'shortest-queue' policy selects the least busy resource;
@@ -39,7 +40,44 @@ and exclude from the selection procedure those resources with capacity set
 to zero. This means that, for these policies, an error will be raised if all
 resources are unavailable.
 }
+\examples{
+## predefined policy
+traj <- trajectory() \%>\%
+  select(paste0("doctor", 1:3), "round-robin") \%>\%
+  seize_selected(1) \%>\%
+  timeout(5) \%>\%
+  release_selected(1)
+
+simmer() \%>\%
+  add_resource("doctor1") \%>\%
+  add_resource("doctor2") \%>\%
+  add_resource("doctor3") \%>\%
+  add_generator("patient", traj, at(0, 1, 2)) \%>\%
+  run() \%>\%
+  get_mon_resources()
+
+## custom policy
+env <- simmer()
+res <- paste0("doctor", 1:3)
+
+traj <- trajectory() \%>\%
+  select(function() {
+    occ <- get_server_count(env, res) + get_queue_count(env, res)
+    res[which.min(occ)[1]]
+  }) \%>\%
+  seize_selected(1) \%>\%
+  timeout(5) \%>\%
+  release_selected(1)
+
+for (i in res) env \%>\%
+  add_resource(i)
+env \%>\%
+  add_generator("patient", traj, at(0, 1, 2)) \%>\%
+  run() \%>\%
+  get_mon_resources()
+
+}
 \seealso{
 \code{\link{seize_selected}}, \code{\link{release_selected}},
-\code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
+\code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}
 }

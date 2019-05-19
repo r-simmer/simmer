@@ -19,7 +19,21 @@ Returns the trajectory object.
 }
 \description{
 Activities for activating or deactivating the generation of arrivals by name.
+Sources must be defined in the simulation environment (see
+\code{\link{add_generator}}, \code{\link{add_dataframe}}).
+}
+\examples{
+traj <- trajectory() \%>\%
+  deactivate("dummy") \%>\%
+  timeout(1) \%>\%
+  activate("dummy")
+
+simmer() \%>\%
+  add_generator("dummy", traj, function() 1) \%>\%
+  run(10) \%>\%
+  get_mon_arrivals()
+
 }
 \seealso{
-\code{\link{set_trajectory}}, \code{\link{set_source}}.
+\code{\link{set_trajectory}}, \code{\link{set_source}}
 }

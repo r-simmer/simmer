@@ -20,8 +20,28 @@ See \code{\link{add_generator}} for more information about these parameters.}
 Returns the trajectory object.
 }
 \description{
-Activity for modifying an arrival's prioritization values.
+Activity for dynamically modifying an arrival's prioritization values.
+Default prioritization values are defined by the source (see
+\code{\link{add_generator}}, \code{\link{add_dataframe}}).
+}
+\examples{
+traj <- trajectory() \%>\%
+
+  # static values
+  set_prioritization(c(3, 7, TRUE)) \%>\%
+
+  # increment
+  set_prioritization(c(2, 1, 0), mod="+") \%>\%
+
+  # dynamic, custom
+  set_attribute("priority", 3) \%>\%
+  set_prioritization(function() {
+    prio <- get_prioritization(env)
+    attr <- get_attribute(env, "priority")
+    c(attr, prio[[2]]+1, FALSE)
+  })
+
 }
 \seealso{
-\code{\link{get_prioritization}}.
+\code{\link{get_prioritization}}
 }

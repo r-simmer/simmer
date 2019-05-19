@@ -27,9 +27,48 @@ not previously initialised. Useful for counters or indexes.}
 Returns the trajectory object.
 }
 \description{
-Activity for modifying an arrival's attributes.
+Activity for modifying attributes. Attributes defined with
+\code{set_attribute} are \emph{per arrival}, meaning that each arrival has
+its own set of attributes, not visible by any other one. On the other hand,
+attributes defined with \code{set_global} are shared by all the arrivals in
+the simulation.
+}
+\details{
+Attribute monitoring is disabled by default. To enable it, set
+\code{mon=2} in the corresponding source (see, e.g., \code{\link{add_generator}}).
+Then, the evolution of the attributes during the simulation can be retrieved
+with \code{\link{get_mon_attributes}}. Global attributes are reported as
+unnamed key/value pairs.
+}
+\examples{
+env <- simmer()
+
+traj <- trajectory() \%>\%
+
+  # simple assignment
+  set_attribute("my_key", 123) \%>\%
+  set_global("global_key", 321) \%>\%
+
+  # more than one assignment at once
+  set_attribute(c("my_key", "other_key"), c(5, 64)) \%>\%
+
+  # increment
+  set_attribute("my_key", 1, mod="+") \%>\%
+
+  # assignment using a function
+  set_attribute("independent_key", function() runif(1)) \%>\%
+
+  # assignment dependent on another attribute
+  set_attribute("dependent_key", function()
+    ifelse(get_attribute(env, "my_key") <= 0.5, 1, 0))
+
+env \%>\%
+  add_generator("dummy", traj, at(3), mon=2) \%>\%
+  run() \%>\%
+  get_mon_attributes()
+
 }
 \seealso{
 \code{\link{get_attribute}}, \code{\link{get_global}},
-\code{\link{timeout_from_attribute}}, \code{\link{timeout_from_global}}.
+\code{\link{timeout_from_attribute}}, \code{\link{timeout_from_global}}
 }

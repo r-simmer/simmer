@@ -25,3 +25,30 @@ Returns the trajectory object.
 Activity for going backwards to a previous point in the trajectory. Useful to
 implement loops.
 }
+\examples{
+## rollback a specific number of times
+traj <- trajectory() \%>\%
+  log_("hello!") \%>\%
+  timeout(1) \%>\%
+  rollback(2, 3)
+
+simmer() \%>\%
+  add_generator("hello_sayer", traj, at(0)) \%>\%
+  run() \%>\% invisible
+
+## custom check
+env <- simmer()
+
+traj <- trajectory() \%>\%
+  set_attribute("var", 0) \%>\%
+  log_(function()
+    paste("attribute level is at:", get_attribute(env, "var"))) \%>\%
+  set_attribute("var", 25, mod="+") \%>\%
+  rollback(2, check=function() get_attribute(env, "var") < 100) \%>\%
+  log_("done")
+
+env \%>\%
+  add_generator("dummy", traj, at(0)) \%>\%
+  run() \%>\% invisible
+
+}

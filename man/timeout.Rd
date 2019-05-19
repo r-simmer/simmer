@@ -28,6 +28,31 @@ Returns the trajectory object.
 \description{
 Activity for inserting delays and execute user-defined tasks.
 }
+\examples{
+env <- simmer()
+
+traj <- trajectory() \%>\%
+
+  # static delay
+  timeout(3) \%>\%
+
+  # dynamic, exponential delay
+  timeout(function() rexp(1, 10)) \%>\%
+
+  # dependent on an attribute
+  set_attribute("delay", 2) \%>\%
+  set_global("other", function() rexp(1, 2)) \%>\%
+  timeout_from_attribute("delay") \%>\%
+  timeout_from_global("other")
+
+env \%>\%
+  add_generator("dummy", traj, at(0)) \%>\%
+  run() \%>\%
+  get_mon_arrivals()
+
+}
 \seealso{
-\code{\link{set_attribute}}, \code{\link{set_global}}.
+\code{\link{set_attribute}}, \code{\link{set_global}}
+
+\code{\link{set_attribute}}, \code{\link{set_global}}
 }

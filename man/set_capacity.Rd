@@ -30,11 +30,28 @@ set_queue_size_selected(.trj, value, id = 0, mod = c(NA, "+", "*"))
 Returns the trajectory object.
 }
 \description{
-Activities for modifying a resource's server capacity or queue size, by name
-or a previously selected one.
+Activities for dynamically modifying a resource's server capacity or queue
+size, by name or a previously selected one. Resources must be defined in the
+simulation environment (see \code{\link{add_resource}}).
+}
+\examples{
+## a resource with a queue size equal to the number of arrivals waiting
+traj <- trajectory() \%>\%
+  set_queue_size("res", 1, mod="+") \%>\%
+  seize("res") \%>\%
+  set_queue_size("res", -1, mod="+") \%>\%
+  timeout(10) \%>\%
+  release("res")
+
+simmer() \%>\%
+  add_resource("res", 1, 0) \%>\%
+  add_generator("dummy", traj, at(0:2)) \%>\%
+  run() \%>\%
+  get_mon_resources()
+
 }
 \seealso{
 \code{\link{select}}, \code{\link{seize}}, \code{\link{release}},
 \code{\link{seize_selected}}, \code{\link{release_selected}},
-\code{\link{get_capacity}}, \code{\link{get_queue_size}}.
+\code{\link{get_capacity}}, \code{\link{get_queue_size}}
 }

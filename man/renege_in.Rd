@@ -30,6 +30,33 @@ Returns the trajectory object.
 Activities for setting or unsetting a timer or a signal after which the
 arrival will abandon.
 }
+\details{
+Note that \code{renege_if} works similarly to \code{\link{trap}},
+but in contrast to that, reneging is triggered even if the arrival is waiting
+in a queue or is part of a non-permanent \code{\link{batch}}.
+}
+\examples{
+bank <- trajectory() \%>\%
+  log_("here I am") \%>\%
+  # renege in 5 minutes
+  renege_in(
+    5,
+    out = trajectory() \%>\%
+      log_("lost my patience. Reneging...")) \%>\%
+  seize("clerk") \%>\%
+  # stay if I'm being attended within 5 minutes
+  renege_abort() \%>\%
+  log_("I'm being attended") \%>\%
+  timeout(10) \%>\%
+  release("clerk") \%>\%
+  log_("finished")
+
+simmer() \%>\%
+  add_resource("clerk", 1) \%>\%
+  add_generator("customer", bank, at(0, 1)) \%>\%
+  run() \%>\% invisible
+
+}
 \seealso{
 \code{\link{send}}, \code{\link{leave}}
 }
