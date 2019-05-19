@@ -4,6 +4,7 @@
 
 - Drop R6 as a dependency (#193 addressing #190).
 - Small fix in `from` and `from_to` + documentation update (75a9569).
+- Move activity usage examples to help pages (#194).
 - Update JSS paper.
 
 # simmer 4.2.2
