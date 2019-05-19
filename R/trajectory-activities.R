@@ -19,7 +19,9 @@
 
 #' Seize/Release Resources
 #'
-#' Activities for seizing/releasing a resource, by name or a previously selected one.
+#' Activities for seizing/releasing a resource, by name or a previously selected
+#' one. Resources must be defined in the simulation environment (see
+#' \code{\link{add_resource}}).
 #'
 #' @param .trj the trajectory object.
 #' @inheritParams select
@@ -40,8 +42,83 @@
 #' handling all kinds of unfinished arrivals.
 #'
 #' @return Returns the trajectory object.
+#'
 #' @seealso \code{\link{select}}, \code{\link{set_capacity}}, \code{\link{set_queue_size}},
-#' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
+#' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}
+#'
+#' @examples
+#' ## simple seize, delay, then release
+#' traj <- trajectory() %>%
+#'   seize("doctor", 1) %>%
+#'   timeout(3) %>%
+#'   release("doctor", 1)
+#'
+#' simmer() %>%
+#'   add_resource("doctor", capacity=1) %>%
+#'   add_generator("patient", traj, at(0, 1)) %>%
+#'   run() %>%
+#'   get_mon_resources()
+#'
+#' ## arrival rejection (no space left in the queue)
+#' traj <- trajectory() %>%
+#'   log_("arriving...") %>%
+#'   seize("doctor", 1) %>%
+#'   # the second patient won't reach this point
+#'   log_("doctor seized") %>%
+#'   timeout(5) %>%
+#'   release("doctor", 1)
+#'
+#' simmer() %>%
+#'   add_resource("doctor", capacity=1, queue_size=0) %>%
+#'   add_generator("patient", traj, at(0, 1)) %>%
+#'   run() %>% invisible
+#'
+#' ## capturing rejection to retry
+#' traj <- trajectory() %>%
+#'   log_("arriving...") %>%
+#'   seize(
+#'     "doctor", 1, continue = FALSE,
+#'     reject = trajectory() %>%
+#'       log_("rejected!") %>%
+#'       # go for a walk and try again
+#'       timeout(2) %>%
+#'       log_("retrying...") %>%
+#'       rollback(amount = 4, times = Inf)) %>%
+#'   # the second patient will reach this point after a couple of walks
+#'   log_("doctor seized") %>%
+#'   timeout(5) %>%
+#'   release("doctor", 1) %>%
+#'   log_("leaving")
+#'
+#' simmer() %>%
+#'   add_resource("doctor", capacity=1, queue_size=0) %>%
+#'   add_generator("patient", traj, at(0, 1)) %>%
+#'   run() %>% invisible
+#'
+#' ## combining post.seize and reject
+#' traj <- trajectory() %>%
+#'   log_("arriving...") %>%
+#'   seize(
+#'     "doctor", 1, continue = c(TRUE, TRUE),
+#'     post.seize = trajectory("admitted patient") %>%
+#'       log_("admitted") %>%
+#'       timeout(5) %>%
+#'       release("doctor", 1),
+#'     reject = trajectory("rejected patient") %>%
+#'       log_("rejected!") %>%
+#'       seize("nurse", 1) %>%
+#'       timeout(2) %>%
+#'       release("nurse", 1)) %>%
+#'   # both patients will reach this point, as continue = c(TRUE, TRUE)
+#'   timeout(10) %>%
+#'   log_("leaving...")
+#'
+#' simmer() %>%
+#'   add_resource("doctor", capacity=1, queue_size=0) %>%
+#'   add_resource("nurse", capacity=10, queue_size=0) %>%
+#'   add_generator("patient", traj, at(0, 1)) %>%
+#'   run() %>% invisible
+#'
 #' @export
 seize <- function(.trj, resource, amount=1, continue=NULL, post.seize=NULL, reject=NULL)
   UseMethod("seize")
@@ -149,8 +226,9 @@ release_selected_all.trajectory <- function(.trj, id=0) {
 
 #' Set Resource Parameters
 #'
-#' Activities for modifying a resource's server capacity or queue size, by name
-#' or a previously selected one.
+#' Activities for dynamically modifying a resource's server capacity or queue
+#' size, by name or a previously selected one. Resources must be defined in the
+#' simulation environment (see \code{\link{add_resource}}).
 #'
 #' @inheritParams seize
 #' @inheritParams select
@@ -159,9 +237,26 @@ release_selected_all.trajectory <- function(.trj, id=0) {
 #' @param value new value to set.
 #'
 #' @return Returns the trajectory object.
+#'
 #' @seealso \code{\link{select}}, \code{\link{seize}}, \code{\link{release}},
 #' \code{\link{seize_selected}}, \code{\link{release_selected}},
-#' \code{\link{get_capacity}}, \code{\link{get_queue_size}}.
+#' \code{\link{get_capacity}}, \code{\link{get_queue_size}}
+#'
+#' @examples
+#' ## a resource with a queue size equal to the number of arrivals waiting
+#' traj <- trajectory() %>%
+#'   set_queue_size("res", 1, mod="+") %>%
+#'   seize("res") %>%
+#'   set_queue_size("res", -1, mod="+") %>%
+#'   timeout(10) %>%
+#'   release("res")
+#'
+#' simmer() %>%
+#'   add_resource("res", 1, 0) %>%
+#'   add_generator("dummy", traj, at(0:2)) %>%
+#'   run() %>%
+#'   get_mon_resources()
+#'
 #' @export
 set_capacity <- function(.trj, resource, value, mod=c(NA, "+", "*"))
   UseMethod("set_capacity")
@@ -228,7 +323,8 @@ set_queue_size_selected.trajectory <- function(.trj, value, id=0, mod=c(NA, "+",
 #' Select Resources
 #'
 #' Activity for selecting a resource for a subsequent seize/release or setting
-#' its parameters (capacity or queue size).
+#' its parameters (capacity or queue size). Resources must be defined in the
+#' simulation environment (see \code{\link{add_resource}}).
 #'
 #' @inheritParams seize
 #' @param resources one or more resource names, or a callable object (a function)
@@ -252,7 +348,44 @@ set_queue_size_selected.trajectory <- function(.trj, value, id=0, mod=c(NA, "+",
 #' resources are unavailable.
 #'
 #' @seealso \code{\link{seize_selected}}, \code{\link{release_selected}},
-#' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
+#' \code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}
+#'
+#' @examples
+#' ## predefined policy
+#' traj <- trajectory() %>%
+#'   select(paste0("doctor", 1:3), "round-robin") %>%
+#'   seize_selected(1) %>%
+#'   timeout(5) %>%
+#'   release_selected(1)
+#'
+#' simmer() %>%
+#'   add_resource("doctor1") %>%
+#'   add_resource("doctor2") %>%
+#'   add_resource("doctor3") %>%
+#'   add_generator("patient", traj, at(0, 1, 2)) %>%
+#'   run() %>%
+#'   get_mon_resources()
+#'
+#' ## custom policy
+#' env <- simmer()
+#' res <- paste0("doctor", 1:3)
+#'
+#' traj <- trajectory() %>%
+#'   select(function() {
+#'     occ <- get_server_count(env, res) + get_queue_count(env, res)
+#'     res[which.min(occ)[1]]
+#'   }) %>%
+#'   seize_selected(1) %>%
+#'   timeout(5) %>%
+#'   release_selected(1)
+#'
+#' for (i in res) env %>%
+#'   add_resource(i)
+#' env %>%
+#'   add_generator("patient", traj, at(0, 1, 2)) %>%
+#'   run() %>%
+#'   get_mon_resources()
+#'
 #' @export
 select <- function(
   .trj, resources,
@@ -288,6 +421,31 @@ select.trajectory <- function(
 #' automatically coerced to positive).
 #'
 #' @return Returns the trajectory object.
+#'
+#' @seealso \code{\link{set_attribute}}, \code{\link{set_global}}
+#'
+#' @examples
+#' env <- simmer()
+#'
+#' traj <- trajectory() %>%
+#'
+#'   # static delay
+#'   timeout(3) %>%
+#'
+#'   # dynamic, exponential delay
+#'   timeout(function() rexp(1, 10)) %>%
+#'
+#'   # dependent on an attribute
+#'   set_attribute("delay", 2) %>%
+#'   set_global("other", function() rexp(1, 2)) %>%
+#'   timeout_from_attribute("delay") %>%
+#'   timeout_from_global("other")
+#'
+#' env %>%
+#'   add_generator("dummy", traj, at(0)) %>%
+#'   run() %>%
+#'   get_mon_arrivals()
+#'
 #' @export
 timeout <- function(.trj, task) UseMethod("timeout")
 
@@ -305,7 +463,7 @@ timeout.trajectory <- function(.trj, task) {
 #' @inheritParams set_attribute
 #' @param key the attribute name, or a callable object (a function) which
 #' must return the attribute name.
-#' @seealso \code{\link{set_attribute}}, \code{\link{set_global}}.
+#' @seealso \code{\link{set_attribute}}, \code{\link{set_global}}
 #' @export
 timeout_from_attribute <- function(.trj, key) UseMethod("timeout_from_attribute")
 
@@ -327,7 +485,11 @@ timeout_from_global <- function(.trj, key) {
 
 #' Set Attributes
 #'
-#' Activity for modifying an arrival's attributes.
+#' Activity for modifying attributes. Attributes defined with
+#' \code{set_attribute} are \emph{per arrival}, meaning that each arrival has
+#' its own set of attributes, not visible by any other one. On the other hand,
+#' attributes defined with \code{set_global} are shared by all the arrivals in
+#' the simulation.
 #'
 #' @inheritParams seize
 #' @param keys the attribute name(s), or a callable object (a function) which
@@ -339,8 +501,43 @@ timeout_from_global <- function(.trj, key) {
 #' not previously initialised. Useful for counters or indexes.
 #'
 #' @return Returns the trajectory object.
+#'
+#' @details Attribute monitoring is disabled by default. To enable it, set
+#' \code{mon=2} in the corresponding source (see, e.g., \code{\link{add_generator}}).
+#' Then, the evolution of the attributes during the simulation can be retrieved
+#' with \code{\link{get_mon_attributes}}. Global attributes are reported as
+#' unnamed key/value pairs.
+#'
 #' @seealso \code{\link{get_attribute}}, \code{\link{get_global}},
-#' \code{\link{timeout_from_attribute}}, \code{\link{timeout_from_global}}.
+#' \code{\link{timeout_from_attribute}}, \code{\link{timeout_from_global}}
+#'
+#' @examples
+#' env <- simmer()
+#'
+#' traj <- trajectory() %>%
+#'
+#'   # simple assignment
+#'   set_attribute("my_key", 123) %>%
+#'   set_global("global_key", 321) %>%
+#'
+#'   # more than one assignment at once
+#'   set_attribute(c("my_key", "other_key"), c(5, 64)) %>%
+#'
+#'   # increment
+#'   set_attribute("my_key", 1, mod="+") %>%
+#'
+#'   # assignment using a function
+#'   set_attribute("independent_key", function() runif(1)) %>%
+#'
+#'   # assignment dependent on another attribute
+#'   set_attribute("dependent_key", function()
+#'     ifelse(get_attribute(env, "my_key") <= 0.5, 1, 0))
+#'
+#' env %>%
+#'   add_generator("dummy", traj, at(3), mon=2) %>%
+#'   run() %>%
+#'   get_mon_attributes()
+#'
 #' @export
 set_attribute <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=0)
   UseMethod("set_attribute")
@@ -387,12 +584,27 @@ set_global.trajectory <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=
 #' Activate/Deactivate Sources
 #'
 #' Activities for activating or deactivating the generation of arrivals by name.
+#' Sources must be defined in the simulation environment (see
+#' \code{\link{add_generator}}, \code{\link{add_dataframe}}).
 #'
 #' @inheritParams seize
 #' @param source the name of the source or a function returning a name.
 #'
 #' @return Returns the trajectory object.
-#' @seealso \code{\link{set_trajectory}}, \code{\link{set_source}}.
+#'
+#' @seealso \code{\link{set_trajectory}}, \code{\link{set_source}}
+#'
+#' @examples
+#' traj <- trajectory() %>%
+#'   deactivate("dummy") %>%
+#'   timeout(1) %>%
+#'   activate("dummy")
+#'
+#' simmer() %>%
+#'   add_generator("dummy", traj, function() 1) %>%
+#'   run(10) %>%
+#'   get_mon_arrivals()
+#'
 #' @export
 activate <- function(.trj, source) UseMethod("activate")
 
@@ -423,13 +635,31 @@ deactivate.trajectory <- function(.trj, source) {
 #' Set Source Parameters
 #'
 #' Activities for modifying a source's trajectory or source object by name.
+#' Sources must be defined in the simulation environment (see
+#' \code{\link{add_generator}}, \code{\link{add_dataframe}}).
 #'
 #' @inheritParams seize
 #' @inheritParams activate
 #' @param trajectory the trajectory that the generated arrivals will follow.
 #'
 #' @return Returns the trajectory object.
-#' @seealso \code{\link{activate}}, \code{\link{deactivate}}.
+#'
+#' @seealso \code{\link{activate}}, \code{\link{deactivate}}
+#'
+#' @examples
+#' traj1 <- trajectory() %>%
+#'   timeout(1)
+#'
+#' traj2 <- trajectory() %>%
+#'   set_source("dummy", function() 1) %>%
+#'   set_trajectory("dummy", traj1) %>%
+#'   timeout(2)
+#'
+#' simmer() %>%
+#'   add_generator("dummy", traj2, function() 2) %>%
+#'   run(6) %>%
+#'   get_mon_arrivals()
+#'
 #' @export
 set_trajectory <- function(.trj, source, trajectory) UseMethod("set_trajectory")
 
@@ -464,7 +694,9 @@ set_source.trajectory <- function(.trj, source, object) {
 
 #' Set Prioritization Values
 #'
-#' Activity for modifying an arrival's prioritization values.
+#' Activity for dynamically modifying an arrival's prioritization values.
+#' Default prioritization values are defined by the source (see
+#' \code{\link{add_generator}}, \code{\link{add_dataframe}}).
 #'
 #' @inheritParams seize
 #' @inheritParams set_attribute
@@ -474,7 +706,26 @@ set_source.trajectory <- function(.trj, source, object) {
 #' See \code{\link{add_generator}} for more information about these parameters.
 #'
 #' @return Returns the trajectory object.
-#' @seealso \code{\link{get_prioritization}}.
+#'
+#' @seealso \code{\link{get_prioritization}}
+#'
+#' @examples
+#' traj <- trajectory() %>%
+#'
+#'   # static values
+#'   set_prioritization(c(3, 7, TRUE)) %>%
+#'
+#'   # increment
+#'   set_prioritization(c(2, 1, 0), mod="+") %>%
+#'
+#'   # dynamic, custom
+#'   set_attribute("priority", 3) %>%
+#'   set_prioritization(function() {
+#'     prio <- get_prioritization(env)
+#'     attr <- get_attribute(env, "priority")
+#'     c(attr, prio[[2]]+1, FALSE)
+#'   })
+#'
 #' @export
 set_prioritization <- function(.trj, values, mod=c(NA, "+", "*"))
   UseMethod("set_prioritization")
@@ -506,6 +757,25 @@ set_prioritization.trajectory <- function(.trj, values, mod=c(NA, "+", "*")) {
 #' describing each sub-trajectory.
 #'
 #' @return Returns the trajectory object.
+#'
+#' @examples
+#' env <- simmer()
+#'
+#' traj <- trajectory() %>%
+#'   set_global("path", 1, mod="+", init=-1) %>%
+#'   log_(function() paste("Path", get_global(env, "path"), "selected")) %>%
+#'   branch(
+#'     function() get_global(env, "path"), continue=c(TRUE, FALSE),
+#'     trajectory() %>%
+#'       log_("following path 1"),
+#'     trajectory() %>%
+#'       log_("following path 2")) %>%
+#'   log_("continuing after the branch (path 0)")
+#'
+#' env %>%
+#'   add_generator("dummy", traj, at(0:2)) %>%
+#'   run() %>% invisible
+#'
 #' @export
 branch <- function(.trj, option, continue, ...) UseMethod("branch")
 
@@ -532,6 +802,33 @@ branch.trajectory <- function(.trj, option, continue, ...) {
 #' function to check whether the rollback must be done or not.
 #'
 #' @return Returns the trajectory object.
+#'
+#' @examples
+#' ## rollback a specific number of times
+#' traj <- trajectory() %>%
+#'   log_("hello!") %>%
+#'   timeout(1) %>%
+#'   rollback(2, 3)
+#'
+#' simmer() %>%
+#'   add_generator("hello_sayer", traj, at(0)) %>%
+#'   run() %>% invisible
+#'
+#' ## custom check
+#' env <- simmer()
+#'
+#' traj <- trajectory() %>%
+#'   set_attribute("var", 0) %>%
+#'   log_(function()
+#'     paste("attribute level is at:", get_attribute(env, "var"))) %>%
+#'   set_attribute("var", 25, mod="+") %>%
+#'   rollback(2, check=function() get_attribute(env, "var") < 100) %>%
+#'   log_("done")
+#'
+#' env %>%
+#'   add_generator("dummy", traj, at(0)) %>%
+#'   run() %>% invisible
+#'
 #' @export
 rollback <- function(.trj, amount, times=Inf, check=NULL) UseMethod("rollback")
 
@@ -560,6 +857,19 @@ rollback.trajectory <- function(.trj, amount, times=Inf, check=NULL) {
 #' \code{\link{handle_unfinished}} activity.
 #'
 #' @seealso \code{\link{handle_unfinished}}, \code{\link{renege_in}}
+#'
+#' @examples
+#' set.seed(1234)
+#'
+#' traj <- trajectory() %>%
+#'   log_("leave with some probability") %>%
+#'   leave(function() runif(1) < 0.5) %>%
+#'   log_("didn't leave")
+#'
+#' simmer() %>%
+#'   add_generator("dummy", traj, at(0, 1)) %>%
+#'   run() %>% invisible
+#'
 #' @export
 leave <- function(.trj, prob) UseMethod("leave")
 
@@ -584,7 +894,27 @@ leave.trajectory <- function(.trj, prob) {
 #' value will unset the drop-out trajectory.
 #'
 #' @return Returns the trajectory object.
+#'
 #' @seealso \code{\link{leave}}, \code{\link{set_capacity}}
+#'
+#' @examples
+#' traj <- trajectory() %>%
+#'   log_("arrived") %>%
+#'   handle_unfinished(
+#'     trajectory() %>%
+#'       log_("preempted!")) %>%
+#'   seize("res") %>%
+#'   log_("resource seized") %>%
+#'   timeout(10) %>%
+#'   release("res") %>%
+#'   log_("leaving")
+#'
+#' simmer() %>%
+#'   add_resource("res", 1, 0, preemptive=TRUE, queue_size_strict=TRUE) %>%
+#'   add_generator("dummy", traj, at(0)) %>%
+#'   add_generator("priority_dummy", traj, at(5), priority=1) %>%
+#'   run() %>% invisible
+#'
 #' @export
 handle_unfinished <- function(.trj, handler) UseMethod("handle_unfinished")
 
@@ -606,6 +936,32 @@ handle_unfinished.trajectory <- function(.trj, handler) {
 #' @param out optional sub-trajectory in case of reneging.
 #'
 #' @return Returns the trajectory object.
+#'
+#' @details Note that \code{renege_if} works similarly to \code{\link{trap}},
+#' but in contrast to that, reneging is triggered even if the arrival is waiting
+#' in a queue or is part of a non-permanent \code{\link{batch}}.
+#'
+#' @examples
+#' bank <- trajectory() %>%
+#'   log_("here I am") %>%
+#'   # renege in 5 minutes
+#'   renege_in(
+#'     5,
+#'     out = trajectory() %>%
+#'       log_("lost my patience. Reneging...")) %>%
+#'   seize("clerk") %>%
+#'   # stay if I'm being attended within 5 minutes
+#'   renege_abort() %>%
+#'   log_("I'm being attended") %>%
+#'   timeout(10) %>%
+#'   release("clerk") %>%
+#'   log_("finished")
+#'
+#' simmer() %>%
+#'   add_resource("clerk", 1) %>%
+#'   add_generator("customer", bank, at(0, 1)) %>%
+#'   run() %>% invisible
+#'
 #' @export
 renege_in <- function(.trj, t, out=NULL) UseMethod("renege_in")
 
@@ -659,6 +1015,65 @@ renege_abort.trajectory <- function(.trj) add_activity(.trj, RenegeAbort__new())
 #' sub-trajectories). Each clone will follow a different sub-trajectory if available.
 #'
 #' @return Returns the trajectory object.
+#'
+#' @examples
+#' ## clone and wait for the others
+#' traj <- trajectory() %>%
+#'   clone(
+#'     n = 3,
+#'     trajectory() %>%
+#'       log_("clone 0 (original)") %>%
+#'       timeout(1),
+#'     trajectory() %>%
+#'       log_("clone 1") %>%
+#'       timeout(2),
+#'     trajectory() %>%
+#'       log_("clone 2") %>%
+#'       timeout(3)) %>%
+#'   log_("sync reached") %>%
+#'   synchronize(wait = TRUE) %>%
+#'   log_("leaving")
+#'
+#' simmer() %>%
+#'   add_generator("arrival", traj, at(0)) %>%
+#'   run() %>% invisible
+#'
+#' ## more clones that trajectories available
+#' traj <- trajectory() %>%
+#'   clone(
+#'     n = 5,
+#'     trajectory() %>%
+#'       log_("clone 0 (original)") %>%
+#'       timeout(1)) %>%
+#'   log_("sync reached") %>%
+#'   synchronize(wait = TRUE) %>%
+#'   log_("leaving")
+#'
+#' simmer() %>%
+#'   add_generator("arrival", traj, at(0)) %>%
+#'   run() %>% invisible
+#'
+#' ## clone and continue without waiting
+#' traj <- trajectory() %>%
+#'   clone(
+#'     n = 3,
+#'     trajectory() %>%
+#'       log_("clone 0 (original)") %>%
+#'       timeout(1),
+#'     trajectory() %>%
+#'       log_("clone 1") %>%
+#'       timeout(2),
+#'     trajectory() %>%
+#'       log_("clone 2") %>%
+#'       timeout(3)) %>%
+#'   log_("sync reached") %>%
+#'   synchronize(wait = FALSE) %>%
+#'   log_("leaving")
+#'
+#' simmer() %>%
+#'   add_generator("arrival", traj, at(0)) %>%
+#'   run() %>% invisible
+#'
 #' @export
 clone <- function(.trj, n, ...) UseMethod("clone")
 
@@ -711,6 +1126,54 @@ synchronize.trajectory <- function(.trj, wait=TRUE, mon_all=FALSE) {
 #  it must return a boolean.
 #'
 #' @return Returns the trajectory object.
+#'
+#' @examples
+#' ## unnamed batch with a timeout
+#' traj <- trajectory() %>%
+#'   log_("arrived") %>%
+#'   batch(2, timeout=5) %>%
+#'   log_("in a batch") %>%
+#'   timeout(5) %>%
+#'   separate() %>%
+#'   log_("leaving")
+#'
+#' simmer() %>%
+#'   add_generator("dummy", traj, at(0:2)) %>%
+#'   run() %>% invisible
+#'
+#' ## batching based on some dynamic rule
+#' traj <- trajectory() %>%
+#'   log_("arrived") %>%
+#'   # always FALSE -> no batches
+#'   batch(2, rule=function() FALSE) %>%
+#'   log_("not in a batch") %>%
+#'   timeout(5) %>%
+#'   separate() %>%
+#'   log_("leaving")
+#'
+#' simmer() %>%
+#'   add_generator("dummy", traj, at(0:2)) %>%
+#'   run() %>% invisible
+#'
+#' ## named batch, shared across trajectories
+#' traj0 <- trajectory() %>%
+#'   log_("arrived traj0") %>%
+#'   batch(2, name = "mybatch")
+#'
+#' traj1 <- trajectory() %>%
+#'   log_("arrived traj1") %>%
+#'   timeout(1) %>%
+#'   batch(2, name = "mybatch") %>%
+#'   log_("in a batch") %>%
+#'   timeout(2) %>%
+#'   separate() %>%
+#'   log_("leaving traj1")
+#'
+#' simmer() %>%
+#'   add_generator("dummy0", traj0, at(0)) %>%
+#'   add_generator("dummy1", traj1, at(0)) %>%
+#'   run() %>% invisible
+#'
 #' @export
 batch <- function(.trj, n, timeout=0, permanent=FALSE, name="", rule=NULL)
   UseMethod("batch")
@@ -761,7 +1224,47 @@ separate.trajectory <- function(.trj) add_activity(.trj, Separate__new())
 #' numeric or a callable object (a function) which must return a numeric.
 #'
 #' @return Returns the trajectory object.
+#'
 #' @seealso \code{\link{renege_if}}
+#'
+#' @examples
+#' ## block, signal and continue with a handler
+#' signal <- "you shall pass"
+#'
+#' t_blocked <- trajectory() %>%
+#'   trap(
+#'     signal,
+#'     trajectory() %>%
+#'       log_("executing the handler")) %>%
+#'   log_("waiting...") %>%
+#'   wait() %>%
+#'   log_("continuing!")
+#'
+#' t_signaler <- trajectory() %>%
+#'   log_(signal) %>%
+#'   send(signal)
+#'
+#' simmer() %>%
+#'   add_generator("blocked", t_blocked, at(0)) %>%
+#'   add_generator("signaler", t_signaler, at(5)) %>%
+#'   run() %>% invisible
+#'
+#' ## handlers can be interrupted, unless interruptible=FALSE
+#' t_worker <- trajectory() %>%
+#'   trap(
+#'   signal,
+#'   handler = trajectory() %>%
+#'     log_("ok, I'm packing...") %>%
+#'     timeout(1)) %>%
+#'   log_("performing a looong task...") %>%
+#'   timeout(100) %>%
+#'   log_("and I'm leaving!")
+#'
+#' simmer() %>%
+#'   add_generator("worker", t_worker, at(0)) %>%
+#'   add_generator("signaler", t_signaler, at(5, 5.5)) %>%
+#'   run() %>% invisible
+#'
 #' @export
 send <- function(.trj, signals, delay=0) UseMethod("send")
 
@@ -834,6 +1337,26 @@ wait.trajectory <- function(.trj) add_activity(.trj, Wait__new())
 #' @param condition a boolean or a function returning a boolean.
 #'
 #' @return Returns the trajectory object.
+#'
+#' @examples
+#' ## log levels
+#' traj <- trajectory() %>%
+#'   log_("this is always printed") %>% # level = 0 by default
+#'   log_("this is printed if `log_level>=1`", level = 1) %>%
+#'   log_("this is printed if `log_level>=2`", level = 2)
+#'
+#' simmer() %>%
+#'   add_generator("dummy", traj, at(0)) %>%
+#'   run() %>% invisible
+#'
+#' simmer(log_level = 1) %>%
+#'   add_generator("dummy", traj, at(0)) %>%
+#'   run() %>% invisible
+#'
+#' simmer(log_level = Inf) %>%
+#'   add_generator("dummy", traj, at(0)) %>%
+#'   run() %>% invisible
+#'
 #' @export
 log_ <- function(.trj, message, level=0) UseMethod("log_")
 

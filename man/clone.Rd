@@ -32,3 +32,62 @@ Activities for defining a parallel fork and removing the copies. \code{clone}
 replicates an arrival \code{n} times (the original one + \code{n-1} copies).
 \code{synchronize} removes all but one clone for each set of clones.
 }
+\examples{
+## clone and wait for the others
+traj <- trajectory() \%>\%
+  clone(
+    n = 3,
+    trajectory() \%>\%
+      log_("clone 0 (original)") \%>\%
+      timeout(1),
+    trajectory() \%>\%
+      log_("clone 1") \%>\%
+      timeout(2),
+    trajectory() \%>\%
+      log_("clone 2") \%>\%
+      timeout(3)) \%>\%
+  log_("sync reached") \%>\%
+  synchronize(wait = TRUE) \%>\%
+  log_("leaving")
+
+simmer() \%>\%
+  add_generator("arrival", traj, at(0)) \%>\%
+  run() \%>\% invisible
+
+## more clones that trajectories available
+traj <- trajectory() \%>\%
+  clone(
+    n = 5,
+    trajectory() \%>\%
+      log_("clone 0 (original)") \%>\%
+      timeout(1)) \%>\%
+  log_("sync reached") \%>\%
+  synchronize(wait = TRUE) \%>\%
+  log_("leaving")
+
+simmer() \%>\%
+  add_generator("arrival", traj, at(0)) \%>\%
+  run() \%>\% invisible
+
+## clone and continue without waiting
+traj <- trajectory() \%>\%
+  clone(
+    n = 3,
+    trajectory() \%>\%
+      log_("clone 0 (original)") \%>\%
+      timeout(1),
+    trajectory() \%>\%
+      log_("clone 1") \%>\%
+      timeout(2),
+    trajectory() \%>\%
+      log_("clone 2") \%>\%
+      timeout(3)) \%>\%
+  log_("sync reached") \%>\%
+  synchronize(wait = FALSE) \%>\%
+  log_("leaving")
+
+simmer() \%>\%
+  add_generator("arrival", traj, at(0)) \%>\%
+  run() \%>\% invisible
+
+}

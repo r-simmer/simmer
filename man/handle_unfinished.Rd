@@ -20,6 +20,25 @@ Activity for setting a drop-out trajectory for unfinished arrivals, i.e.,
 those dropped from a resource (due to preemption, resource shrinkage or a
 rejected \code{\link{seize}}) or those that \code{\link{leave}} a trajectory.
 }
+\examples{
+traj <- trajectory() \%>\%
+  log_("arrived") \%>\%
+  handle_unfinished(
+    trajectory() \%>\%
+      log_("preempted!")) \%>\%
+  seize("res") \%>\%
+  log_("resource seized") \%>\%
+  timeout(10) \%>\%
+  release("res") \%>\%
+  log_("leaving")
+
+simmer() \%>\%
+  add_resource("res", 1, 0, preemptive=TRUE, queue_size_strict=TRUE) \%>\%
+  add_generator("dummy", traj, at(0)) \%>\%
+  add_generator("priority_dummy", traj, at(5), priority=1) \%>\%
+  run() \%>\% invisible
+
+}
 \seealso{
 \code{\link{leave}}, \code{\link{set_capacity}}
 }

@@ -25,7 +25,24 @@ Returns the trajectory object.
 }
 \description{
 Activities for modifying a source's trajectory or source object by name.
+Sources must be defined in the simulation environment (see
+\code{\link{add_generator}}, \code{\link{add_dataframe}}).
+}
+\examples{
+traj1 <- trajectory() \%>\%
+  timeout(1)
+
+traj2 <- trajectory() \%>\%
+  set_source("dummy", function() 1) \%>\%
+  set_trajectory("dummy", traj1) \%>\%
+  timeout(2)
+
+simmer() \%>\%
+  add_generator("dummy", traj2, function() 2) \%>\%
+  run(6) \%>\%
+  get_mon_arrivals()
+
 }
 \seealso{
-\code{\link{activate}}, \code{\link{deactivate}}.
+\code{\link{activate}}, \code{\link{deactivate}}
 }

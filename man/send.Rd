@@ -42,6 +42,45 @@ reception, the arrival stops the current activity and executes the handler
 point of the interruption. \code{untrap()} can be used to unsubscribe from
 signals. \code{wait()} blocks until a signal is received.
 }
+\examples{
+## block, signal and continue with a handler
+signal <- "you shall pass"
+
+t_blocked <- trajectory() \%>\%
+  trap(
+    signal,
+    trajectory() \%>\%
+      log_("executing the handler")) \%>\%
+  log_("waiting...") \%>\%
+  wait() \%>\%
+  log_("continuing!")
+
+t_signaler <- trajectory() \%>\%
+  log_(signal) \%>\%
+  send(signal)
+
+simmer() \%>\%
+  add_generator("blocked", t_blocked, at(0)) \%>\%
+  add_generator("signaler", t_signaler, at(5)) \%>\%
+  run() \%>\% invisible
+
+## handlers can be interrupted, unless interruptible=FALSE
+t_worker <- trajectory() \%>\%
+  trap(
+  signal,
+  handler = trajectory() \%>\%
+    log_("ok, I'm packing...") \%>\%
+    timeout(1)) \%>\%
+  log_("performing a looong task...") \%>\%
+  timeout(100) \%>\%
+  log_("and I'm leaving!")
+
+simmer() \%>\%
+  add_generator("worker", t_worker, at(0)) \%>\%
+  add_generator("signaler", t_signaler, at(5, 5.5)) \%>\%
+  run() \%>\% invisible
+
+}
 \seealso{
 \code{\link{renege_if}}
 }

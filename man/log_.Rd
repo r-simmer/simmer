@@ -28,3 +28,23 @@ Returns the trajectory object.
 Activities for displaying messages preceded by the simulation time and the
 name of the arrival, and for setting conditional breakpoints.
 }
+\examples{
+## log levels
+traj <- trajectory() \%>\%
+  log_("this is always printed") \%>\% # level = 0 by default
+  log_("this is printed if `log_level>=1`", level = 1) \%>\%
+  log_("this is printed if `log_level>=2`", level = 2)
+
+simmer() \%>\%
+  add_generator("dummy", traj, at(0)) \%>\%
+  run() \%>\% invisible
+
+simmer(log_level = 1) \%>\%
+  add_generator("dummy", traj, at(0)) \%>\%
+  run() \%>\% invisible
+
+simmer(log_level = Inf) \%>\%
+  add_generator("dummy", traj, at(0)) \%>\%
+  run() \%>\% invisible
+
+}
