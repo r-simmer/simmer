@@ -55,10 +55,11 @@ namespace simmer {
     * Seize resources.
     * @param   arrival  a pointer to the arrival trying to seize resources
     * @param   amount   the amount of resources needed
+    * @param   willqueue   is this arrival willing to queue
     *
     * @return  STATUS_SUCCESS, STATUS_ENQUEUE, STATUS_REJECT
     */
-    int seize(Arrival* arrival, int amount) {
+    int seize(Arrival* arrival, int amount, bool willqueue) {
       if (!amount) return STATUS_SUCCESS;
 
       int status;
@@ -70,7 +71,7 @@ namespace simmer {
         status = STATUS_SUCCESS;
       }
       // enqueue
-      else if (room_in_queue(amount, arrival->order.get_priority())) {
+      else if (room_in_queue(amount, arrival->order.get_priority()) && willqueue) {
         insert_in_queue(arrival, amount);
         status = STATUS_ENQUEUE;
       }

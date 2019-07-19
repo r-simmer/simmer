@@ -125,15 +125,17 @@ seize <- function(.trj, resource, amount=1, continue=NULL, post.seize=NULL, reje
 
 #' @export
 seize.trajectory <- function(.trj, resource, amount=1,
-                             continue=NULL, post.seize=NULL, reject=NULL)
+                             continue=NULL, willqueue=NULL, post.seize=NULL, reject=NULL)
 {
   continue <- recycle(continue, length(c(post.seize, reject)))
   stopifnot(length(continue) == length(c(post.seize, reject)))
   if (!length(continue)) continue <- TRUE
+  if (!length(willqueue)) willqueue <- TRUE
   check_args(
     resource = "string",
     amount = c("number", "function"),
     continue = "flag",
+    willqueue = "flag",
     post.seize = c("trajectory", "NULL"),
     reject = c("trajectory", "NULL")
   )
@@ -141,27 +143,29 @@ seize.trajectory <- function(.trj, resource, amount=1,
   mask <- sum(c(1, 2) * !sapply(list(post.seize, reject), is.null))
   switch(
     binarise(is.function(amount)),
-    add_activity(.trj, Seize__new(resource, amount, continue, trj, mask)),
-    add_activity(.trj, Seize__new_func(resource, amount, continue, trj, mask))
+    add_activity(.trj, Seize__new(resource, amount, continue, willqueue, trj, mask)),
+    add_activity(.trj, Seize__new_func(resource, amount, continue, willqueue, trj, mask))
   )
 }
 
 #' @rdname seize
 #' @export
-seize_selected <- function(.trj, amount=1, id=0,continue=NULL, post.seize=NULL, reject=NULL)
+seize_selected <- function(.trj, amount=1, id=0,continue=NULL, willqueue=NULL, post.seize=NULL, reject=NULL)
   UseMethod("seize_selected")
 
 #' @export
 seize_selected.trajectory <- function(.trj, amount=1, id=0,
-                                      continue=NULL, post.seize=NULL, reject=NULL)
+                                      continue=NULL, willqueue=NULL, post.seize=NULL, reject=NULL)
 {
   continue <- recycle(continue, length(c(post.seize, reject)))
   stopifnot(length(continue) == length(c(post.seize, reject)))
   if (!length(continue)) continue <- TRUE
+  if (!length(willqueue)) willqueue <- TRUE
   check_args(
     amount = c("number", "function"),
     id = "number",
     continue = "flag",
+    willqueue = "flag",
     post.seize = c("trajectory", "NULL"),
     reject = c("trajectory", "NULL")
   )
@@ -169,8 +173,8 @@ seize_selected.trajectory <- function(.trj, amount=1, id=0,
   mask <- sum(c(1, 2) * !sapply(list(post.seize, reject), is.null))
   switch(
     binarise(is.function(amount)),
-    add_activity(.trj, SeizeSelected__new(id, amount, continue, trj, mask)),
-    add_activity(.trj, SeizeSelected__new_func(id, amount, continue, trj, mask))
+    add_activity(.trj, SeizeSelected__new(id, amount, continue, willqueue, trj, mask)),
+    add_activity(.trj, SeizeSelected__new_func(id, amount, continue, willqueue, trj, mask))
   )
 }
 

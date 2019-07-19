@@ -7,62 +7,66 @@
 using namespace Rcpp;
 
 // Seize__new
-SEXP Seize__new(const std::string& resource, int amount, std::vector<bool> cont, const std::vector<Environment>& trj, unsigned short mask);
-RcppExport SEXP _simmer_Seize__new(SEXP resourceSEXP, SEXP amountSEXP, SEXP contSEXP, SEXP trjSEXP, SEXP maskSEXP) {
+SEXP Seize__new(const std::string& resource, int amount, std::vector<bool> cont, bool willqueue, const std::vector<Environment>& trj, unsigned short mask);
+RcppExport SEXP _simmer_Seize__new(SEXP resourceSEXP, SEXP amountSEXP, SEXP contSEXP, SEXP willqueueSEXP, SEXP trjSEXP, SEXP maskSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type resource(resourceSEXP);
     Rcpp::traits::input_parameter< int >::type amount(amountSEXP);
     Rcpp::traits::input_parameter< std::vector<bool> >::type cont(contSEXP);
+    Rcpp::traits::input_parameter< bool >::type willqueue(willqueueSEXP);
     Rcpp::traits::input_parameter< const std::vector<Environment>& >::type trj(trjSEXP);
     Rcpp::traits::input_parameter< unsigned short >::type mask(maskSEXP);
-    rcpp_result_gen = Rcpp::wrap(Seize__new(resource, amount, cont, trj, mask));
+    rcpp_result_gen = Rcpp::wrap(Seize__new(resource, amount, cont, willqueue, trj, mask));
     return rcpp_result_gen;
 END_RCPP
 }
 // Seize__new_func
-SEXP Seize__new_func(const std::string& resource, const Function& amount, std::vector<bool> cont, const std::vector<Environment>& trj, unsigned short mask);
-RcppExport SEXP _simmer_Seize__new_func(SEXP resourceSEXP, SEXP amountSEXP, SEXP contSEXP, SEXP trjSEXP, SEXP maskSEXP) {
+SEXP Seize__new_func(const std::string& resource, const Function& amount, std::vector<bool> cont, bool willqueue, const std::vector<Environment>& trj, unsigned short mask);
+RcppExport SEXP _simmer_Seize__new_func(SEXP resourceSEXP, SEXP amountSEXP, SEXP contSEXP, SEXP willqueueSEXP, SEXP trjSEXP, SEXP maskSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type resource(resourceSEXP);
     Rcpp::traits::input_parameter< const Function& >::type amount(amountSEXP);
     Rcpp::traits::input_parameter< std::vector<bool> >::type cont(contSEXP);
+    Rcpp::traits::input_parameter< bool >::type willqueue(willqueueSEXP);
     Rcpp::traits::input_parameter< const std::vector<Environment>& >::type trj(trjSEXP);
     Rcpp::traits::input_parameter< unsigned short >::type mask(maskSEXP);
-    rcpp_result_gen = Rcpp::wrap(Seize__new_func(resource, amount, cont, trj, mask));
+    rcpp_result_gen = Rcpp::wrap(Seize__new_func(resource, amount, cont, willqueue, trj, mask));
     return rcpp_result_gen;
 END_RCPP
 }
 // SeizeSelected__new
-SEXP SeizeSelected__new(int id, int amount, std::vector<bool> cont, const std::vector<Environment>& trj, unsigned short mask);
-RcppExport SEXP _simmer_SeizeSelected__new(SEXP idSEXP, SEXP amountSEXP, SEXP contSEXP, SEXP trjSEXP, SEXP maskSEXP) {
+SEXP SeizeSelected__new(int id, int amount, std::vector<bool> cont, bool willqueue, const std::vector<Environment>& trj, unsigned short mask);
+RcppExport SEXP _simmer_SeizeSelected__new(SEXP idSEXP, SEXP amountSEXP, SEXP contSEXP, SEXP willqueueSEXP, SEXP trjSEXP, SEXP maskSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type id(idSEXP);
     Rcpp::traits::input_parameter< int >::type amount(amountSEXP);
     Rcpp::traits::input_parameter< std::vector<bool> >::type cont(contSEXP);
+    Rcpp::traits::input_parameter< bool >::type willqueue(willqueueSEXP);
     Rcpp::traits::input_parameter< const std::vector<Environment>& >::type trj(trjSEXP);
     Rcpp::traits::input_parameter< unsigned short >::type mask(maskSEXP);
-    rcpp_result_gen = Rcpp::wrap(SeizeSelected__new(id, amount, cont, trj, mask));
+    rcpp_result_gen = Rcpp::wrap(SeizeSelected__new(id, amount, cont, willqueue, trj, mask));
     return rcpp_result_gen;
 END_RCPP
 }
 // SeizeSelected__new_func
-SEXP SeizeSelected__new_func(int id, const Function& amount, std::vector<bool> cont, const std::vector<Environment>& trj, unsigned short mask);
-RcppExport SEXP _simmer_SeizeSelected__new_func(SEXP idSEXP, SEXP amountSEXP, SEXP contSEXP, SEXP trjSEXP, SEXP maskSEXP) {
+SEXP SeizeSelected__new_func(int id, const Function& amount, std::vector<bool> cont, bool willqueue, const std::vector<Environment>& trj, unsigned short mask);
+RcppExport SEXP _simmer_SeizeSelected__new_func(SEXP idSEXP, SEXP amountSEXP, SEXP contSEXP, SEXP willqueueSEXP, SEXP trjSEXP, SEXP maskSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type id(idSEXP);
     Rcpp::traits::input_parameter< const Function& >::type amount(amountSEXP);
     Rcpp::traits::input_parameter< std::vector<bool> >::type cont(contSEXP);
+    Rcpp::traits::input_parameter< bool >::type willqueue(willqueueSEXP);
     Rcpp::traits::input_parameter< const std::vector<Environment>& >::type trj(trjSEXP);
     Rcpp::traits::input_parameter< unsigned short >::type mask(maskSEXP);
-    rcpp_result_gen = Rcpp::wrap(SeizeSelected__new_func(id, amount, cont, trj, mask));
+    rcpp_result_gen = Rcpp::wrap(SeizeSelected__new_func(id, amount, cont, willqueue, trj, mask));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1383,10 +1387,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_simmer_Seize__new", (DL_FUNC) &_simmer_Seize__new, 5},
-    {"_simmer_Seize__new_func", (DL_FUNC) &_simmer_Seize__new_func, 5},
-    {"_simmer_SeizeSelected__new", (DL_FUNC) &_simmer_SeizeSelected__new, 5},
-    {"_simmer_SeizeSelected__new_func", (DL_FUNC) &_simmer_SeizeSelected__new_func, 5},
+    {"_simmer_Seize__new", (DL_FUNC) &_simmer_Seize__new, 6},
+    {"_simmer_Seize__new_func", (DL_FUNC) &_simmer_Seize__new_func, 6},
+    {"_simmer_SeizeSelected__new", (DL_FUNC) &_simmer_SeizeSelected__new, 6},
+    {"_simmer_SeizeSelected__new_func", (DL_FUNC) &_simmer_SeizeSelected__new_func, 6},
     {"_simmer_Release__new", (DL_FUNC) &_simmer_Release__new, 2},
     {"_simmer_Release__new_func", (DL_FUNC) &_simmer_Release__new_func, 2},
     {"_simmer_ReleaseAll__new", (DL_FUNC) &_simmer_ReleaseAll__new, 1},

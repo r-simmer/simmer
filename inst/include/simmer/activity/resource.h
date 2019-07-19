@@ -33,15 +33,15 @@ namespace simmer {
   public:
     CLONEABLE(Seize<T>)
 
-    Seize(const std::string& resource, const T& amount, const VEC<bool>& cont,
+    Seize(const std::string& resource, const T& amount, const VEC<bool>& cont, const bool willqueue,
           const VEC<REnv>& trj, unsigned short mask)
       : Fork("Seize", cont, trj),
-        internal::ResGetter("Seize", resource), amount(amount), mask(mask) {}
+        internal::ResGetter("Seize", resource), amount(amount), mask(mask), willqueue(willqueue) {}
 
-    Seize(int id, const T& amount, const VEC<bool>& cont,
+    Seize(int id, const T& amount, const VEC<bool>& cont, const bool willqueue,
           const VEC<REnv>& trj, unsigned short mask)
       : Fork("Seize", cont, trj),
-        internal::ResGetter("Seize", id), amount(amount), mask(mask) {}
+        internal::ResGetter("Seize", id), amount(amount), mask(mask), willqueue(willqueue) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
@@ -51,12 +51,13 @@ namespace simmer {
 
     double run(Arrival* arrival) {
       return select_path(arrival, get_resource(arrival)->
-                         seize(arrival, std::abs(get<int>(amount, arrival))));
+                         seize(arrival, std::abs(get<int>(amount, arrival)),willqueue));
     }
 
   protected:
     T amount;
     unsigned short mask;
+    bool willqueue;
 
     int select_path(Arrival* arrival, int ret) {
       switch (ret) {

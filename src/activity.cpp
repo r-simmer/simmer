@@ -23,31 +23,31 @@ using namespace Rcpp;
 using namespace simmer;
 
 //[[Rcpp::export]]
-SEXP Seize__new(const std::string& resource, int amount, std::vector<bool> cont,
+SEXP Seize__new(const std::string& resource, int amount, std::vector<bool> cont, bool willqueue,
                 const std::vector<Environment>& trj, unsigned short mask)
 {
-  return XPtr<Seize<int> >(new Seize<int>(resource, amount, cont, trj, mask));
+  return XPtr<Seize<int> >(new Seize<int>(resource, amount, cont, willqueue, trj, mask));
 }
 
 //[[Rcpp::export]]
-SEXP Seize__new_func(const std::string& resource, const Function& amount, std::vector<bool> cont,
+SEXP Seize__new_func(const std::string& resource, const Function& amount, std::vector<bool> cont, bool willqueue,
                      const std::vector<Environment>& trj, unsigned short mask)
 {
-  return XPtr<Seize<Function> >(new Seize<Function>(resource, amount, cont, trj, mask));
+  return XPtr<Seize<Function> >(new Seize<Function>(resource, amount, cont, willqueue, trj, mask));
 }
 
 //[[Rcpp::export]]
-SEXP SeizeSelected__new(int id, int amount, std::vector<bool> cont,
+SEXP SeizeSelected__new(int id, int amount, std::vector<bool> cont, bool willqueue,
                         const std::vector<Environment>& trj, unsigned short mask)
 {
-  return XPtr<Seize<int> >(new Seize<int>(id, amount, cont, trj, mask));
+  return XPtr<Seize<int> >(new Seize<int>(id, amount, cont, willqueue, trj, mask));
 }
 
 //[[Rcpp::export]]
-SEXP SeizeSelected__new_func(int id, const Function& amount, std::vector<bool> cont,
+SEXP SeizeSelected__new_func(int id, const Function& amount, std::vector<bool> cont, bool willqueue,
                              const std::vector<Environment>& trj, unsigned short mask)
 {
-  return XPtr<Seize<Function> >(new Seize<Function>(id, amount, cont, trj, mask));
+  return XPtr<Seize<Function> >(new Seize<Function>(id, amount, cont, willqueue, trj, mask));
 }
 
 //[[Rcpp::export]]
