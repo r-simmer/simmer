@@ -1,5 +1,5 @@
 // Copyright (C) 2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -32,7 +32,7 @@ namespace simmer {
       return;
     }
 
-    foreach_ (ResMSet::value_type& itr, resources) {
+    foreach_ (ResVec::value_type& itr, resources) {
       Rcpp::warning("'%s': leaving without releasing '%s'", name, itr->name);
       itr->erase(this, true);
     }
@@ -58,11 +58,11 @@ namespace simmer {
       restime[ptr->name].start = sim->now();
       restime[ptr->name].activity = 0;
     }
-    resources.insert(ptr);
+    resources.push_back(ptr);
   }
 
   inline void Arrival::unregister_entity(Resource* ptr) {
-    ResMSet::iterator search = resources.find(ptr);
+    ResVec::iterator search = std::find(resources.begin(), resources.end(), ptr);
     if (!ptr || search == resources.end())
       Rcpp::stop("illegal unregister of arrival '%s'", name); // # nocov
     if (is_monitored())
@@ -70,21 +70,24 @@ namespace simmer {
     resources.erase(search);
   }
 
-  inline bool Arrival::leave_resources(bool flag) {
+  inline bool Arrival::leave_resources(bool flag, bool keep_seized) {
     if (status.busy_until > sim->now())
       unset_busy(sim->now());
     unset_remaining();
-    while (resources.begin() != resources.end())
-      flag |= (*resources.begin())->erase(this);
+    if (!keep_seized) {
+      while (resources.begin() != resources.end())
+        flag |= (*resources.begin())->erase(this);
+    } else if (!sim->is_scheduled(this))
+      flag |= resources.back()->erase(this);
     return flag;
   }
 
-  inline void Arrival::renege(Activity* next) {
+  inline void Arrival::renege(Activity* next, bool keep_seized) {
     timer = NULL;
     cancel_renege();
     if (batch && !batch->erase(this))
       return;
-    if (!leave_resources() && !batch)
+    if (!leave_resources(false, keep_seized) && !batch)
       deactivate();
     batch = NULL;
     if (next) {

@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Bart Smeets
 // Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-// Copyright (C) 2015-2018 Iñaki Ucar
+// Copyright (C) 2015-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -323,23 +323,23 @@ SEXP Batch__new_func3(int n, const Function& timeout, bool permanent,
 SEXP Separate__new() { return XPtr<Separate>(new Separate()); }
 
 //[[Rcpp::export]]
-SEXP RenegeIn__new(double t, const std::vector<Environment>& trj) {
-  return XPtr<RenegeIn<double> >(new RenegeIn<double>(t, trj));
+SEXP RenegeIn__new(double t, const std::vector<Environment>& trj, bool keep_seized) {
+  return XPtr<RenegeIn<double> >(new RenegeIn<double>(t, trj, keep_seized));
 }
 
 //[[Rcpp::export]]
-SEXP RenegeIn__new_func(const Function& t, const std::vector<Environment>& trj) {
-  return XPtr<RenegeIn<Function> >(new RenegeIn<Function>(t, trj));
+SEXP RenegeIn__new_func(const Function& t, const std::vector<Environment>& trj, bool keep_seized) {
+  return XPtr<RenegeIn<Function> >(new RenegeIn<Function>(t, trj, keep_seized));
 }
 
 //[[Rcpp::export]]
-SEXP RenegeIf__new(const std::string& signal, const std::vector<Environment>& trj) {
-  return XPtr<RenegeIf<std::string> >(new RenegeIf<std::string>(signal, trj));
+SEXP RenegeIf__new(const std::string& signal, const std::vector<Environment>& trj, bool keep_seized) {
+  return XPtr<RenegeIf<std::string> >(new RenegeIf<std::string>(signal, trj, keep_seized));
 }
 
 //[[Rcpp::export]]
-SEXP RenegeIf__new_func(const Function& signal, const std::vector<Environment>& trj) {
-  return XPtr<RenegeIf<Function> >(new RenegeIf<Function>(signal, trj));
+SEXP RenegeIf__new_func(const Function& signal, const std::vector<Environment>& trj, bool keep_seized) {
+  return XPtr<RenegeIf<Function> >(new RenegeIf<Function>(signal, trj, keep_seized));
 }
 
 //[[Rcpp::export]]

@@ -934,6 +934,8 @@ handle_unfinished.trajectory <- function(.trj, handler) {
 #' @param t timeout to trigger reneging, accepts either a numeric or a callable
 #' object (a function) which must return a numeric.
 #' @param out optional sub-trajectory in case of reneging.
+#' @param keep_seized whether to keep already seized resources. By default, all
+#' resources are released.
 #'
 #' @return Returns the trajectory object.
 #'
@@ -963,16 +965,21 @@ handle_unfinished.trajectory <- function(.trj, handler) {
 #'   run() %>% invisible
 #'
 #' @export
-renege_in <- function(.trj, t, out=NULL) UseMethod("renege_in")
+renege_in <- function(.trj, t, out=NULL, keep_seized=FALSE)
+  UseMethod("renege_in")
 
 #' @export
-renege_in.trajectory <- function(.trj, t, out=NULL) {
-  check_args(t=c("number", "function"), out=c("trajectory", "NULL"))
+renege_in.trajectory <- function(.trj, t, out=NULL, keep_seized=FALSE) {
+  check_args(
+    t = c("number", "function"),
+    out = c("trajectory", "NULL"),
+    keep_seized = "flag"
+  )
   traj <- as.list(c(out[]))
   switch(
     binarise(is.function(t)),
-    add_activity(.trj, RenegeIn__new(t, traj)),
-    add_activity(.trj, RenegeIn__new_func(t, traj))
+    add_activity(.trj, RenegeIn__new(t, traj, keep_seized)),
+    add_activity(.trj, RenegeIn__new_func(t, traj, keep_seized))
   )
 }
 
@@ -982,16 +989,21 @@ renege_in.trajectory <- function(.trj, t, out=NULL) {
 #' @rdname renege_in
 #' @seealso \code{\link{send}}, \code{\link{leave}}
 #' @export
-renege_if <- function(.trj, signal, out=NULL) UseMethod("renege_if")
+renege_if <- function(.trj, signal, out=NULL, keep_seized=FALSE)
+  UseMethod("renege_if")
 
 #' @export
-renege_if.trajectory <- function(.trj, signal, out=NULL) {
-  check_args(signal=c("string", "function"), out=c("trajectory", "NULL"))
+renege_if.trajectory <- function(.trj, signal, out=NULL, keep_seized=FALSE) {
+  check_args(
+    signal = c("string", "function"),
+    out = c("trajectory", "NULL"),
+    keep_seized = "flag"
+  )
   traj <- as.list(c(out[]))
   switch(
     binarise(is.function(signal)),
-    add_activity(.trj, RenegeIf__new(signal, traj)),
-    add_activity(.trj, RenegeIf__new_func(signal, traj))
+    add_activity(.trj, RenegeIf__new(signal, traj, keep_seized)),
+    add_activity(.trj, RenegeIf__new_func(signal, traj, keep_seized))
   )
 }
 

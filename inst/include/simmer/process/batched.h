@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -88,12 +88,12 @@ namespace simmer {
           }
         }
       } else if (arrivals.size() == 1 && !batch) {
-        if (!leave_resources(!activity))
+        if (!leave_resources(!activity, false))
           deactivate();
       } else {
         del = true;
         batch->erase(this);
-        leave_resources();
+        leave_resources(false, false);
       }
       arrivals.erase(std::remove(arrivals.begin(), arrivals.end(), arrival), arrivals.end());
       arrival->unregister_entity(this);
