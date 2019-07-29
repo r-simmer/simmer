@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -168,14 +168,11 @@ namespace simmer {
       Batched** ptr = sim->get_batch(this, id);
       if (!(*ptr) || *ptr != target)
         return;
-      if ((*ptr)->size()) {
-        (*ptr)->set_activity(get_next());
-        (*ptr)->activate();
-        *ptr = init(*ptr);
-      } else {
-        delete *ptr;
-        *ptr = NULL;
-      }
+      if (target->size()) {
+        target->set_activity(get_next());
+        target->activate();
+      } else delete target;
+      *ptr = NULL;
     }
   };
 

@@ -146,7 +146,7 @@ test_that("a timeout can trigger early batches", {
   expect_equal(arr_glb$start_time, c(0, 1, 2, 3))
   expect_equal(arr_glb$end_time, c(1.5, 3.5, 5.5, 7.5))
   expect_equal(arr_glb$activity_time, c(1, 2, 3, 4))
-  expect_equal(arr_res$start_time, c(0.5, 1, 2.5, 3))
+  expect_equal(arr_res$start_time, c(0.5, 1.5, 2.5, 3.5))
   expect_equal(arr_res$end_time, c(1.5, 2.5, 3.5, 4.5))
   expect_equal(arr_res$activity_time, c(1, 1, 1, 1))
 })
