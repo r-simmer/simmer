@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -100,8 +100,13 @@ namespace simmer { namespace internal {
         Resource* res = sim->get_resource(resources[i]);
         if (check_available && !res->get_capacity())
           continue;
-        if (!selected || res->get_server_count() + res->get_queue_count() <
-          selected->get_server_count() + selected->get_queue_count())
+        if (!selected ||
+            ((selected->get_capacity() >= 0) &&
+             ((res->get_capacity() < 0) ||
+              (res->get_queue_count()
+                 + res->get_server_count() - res->get_capacity() <
+                   selected->get_queue_count()
+                 + selected->get_server_count() - selected->get_capacity()))))
           selected = res;
       }
       if (!selected)
@@ -144,7 +149,7 @@ namespace simmer { namespace internal {
         Rcpp::stop("policy '%s' found no resource available", name);
       selected = first_available;
     select:
-        return selected;
+      return selected;
     }
 
     Resource* policy_random(Simulator* sim, const VEC<std::string>& resources) {
