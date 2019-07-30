@@ -782,7 +782,7 @@ def benchmark(n, times):
 
 Equivalently, this can be done for \proglang{Julia} and \pkg{SimJulia} using the \pkg{rjulia} package [@GitHub:rJulia].[^1] Once more, \code{n} controls the number of arrivals simulated on average:
 
-[^1]: Note that the code provided does not work on recent versions of Julia and SimJulia. An analogous standalone replication script for more recent versions is supplied in the supplementary materials.
+[^1]: Note that the code provided does not work on recent versions of \proglang{Julia} and \pkg{SimJulia} An analogous standalone replication script for more recent versions is supplied in the supplementary materials.
 
 ```{r, performance-mm1-simjulia, eval=FALSE}
 rjulia::julia_init()

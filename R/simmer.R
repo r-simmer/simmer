@@ -27,9 +27,16 @@
 #' leverages the chaining/piping workflow introduced by the \pkg{magrittr} package.
 #'
 #' @author Iñaki Ucar and Bart Smeets
-#' @references Iñaki Ucar, Bart Smeets and Arturo Azcorra (2018).
-#' \pkg{simmer}: Discrete-Event Simulation for \R.
-#' \emph{Journal of Statistical Software}, accepted for publication.
+#' @references Ucar I., Smeets B., Azcorra A. (2019).
+#' "\pkg{simmer}: Discrete-Event Simulation for \R."
+#' \emph{Journal of Statistical Software}, \strong{90}(2), 1-30.
+#' \doi{10.18637/jss.v090.i02}.
+#'
+#' Ucar I., Hernández J.A., Serrano P., Azcorra A. (2018).
+#' "Design and Analysis of 5G Scenarios with \pkg{simmer}: An \R Package for
+#' Fast DES Prototyping."
+#' \emph{IEEE Communications Magazine}, \strong{56}(11), 145-151.
+#' \doi{10.1109/MCOM.2018.1700960}.
 #'
 #' @seealso \pkg{simmer}'s homepage \url{http://r-simmer.org} and
 #' GitHub repository \url{https://github.com/r-simmer/simmer}.

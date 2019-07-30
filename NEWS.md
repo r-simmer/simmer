@@ -13,7 +13,7 @@
 - Move activity usage examples to help pages (#194).
 - Fix shortest-queue selection policies (#196).
 - Fix batch triggering (#203).
-- Update JSS paper.
+- Update JSS paper, CITATION, references and DOI.
 
 # simmer 4.2.2
 
