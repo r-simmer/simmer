@@ -429,8 +429,8 @@ add_dataframe_ <- function(sim_, name_prefix, trj, data, mon, batch, time, attrs
     .Call(`_simmer_add_dataframe_`, sim_, name_prefix, trj, data, mon, batch, time, attrs, priority, preemptible, restart)
 }
 
-add_resource_ <- function(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict) {
-    .Call(`_simmer_add_resource_`, sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict)
+add_resource_ <- function(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict, queue_priority_min, queue_priority_max) {
+    .Call(`_simmer_add_resource_`, sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict, queue_priority_min, queue_priority_max)
 }
 
 add_resource_manager_ <- function(sim_, name, param, init, intervals, values, period) {
