@@ -70,26 +70,25 @@ namespace simmer {
     resources.erase(search);
   }
 
-  inline bool Arrival::leave_resources(bool flag, bool keep_seized) {
+  inline void Arrival::leave_resources(bool was_batched, bool keep_seized) {
     if (status.busy_until > sim->now())
       unset_busy(sim->now());
     unset_remaining();
     if (!keep_seized) {
       while (resources.begin() != resources.end())
-        flag |= (*resources.begin())->erase(this);
-    } else if (!sim->is_scheduled(this))
-      flag |= resources.back()->erase(this);
-    return flag;
+        (*resources.begin())->erase(this);
+    } else if (!sim->is_scheduled(this) && !was_batched)
+      resources.back()->erase(this);
   }
 
   inline void Arrival::renege(Activity* next, bool keep_seized) {
+    bool in_batch = batch != NULL;
     timer = NULL;
     cancel_renege();
     if (batch && !batch->erase(this))
       return;
-    if (!leave_resources(false, keep_seized) && !batch)
-      deactivate();
-    batch = NULL;
+    leave_resources(in_batch, keep_seized);
+    deactivate();
     if (next) {
       activity = next;
       activate();

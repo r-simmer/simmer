@@ -88,12 +88,12 @@ namespace simmer {
           }
         }
       } else if (arrivals.size() == 1 && !batch) {
-        if (!leave_resources(!activity, false))
-          deactivate();
+        leave_resources(false, false);
+        deactivate();
       } else {
         del = true;
         batch->erase(this);
-        leave_resources(false, false);
+        leave_resources(true, false);
       }
       arrivals.erase(std::remove(arrivals.begin(), arrivals.end(), arrival), arrivals.end());
       arrival->unregister_entity(this);
