@@ -3,6 +3,8 @@
 ## New features
 
 - Add ability to `keep_seized` resources after reneging (#204 addressing #200).
+- Add ability to define a range of arrival priorities that are allowed to access
+  a resource's queue if there is no room in the server (#205 addressing #202).
 
 ## Minor changes and fixes:
 
