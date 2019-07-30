@@ -553,6 +553,30 @@ test_that("a reneging arrival keeps seized resources", {
   t <- trajectory() %>%
     renege_in(1, out=out, keep_seized=TRUE) %>%
     seize("dummy") %>%
+    seize("other") %>%
+    timeout(4)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy") %>%
+    add_resource("other", 0) %>%
+    add_generator("arrival", t, at(0))
+
+  expect_warning(run(env))
+
+  arr <- get_mon_arrivals(env)
+  res <- get_mon_resources(env)
+
+  expect_equal(arr$end_time, 2)
+  expect_equal(arr$activity_time, 1)
+  expect_true(arr$finished)
+  expect_equal(res$resource, c("dummy", "other", "other"))
+  expect_equal(res$time, c(0, 0, 1))
+  expect_equal(res$server, c(1, 0, 0))
+  expect_equal(res$queue, c(0, 1, 0))
+
+  t <- trajectory() %>%
+    renege_in(1, out=out, keep_seized=TRUE) %>%
+    seize("dummy") %>%
     batch(1) %>%
     seize("other") %>%
     timeout(4)
