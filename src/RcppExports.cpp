@@ -1324,8 +1324,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // add_resource_
-bool add_resource_(SEXP sim_, const std::string& name, int capacity, int queue_size, bool mon, bool preemptive, const std::string& preempt_order, bool queue_size_strict);
-RcppExport SEXP _simmer_add_resource_(SEXP sim_SEXP, SEXP nameSEXP, SEXP capacitySEXP, SEXP queue_sizeSEXP, SEXP monSEXP, SEXP preemptiveSEXP, SEXP preempt_orderSEXP, SEXP queue_size_strictSEXP) {
+bool add_resource_(SEXP sim_, const std::string& name, int capacity, int queue_size, bool mon, bool preemptive, const std::string& preempt_order, bool queue_size_strict, int queue_min_priority);
+RcppExport SEXP _simmer_add_resource_(SEXP sim_SEXP, SEXP nameSEXP, SEXP capacitySEXP, SEXP queue_sizeSEXP, SEXP monSEXP, SEXP preemptiveSEXP, SEXP preempt_orderSEXP, SEXP queue_size_strictSEXP, SEXP queue_min_prioritySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1337,7 +1337,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type preemptive(preemptiveSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type preempt_order(preempt_orderSEXP);
     Rcpp::traits::input_parameter< bool >::type queue_size_strict(queue_size_strictSEXP);
-    rcpp_result_gen = Rcpp::wrap(add_resource_(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict));
+    Rcpp::traits::input_parameter< int >::type queue_min_priority(queue_min_prioritySEXP);
+    rcpp_result_gen = Rcpp::wrap(add_resource_(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict, queue_min_priority));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1494,7 +1495,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_run_", (DL_FUNC) &_simmer_run_, 2},
     {"_simmer_add_generator_", (DL_FUNC) &_simmer_add_generator_, 8},
     {"_simmer_add_dataframe_", (DL_FUNC) &_simmer_add_dataframe_, 11},
-    {"_simmer_add_resource_", (DL_FUNC) &_simmer_add_resource_, 8},
+    {"_simmer_add_resource_", (DL_FUNC) &_simmer_add_resource_, 9},
     {"_simmer_add_resource_manager_", (DL_FUNC) &_simmer_add_resource_manager_, 7},
     {"_simmer_add_global_manager_", (DL_FUNC) &_simmer_add_global_manager_, 6},
     {"_simmer_record_ongoing_", (DL_FUNC) &_simmer_record_ongoing_, 2},

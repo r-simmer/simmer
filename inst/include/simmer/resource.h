@@ -1,6 +1,6 @@
 // Copyright (C) 2014-2015 Bart Smeets
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -39,9 +39,10 @@ namespace simmer {
     * @param queue_size  room in the queue (-1 means infinity)
     */
     Resource(Simulator* sim, const std::string& name, int mon, int capacity,
-             int queue_size, bool queue_size_strict)
+             int queue_size, bool queue_size_strict, int queue_min_priority)
       : Entity(sim, name, mon), capacity(capacity), queue_size(queue_size),
-        server_count(0), queue_count(0), queue_size_strict(queue_size_strict) {}
+        server_count(0), queue_count(0), queue_size_strict(queue_size_strict),
+        queue_min_priority(queue_min_priority) {}
 
     /**
     * Reset the resource: server, queue
@@ -170,6 +171,7 @@ namespace simmer {
     int server_count;       /**< number of arrivals being served */
     int queue_count;        /**< number of arrivals waiting */
     bool queue_size_strict;
+    int queue_min_priority;
 
     int post_release() {
       // serve another

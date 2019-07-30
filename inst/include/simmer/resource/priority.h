@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -34,8 +34,9 @@ namespace simmer {
 
   public:
     PriorityRes(Simulator* sim, const std::string& name, int mon, int capacity,
-                int queue_size, bool queue_size_strict)
-      : Resource(sim, name, mon, capacity, queue_size, queue_size_strict) {}
+                int queue_size, bool queue_size_strict, int queue_min_priority)
+      : Resource(sim, name, mon, capacity, queue_size, queue_size_strict,
+                 queue_min_priority) {}
 
     ~PriorityRes() { reset(); }
 
@@ -73,6 +74,8 @@ namespace simmer {
     }
 
     bool room_in_queue(int amount, int priority) const {
+      if (priority < queue_min_priority)
+        return false;
       if (queue_size < 0 || queue_count + amount <= queue_size)
         return true;
       int count = (queue_size > 0) ? (queue_size - queue_count) : 0;

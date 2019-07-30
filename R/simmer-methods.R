@@ -247,19 +247,22 @@ peek.simmer <- function(.env, steps=1, verbose=FALSE) {
 #' \code{\link{get_mon_arrivals}}. Unfinished arrivals can be handled with a
 #' drop-out trajectory that can be set using the \code{\link{handle_unfinished}}
 #' activity.
+#' @param queue_min_priority the minimum priority required to be able to access
+#' the queue if there is no room in the server. By default, all arrivals can be
+#' enqueued.
 #'
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \code{\link{schedule}}.
 #' @export
 add_resource <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE,
                          preemptive=FALSE, preempt_order=c("fifo", "lifo"),
-                         queue_size_strict=FALSE)
+                         queue_size_strict=FALSE, queue_min_priority=0)
   UseMethod("add_resource")
 
 #' @export
 add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE,
                                 preemptive=FALSE, preempt_order=c("fifo", "lifo"),
-                                queue_size_strict=FALSE)
+                                queue_size_strict=FALSE, queue_min_priority=0)
 {
   check_args(
     name = "string",
@@ -267,7 +270,8 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
     queue_size = c("number", "schedule"),
     mon = "flag",
     preemptive = "flag",
-    queue_size_strict = "flag"
+    queue_size_strict = "flag",
+    queue_min_priority = "number"
   )
   preempt_order <- match.arg(preempt_order)
 
@@ -281,8 +285,8 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
     queue_size <- queue_size_schedule$schedule$init
   } else queue_size_schedule <- NA
 
-  ret <- add_resource_(.env$sim_obj, name, capacity, queue_size, mon,
-                       preemptive, preempt_order, queue_size_strict)
+  ret <- add_resource_(.env$sim_obj, name, capacity, queue_size, mon, preemptive,
+                       preempt_order, queue_size_strict, queue_min_priority)
   if (ret) .env$resources[[name]] <- c(mon=mon, preemptive=preemptive)
 
   if (inherits(capacity_schedule, "schedule"))
