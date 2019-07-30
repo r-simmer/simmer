@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -30,12 +30,13 @@ namespace simmer {
   public:
     CLONEABLE(RenegeIn<T>)
 
-    RenegeIn(const T& t, const VEC<REnv>& trj)
-      : Fork("RenegeIn", VEC<bool>(trj.size(), false), trj), t(t) {}
+    RenegeIn(const T& t, const VEC<REnv>& trj, bool keep_seized)
+      : Fork("RenegeIn", VEC<bool>(trj.size(), false), trj), t(t),
+        keep_seized(keep_seized) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      internal::print(brief, false, ARG(t));
+      internal::print(brief, false, ARG(t), ARG(keep_seized));
       Fork::print(indent, verbose, brief);
     }
 
@@ -43,12 +44,13 @@ namespace simmer {
       Activity* next = NULL;
       if (heads.size())
         next = heads[0];
-      arrival->set_renege(std::abs(get<double>(t, arrival)), next);
+      arrival->set_renege(std::abs(get<double>(t, arrival)), next, keep_seized);
       return 0;
     }
 
   protected:
     T t;
+    bool keep_seized;
   };
 
   /**
@@ -59,12 +61,13 @@ namespace simmer {
   public:
     CLONEABLE(RenegeIf<T>)
 
-    RenegeIf(const T& signal, const VEC<REnv>& trj)
-      : Fork("RenegeIf", VEC<bool>(trj.size(), false), trj), signal(signal) {}
+    RenegeIf(const T& signal, const VEC<REnv>& trj, bool keep_seized)
+      : Fork("RenegeIf", VEC<bool>(trj.size(), false), trj), signal(signal),
+        keep_seized(keep_seized) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      internal::print(brief, false, ARG(signal));
+      internal::print(brief, false, ARG(signal), ARG(keep_seized));
       Fork::print(indent, verbose, brief);
     }
 
@@ -72,12 +75,13 @@ namespace simmer {
       Activity* next = NULL;
       if (heads.size())
         next = heads[0];
-      arrival->set_renege(get<std::string>(signal, arrival), next);
+      arrival->set_renege(get<std::string>(signal, arrival), next, keep_seized);
       return 0;
     }
 
   protected:
     T signal;
+    bool keep_seized;
   };
 
   /**

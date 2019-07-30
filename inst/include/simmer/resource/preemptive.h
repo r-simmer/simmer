@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -32,8 +32,10 @@ namespace simmer {
   class PreemptiveRes : public PriorityRes<T> {
   public:
     PreemptiveRes(Simulator* sim, const std::string& name, int mon, int capacity,
-                  int queue_size, bool queue_size_strict)
-      : PriorityRes<T>(sim, name, mon, capacity, queue_size, queue_size_strict) {}
+                  int queue_size, bool queue_size_strict, int queue_priority_min,
+                  int queue_priority_max)
+      : PriorityRes<T>(sim, name, mon, capacity, queue_size, queue_size_strict,
+                       queue_priority_min, queue_priority_max) {}
 
     ~PreemptiveRes() { reset(); }
 

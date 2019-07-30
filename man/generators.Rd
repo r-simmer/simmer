@@ -24,7 +24,9 @@ when_activated(n = 1)
 
 \item{start_time}{the time at which to launch the initial arrival.}
 
-\item{dist}{a function modelling the interarrival times.}
+\item{dist}{a function modelling the interarrival times. It is supposed to be
+an infinite source of values \code{>= 0} (e.g., \code{rexp} and the like). If
+the function provided returns any negative value, the behaviour is undefined.}
 
 \item{arrive}{if set to \code{TRUE} (default) the first arrival will be
 generated at \code{start_time} and will follow \code{dist} from then on.

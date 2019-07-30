@@ -52,9 +52,85 @@ handling all kinds of unfinished arrivals.}
 Returns the trajectory object.
 }
 \description{
-Activities for seizing/releasing a resource, by name or a previously selected one.
+Activities for seizing/releasing a resource, by name or a previously selected
+one. Resources must be defined in the simulation environment (see
+\code{\link{add_resource}}).
+}
+\examples{
+## simple seize, delay, then release
+traj <- trajectory() \%>\%
+  seize("doctor", 1) \%>\%
+  timeout(3) \%>\%
+  release("doctor", 1)
+
+simmer() \%>\%
+  add_resource("doctor", capacity=1) \%>\%
+  add_generator("patient", traj, at(0, 1)) \%>\%
+  run() \%>\%
+  get_mon_resources()
+
+## arrival rejection (no space left in the queue)
+traj <- trajectory() \%>\%
+  log_("arriving...") \%>\%
+  seize("doctor", 1) \%>\%
+  # the second patient won't reach this point
+  log_("doctor seized") \%>\%
+  timeout(5) \%>\%
+  release("doctor", 1)
+
+simmer() \%>\%
+  add_resource("doctor", capacity=1, queue_size=0) \%>\%
+  add_generator("patient", traj, at(0, 1)) \%>\%
+  run() \%>\% invisible
+
+## capturing rejection to retry
+traj <- trajectory() \%>\%
+  log_("arriving...") \%>\%
+  seize(
+    "doctor", 1, continue = FALSE,
+    reject = trajectory() \%>\%
+      log_("rejected!") \%>\%
+      # go for a walk and try again
+      timeout(2) \%>\%
+      log_("retrying...") \%>\%
+      rollback(amount = 4, times = Inf)) \%>\%
+  # the second patient will reach this point after a couple of walks
+  log_("doctor seized") \%>\%
+  timeout(5) \%>\%
+  release("doctor", 1) \%>\%
+  log_("leaving")
+
+simmer() \%>\%
+  add_resource("doctor", capacity=1, queue_size=0) \%>\%
+  add_generator("patient", traj, at(0, 1)) \%>\%
+  run() \%>\% invisible
+
+## combining post.seize and reject
+traj <- trajectory() \%>\%
+  log_("arriving...") \%>\%
+  seize(
+    "doctor", 1, continue = c(TRUE, TRUE),
+    post.seize = trajectory("admitted patient") \%>\%
+      log_("admitted") \%>\%
+      timeout(5) \%>\%
+      release("doctor", 1),
+    reject = trajectory("rejected patient") \%>\%
+      log_("rejected!") \%>\%
+      seize("nurse", 1) \%>\%
+      timeout(2) \%>\%
+      release("nurse", 1)) \%>\%
+  # both patients will reach this point, as continue = c(TRUE, TRUE)
+  timeout(10) \%>\%
+  log_("leaving...")
+
+simmer() \%>\%
+  add_resource("doctor", capacity=1, queue_size=0) \%>\%
+  add_resource("nurse", capacity=10, queue_size=0) \%>\%
+  add_generator("patient", traj, at(0, 1)) \%>\%
+  run() \%>\% invisible
+
 }
 \seealso{
 \code{\link{select}}, \code{\link{set_capacity}}, \code{\link{set_queue_size}},
-\code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}.
+\code{\link{set_capacity_selected}}, \code{\link{set_queue_size_selected}}
 }

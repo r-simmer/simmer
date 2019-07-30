@@ -48,7 +48,7 @@ namespace simmer {
     };
     typedef UMAP<std::string, ArrTime> ResTime;
     typedef UMAP<int, Resource*> SelMap;
-    typedef MSET<Resource*> ResMSet;
+    typedef VEC<Resource*> ResVec;
 
     CLONEABLE(Arrival)
 
@@ -188,18 +188,18 @@ namespace simmer {
 
     void set_dropout(Activity* next) { dropout = next; }
 
-    void set_renege(double timeout, Activity* next) {
+    void set_renege(double timeout, Activity* next, bool keep_seized) {
       cancel_renege();
       timer = new Task(sim, "Renege-Timer",
-                       BIND(&Arrival::renege, this, next),
+                       BIND(&Arrival::renege, this, next, keep_seized),
                        PRIORITY_MIN);
       timer->activate(timeout);
     }
 
-    void set_renege(const std::string& sig, Activity* next) {
+    void set_renege(const std::string& sig, Activity* next, bool keep_seized) {
       cancel_renege();
       signal = sig;
-      sim->subscribe(signal, this, BIND(&Arrival::renege, this, next));
+      sim->subscribe(signal, this, BIND(&Arrival::renege, this, next, keep_seized));
     }
 
     void cancel_renege() {
@@ -226,7 +226,7 @@ namespace simmer {
     std::string signal;   /**< signal that triggers reneging */
     Activity* dropout;    /**< drop-out trajectory */
     Batched* batch;       /**< batch that contains this arrival */
-    ResMSet resources;    /**< resources that contain this arrival */
+    ResVec resources;     /**< resources that contain this arrival */
 
     void init() {
       (*clones)++;
@@ -240,7 +240,7 @@ namespace simmer {
       sim->unregister_arrival(this);
     }
 
-    void renege(Activity* next);
+    void renege(Activity* next, bool keep_seized);
 
     virtual void report(const std::string& resource) const {
       ArrTime time = restime.find(resource)->second;
@@ -251,7 +251,7 @@ namespace simmer {
       sim->mon->record_release(name, start, sim->now(), activity, resource);
     }
 
-    bool leave_resources(bool flag = false);
+    void leave_resources(bool was_batched, bool keep_seized);
 
     virtual void update_activity(double value) {
       lifetime.activity += value;

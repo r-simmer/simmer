@@ -1,6 +1,9 @@
-## Patch release
+## Minor release
 
-Several bug fixes.
+The DOI in the CITATION is for a new JSS publication that will be registered
+after publication on CRAN.
+
+Several improvements and bug fixes, including current WARNs on CRAN.
 
 Regarding the package title, Uwe asked us in a past submission to remove
 "for R" because it is redundant. If it is not an issue, we would like to keep
@@ -12,8 +15,8 @@ written in Julia".
 
 ## Test environments
 
-- Fedora 29 + GCC + clang (local), R 3.5.2
-- Ubuntu 14.04 + GCC (on Travis-CI), R 3.4.4, 3.5.2, devel
+- Fedora 30 + GCC + clang (local), R 3.6.0
+- Ubuntu 14.04 + GCC (on Travis-CI), R 3.5.3, 3.6.1, devel
 - linux-x86_64-rocker-gcc-san (on r-hub)
 - ubuntu-rchk (on r-hub)
 - win-builder, R devel
@@ -25,4 +28,4 @@ There were no ERRORs, WARNINGs or NOTEs.
 ## Downstream dependencies
 
 There are 2 downstream dependencies, simmer.plot and simmer.bricks, for which
-I'm the maintainer too.
+I'm the maintainer too. No issues found.

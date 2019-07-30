@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -28,37 +28,29 @@ test_that("no selection throws an error", {
 })
 
 test_that("core selection algorithms work: shortest-queue", {
-  t0 <- trajectory() %>% seize("r1", 1)
-  t1 <- trajectory() %>% seize("r2", 1)
-
-  t2 <- trajectory() %>%
-    select(c("r1", "r2", "r3"), policy = "shortest-queue") %>%
+  t0 <- trajectory() %>%
+    select(c("o1", "r1", "o2", "r2", "r3"), policy = "shortest-queue") %>%
     seize_selected(1)
 
   env <- simmer(verbose = TRUE) %>%
+    add_resource("o1", 0) %>%
+    add_resource("o2", 0) %>%
     add_resource("r1", 2) %>%
     add_resource("r2", 3) %>%
     add_resource("r3", 1) %>%
-    add_generator("dummy0", t0, at(0)) %>%
-    add_generator("dummy1", t1, at(0, 0)) %>%
-    add_generator("dummy2", t2, at(seq(1, 6)))
+    add_generator("dummy0", t0, at(1:9))
 
   expect_warning(env %>% run)
 
   res <- get_mon_resources(env)
-  res_ordered <- res[order(res$time), ]
-  res_ordered <- res_ordered[4:9, ]
 
-  expect_equal(res_ordered$server, c(1, 2, 1, 2, 3, 1))
-  expect_equal(res_ordered$queue, c(0, 0, 1, 1, 0, 2))
-  expect_equal(res_ordered$resource, c("r3", "r1", "r3", "r1", "r2", "r3"))
+  expect_equal(res$server, c(1, 1, 2, 2, 3, 1, 0, 2, 0))
+  expect_equal(res$queue, c(0, 0, 0, 0, 0, 0, 1, 1, 1))
+  expect_equal(res$resource, c(paste0("r", c(2, 1, 2, 1, 2, 3)), "o1", "r1", "o2"))
 })
 
 test_that("core selection algorithms work: shortest-queue-available", {
-  t0 <- trajectory() %>% seize("r1", 1)
-  t1 <- trajectory() %>% seize("r2", 1)
-
-  t2 <- trajectory() %>%
+  t0 <- trajectory() %>%
     select(c("o1", "r1", "o2", "r2", "r3"), policy = "shortest-queue-available") %>%
     seize_selected(1)
 
@@ -68,19 +60,15 @@ test_that("core selection algorithms work: shortest-queue-available", {
     add_resource("r1", 2) %>%
     add_resource("r2", 3) %>%
     add_resource("r3", 1) %>%
-    add_generator("dummy0", t0, at(0)) %>%
-    add_generator("dummy1", t1, at(0, 0)) %>%
-    add_generator("dummy2", t2, at(seq(1, 6)))
+    add_generator("dummy0", t0, at(1:9))
 
   expect_warning(env %>% run)
 
   res <- get_mon_resources(env)
-  res_ordered <- res[order(res$time), ]
-  res_ordered <- res_ordered[4:9, ]
 
-  expect_equal(res_ordered$server, c(1, 2, 1, 2, 3, 1))
-  expect_equal(res_ordered$queue, c(0, 0, 1, 1, 0, 2))
-  expect_equal(res_ordered$resource, c("r3", "r1", "r3", "r1", "r2", "r3"))
+  expect_equal(res$server, c(1, 1, 2, 2, 3, 1, 2, 3, 1))
+  expect_equal(res$queue, c(0, 0, 0, 0, 0, 0, 1, 1, 1))
+  expect_equal(res$resource, paste0("r", c(2, 1, 2, 1, 2, 3, 1, 2, 3)))
 })
 
 test_that("core selection algorithms work: round-robin", {

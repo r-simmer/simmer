@@ -6,9 +6,9 @@
 \alias{renege_abort}
 \title{Renege on some Condition}
 \usage{
-renege_in(.trj, t, out = NULL)
+renege_in(.trj, t, out = NULL, keep_seized = FALSE)
 
-renege_if(.trj, signal, out = NULL)
+renege_if(.trj, signal, out = NULL, keep_seized = FALSE)
 
 renege_abort(.trj)
 }
@@ -20,6 +20,9 @@ object (a function) which must return a numeric.}
 
 \item{out}{optional sub-trajectory in case of reneging.}
 
+\item{keep_seized}{whether to keep already seized resources. By default, all
+resources are released.}
+
 \item{signal}{signal to trigger reneging, accepts either a string or a
 callable object (a function) which must return a string.}
 }
@@ -29,6 +32,33 @@ Returns the trajectory object.
 \description{
 Activities for setting or unsetting a timer or a signal after which the
 arrival will abandon.
+}
+\details{
+Note that \code{renege_if} works similarly to \code{\link{trap}},
+but in contrast to that, reneging is triggered even if the arrival is waiting
+in a queue or is part of a non-permanent \code{\link{batch}}.
+}
+\examples{
+bank <- trajectory() \%>\%
+  log_("here I am") \%>\%
+  # renege in 5 minutes
+  renege_in(
+    5,
+    out = trajectory() \%>\%
+      log_("lost my patience. Reneging...")) \%>\%
+  seize("clerk") \%>\%
+  # stay if I'm being attended within 5 minutes
+  renege_abort() \%>\%
+  log_("I'm being attended") \%>\%
+  timeout(10) \%>\%
+  release("clerk") \%>\%
+  log_("finished")
+
+simmer() \%>\%
+  add_resource("clerk", 1) \%>\%
+  add_generator("customer", bank, at(0, 1)) \%>\%
+  run() \%>\% invisible
+
 }
 \seealso{
 \code{\link{send}}, \code{\link{leave}}

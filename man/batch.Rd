@@ -37,3 +37,51 @@ Returns the trajectory object.
 Activities for collecting a number of arrivals before they can continue processing
 and splitting a previously established batch.
 }
+\examples{
+## unnamed batch with a timeout
+traj <- trajectory() \%>\%
+  log_("arrived") \%>\%
+  batch(2, timeout=5) \%>\%
+  log_("in a batch") \%>\%
+  timeout(5) \%>\%
+  separate() \%>\%
+  log_("leaving")
+
+simmer() \%>\%
+  add_generator("dummy", traj, at(0:2)) \%>\%
+  run() \%>\% invisible
+
+## batching based on some dynamic rule
+traj <- trajectory() \%>\%
+  log_("arrived") \%>\%
+  # always FALSE -> no batches
+  batch(2, rule=function() FALSE) \%>\%
+  log_("not in a batch") \%>\%
+  timeout(5) \%>\%
+  separate() \%>\%
+  log_("leaving")
+
+simmer() \%>\%
+  add_generator("dummy", traj, at(0:2)) \%>\%
+  run() \%>\% invisible
+
+## named batch, shared across trajectories
+traj0 <- trajectory() \%>\%
+  log_("arrived traj0") \%>\%
+  batch(2, name = "mybatch")
+
+traj1 <- trajectory() \%>\%
+  log_("arrived traj1") \%>\%
+  timeout(1) \%>\%
+  batch(2, name = "mybatch") \%>\%
+  log_("in a batch") \%>\%
+  timeout(2) \%>\%
+  separate() \%>\%
+  log_("leaving traj1")
+
+simmer() \%>\%
+  add_generator("dummy0", traj0, at(0)) \%>\%
+  add_generator("dummy1", traj1, at(0)) \%>\%
+  run() \%>\% invisible
+
+}

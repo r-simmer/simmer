@@ -1,8 +1,19 @@
 # simmer 4.3.0
 
+## New features
+
+- Add ability to `keep_seized` resources after reneging (#204 addressing #200).
+- Add ability to define a range of arrival priorities that are allowed to access
+  a resource's queue if there is no room in the server (#205 addressing #202).
+
 ## Minor changes and fixes:
 
 - Drop R6 as a dependency (#193 addressing #190).
+- Small fix in `from` and `from_to` + documentation update (75a9569).
+- Move activity usage examples to help pages (#194).
+- Fix shortest-queue selection policies (#196).
+- Fix batch triggering (#203).
+- Update JSS paper, CITATION, references and DOI.
 
 # simmer 4.2.2
 

@@ -217,20 +217,20 @@ Separate__new <- function() {
     .Call(`_simmer_Separate__new`)
 }
 
-RenegeIn__new <- function(t, trj) {
-    .Call(`_simmer_RenegeIn__new`, t, trj)
+RenegeIn__new <- function(t, trj, keep_seized) {
+    .Call(`_simmer_RenegeIn__new`, t, trj, keep_seized)
 }
 
-RenegeIn__new_func <- function(t, trj) {
-    .Call(`_simmer_RenegeIn__new_func`, t, trj)
+RenegeIn__new_func <- function(t, trj, keep_seized) {
+    .Call(`_simmer_RenegeIn__new_func`, t, trj, keep_seized)
 }
 
-RenegeIf__new <- function(signal, trj) {
-    .Call(`_simmer_RenegeIf__new`, signal, trj)
+RenegeIf__new <- function(signal, trj, keep_seized) {
+    .Call(`_simmer_RenegeIf__new`, signal, trj, keep_seized)
 }
 
-RenegeIf__new_func <- function(signal, trj) {
-    .Call(`_simmer_RenegeIf__new_func`, signal, trj)
+RenegeIf__new_func <- function(signal, trj, keep_seized) {
+    .Call(`_simmer_RenegeIf__new_func`, signal, trj, keep_seized)
 }
 
 RenegeAbort__new <- function() {
@@ -429,8 +429,8 @@ add_dataframe_ <- function(sim_, name_prefix, trj, data, mon, batch, time, attrs
     .Call(`_simmer_add_dataframe_`, sim_, name_prefix, trj, data, mon, batch, time, attrs, priority, preemptible, restart)
 }
 
-add_resource_ <- function(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict) {
-    .Call(`_simmer_add_resource_`, sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict)
+add_resource_ <- function(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict, queue_priority_min, queue_priority_max) {
+    .Call(`_simmer_add_resource_`, sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict, queue_priority_min, queue_priority_max)
 }
 
 add_resource_manager_ <- function(sim_, name, param, init, intervals, values, period) {

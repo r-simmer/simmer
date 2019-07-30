@@ -23,6 +23,19 @@ to \code{FALSE} in the output of \code{\link{get_mon_arrivals}}. Unfinished
 arrivals can be handled with a drop-out trajectory that can be set using the
 \code{\link{handle_unfinished}} activity.
 }
+\examples{
+set.seed(1234)
+
+traj <- trajectory() \%>\%
+  log_("leave with some probability") \%>\%
+  leave(function() runif(1) < 0.5) \%>\%
+  log_("didn't leave")
+
+simmer() \%>\%
+  add_generator("dummy", traj, at(0, 1)) \%>\%
+  run() \%>\% invisible
+
+}
 \seealso{
 \code{\link{handle_unfinished}}, \code{\link{renege_in}}
 }

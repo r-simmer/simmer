@@ -3,8 +3,8 @@ author:
   - name: Iñaki Ucar
     affiliation: Universidad Carlos III de Madrid
     address: >
-      Avda. de la Universidad, 30
-      28911 Leganés (Madrid) Spain
+      Calle Madrid, 135
+      28903 Getafe (Madrid) Spain
     email: iucar@fedoraproject.org
   - name: Bart Smeets
     affiliation: dataroots
@@ -40,6 +40,7 @@ preamble: >
   \usepackage{subfig}
 output: if (packageVersion("rticles") < 0.5 || rmarkdown::pandoc_version() >= 2)
   rticles::jss_article else rmarkdown::html_vignette
+documentclass: jss
 classoption: nojss
 citation_package: natbib
 bibliography: jss.bib
@@ -55,7 +56,7 @@ vignette: >
 \setlength{\abovedisplayskip}{0pt}
 
 ```{r, setup, include=FALSE}
-knitr::opts_chunk$set(fig.width=5, fig.height=3, warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(fig.width=4, fig.height=3*4/5, warning=FALSE, message=FALSE)
 
 knitr::knit_hooks$set(document = function(x, options) {
   # fix line width
@@ -70,17 +71,17 @@ This manuscript corresponds to \pkg{simmer} version `r packageDescription("simme
 
 # Introduction
 
-The complexity of many real-world systems involves unaffordable analytical models, and consequently, such systems are commonly studied by means of simulation. This problem-solving technique precedes the emergence of computers, but tool and technique got entangled as a result of their development. As defined by @Shannon:1975:Systems, simulation "is the process of designing a model of a real system and conducting experiments with this model for the purpose either of understanding the behaviour of the system or of evaluating various strategies (within the limits imposed by a criterion or a set of criteria) for the operation of the system."
+The complexity of many real-world systems involves unaffordable analytical models, and consequently, such systems are commonly studied by means of simulation. This problem-solving technique precedes the emergence of computers, but tool and technique got entangled as a result of their development. As defined by @Shannon:1975:Systems, simulation "is the process of designing a model of a real system and conducting experiments with this model for the purpose either of understanding the behavior of the system or of evaluating various strategies (within the limits imposed by a criterion or a set of criteria) for the operation of the system."
 
-Different types of simulation apply depending on the nature of the system under consideration. A common model taxonomy classifies simulation problems along three main dimensions [@Law:2000:Simulation]: (*i*) deterministic vs. stochastic, (*ii*) static vs. dynamic (depending on whether they require a *time* component), and (*iii*) continuous vs. discrete (depending on how the system changes). For instance, *Monte Carlo methods* are well-known examples of static stochastic simulation techniques. On the other hand, *Discrete-event simulation* (DES) is a specific technique for modelling stochastic, dynamic and discretely evolving systems. As opposed to *continuous simulation*, which typically uses smoothly-evolving equational models, DES is characterised by sudden state changes at precise points of (simulated) time.
+Different types of simulation apply depending on the nature of the system under consideration. A common model taxonomy classifies simulation problems along three main dimensions [@Law:2000:Simulation]: (*i*) deterministic vs. stochastic, (*ii*) static vs. dynamic (depending on whether they require a *time* component), and (*iii*) continuous vs. discrete (depending on how the system changes). For instance, *Monte Carlo methods* are well-known examples of static stochastic simulation techniques. On the other hand, *Discrete-event simulation* (DES) is a specific technique for modelling stochastic, dynamic and discretely evolving systems. As opposed to *continuous simulation*, which typically uses smoothly-evolving equational models, DES is characterized by sudden state changes at precise points of (simulated) time.
 
-Customers arriving at a bank, products being manipulated in a supply chain, or packets traversing a network are common examples of such systems. The discrete nature of a given system arises as soon as its behaviour can be described in terms of *events*, which is the most fundamental concept in DES. An *event* is an instantaneous occurrence that may change the state of the system, while, between events, all the state variables remain constant.
+Customers arriving at a bank, products being manipulated in a supply chain, or packets traversing a network are common examples of such systems. The discrete nature of a given system arises as soon as its behavior can be described in terms of *events*, which is the most fundamental concept in DES. An *event* is an instantaneous occurrence that may change the state of the system, while, between events, all the state variables remain constant.
 
-The applications of DES are vast, including, but not limited to, areas such as manufacturing systems, construction engineering, project management, logistics, transportation systems, business processes, healthcare and telecommunications networks [@Banks:2005:Discrete]. The simulation of such systems provides insights into the process' risk, efficiency and effectiveness. Also, by simulation of an alternative configuration, one can proactively estimate the effects of changes to the system. In turn, this allows one to get clear insights into the benefits of process redesign strategies (e.g., extra resources). A wide range of practical applications is prompted by this, such as analysing bottlenecks in customer services centres, optimising patient flows in hospitals, testing the robustness of a supply chain or predicting the performance of a new protocol or configuration of a telecommunications network.
+The applications of DES are vast, including, but not limited to, areas such as manufacturing systems, construction engineering, project management, logistics, transportation systems, business processes, healthcare and telecommunications networks [@Banks:2005:Discrete]. The simulation of such systems provides insights into the process' risk, efficiency and effectiveness. Also, by simulation of an alternative configuration, one can proactively estimate the effects of changes to the system. In turn, this allows one to get clear insights into the benefits of process redesign strategies (e.g., extra resources). A wide range of practical applications is prompted by this, such as analyzing bottlenecks in customer services centers, optimizing patient flows in hospitals, testing the robustness of a supply chain or predicting the performance of a new protocol or configuration of a telecommunications network.
 
 There are several world views, or programming styles, for DES [@Banks:2005:Discrete]. In the *activity-oriented* approach, a model consists of sequences of activities, or operations, waiting to be executed depending on some conditions. The simulation clock advances in fixed time increments. At each step, the whole list of activities is scanned, and their conditions, verified. Despite its simplicity, the simulation performance is too sensitive to the election of such a time increment. Instead, the *event-oriented* approach completely bypasses this issue by maintaining a list of scheduled events ordered by time of occurrence. Then, the simulation just consists in jumping from event to event, sequentially executing the associated routines. Finally, the *process-oriented* approach refines the latter with the addition of interacting *processes*, whose activation is triggered by events. In this case, the modeller defines a set of processes, which correspond to entities or objects of the real system, and their life cycle.
 
-\pkg{simmer} [@CRAN:simmer] is a DES package for \proglang{R} which enables high-level process-oriented modelling, in line with other modern simulators. But in addition, it exploits the novel concept of *trajectory*: a common path in the simulation model for entities of the same type. In other words, a trajectory consist of a list of standardised actions which defines the life cycle of equivalent processes. This design pattern is flexible and simple to use, and takes advantage of the chaining/piping workflow introduced by the \pkg{magrittr} package [@CRAN:magrittr].
+\pkg{simmer} [@CRAN:simmer] is a DES package for \proglang{R} which enables high-level process-oriented modelling, in line with other modern simulators. But in addition, it exploits the novel concept of *trajectory*: a common path in the simulation model for entities of the same type. In other words, a trajectory consist of a list of standardized actions which defines the life cycle of equivalent processes. This design pattern is flexible and simple to use, and takes advantage of the chaining/piping workflow introduced by the \pkg{magrittr} package [@CRAN:magrittr].
 
 Let us illustrate this with a simple example taken from @Pidd:1988:Computer, Section 5.3.1:
 
@@ -106,9 +107,7 @@ First of all, let us instantiate a new simulation environment and define the com
 
 ```{r, job-shop-1}
 library("simmer")
-
 set.seed(1234)
-
 (env <- simmer("Job Shop"))
 
 RUNNING <- function() rexp(1, 1)
@@ -137,7 +136,9 @@ job <- trajectory() %>%
   timeout(RESET) %>%
   release("operative") %>%
   release("machine")
+```
 
+```{r, job-shop-3}
 task <- trajectory() %>%
   seize("operative") %>%
   timeout(AWAY) %>%
@@ -146,7 +147,7 @@ task <- trajectory() %>%
 
 Once the processes' trajectories are defined, we append 10 identical machines and 5 operatives to the simulation environment, as well as two generators for jobs and tasks.
 
-```{r, job-shop-3}
+```{r, job-shop-4}
 env %>%
   add_resource("machine", 10) %>%
   add_resource("operative", 5) %>%
@@ -155,17 +156,15 @@ env %>%
   run(until=1000)
 ```
 
-The simulation has been run for 1000 units of time, and the simulator has monitored all the state changes and lifetimes of all processes, which enables any kind of analysis without any additional effort from the modeller's side. For instance, we may extract a history of the resource's state to analyse the average number of machines/operatives in use as well as the average number of jobs/tasks waiting for an assignment.
+The simulation has been run for 1000 units of time, and the simulator has monitored all the state changes and lifetimes of all processes, which enables any kind of analysis without any additional effort from the modeller's side. For instance, we may extract a history of the resource's state to analyze the average number of machines/operatives in use as well as the average number of jobs/tasks waiting for an assignment.
 
-\pagebreak
-
-```{r, job-shop-4}
+```{r, job-shop-5}
 aggregate(cbind(server, queue) ~ resource, get_mon_resources(env), mean)
 ```
 
-The development of the \pkg{simmer} package started in the second half of 2014. The initial need for a DES framework for \proglang{R} came up in projects related to process optimisation in healthcare facilities. Most of these cases involved patients following a clear trajectory through a care process. This background is not unimportant, as it lead to the adoption and implementation of a *trajectory* concept at the very core of \pkg{simmer}'s DES engine. This strong focus on clearly defined *trajectories* is somewhat innovative and, more importantly, very intuitive. Furthermore, this framework relies on a fast \proglang{C++} simulation core to boost performance and make DES modelling in \proglang{R} not only effective, but also efficient.
+The development of the \pkg{simmer} package started in the second half of 2014. The initial need for a DES framework for \proglang{R} came up in projects related to process optimization in healthcare facilities. Most of these cases involved patients following a clear trajectory through a care process. This background is not unimportant, as it lead to the adoption and implementation of a *trajectory* concept at the very core of \pkg{simmer}'s DES engine. This strong focus on clearly defined *trajectories* is somewhat innovative and, more importantly, very intuitive. Furthermore, this framework relies on a fast \proglang{C++} simulation core to boost performance and make DES modelling in \proglang{R} not only effective, but also efficient.
 
-Over time, the \pkg{simmer} package has seen significant improvements and has been at the forefront of DES for \proglang{R}. Although it is the most generic DES framework, it is however not the only \proglang{R} package which delivers such functionality. For example, the \pkg{SpaDES} package [@CRAN:SpaDES] focuses on spatially explicit discrete models, and the \pkg{queuecomputer} package [@CRAN:queuecomputer] implements an efficient method for simulating queues with arbitrary arrival and service times. Going beyond the \proglang{R} language, the direct competitors to \pkg{simmer} are \pkg{SimPy} [@SimPy] and \pkg{SimJulia} [@GitHub:SimJulia], built for the \proglang{Python} and \proglang{Julia} languages.
+Over time, the \pkg{simmer} package has seen significant improvements and has been at the forefront of DES for \proglang{R}. Although it is the most generic DES framework, it is however not the only \proglang{R} package which delivers such functionality. For example, the \pkg{SpaDES} package [@CRAN:SpaDES] focuses on spatially explicit discrete models, and the \pkg{queuecomputer} package [@CRAN:queuecomputer; @arxiv:queuecomputer] implements an efficient method for simulating queues with arbitrary arrival and service times. Going beyond the \proglang{R} language, the direct competitors to \pkg{simmer} are \pkg{SimPy} [@SimPy] and \pkg{SimJulia} [@GitHub:SimJulia], built for respectively the \proglang{Python} and \proglang{Julia} languages.
 
 # The simulation core design
 
@@ -176,8 +175,6 @@ The core of any modern discrete-event simulator comprises two main components: a
 In fact, first attempts were made in pure \proglang{R} by these authors, and a  minimal process-based implementation with \pkg{R6} classes [@CRAN:R6] proved to be  unfeasible in terms of performance compared to similar approaches in pure \proglang{Python}. For this reason, it was decided to provide a robust and fast simulation core written in \proglang{C++}. The \proglang{R} API interfaces with this \proglang{C++} core by leveraging the \pkg{Rcpp} package [@Eddelbuettel:2011:Rcpp; @Eddelbuettel:2013:Rcpp], which has become one of the most popular ways of extending \proglang{R} packages  with \proglang{C} or \proglang{C++} code.
 
 The following sections are devoted to describe the simulation core architecture. First, we establish the DES terminology used in the rest of the paper. Then, the architectural choices made are discussed, as well as the event queue and the *simultaneity problem*,  an important topic that every DES framework has to deal with.
-
-\pagebreak
 
 ## Terminology
 
@@ -199,7 +196,7 @@ Source
   ~ A process responsible for creating new *arrivals* with a given interarrival time pattern and inserting them into the simulation model.
 
 Arrival
-  ~ A process capable of interacting with resources or other entities of the simulation model. It may have some attributes and prioritisation values associated and, in general, a limited lifetime. Upon creation, every arrival is attached to a given *trajectory*.
+  ~ A process capable of interacting with resources or other entities of the simulation model. It may have some attributes and prioritization values associated and, in general, a limited lifetime. Upon creation, every arrival is attached to a given *trajectory*.
 
 Trajectory
   ~ An interlinkage of *activities* constituting a recipe for arrivals attached to it, i.e., an ordered set of actions that must be executed. The simulation model is ultimately represented by a set of trajectories.
@@ -207,14 +204,13 @@ Trajectory
 Activity
   ~ The individual unit of action that allows arrivals to interact with resources and other entities, perform custom routines while spending time in the system, move back and forth through the trajectory dynamically, and much more.
 
-
 ## Architecture
-
-![UML diagram of the simulation core architecture. Blue classes represent how \proglang{R} encapsulates the \proglang{C++} core. Blue circles represent how \proglang{C++} interfaces with \proglang{R}.\label{architecture}](includes/jss-simmer-design.pdf)
 
 Extending an \proglang{R} package (or any other piece of software written in any interpreted language) with compiled code poses an important trade-off between performance and flexibility: placing too much functionality into the compiled part produces gains in performance, but degrades modelling capabilities, and vice versa. The following lines are devoted to discuss how this trade-off is resolved in \pkg{simmer}.
 
 Figure \ref{architecture} sketches a UML (Unified Modelling Language) description of the architecture, which constitutes a process-based design, as in many modern DES frameworks. We draw the attention now to the \proglang{C++} classes (depicted in white).
+
+![UML diagram of the simulation core architecture. Blue classes represent how \proglang{R} encapsulates the \proglang{C++} core. Blue circles represent how \proglang{C++} interfaces with \proglang{R}.\label{architecture}](includes/jss-simmer-design.pdf)
 
 The first main component is the \code{Simulator} class. It comprises the event loop and the event queue, which will be addressed in the next section. The \code{Simulator} provides methods for scheduling and unscheduling events. Moreover, it is responsible for managing simulation-wide entities (e.g., resources and arrival sources) and facilities (e.g., signaling between processes and batches) through diverse \proglang{C++} unordered maps:
 
@@ -223,7 +219,7 @@ The first main component is the \code{Simulator} class. It comprises the event l
 - Maps of signals subscribed by arrivals and handlers defined for different signals.
 - Maps for forming batches of arrivals, named and unnamed.
 
-This class also holds global attributes and monitoring information. Thus, monitoring counters, which are derived from the \code{Monitor} class, are centralised, and they register every change of state produced during the simulation time. There are five types of built-in changes of state that are recorded by calling \code{Monitor}'s \code{record\_*()} methods:
+This class also holds global attributes and monitoring information. Thus, monitoring counters, which are derived from the \code{Monitor} class, are centralized, and they register every change of state produced during the simulation time. There are five types of built-in changes of state that are recorded by calling \code{Monitor}'s \code{record\_*()} methods:
 
 - An arrival is accepted into a resource (served or enqueued). The resource notifies about the new status of its internal counters.
 - An arrival leaves a resource. The resource notifies the new status of its internal counters, and the arrival notifies start, end and activity times in that particular resource.
@@ -304,7 +300,7 @@ traj2[1] <- traj2[3]
 traj2
 ```
 
-There are many activities available. We will briefly review them by categorising them into different topics.
+There are many activities available. We will briefly review them by categorizing them into different topics.
 
 ### Arrival properties
 
@@ -312,18 +308,18 @@ Arrivals are able to store attributes and modify these using \code{set\_attribut
 
 Attributes can be retrieved in any \proglang{R} function by calling \code{get\_attribute()}, whose first argument must be a \code{simmer} object. For instance, the following trajectory prints \code{81}:
 
-```{r, trajectory-attributes}
+```{r, trajectory-attributes-1}
 env <- simmer()
+```
 
+```{r, trajectory-attributes-2}
 traj <- trajectory() %>%
   set_attribute("weight", 80) %>%
   set_attribute("weight", 1, mod="+") %>%
   log_(function() paste0("My weight is ", get_attribute(env, "weight")))
 ```
 
-\pagebreak
-
-Arrivals also hold a set of three prioritisation values for accessing resources:
+Arrivals also hold a set of three prioritization values for accessing resources:
 
 priority
   ~ A higher value equals higher priority. The default value is the minimum priority, which is 0.
@@ -342,7 +338,7 @@ The two main activities for interacting with resources are \code{seize()} and \c
 
 The \code{seize()} activity is special in the sense that the outcome depends on the state of the resource. The arrival may successfully seize the resource and continue its path, but it may also be enqueued or rejected and dropped from the trajectory. To handle these special cases with total flexibility, \code{seize()} supports the specification of two optional sub-trajectories: \code{post.seize}, which is followed after a successful seize, and \code{reject}, followed if the arrival is rejected. As in every activity supporting the definition of sub-trajectories, there is a boolean parameter called \code{continue}. For each sub-trajectory, it controls whether arrivals should continue to the activity following the \code{seize()} in the main trajectory after executing the sub-trajectory.
 
-```{r, trajectory-seize-advanced}
+```{r, trajectory-seize-advanced-1}
 patient <- trajectory() %>%
   log_("arriving...") %>%
   seize(
@@ -355,12 +351,13 @@ patient <- trajectory() %>%
       log_("nurse seized") %>%
       timeout(2) %>%
       release("nurse", 1) %>%
-      log_("nurse released")
-  ) %>%
+      log_("nurse released")) %>%
   timeout(5) %>%
   release("doctor", 1) %>%
   log_("doctor released")
+```
 
+```{r, trajectory-seize-advanced-2}
 env <- simmer() %>%
   add_resource("doctor", capacity = 1, queue_size = 0) %>%
   add_resource("nurse", capacity = 10, queue_size = 0) %>%
@@ -388,12 +385,14 @@ Its \code{resources} parameter is allowed to be dynamical, and there is also the
 
 There are four activities specifically intended to modify arrival sources. An arrival may \code{activate()} or \code{deactivate()} a source, but also modify with \code{set\_trajectory()} the trajectory to which it attaches the arrivals created, or set a new interarrival distribution with \code{set\_source()}. For dynamically selecting a source, the parameter that specifies the source name in all these methods can be dynamical.
 
-```{r, trajectory-sources}
+```{r, trajectory-sources-1}
 traj <- trajectory() %>%
   deactivate("dummy") %>%
   timeout(1) %>%
   activate("dummy")
+```
 
+```{r, trajectory-sources-2}
 simmer() %>%
   add_generator("dummy", traj, function() 1) %>%
   run(10) %>%
@@ -404,23 +403,25 @@ simmer() %>%
 
 A branch is a point in a trajectory in which one or more sub-trajectories may be followed. Two types of branching are supported in \pkg{simmer}. The \code{branch()} activity places the arrival in one of the sub-trajectories depending on some condition evaluated in a dynamical parameter called \code{option}. It is the equivalent of an \code{if/else} in programming, i.e., if the value of \code{option} is $i$, the $i$-th sub-trajectory will be executed. On the other hand, the \code{clone()} activity is a *parallel* branch. It does not take any option, but replicates the arrival \code{n-1} times and places each one of them into the \code{n} sub-trajectories supplied.
 
-```{r, trajectory-branching}
+```{r, trajectory-branching-1}
 env <- simmer()
+```
 
+```{r, trajectory-branching-2}
 traj <- trajectory() %>%
   branch(
     option = function() round(now(env)), continue = c(FALSE, TRUE),
     trajectory() %>% log_("branch 1"),
-    trajectory() %>% log_("branch 2")
-  ) %>%
+    trajectory() %>% log_("branch 2")) %>%
   clone(
     n = 2,
     trajectory() %>% log_("clone 0"),
-    trajectory() %>% log_("clone 1")
-  ) %>%
+    trajectory() %>% log_("clone 1")) %>%
   synchronize(wait = TRUE) %>%
   log_("out")
+```
 
+```{r, trajectory-branching-3}
 env %>%
   add_generator("dummy", traj, at(1, 2)) %>%
   run() %>% invisible
@@ -428,18 +429,18 @@ env %>%
 
 Note that \code{clone()} is the only exception among all activities supporting sub-trajectories that does not accept a \code{continue} parameter. By default, all the clones continue in the main trajectory after this activity. To remove all of them except for one, the \code{synchronize()} activity may be used.
 
-\pagebreak
-
 ### Loops
 
 There is a mechanism, \code{rollback()}, for going back in a trajectory and thus executing loops over a number of activities. This activity causes the arrival to step back a given \code{amount} of activities (that can be dynamical) a number of \code{times}. If a \code{check} function returning a boolean is supplied, the \code{times} parameter is ignored and the arrival determines whether it must step back each time it hits the \code{rollback}.
 
-```{r, trajectory-loops}
+```{r, trajectory-loops-1}
 hello <- trajectory() %>%
   log_("Hello!") %>%
   timeout(1) %>%
   rollback(amount = 2, times = 2)
+```
 
+```{r, trajectory-loops-2}
 simmer() %>%
   add_generator("hello_sayer", hello, at(0)) %>%
   run() %>% invisible
@@ -462,8 +463,6 @@ roller <- trajectory() %>%
 
 By default, all the arrivals reaching a batch are joined into it, and batches wait until the specified number of arrivals are collected. Nonetheless, arrivals can avoid joining the batch under any constraint if an optional function returning a boolean, \code{rule}, is supplied. Also, a batch may be triggered before collecting a given amount of arrivals if some \code{timeout} is specified. Note that batches are shared only by arrivals directly attached to the same trajectory. Whenever a globally shared batch is needed, a common \code{name} must be specified.
 
-\pagebreak
-
 ### Asynchronous programming
 
 There are a number of methods enabling asynchronous events. The \code{send()} activity broadcasts one or more \code{signals} to all the arrivals subscribed to them. Signals can be triggered immediately or after some \code{delay}. In this case, both parameters, \code{signals} and \code{delay}, can be dynamical. Arrivals are able to block and \code{wait()} until a certain signal is received.
@@ -472,21 +471,24 @@ Arrivals can subscribe to \code{signals} and (optionally) assign a \code{handler
 
 [^handler]: The \code{handler} parameter accepts a trajectory object. Once the handler gets called, it will route the arrival to this sub-trajectory.
 
-```{r, trajectory-async}
+```{r, trajectory-async-1}
 t_blocked <- trajectory() %>%
   trap(
     "you shall pass",
     handler = trajectory() %>%
-      log_("got a signal!")
-  ) %>%
+      log_("got a signal!")) %>%
   log_("waiting...") %>%
   wait() %>%
   log_("continuing!")
+```
 
+```{r, trajectory-async-2}
 t_signal <- trajectory() %>%
   log_("you shall pass") %>%
   send("you shall pass")
+```
 
+```{r, trajectory-async-3}
 simmer() %>%
   add_generator("blocked", t_blocked, at(0)) %>%
   add_generator("signaler", t_signal, at(5)) %>%
@@ -499,21 +501,21 @@ By default, signal handlers may be interrupted as well by other signals, meaning
 
 Besides being rejected while trying to seize a resource, arrivals are also able to leave the trajectory at any moment, synchronously or asynchronously. Namely, reneging means that an arrival abandons the trajectory at a given moment. The most simple activity enabling this is \code{leave}, which immediately triggers the action given some probability. Furthermore, \code{renege\_in()} and \code{renege\_if()} trigger reneging asynchronously after some timeout \code{t} or if a \code{signal} is received respectively, unless the action is aborted with \code{renege\_abort()}. Both \code{renege\_in()} and \code{renege\_if()} accept an optional sub-trajectory, \code{out}, that is executed right before leaving.
 
-```{r, trajectory-reneging}
+```{r, trajectory-reneging-1}
 bank <- trajectory() %>%
   log_("Here I am") %>%
   renege_in(
-    5,
-    out = trajectory() %>%
-      log_("Lost my patience. Reneging...")
-  ) %>%
+    5, out = trajectory() %>%
+      log_("Lost my patience. Reneging...")) %>%
   seize("clerk", 1) %>%
   renege_abort() %>%
   log_("I'm being attended") %>%
   timeout(10) %>%
   release("clerk", 1) %>%
   log_("Finished")
+```
 
+```{r, trajectory-reneging-2}
 simmer() %>%
   add_resource("clerk", 1) %>%
   add_generator("customer", bank, at(0, 1)) %>%
@@ -534,8 +536,7 @@ env <- simmer() %>%
 Then, the simulation can be executed, or \code{run()}, \code{until} a stop time:
 
 ```{r, simmer-2}
-env %>%
-  run(until=30)
+env %>% run(until=30)
 ```
 
 There are a number of methods for extracting information, such as the simulation time (\code{now()}), future scheduled events (\code{peek()}), and *getters* for obtaining resources' and sources' parameters (capacity, queue size, server count and queue count; number of arrivals generated so far). There are also several *setters* available for resources and sources (capacity, queue size; trajectory, distribution).
@@ -569,7 +570,7 @@ get\_mon\_attributes()
 
 \section[Modelling with simmer]{Modelling with \pkg{simmer}}
 
-The following sections aim to provide some basic modelling examples. The topics addressed are queuing systems, replication, parallelisation and some best practices. We invite the reader to learn about a broader selection of activities and modelling techniques available in the package vignettes, which cover the use of attributes, loops, batching, branching, shared events, reneging and advanced uses of resources among others.
+The following sections aim to provide some basic modelling examples. The topics addressed are queuing systems, replication, parallelization and some best practices. We invite the reader to learn about a broader selection of activities and modelling techniques available in the package vignettes, which cover the use of attributes, loops, batching, branching, shared events, reneging and advanced uses of resources among others.
 
 ## Queuing systems
 
@@ -578,27 +579,28 @@ The concept of *trajectory* developed in \pkg{simmer} emerges as a natural way t
 In Kendall's notation [@Kendall:1953], an M/M/1 system has exponential arrivals (**M**/M/1), a single server (M/M/**1**) with exponential service time (M/**M**/1) and an infinite queue (implicit M/M/1/**$\infty$**). For instance, people arriving at an ATM at rate $\lambda$, waiting their turn in the street and withdrawing money at rate $\mu$. These are the basic parameters of the system, whenever $\rho < 1$:
 
 \begin{align}
-\rho &= \frac{\lambda}{\mu} &&\equiv \mbox{Server utilisation} \\
+\rho &= \frac{\lambda}{\mu} &&\equiv \mbox{Server utilization} \\
 N &= \frac{\rho}{1-\rho} &&\equiv \mbox{Average number of customers in the system (queue $+$ server)} \label{eq:N}\\
 T &= \frac{N}{\lambda} &&\equiv \mbox{Average time in the system (queue $+$ server) [Little's law]}
 \end{align}
 
 If $\rho \ge 1$, it means that the system is unstable: there are more arrivals than the server is capable of handling and the queue will grow indefinitely. The simulation of an M/M/1 system is quite simple using \pkg{simmer}:
 
-```{r, mm1-simulation}
-library("simmer")
-
+```{r, mm1-simulation-1}
 set.seed(1234)
-
 lambda <- 2
 mu <- 4
 rho <- lambda/mu
+```
 
+```{r, mm1-simulation-2}
 mm1.traj <- trajectory() %>%
   seize("mm1.resource", amount=1) %>%
   timeout(function() rexp(1, mu)) %>%
   release("mm1.resource", amount=1)
+```
 
+```{r, mm1-simulation-3}
 mm1.env <- simmer() %>%
   add_resource("mm1.resource", capacity=1, queue_size=Inf) %>%
   add_generator("arrival", mm1.traj, function() rexp(1, lambda)) %>%
@@ -607,15 +609,14 @@ mm1.env <- simmer() %>%
 
 After the parameter setup, the first code block defines the trajectory: each arrival will seize the resource, wait some exponential random time (service time) and release the resource. The second code block instantiates the simulation environment, creates the resource, attaches an exponential generator to the trajectory and runs the simulation for 2000 units of time. Note that trajectories can be defined independently of the simulation environment, but it is recommended to instantiate the latter in the first place, so that trajectories are able to extract information from it (e.g., the simulation time).
 
-As a next step, we could extract the monitoring information and perform some analyses. The extension package \pkg{simmer.plot} [@CRAN:simmer.plot] provides convenience plotting methods to, for instance, quickly visualise the usage of a resource over time. Figure \ref{mm1-plot} gives a glimpse of this simulation using this package. In particular, it shows that the average number of customers in the system converges to the theoretical value given by Equation \ref{eq:N}.
+As a next step, we could extract the monitoring information and perform some analyses. The extension package \pkg{simmer.plot} [@CRAN:simmer.plot] provides convenience plotting methods to, for instance, quickly visualize the usage of a resource over time. Figure \ref{mm1-plot} gives a glimpse of this simulation using this package. In particular, it shows that the average number of customers in the system converges to the theoretical value given by Equation \ref{eq:N}.
 
-```{r, mm1-plot, echo=FALSE, eval=requireNamespace("simmer.plot", quietly=TRUE), out.width='.49\\linewidth', fig.height=4, fig.cap='Detail of the resource usage\\label{mm1-plot}.', fig.subcap=c("Instantaneous usage.", "Convergence over time.")}
+```{r, mm1-plot, echo=FALSE, eval=requireNamespace("simmer.plot", quietly=TRUE), out.width='.49\\linewidth', fig.asp=4/5, fig.cap='Detail of the resource usage\\label{mm1-plot}.', fig.subcap=c("Instantaneous usage.", "Convergence over time.")}
 library("simmer.plot")
 
 mm1.env.res <- get_mon_resources(mm1.env)
 
-plot(mm1.env.res, "usage", "mm1.resource",
-     items=c("server", "queue"), steps=TRUE) +
+plot(mm1.env.res, "usage", "mm1.resource", items=c("server", "queue"), steps=TRUE) +
   theme_bw() + xlim(0, 15) + ylim(0, 5) +
   theme(legend.justification=c(0, 1), legend.position=c(0.01, 0.99))
 
@@ -624,38 +625,33 @@ plot(mm1.env.res, "usage", "mm1.resource", items="system") +
   theme(legend.justification=c(1, 0), legend.position=c(0.99, 0.01))
 ```
 
-## Replication and parallelisation
+## Replication and parallelization
 
 Typically, running a certain simulation only once is useless. In general, we will be interested in replicating the model execution many times, maybe with different initial conditions, and then perform some statistical analysis over the output. This can be easily achieved using standard \proglang{R} tools, e.g., \code{lapply()} or similar functions.
 
-Additionally, we can leverage the parallelised version of \code{lapply()}, \code{mclapply()}, provided by the \pkg{parallel} package, to speed up this process. Unfortunately, parallelisation has the shortcoming that we lose the underlying \proglang{C++}  objects when each thread finishes. To avoid losing the monitored data, the \code{wrap()} method can be used to extract and wrap these data into a pure \proglang{R} object  before the \proglang{C++} object is garbage-collected.
+Additionally, we can leverage the parallelized version of \code{lapply()}, \code{mclapply()}, provided by the \pkg{parallel} package [@CRAN:r], to speed up this process. Unfortunately, parallelization has the shortcoming that we lose the underlying \proglang{C++}  objects when each thread finishes. To avoid losing the monitored data, the \code{wrap()} method can be used to extract and wrap these data into a pure \proglang{R} object  before the \proglang{C++} object is garbage-collected.
 
 The following example uses \code{mclapply()} and \code{wrap()} to perform 100 replicas of the M/M/1 simulation from the previous section (note that the trajectory is not redefined):
 
-```{r, mm1-replication}
-library("simmer")
+```{r, mm1-replication-1}
 library("parallel")
-
 set.seed(1234)
+```
 
+```{r, mm1-replication-2}
 mm1.envs <- mclapply(1:100, function(i) {
   simmer() %>%
     add_resource("mm1.resource", capacity=1, queue_size=Inf) %>%
     add_generator("arrival", mm1.traj, function() rexp(100, lambda)) %>%
-    run(until=1000/lambda) %>%
-    wrap()
+    run(until=1000/lambda) %>% wrap()
 }, mc.set.seed=FALSE)
 ```
-
-\pagebreak
 
 With all these replicas, we could, for instance, perform a t-test over $N$, the average number of customers in the system:
 
 ```{r, mm1-replication-test}
-mm1.data <-
-  get_mon_arrivals(mm1.envs) %>%
+mm1.data <- get_mon_arrivals(mm1.envs) %>%
   aggregate(end_time - start_time ~ replication, data=., mean)
-
 t.test(mm1.data[[2]])
 ```
 
@@ -668,7 +664,9 @@ There are usually multiple valid ways of mapping the identified resources and pr
 ```{r, beep-1}
 beep <- trajectory() %>%
   log_("beeeep!")
+```
 
+```{r, beep-2}
 env <- simmer() %>%
   add_generator("beep", beep, function() 1) %>%
   run(2.5)
@@ -676,12 +674,14 @@ env <- simmer() %>%
 
 But instead, identifying the alarm clock as the process is equally valid, and then we have *a single alarm* (single arrival) producing all the beeps in a loop:
 
-```{r, beep-2}
+```{r, beep-3}
 alarm <- trajectory() %>%
   timeout(1) %>%
   log_("beeeep!") %>%
   rollback(2)
+```
 
+```{r, beep-4}
 env <- simmer() %>%
   add_generator("alarm", alarm, at(0)) %>%
   run(2.5)
@@ -689,15 +689,17 @@ env <- simmer() %>%
 
 These are two common design patterns in \pkg{simmer} for which the outcome is the same, although there are subtle differences that depend on the problem being considered and the monitoring requirements. Furthermore, as a model becomes more complex and detailed, the resulting mapping and syntax may become more artificious. These issues are shared in different ways by other frameworks as well, such as \pkg{SimPy}, and arise due to their generic nature. 
 
-Furthermore, the piping mechanism used in the \pkg{simmer} API may invite the user to produce large monolithic trajectories. However, it should be noted that it is usually better to break them down into small manageable pieces. For instance, the following example parametrises the access to a \code{resource}, where \code{G} refers to arbitrary service times, and *n* servers are seized. Then, it is used to instantiate the trajectory shown in the former M/M/1 example:
+Furthermore, the piping mechanism used in the \pkg{simmer} API may invite the user to produce large monolithic trajectories. However, it should be noted that it is usually better to break them down into small manageable pieces. For instance, the following example parameterizes the access to a \code{resource}, where \code{G} refers to arbitrary service times, and *n* servers are seized. Then, it is used to instantiate the trajectory shown in the former M/M/1 example:
 
-```{r, xgn}
+```{r, xgn-1}
 xgn <- function(resource, G, n)
   trajectory() %>%
     seize(resource, n) %>%
     timeout(G) %>%
     release(resource, n)
+```
 
+```{r, xgn-2}
 (mm1.traj <- xgn("mm1.resource", function() rexp(1, mu), 1))
 ```
 
@@ -705,13 +707,17 @@ Standard \proglang{R} tools (\code{lapply()} and the like) may also be used to g
 
 During a simulation, trajectories can interact with the simulation environment in order to extract or modify parameters of interest such as the current simulation time, attributes, status of resources (get the number of arrivals in a resource, get or set resources' capacity or queue size), or status of sources (get the number of generated arrivals, set sources' attached trajectory or distribution). The only requirement is that the simulation object must be defined in the same \proglang{R} environment (or a parent one) *before* the simulation is started. Effectively, it is enough to detach the \code{run()} method from the instantiation (\code{simmer()}), namely, they should not be called in the same pipe. But, for the sake of consistency, it is a good coding practice to instantiate the simulation object always in the first place as follows:
 
-```{r, best-coding}
+```{r, best-coding-1}
 set.seed(1234)
 env <- simmer()
+```
 
+```{r, best-coding-2}
 traj <- trajectory() %>%
   log_(function() paste0("Current simulation time: ", now(env)))
+```
 
+```{r, best-coding-3}
 env <- env %>%
   add_generator("dummy", traj, at(rexp(1, 1))) %>%
   run()
@@ -728,14 +734,11 @@ All the subsequent tests were performed under Fedora Linux 25 running on an Inte
 A significant effort has been put into the design of \pkg{simmer} in order to make it performant enough to run general and relatively large simulation models in a reasonable amount of time. In this regard, a relevant comparison can be made against other general-purpose DES frameworks such as \pkg{SimPy} and \pkg{SimJulia}. To this effect, we retake the M/M/1 example from Section \ref{queuing-systems}, which can be bundled into the following test:
 
 ```{r, performance-mm1-simmer, eval=FALSE}
-library("simmer")
-
 test_mm1_simmer <- function(n, m, mon=FALSE) {
   mm1 <- trajectory() %>%
     seize("server", 1) %>%
     timeout(function() rexp(1, 1.1)) %>%
     release("server", 1)
-
   env <- simmer() %>%
     add_resource("server", 1, mon=mon) %>%
     add_generator("customer", mm1, function() rexp(m, 1), mon=mon) %>%
@@ -757,13 +760,11 @@ def test_mm1(n):
           dt = random.expovariate(lambd)
           yield env.timeout(dt)
           env.process(customer(env, server, mu))
-
   def customer(env, server, mu):
       with server.request() as req:
           yield req
           dt = random.expovariate(mu)
           yield env.timeout(dt)
-
   env = simpy.Environment()
   server = simpy.Resource(env, capacity=1)
   env.process(exp_source(env, 1, server, 1.1))
@@ -779,7 +780,9 @@ def benchmark(n, times):
 ")
 ```
 
-Equivalently, this can be done for \proglang{Julia} and \pkg{SimJulia} using the \pkg{rjulia} package [@GitHub:rJulia]. Once more, \code{n} controls the number of arrivals simulated on average:
+Equivalently, this can be done for \proglang{Julia} and \pkg{SimJulia} using the \pkg{rjulia} package [@GitHub:rJulia].[^1] Once more, \code{n} controls the number of arrivals simulated on average:
+
+[^1]: Note that the code provided does not work on recent versions of \proglang{Julia} and \pkg{SimJulia} An analogous standalone replication script for more recent versions is supplied in the supplementary materials.
 
 ```{r, performance-mm1-simjulia, eval=FALSE}
 rjulia::julia_init()
@@ -795,14 +798,12 @@ function test_mm1(n::Float64)
       Process(env, customer, server, mu)
     end
   end
-
   function customer(env::Environment, server::Resource, mu::Float64)
     yield(Request(server))
     dt = rand(Exponential(1/mu))
     yield(Timeout(env, dt))
     yield(Release(server))
   end
-
   env = Environment()
   server = Resource(env, 1)
   Process(env, exp_source, 1.0, server, 1.1)
@@ -822,21 +823,17 @@ end
 
 It can be noted that in both cases there is no monitoring involved, because either \pkg{SimPy} nor \pkg{SimJulia} provide automatic monitoring as \pkg{simmer} does. Furthermore, the resulting code for \pkg{simmer} is more concise and expressive than the equivalent ones for \pkg{SimPy} and \pkg{SimJulia}, which are very similar.
 
-\pagebreak
-
 We obtain the reference benchmark with \code{n=1e4} and 20 replicas for both packages as follows:
 
 ```{r, performance-mm1-ref, eval=FALSE}
 n <- 1e4L
 times <- 20
-
 ref <- data.frame(
   SimPy = rPython::python.call("benchmark", n, times),
-  SimJulia = rjulia::j2r(paste0("benchmark(", n, ".0, ", times, ")"))
-)
+  SimJulia = rjulia::j2r(paste0("benchmark(", n, ".0, ", times, ")")))
 ```
 
-As a matter of fact, we also tested a small DES skeleton in pure \proglang{R} provided in [@Matloff:2011:ARP:2090080, *7.8.3 Extended Example: Discrete-Event Simulation in \proglang{R}*]. This code was formalised into an \proglang{R} package called \pkg{DES}, available on GitHub[^DES] since 2014. The original code implemented the event queue as an ordered vector which was updated by performing a binary search. Thus, the execution time of this version was two orders of magnitude slower than the other frameworks. The most recent version on GitHub (as of 2017) takes another clever approach though: it supposes that the event vector will be short and approximately ordered; therefore, the event vector is not sorted anymore, and the next event is found using a simple linear search. These assumptions hold for many cases, and particularly for this M/M/1 scenario. As a result, the performance of this model is only $\sim2.2$ times slower than \pkg{SimPy}. Still, it is clear that pure \proglang{R} cannot compete with other languages in discrete-event simulation, and \pkg{DES} is not considered in our comparisons hereafter.
+As a matter of fact, we also tested a small DES skeleton in pure \proglang{R} provided in [@Matloff:2011:ARP:2090080, *7.8.3 Extended Example: Discrete-Event Simulation in \proglang{R}*]. This code was formalized into an \proglang{R} package called \pkg{DES}, available on GitHub[^DES] since 2014. The original code implemented the event queue as an ordered vector which was updated by performing a binary search. Thus, the execution time of this version was two orders of magnitude slower than the other frameworks. The most recent version on GitHub (as of 2017) takes another clever approach though: it supposes that the event vector will be short and approximately ordered; therefore, the event vector is not sorted anymore, and the next event is found using a simple linear search. These assumptions hold for many cases, and particularly for this M/M/1 scenario. As a result, the performance of this model is only $\sim2.2$ times slower than \pkg{SimPy}. Still, it is clear that pure \proglang{R} cannot compete with other languages in discrete-event simulation, and \pkg{DES} is not considered in our comparisons hereafter.
 
 [^DES]: https://github.com/matloff/des
 
@@ -857,16 +854,12 @@ The \proglang{C++} simulation core provided by \pkg{simmer} is quite fast, as we
 To explore the cost of calling \proglang{R} from \proglang{C++}, let us define the following test:
 
 ```{r, performance-simmer}
-library("simmer")
-
 test_simmer <- function(n, delay) {
   test <- trajectory() %>%
     timeout(delay)
-
   env <- simmer() %>%
     add_generator("test", test, at(1:n)) %>%
     run(Inf)
-
   arrivals <- get_mon_arrivals(env)
 }
 ```
@@ -890,7 +883,6 @@ test_R_for <- function(n) {
   end_time <- numeric(n)
   activity_time <- logical(n)
   finished <- numeric(n)
-
   for (i in 1:n) {
     name[i] <- paste0("test", i-1)
     start_time[i] <- i
@@ -898,38 +890,27 @@ test_R_for <- function(n) {
     activity_time[i] <- 1
     finished[i] <- TRUE
   }
-
-  arrivals <- data.frame(
-    name=name,
-    start_time=start_time,
-    end_time=end_time,
-    activity_time=activity_time,
-    finished=finished,
-    replication = 1
-  )
+  arrivals <- data.frame(name = name, start_time = start_time,
+    end_time = end_time, activity_time = activity_time,
+    finished = finished, replication = 1)
 }
 ```
 
-Note that we are using a \code{for} loop to mimic the behaviour of \pkg{simmer}'s internals, of how monitoring is made, but we concede the advantage of pre-allocated vectors to \proglang{R}. A second base \proglang{R} implementation, which builts upon the `lapply()` function, is implemented as the \code{test_R_lapply()} function:
+Note that we are using a \code{for} loop to mimic the behavior of \pkg{simmer}'s internals, of how monitoring is made, but we concede the advantage of pre-allocated vectors to \proglang{R}. A second base \proglang{R} implementation, which builds upon the `lapply()` function, is implemented as the \code{test_R_lapply()} function:
 
 ```{r, performance-R2, eval=FALSE}
 test_R_lapply <- function(n) {
   as.data.frame(do.call(rbind, lapply(1:n, function(i) {
-    list(
-      name = paste0("test", i - 1),
-      start_time = i,
-      end_time = i + 1,
-      activity_time = 1,
-      finished = TRUE,
-      replication = 1
-    )
+    list(name = paste0("test", i - 1), start_time = i,
+      end_time = i + 1, activity_time = 1, finished = TRUE,
+      replication = 1)
   })))
 }
 ```
 
 The \code{test_simmer()}, \code{test_R_for()} and \code{test_R_lapply()} functions all produce exactly the same data in a similar manner (cfr. Table \ref{test-simmer-output-table}). Now, we want to compare how a delay consisting of a function call instead of a fixed value impacts the performance of \pkg{simmer}, and we use \code{test_R_for()} and \code{test_R_lapply()} as yardsticks.
 
-To this end, the \pkg{microbenchmark} package [@CRAN:microbenchmark] is used. The benchmark was executed with \code{n=1e5} and 20 replicas for each test. Table \ref{performance-table} shows a summary of the resulting timings. As we can see, \pkg{simmer} is $\sim4.4$ times faster than \code{for}-based base \proglang{R} and $\sim3.6$ times faster than \code{lapply}-based base \proglang{R} on average when we set a fixed delay. On the ther hand, if we replace it for a function call, the execution becomes $\sim6.5$ times slower, or $\sim1.5$ times slower than \code{for}-based base \proglang{R}. It is indeed a quite good result if we take into account the fact that base \proglang{R} pre-allocates memory, and that \pkg{simmer} is doing a lot more internally. But still, these results highlight the overheads involved and encourage the use of fixed values instead of function calls whenever possible.
+To this end, the \pkg{microbenchmark} package [@CRAN:microbenchmark] is used. The benchmark was executed with \code{n=1e5} and 20 replicas for each test. Table \ref{performance-table} shows a summary of the resulting timings. As we can see, \pkg{simmer} is $\sim4.4$ times faster than \code{for}-based base \proglang{R} and $\sim3.6$ times faster than \code{lapply}-based base \proglang{R} on average when we set a fixed delay. On the other hand, if we replace it for a function call, the execution becomes $\sim6.5$ times slower, or $\sim1.5$ times slower than \code{for}-based base \proglang{R}. It is indeed a quite good result if we take into account the fact that base \proglang{R} pre-allocates memory, and that \pkg{simmer} is doing a lot more internally. But still, these results highlight the overheads involved and encourage the use of fixed values instead of function calls whenever possible.
 
 |Expr                         |       Min|     Mean|    Median|       Max|
 |:----------------------------|---------:|--------:|---------:|---------:|
@@ -944,11 +925,11 @@ Table: Execution time (milliseconds).\label{performance-table}
 
 The \pkg{simmer} package presented in this paper brings a generic yet powerful process-oriented Discrete-Event Simulation framework to \proglang{R}. \pkg{simmer} combines a robust and fast simulation core written in \proglang{C++} with a rich and flexible \proglang{R} API. The main modelling component is the *activity*. Activities are chained together with the pipe operator into *trajectories*, which are common paths for processes of the same type. \pkg{simmer} provides a broad set of activities, and allows the user to extend their capabilities with custom \proglang{R} functions.
 
-Monitoring is automatically performed by the underlying simulation core, thereby enabling the user to focus on problem modelling. \pkg{simmer} enables simple replication and parallelisation with standard \proglang{R} tools. Data can be extracted into \proglang{R} data frames from a single simulation environment or a list of environments, each of which is marked as a different replication for further analysis.
+Monitoring is automatically performed by the underlying simulation core, thereby enabling the user to focus on problem modelling. \pkg{simmer} enables simple replication and parallelization with standard \proglang{R} tools. Data can be extracted into \proglang{R} data frames from a single simulation environment or a list of environments, each of which is marked as a different replication for further analysis.
 
 Despite the drawbacks of combining \proglang{R} calls into \proglang{C++} code, \pkg{simmer} shows a good performance combined with high flexibility. It is currently one of the most extensive DES frameworks for \proglang{R} and provides a mature workflow for truly integrating DES into \proglang{R} processes.
 
-\section*{Acknowledgements}
+\section*{Acknowledgments}
 
 We thank the editors and the anonymous referee for their thorough reviews and valuable comments, which have been of great help in improving this paper. Likewise, we thank Norman Matloff for his advice and support. Last but not least, we are very grateful for vignette contributions by Duncan Garmonsway, and for all the fruitful ideas for new or extended features by several users via the \code{simmer-devel} mailing list and GitHub.
 

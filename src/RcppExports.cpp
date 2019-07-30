@@ -685,50 +685,54 @@ BEGIN_RCPP
 END_RCPP
 }
 // RenegeIn__new
-SEXP RenegeIn__new(double t, const std::vector<Environment>& trj);
-RcppExport SEXP _simmer_RenegeIn__new(SEXP tSEXP, SEXP trjSEXP) {
+SEXP RenegeIn__new(double t, const std::vector<Environment>& trj, bool keep_seized);
+RcppExport SEXP _simmer_RenegeIn__new(SEXP tSEXP, SEXP trjSEXP, SEXP keep_seizedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type t(tSEXP);
     Rcpp::traits::input_parameter< const std::vector<Environment>& >::type trj(trjSEXP);
-    rcpp_result_gen = Rcpp::wrap(RenegeIn__new(t, trj));
+    Rcpp::traits::input_parameter< bool >::type keep_seized(keep_seizedSEXP);
+    rcpp_result_gen = Rcpp::wrap(RenegeIn__new(t, trj, keep_seized));
     return rcpp_result_gen;
 END_RCPP
 }
 // RenegeIn__new_func
-SEXP RenegeIn__new_func(const Function& t, const std::vector<Environment>& trj);
-RcppExport SEXP _simmer_RenegeIn__new_func(SEXP tSEXP, SEXP trjSEXP) {
+SEXP RenegeIn__new_func(const Function& t, const std::vector<Environment>& trj, bool keep_seized);
+RcppExport SEXP _simmer_RenegeIn__new_func(SEXP tSEXP, SEXP trjSEXP, SEXP keep_seizedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Function& >::type t(tSEXP);
     Rcpp::traits::input_parameter< const std::vector<Environment>& >::type trj(trjSEXP);
-    rcpp_result_gen = Rcpp::wrap(RenegeIn__new_func(t, trj));
+    Rcpp::traits::input_parameter< bool >::type keep_seized(keep_seizedSEXP);
+    rcpp_result_gen = Rcpp::wrap(RenegeIn__new_func(t, trj, keep_seized));
     return rcpp_result_gen;
 END_RCPP
 }
 // RenegeIf__new
-SEXP RenegeIf__new(const std::string& signal, const std::vector<Environment>& trj);
-RcppExport SEXP _simmer_RenegeIf__new(SEXP signalSEXP, SEXP trjSEXP) {
+SEXP RenegeIf__new(const std::string& signal, const std::vector<Environment>& trj, bool keep_seized);
+RcppExport SEXP _simmer_RenegeIf__new(SEXP signalSEXP, SEXP trjSEXP, SEXP keep_seizedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type signal(signalSEXP);
     Rcpp::traits::input_parameter< const std::vector<Environment>& >::type trj(trjSEXP);
-    rcpp_result_gen = Rcpp::wrap(RenegeIf__new(signal, trj));
+    Rcpp::traits::input_parameter< bool >::type keep_seized(keep_seizedSEXP);
+    rcpp_result_gen = Rcpp::wrap(RenegeIf__new(signal, trj, keep_seized));
     return rcpp_result_gen;
 END_RCPP
 }
 // RenegeIf__new_func
-SEXP RenegeIf__new_func(const Function& signal, const std::vector<Environment>& trj);
-RcppExport SEXP _simmer_RenegeIf__new_func(SEXP signalSEXP, SEXP trjSEXP) {
+SEXP RenegeIf__new_func(const Function& signal, const std::vector<Environment>& trj, bool keep_seized);
+RcppExport SEXP _simmer_RenegeIf__new_func(SEXP signalSEXP, SEXP trjSEXP, SEXP keep_seizedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Function& >::type signal(signalSEXP);
     Rcpp::traits::input_parameter< const std::vector<Environment>& >::type trj(trjSEXP);
-    rcpp_result_gen = Rcpp::wrap(RenegeIf__new_func(signal, trj));
+    Rcpp::traits::input_parameter< bool >::type keep_seized(keep_seizedSEXP);
+    rcpp_result_gen = Rcpp::wrap(RenegeIf__new_func(signal, trj, keep_seized));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1320,8 +1324,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // add_resource_
-bool add_resource_(SEXP sim_, const std::string& name, int capacity, int queue_size, bool mon, bool preemptive, const std::string& preempt_order, bool queue_size_strict);
-RcppExport SEXP _simmer_add_resource_(SEXP sim_SEXP, SEXP nameSEXP, SEXP capacitySEXP, SEXP queue_sizeSEXP, SEXP monSEXP, SEXP preemptiveSEXP, SEXP preempt_orderSEXP, SEXP queue_size_strictSEXP) {
+bool add_resource_(SEXP sim_, const std::string& name, int capacity, int queue_size, bool mon, bool preemptive, const std::string& preempt_order, bool queue_size_strict, int queue_priority_min, int queue_priority_max);
+RcppExport SEXP _simmer_add_resource_(SEXP sim_SEXP, SEXP nameSEXP, SEXP capacitySEXP, SEXP queue_sizeSEXP, SEXP monSEXP, SEXP preemptiveSEXP, SEXP preempt_orderSEXP, SEXP queue_size_strictSEXP, SEXP queue_priority_minSEXP, SEXP queue_priority_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1333,7 +1337,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type preemptive(preemptiveSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type preempt_order(preempt_orderSEXP);
     Rcpp::traits::input_parameter< bool >::type queue_size_strict(queue_size_strictSEXP);
-    rcpp_result_gen = Rcpp::wrap(add_resource_(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict));
+    Rcpp::traits::input_parameter< int >::type queue_priority_min(queue_priority_minSEXP);
+    Rcpp::traits::input_parameter< int >::type queue_priority_max(queue_priority_maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(add_resource_(sim_, name, capacity, queue_size, mon, preemptive, preempt_order, queue_size_strict, queue_priority_min, queue_priority_max));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1437,10 +1443,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_Batch__new_func2", (DL_FUNC) &_simmer_Batch__new_func2, 5},
     {"_simmer_Batch__new_func3", (DL_FUNC) &_simmer_Batch__new_func3, 5},
     {"_simmer_Separate__new", (DL_FUNC) &_simmer_Separate__new, 0},
-    {"_simmer_RenegeIn__new", (DL_FUNC) &_simmer_RenegeIn__new, 2},
-    {"_simmer_RenegeIn__new_func", (DL_FUNC) &_simmer_RenegeIn__new_func, 2},
-    {"_simmer_RenegeIf__new", (DL_FUNC) &_simmer_RenegeIf__new, 2},
-    {"_simmer_RenegeIf__new_func", (DL_FUNC) &_simmer_RenegeIf__new_func, 2},
+    {"_simmer_RenegeIn__new", (DL_FUNC) &_simmer_RenegeIn__new, 3},
+    {"_simmer_RenegeIn__new_func", (DL_FUNC) &_simmer_RenegeIn__new_func, 3},
+    {"_simmer_RenegeIf__new", (DL_FUNC) &_simmer_RenegeIf__new, 3},
+    {"_simmer_RenegeIf__new_func", (DL_FUNC) &_simmer_RenegeIf__new_func, 3},
     {"_simmer_RenegeAbort__new", (DL_FUNC) &_simmer_RenegeAbort__new, 0},
     {"_simmer_Send__new", (DL_FUNC) &_simmer_Send__new, 2},
     {"_simmer_Send__new_func1", (DL_FUNC) &_simmer_Send__new_func1, 2},
@@ -1490,7 +1496,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_run_", (DL_FUNC) &_simmer_run_, 2},
     {"_simmer_add_generator_", (DL_FUNC) &_simmer_add_generator_, 8},
     {"_simmer_add_dataframe_", (DL_FUNC) &_simmer_add_dataframe_, 11},
-    {"_simmer_add_resource_", (DL_FUNC) &_simmer_add_resource_, 8},
+    {"_simmer_add_resource_", (DL_FUNC) &_simmer_add_resource_, 10},
     {"_simmer_add_resource_manager_", (DL_FUNC) &_simmer_add_resource_manager_, 7},
     {"_simmer_add_global_manager_", (DL_FUNC) &_simmer_add_global_manager_, 6},
     {"_simmer_record_ongoing_", (DL_FUNC) &_simmer_record_ongoing_, 2},

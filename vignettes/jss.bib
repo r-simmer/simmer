@@ -1,61 +1,71 @@
 @String{CRAN = "https://CRAN.R-project.org/"}
 @String{GitHub = "https://github.com/"}
 
-@Manual{R,
+@Manual{CRAN:r,
   title         = {\proglang{R}: A Language and Environment for Statistical Computing},
   author        = {{\proglang{R} Core Team}},
   organization  = {\proglang{R} Foundation for Statistical Computing},
   address       = {Vienna, Austria},
-  year          = {2017},
+  year          = {2019},
   url           = {https://www.R-project.org/},
 }
 
 @Manual{R:compiler,
   title         = {A Byte-code Compiler for \proglang{R}},
-  author        = {{Luke Tierney}},
+  author        = {Luke Tierney},
   organization  = {Department of Statistics and Actuarial Science, University of Iowa},
-  year          = {2016},
+  year          = {2019},
   url           = {https://www.stat.uiowa.edu/~luke/R/compiler/compiler.pdf},
 }
 
 @Manual{CRAN:simmer,
   title         = {\pkg{simmer}: Discrete-Event Simulation for \proglang{R}},
-  author        = {Iñaki Ucar and Bart Smeets},
-  year          = {2017},
-  note          = {\proglang{R}~package version~3.6.4},
+  author        = {I{\\~n}aki Ucar and Bart Smeets},
+  year          = {2019},
+  note          = {\proglang{R}~package version~4.3.0},
   url           = CRAN # "package=simmer",
 }
 
 @Manual{CRAN:simmer.plot,
   title         = {\pkg{simmer.plot}: Plotting Methods for \pkg{simmer}},
-  author        = {Iñaki Ucar and Bart Smeets},
-  year          = {2017},
-  note          = {\proglang{R}~package version~0.1.11},
+  author        = {I{\\~n}aki Ucar and Bart Smeets},
+  year          = {2019},
+  note          = {\proglang{R}~package version~0.1.15},
   url           = CRAN # "package=simmer.plot",
 }
 
 @Manual{CRAN:queuecomputer,
   title         = {\pkg{queuecomputer}: Computationally Efficient Queue Simulation},
   author        = {Anthony Ebert},
-  year          = {2017},
-  note          = {\proglang{R}~package version~0.8.1},
+  year          = {2018},
+  note          = {\proglang{R}~package version~0.8.3},
   url           = CRAN # "package=queuecomputer",
+}
+
+@Article{arxiv:queuecomputer,
+  title         = {Computationally Efficient Simulation of Queues: The {R}
+                  Package \pkg{queuecomputer}},
+  author        = {Anthony Ebert and Paul Wu and Kerrie Mengersen and Fabrizio Ruggeri},
+  year          = {2017},
+  journal       = {arXiv:1703.02151},
+  note          = {arXiv.org E-Print Archive},
+  url           = {http://arxiv.org/abs/1703.02151},
 }
 
 @Manual{CRAN:SpaDES,
   title         = {\pkg{SpaDES}: Develop and Run Spatially
                   Explicit Discrete Event Simulation Models},
   author        = {Alex M Chubaty and Eliot J B McIntire},
-  year          = {2017},
-  note          = {\proglang{R}~package version~2.0.0},
+  year          = {2019},
+  note          = {\proglang{R}~package version~2.0.3},
   url           = CRAN # "package=SpaDES",
 }
 
 @Manual{CRAN:R6,
   title         = {\pkg{R6}: Classes with Reference Semantics},
   author        = {Winston Chang},
-  year          = {2017},
-  note          = {\proglang{R}~package version~2.2.2},
+  year          = {2019},
+  note          = {\proglang{R}~package version~2.4.0},
   url           = CRAN # "package=R6",
 }
 
@@ -69,15 +79,15 @@
 
 @Manual{CRAN:dplyr,
   title         = {\pkg{dplyr}: A Grammar of Data Manipulation},
-  author        = {Hadley Wickham and Romain Francois},
-  year          = {2017},
-  note          = {\proglang{R}~package version~0.7.4},
+  author        = {Hadley Wickham and Romain Fran\c{c}ois and Kirill M\"{u}ller},
+  year          = {2019},
+  note          = {\proglang{R}~package version~0.8.0.1},
   url           = CRAN # "package=dplyr",
 }
 
 @Manual{CRAN:rPython,
   title         = {\pkg{rPython}: Package Allowing \proglang{R} to Call \proglang{Python} },
-  author        = {Carlos J. Gil Bellosta},
+  author        = {Carlos J. {Gil Bellosta}},
   year          = {2015},
   note          = {\proglang{R}~package version~0.0-6},
   url           = CRAN # "package=rPython",
@@ -86,23 +96,23 @@
 @Manual{CRAN:microbenchmark,
   title         = {\pkg{microbenchmark}: Accurate Timing Functions},
   author        = {Olaf Mersmann},
-  year          = {2015},
-  note          = {\proglang{R}~package version~1.4-2.1},
+  year          = {2018},
+  note          = {\proglang{R}~package version~1.4-6},
   url           = CRAN # "package=microbenchmark",
 }
 
 @Manual{SimPy,
   author        = {{Team SimPy}},
   title         = {\pkg{SimPy}: Discrete-Event Simulation for \proglang{Python}},
-  year          = 2017,
+  year          = {2017},
   note          = {\proglang{Python}~package version~3.0.9},
-  url           = {https://simpy.readthedocs.io/en/latest/},
+  url           = {https://simpy.readthedocs.io/en/stable},
 }
 
 @Manual{GitHub:rJulia,
   title         = {\pkg{rjulia}: Integrating \proglang{R} and \proglang{Julia}
                   -- Calling \proglang{Julia} from \proglang{R}},
-  author        = {Yu Gong and Oliver Keys and Martin Maechler},
+  author        = {Yu Gong},
   year          = {2017},
   note          = {\proglang{R}~package version~0.9-3},
   url           = GitHub # "armgong/rjulia",
@@ -112,15 +122,14 @@
   title         = {\pkg{SimJulia.jl}: Combined Continuous-Time / Discrete-Event
                   Process Oriented Simulation Framework Written in \proglang{Julia}},
   author        = {Lauwens, Ben},
-  year          = 2017,
-  note          = {\proglang{Julia}~package version~0.3.14},
+  year          = {2017},
+  note          = {\proglang{Julia}~package version~0.5},
   url           = GitHub # "BenLauwens/SimJulia.jl",
 }
 
 @Book{Shannon:1975:Systems,
   title         = {Systems Simulation: The Art and Science},
-  author        = {Shannon, Robert E.},
-  isbn          = {9780138818395},
+  author        = {Robert E. Shannon},
   lccn          = {75001174},
   year          = {1975},
   publisher     = {Prentice-Hall},
@@ -128,8 +137,7 @@
 
 @Book{Law:2000:Simulation,
   title         = {Simulation Modeling and Analysis},
-  author        = {Law, A.M. and Kelton, W.D.},
-  isbn          = {9780070592926},
+  author        = {A. M. Law and W. D. Kelton},
   lccn          = {99052146},
   series        = {McGraw-Hill Series in Industrial Engineering and Management Science},
   year          = {2000},
@@ -138,8 +146,7 @@
 
 @Book{Banks:2005:Discrete,
   title         = {Discrete-event System Simulation},
-  author        = {Banks, J.},
-  isbn          = {9780131446793},
+  author        = {J. Banks},
   lccn          = {2004053354},
   series        = {Prentice-Hall International Series in Industrial and Systems Engineering},
   year          = {2005},
@@ -148,30 +155,27 @@
 
 @Book{Pidd:1988:Computer,
   title         = {Computer Simulation in Management Science},
-  author        = {Pidd, M.},
-  isbn          = {9780471919315},
+  author        = {M. Pidd},
   lccn          = {87037481},
   year          = {1988},
   publisher     = {John Wiley \& Sons},
 }
 
 @Book{Matloff:2011:ARP:2090080,
-  author        = {Matloff, Norman},
+  author        = {Norman Matloff},
   title         = {The Art of \proglang{R} Programming: A Tour of Statistical Software Design},
   year          = {2011},
-  isbn          = {1593273843, 9781593273842},
   edition       = {1st},
   publisher     = {No Starch Press},
-  address       = {San Francisco, CA, USA},
+  address       = {San Francisco},
 }
 
 @Book{Eddelbuettel:2013:Rcpp,
   title         = {Seamless \proglang{R} and \proglang{C++} Integration with \pkg{Rcpp}},
   author        = {Dirk Eddelbuettel},
   publisher     = {Springer-Verlag},
-  address       = {New York, NY, USA},
+  address       = {New York},
   year          = {2013},
-  isbn          = {978-1-4614-6867-7},
 }
 
 @Article{Eddelbuettel:2011:Rcpp,
@@ -186,15 +190,14 @@
 }
 
 @Article{Jha:2000:SEL:361026.361032,
-  author        = {Jha, Vikas and Bagrodia, Rajive},
+  author        = {Vikas Jha and Rajive Bagrodia},
   title         = {Simultaneous Events and Lookahead in Simulation Protocols},
-  journal       = {ACM Trans. Model. Comput. Simul.},
+  journal       = {ACM Transactions on Modeling and Computer Simulation},
   issue_date    = {July 2000},
   volume        = {10},
   number        = {3},
   month         = jul,
   year          = {2000},
-  issn          = {1049-3301},
   pages         = {241--267},
   numpages      = {27},
   doi           = {10.1145/361026.361032},
@@ -206,11 +209,10 @@
 @Article{Kendall:1953,
   title         = {Stochastic Processes Occurring in the Theory of Queues
                   and their Analysis by the Method of the Imbedded Markov Chain},
-  author        = {Kendall, David G.},
+  author        = {David G. Kendall},
   journal       = {The Annals of Mathematical Statistics},
   publisher     = {The Institute of Mathematical Statistics},
   volume        = {24},
-  month         = {09},
   number        = {3},
   pages         = {338--354},
   year          = {1953},
@@ -218,16 +220,15 @@
 }
 
 @InProceedings{Ronngren:1999:EOP:301429.301456,
-  author        = {R\"{o}nngren, Robert and Liljenstam, Michael},
+  author        = {Robert R\"{o}nngren and Michael Liljenstam},
   title         = {On Event Ordering in Parallel Discrete Event Simulation},
   booktitle     = {Proceedings of the Thirteenth Workshop on Parallel and Distributed Simulation},
   series        = {PADS '99},
   year          = {1999},
-  isbn          = {0-7695-0155-9},
   location      = {Atlanta, Georgia, USA},
   pages         = {38--45},
   numpages      = {8},
   acmid         = {301456},
   publisher     = {IEEE Computer Society},
-  address       = {Washington, DC, USA},
+  address       = {Washington, DC},
 }

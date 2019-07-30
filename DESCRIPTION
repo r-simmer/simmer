@@ -13,8 +13,8 @@ Description: A process-oriented and trajectory-based Discrete-Event Simulation
     revolves around the concept of trajectory, a common path in the simulation
     model for entities of the same type. Documentation about 'simmer' is provided
     by several vignettes included in this package, via the paper by Ucar, Smeets
-    & Azcorra (2018, <arXiv:1705.09746>), and the paper by Ucar, Hernández, 
-    Serrano & Azcorra (2018, <doi:10.1109/MCOM.2018.1700960>);
+    & Azcorra (2019, <doi:10.18637/jss.v090.i02>), and the paper by Ucar,
+    Hernández, Serrano & Azcorra (2018, <doi:10.1109/MCOM.2018.1700960>);
     see 'citation("simmer")' for details.
 License: GPL (>= 2)
 Encoding: UTF-8
