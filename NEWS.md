@@ -1,5 +1,9 @@
 # simmer 4.3.0
 
+## New features
+
+- Add ability to `keep_seized` resources after reneging (#204 addressing #200).
+
 ## Minor changes and fixes:
 
 - Drop R6 as a dependency (#193 addressing #190).
