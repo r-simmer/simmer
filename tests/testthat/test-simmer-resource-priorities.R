@@ -101,3 +101,42 @@ test_that("priority works in non-saturated finite-queue resources", {
   expect_equal(arr$end_time, c(1, 1))
   expect_equal(arr$activity_time, c(0, 0))
 })
+
+test_that("out-of-range priorities are not enqueued", {
+  t <- trajectory() %>%
+    seize("res") %>%
+    timeout(4) %>%
+    release("res")
+
+  env <- simmer(verbose=TRUE) %>%
+    add_resource("res", 3, queue_priority=1) %>%
+    add_generator("lprio", t, at(0, 1), priority=0) %>%
+    add_generator("hprio", t, at(0, 2), priority=2) %>%
+    add_generator("nprio", t, at(0, 3), priority=1) %>%
+    run()
+
+  arr <- get_mon_arrivals(env)
+  arr <- arr[order(arr$start_time),]
+
+  expect_equal(arr$start_time, c(0, 0, 0, 1, 2, 3))
+  expect_equal(arr$end_time, c(4, 4, 4, 1, 8, 8))
+  expect_equal(arr$activity_time, c(4, 4, 4, 0, 4, 4))
+  expect_equal(arr$finished, c(TRUE, TRUE, TRUE, FALSE, TRUE, TRUE))
+
+  env <- simmer(verbose=TRUE) %>%
+    add_resource("res", 3, queue_priority=c(1, 1)) %>%
+    add_generator("lprio", t, at(0, 1), priority=0) %>%
+    add_generator("hprio", t, at(0, 2), priority=2) %>%
+    add_generator("nprio", t, at(0, 3), priority=1) %>%
+    run()
+
+  arr <- get_mon_arrivals(env)
+  arr <- arr[order(arr$start_time),]
+
+  expect_equal(arr$start_time, c(0, 0, 0, 1, 2, 3))
+  expect_equal(arr$end_time, c(4, 4, 4, 1, 2, 8))
+  expect_equal(arr$activity_time, c(4, 4, 4, 0, 0, 4))
+  expect_equal(arr$finished, c(TRUE, TRUE, TRUE, FALSE, FALSE, TRUE))
+
+  expect_error(simmer() %>% add_resource("res", queue_priority=c(1, 2, 3)))
+})
