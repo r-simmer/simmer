@@ -247,22 +247,22 @@ peek.simmer <- function(.env, steps=1, verbose=FALSE) {
 #' \code{\link{get_mon_arrivals}}. Unfinished arrivals can be handled with a
 #' drop-out trajectory that can be set using the \code{\link{handle_unfinished}}
 #' activity.
-#' @param queue_min_priority the minimum priority required to be able to access
-#' the queue if there is no room in the server. By default, all arrivals can be
-#' enqueued.
+#' @param queue_priority the priority range required to be able to access the
+#' queue if there is no room in the server (if a single value is provided, it is
+#' treated as the minimum priority). By default, all arrivals can be enqueued.
 #'
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \code{\link{schedule}}.
 #' @export
 add_resource <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE,
                          preemptive=FALSE, preempt_order=c("fifo", "lifo"),
-                         queue_size_strict=FALSE, queue_min_priority=0)
+                         queue_size_strict=FALSE, queue_priority=c(0, Inf))
   UseMethod("add_resource")
 
 #' @export
 add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE,
                                 preemptive=FALSE, preempt_order=c("fifo", "lifo"),
-                                queue_size_strict=FALSE, queue_min_priority=0)
+                                queue_size_strict=FALSE, queue_priority=c(0, Inf))
 {
   check_args(
     name = "string",
@@ -271,9 +271,16 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
     mon = "flag",
     preemptive = "flag",
     queue_size_strict = "flag",
-    queue_min_priority = "number"
+    queue_priority = c("number", "number vector")
   )
   preempt_order <- match.arg(preempt_order)
+
+  if (length(queue_priority) == 1)
+    queue_priority <- c(queue_priority, Inf)
+  queue_priority <- replace(queue_priority, is.infinite(queue_priority), -1)
+  if (length(queue_priority) != 2 ||
+      !(queue_priority[2] < 0 || queue_priority[2]-queue_priority[1] >= 0))
+    stop(get_caller(), ": 'queue_priority' is not a valid numeric range", call.=FALSE)
 
   if (inherits(capacity, "schedule")) {
     capacity_schedule <- capacity
@@ -285,8 +292,9 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
     queue_size <- queue_size_schedule$schedule$init
   } else queue_size_schedule <- NA
 
-  ret <- add_resource_(.env$sim_obj, name, capacity, queue_size, mon, preemptive,
-                       preempt_order, queue_size_strict, queue_min_priority)
+  ret <- add_resource_(.env$sim_obj, name, capacity, queue_size, mon,
+                       preemptive, preempt_order, queue_size_strict,
+                       queue_priority[1], queue_priority[2])
   if (ret) .env$resources[[name]] <- c(mon=mon, preemptive=preemptive)
 
   if (inherits(capacity_schedule, "schedule"))

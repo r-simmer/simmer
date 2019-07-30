@@ -39,10 +39,12 @@ namespace simmer {
     * @param queue_size  room in the queue (-1 means infinity)
     */
     Resource(Simulator* sim, const std::string& name, int mon, int capacity,
-             int queue_size, bool queue_size_strict, int queue_min_priority)
+             int queue_size, bool queue_size_strict, int queue_priority_min,
+             int queue_priority_max)
       : Entity(sim, name, mon), capacity(capacity), queue_size(queue_size),
         server_count(0), queue_count(0), queue_size_strict(queue_size_strict),
-        queue_min_priority(queue_min_priority) {}
+        queue_priority_min(queue_priority_min),
+        queue_priority_max(queue_priority_max) {}
 
     /**
     * Reset the resource: server, queue
@@ -171,7 +173,8 @@ namespace simmer {
     int server_count;       /**< number of arrivals being served */
     int queue_count;        /**< number of arrivals waiting */
     bool queue_size_strict;
-    int queue_min_priority;
+    int queue_priority_min;
+    int queue_priority_max;
 
     int post_release() {
       // serve another

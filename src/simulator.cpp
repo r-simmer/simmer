@@ -92,21 +92,24 @@ bool add_dataframe_(SEXP sim_, const std::string& name_prefix, const Environment
 //[[Rcpp::export]]
 bool add_resource_(SEXP sim_, const std::string& name, int capacity, int queue_size,
                    bool mon, bool preemptive, const std::string& preempt_order,
-                   bool queue_size_strict, int queue_min_priority)
+                   bool queue_size_strict, int queue_priority_min, int queue_priority_max)
 {
   XPtr<Simulator> sim(sim_);
 
   Resource* res;
   if (!preemptive) {
-    res = new PriorityRes<FIFO>(sim, name, mon, capacity, queue_size,
-                                queue_size_strict, queue_min_priority);
+    res = new PriorityRes<FIFO>(
+      sim, name, mon, capacity, queue_size, queue_size_strict,
+      queue_priority_min, queue_priority_max);
   } else {
     if (preempt_order.compare("fifo") == 0)
-      res = new PreemptiveRes<FIFO>(sim, name, mon, capacity, queue_size,
-                                    queue_size_strict, queue_min_priority);
+      res = new PreemptiveRes<FIFO>(
+        sim, name, mon, capacity, queue_size, queue_size_strict,
+        queue_priority_min, queue_priority_max);
     else
-      res = new PreemptiveRes<LIFO>(sim, name, mon, capacity, queue_size,
-                                    queue_size_strict, queue_min_priority);
+      res = new PreemptiveRes<LIFO>(
+        sim, name, mon, capacity, queue_size, queue_size_strict,
+        queue_priority_min, queue_priority_max);
   }
 
   bool ret = sim->add_resource(res);

@@ -6,7 +6,7 @@
 \usage{
 add_resource(.env, name, capacity = 1, queue_size = Inf, mon = TRUE,
   preemptive = FALSE, preempt_order = c("fifo", "lifo"),
-  queue_size_strict = FALSE, queue_min_priority = 0)
+  queue_size_strict = FALSE, queue_priority = c(0, Inf))
 }
 \arguments{
 \item{.env}{the simulation environment.}
@@ -41,9 +41,9 @@ will set the \code{finished} flag to \code{FALSE} in the output of
 drop-out trajectory that can be set using the \code{\link{handle_unfinished}}
 activity.}
 
-\item{queue_min_priority}{the minimum priority required to be able to access
-the queue if there is no room in the server. By default, all arrivals can be
-enqueued.}
+\item{queue_priority}{the priority range required to be able to access the
+queue if there is no room in the server (if a single value is provided, it is
+treated as the minimum priority). By default, all arrivals can be enqueued.}
 }
 \value{
 Returns the simulation environment.
