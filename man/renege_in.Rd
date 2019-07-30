@@ -6,9 +6,9 @@
 \alias{renege_abort}
 \title{Renege on some Condition}
 \usage{
-renege_in(.trj, t, out = NULL)
+renege_in(.trj, t, out = NULL, keep_seized = FALSE)
 
-renege_if(.trj, signal, out = NULL)
+renege_if(.trj, signal, out = NULL, keep_seized = FALSE)
 
 renege_abort(.trj)
 }
@@ -19,6 +19,9 @@ renege_abort(.trj)
 object (a function) which must return a numeric.}
 
 \item{out}{optional sub-trajectory in case of reneging.}
+
+\item{keep_seized}{whether to keep already seized resources. By default, all
+resources are released.}
 
 \item{signal}{signal to trigger reneging, accepts either a string or a
 callable object (a function) which must return a string.}
