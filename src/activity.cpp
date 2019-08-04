@@ -266,8 +266,8 @@ SEXP Rollback__new_func(int amount, const Function& check) {
 }
 
 //[[Rcpp::export]]
-SEXP Leave__new(double prob) {
-  return XPtr<Leave<double> >(new Leave<double>(prob));
+SEXP Leave__new(double prob, const std::vector<Environment>& trj, bool keep_seized) {
+  return XPtr<Leave<double> >(new Leave<double>(prob, trj, keep_seized));
 }
 
 //[[Rcpp::export]]
@@ -276,8 +276,8 @@ SEXP HandleUnfinished__new(const std::vector<Environment>& trj) {
 }
 
 //[[Rcpp::export]]
-SEXP Leave__new_func(const Function& prob) {
-  return XPtr<Leave<Function> >(new Leave<Function>(prob));
+SEXP Leave__new_func(const Function& prob, const std::vector<Environment>& trj, bool keep_seized) {
+  return XPtr<Leave<Function> >(new Leave<Function>(prob, trj, keep_seized));
 }
 
 //[[Rcpp::export]]

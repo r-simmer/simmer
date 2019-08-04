@@ -23,6 +23,39 @@
 namespace simmer {
 
   /**
+   * Leave the trajectory with some probability.
+   */
+  template <typename T>
+  class Leave : public Fork {
+  public:
+    CLONEABLE(Leave<T>)
+
+    Leave(const T& prob, const VEC<REnv>& trj, bool keep_seized)
+      : Fork("Leave", VEC<bool>(trj.size(), false), trj), prob(prob),
+        keep_seized(keep_seized) {}
+
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      internal::print(brief, false, ARG(prob), ARG(keep_seized));
+      Fork::print(indent, verbose, brief);
+    }
+
+    double run(Arrival* arrival) {
+      Activity* next = NULL;
+      if (Rcpp::runif(1)[0] > get<double>(prob, arrival))
+        return 0;
+      if (heads.size())
+        next = heads[0];
+      arrival->set_renege(0, next, keep_seized);
+      return 0;
+    }
+
+  protected:
+    T prob;
+    bool keep_seized;
+  };
+
+  /**
    * Renege after some time.
    */
   template <typename T>
@@ -100,6 +133,31 @@ namespace simmer {
 
     double run(Arrival* arrival) {
       arrival->cancel_renege();
+      return 0;
+    }
+  };
+
+  /**
+   * Set a path to handle unfinished arrivals (from 'leave' or resources)
+   */
+  class HandleUnfinished : public Fork {
+  public:
+    CLONEABLE(HandleUnfinished)
+
+    HandleUnfinished(const VEC<REnv>& trj)
+      : Fork("HandleUnfinished", VEC<bool>(trj.size(), false), trj) {}
+
+    void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
+      Activity::print(indent, verbose, brief);
+      internal::print(brief, false);
+      Fork::print(indent, verbose, brief);
+    }
+
+    double run(Arrival* arrival) {
+      Activity* next = NULL;
+      if (heads.size())
+        next = heads[0];
+      arrival->set_dropout(next);
       return 0;
     }
   };

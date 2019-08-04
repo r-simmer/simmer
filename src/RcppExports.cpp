@@ -548,13 +548,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // Leave__new
-SEXP Leave__new(double prob);
-RcppExport SEXP _simmer_Leave__new(SEXP probSEXP) {
+SEXP Leave__new(double prob, const std::vector<Environment>& trj, bool keep_seized);
+RcppExport SEXP _simmer_Leave__new(SEXP probSEXP, SEXP trjSEXP, SEXP keep_seizedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type prob(probSEXP);
-    rcpp_result_gen = Rcpp::wrap(Leave__new(prob));
+    Rcpp::traits::input_parameter< const std::vector<Environment>& >::type trj(trjSEXP);
+    Rcpp::traits::input_parameter< bool >::type keep_seized(keep_seizedSEXP);
+    rcpp_result_gen = Rcpp::wrap(Leave__new(prob, trj, keep_seized));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -570,13 +572,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // Leave__new_func
-SEXP Leave__new_func(const Function& prob);
-RcppExport SEXP _simmer_Leave__new_func(SEXP probSEXP) {
+SEXP Leave__new_func(const Function& prob, const std::vector<Environment>& trj, bool keep_seized);
+RcppExport SEXP _simmer_Leave__new_func(SEXP probSEXP, SEXP trjSEXP, SEXP keep_seizedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Function& >::type prob(probSEXP);
-    rcpp_result_gen = Rcpp::wrap(Leave__new_func(prob));
+    Rcpp::traits::input_parameter< const std::vector<Environment>& >::type trj(trjSEXP);
+    Rcpp::traits::input_parameter< bool >::type keep_seized(keep_seizedSEXP);
+    rcpp_result_gen = Rcpp::wrap(Leave__new_func(prob, trj, keep_seized));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1432,9 +1436,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_Branch__new", (DL_FUNC) &_simmer_Branch__new, 3},
     {"_simmer_Rollback__new", (DL_FUNC) &_simmer_Rollback__new, 2},
     {"_simmer_Rollback__new_func", (DL_FUNC) &_simmer_Rollback__new_func, 2},
-    {"_simmer_Leave__new", (DL_FUNC) &_simmer_Leave__new, 1},
+    {"_simmer_Leave__new", (DL_FUNC) &_simmer_Leave__new, 3},
     {"_simmer_HandleUnfinished__new", (DL_FUNC) &_simmer_HandleUnfinished__new, 1},
-    {"_simmer_Leave__new_func", (DL_FUNC) &_simmer_Leave__new_func, 1},
+    {"_simmer_Leave__new_func", (DL_FUNC) &_simmer_Leave__new_func, 3},
     {"_simmer_Clone__new", (DL_FUNC) &_simmer_Clone__new, 2},
     {"_simmer_Clone__new_func", (DL_FUNC) &_simmer_Clone__new_func, 2},
     {"_simmer_Synchronize__new", (DL_FUNC) &_simmer_Synchronize__new, 2},

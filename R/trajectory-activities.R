@@ -842,23 +842,30 @@ rollback.trajectory <- function(.trj, amount, times=Inf, check=NULL) {
   )
 }
 
-#' Leave the Trajectory
+#' Renege on some Condition
 #'
-#' Activity for leaving the trajectory with some probability.
+#' Activities for leaving with some probability, or for setting or unsetting a
+#' timer or a signal after which the arrival will abandon.
 #'
 #' @inheritParams seize
 #' @param prob a probability or a function returning a probability.
+#' @param out optional sub-trajectory in case of reneging.
+#' @param keep_seized whether to keep already seized resources. By default, all
+#' resources are released.
 #'
 #' @return Returns the trajectory object.
 #'
 #' @details Arrivals that leave the trajectory will set the \code{finished} flag
 #' to \code{FALSE} in the output of \code{\link{get_mon_arrivals}}. Unfinished
 #' arrivals can be handled with a drop-out trajectory that can be set using the
-#' \code{\link{handle_unfinished}} activity.
+#' optional argument \code{out} or the \code{\link{handle_unfinished}} activity.
 #'
-#' @seealso \code{\link{handle_unfinished}}, \code{\link{renege_in}}
+#' Note that, for historical reasons, \code{leave} has \code{keep_seized=TRUE}
+#' by default, while \code{renege_*} does not.
 #'
+#' @seealso \code{\link{handle_unfinished}}
 #' @examples
+#' ## leave with some probability
 #' set.seed(1234)
 #'
 #' traj <- trajectory() %>%
@@ -870,18 +877,105 @@ rollback.trajectory <- function(.trj, amount, times=Inf, check=NULL) {
 #'   add_generator("dummy", traj, at(0, 1)) %>%
 #'   run() %>% invisible
 #'
+#' @name renege
 #' @export
-leave <- function(.trj, prob) UseMethod("leave")
+leave <- function(.trj, prob, out=NULL, keep_seized=TRUE) UseMethod("leave")
 
 #' @export
-leave.trajectory <- function(.trj, prob) {
-  check_args(prob=c("number", "function"))
+leave.trajectory <- function(.trj, prob, out=NULL, keep_seized=TRUE) {
+  check_args(
+    prob = c("number", "function"),
+    out = c("trajectory", "NULL"),
+    keep_seized = "flag"
+  )
+  traj <- as.list(c(out[]))
   switch(
     binarise(is.function(prob)),
-    add_activity(.trj, Leave__new(prob)),
-    add_activity(.trj, Leave__new_func(prob))
+    add_activity(.trj, Leave__new(prob, traj, keep_seized)),
+    add_activity(.trj, Leave__new_func(prob, traj, keep_seized))
   )
 }
+
+
+#' @param t timeout to trigger reneging, accepts either a numeric or a callable
+#' object (a function) which must return a numeric.
+#'
+#' @details Note that \code{renege_if} works similarly to \code{\link{trap}},
+#' but in contrast to that, reneging is triggered even if the arrival is waiting
+#' in a queue or is part of a non-permanent \code{\link{batch}}.
+#'
+#' @examples
+#' ## reneging after some time
+#' bank <- trajectory() %>%
+#'   log_("here I am") %>%
+#'   # renege in 5 minutes
+#'   renege_in(
+#'     5,
+#'     out = trajectory() %>%
+#'       log_("lost my patience. Reneging...")) %>%
+#'   seize("clerk") %>%
+#'   # stay if I'm being attended within 5 minutes
+#'   renege_abort() %>%
+#'   log_("I'm being attended") %>%
+#'   timeout(10) %>%
+#'   release("clerk") %>%
+#'   log_("finished")
+#'
+#' simmer() %>%
+#'   add_resource("clerk", 1) %>%
+#'   add_generator("customer", bank, at(0, 1)) %>%
+#'   run() %>% invisible
+#'
+#' @rdname renege
+#' @export
+renege_in <- function(.trj, t, out=NULL, keep_seized=FALSE)
+  UseMethod("renege_in")
+
+#' @export
+renege_in.trajectory <- function(.trj, t, out=NULL, keep_seized=FALSE) {
+  check_args(
+    t = c("number", "function"),
+    out = c("trajectory", "NULL"),
+    keep_seized = "flag"
+  )
+  traj <- as.list(c(out[]))
+  switch(
+    binarise(is.function(t)),
+    add_activity(.trj, RenegeIn__new(t, traj, keep_seized)),
+    add_activity(.trj, RenegeIn__new_func(t, traj, keep_seized))
+  )
+}
+
+#' @param signal signal to trigger reneging, accepts either a string or a
+#' callable object (a function) which must return a string.
+#'
+#' @rdname renege
+#' @seealso \code{\link{send}}
+#' @export
+renege_if <- function(.trj, signal, out=NULL, keep_seized=FALSE)
+  UseMethod("renege_if")
+
+#' @export
+renege_if.trajectory <- function(.trj, signal, out=NULL, keep_seized=FALSE) {
+  check_args(
+    signal = c("string", "function"),
+    out = c("trajectory", "NULL"),
+    keep_seized = "flag"
+  )
+  traj <- as.list(c(out[]))
+  switch(
+    binarise(is.function(signal)),
+    add_activity(.trj, RenegeIf__new(signal, traj, keep_seized)),
+    add_activity(.trj, RenegeIf__new_func(signal, traj, keep_seized))
+  )
+}
+
+#' @rdname renege
+#' @export
+renege_abort <- function(.trj) UseMethod("renege_abort")
+
+#' @export
+renege_abort.trajectory <- function(.trj) add_activity(.trj, RenegeAbort__new())
 
 #' Handle Unfinished Arrivals
 #'
@@ -924,95 +1018,6 @@ handle_unfinished.trajectory <- function(.trj, handler) {
   traj <- as.list(c(handler[]))
   add_activity(.trj, HandleUnfinished__new(traj))
 }
-
-#' Renege on some Condition
-#'
-#' Activities for setting or unsetting a timer or a signal after which the
-#' arrival will abandon.
-#'
-#' @inheritParams seize
-#' @param t timeout to trigger reneging, accepts either a numeric or a callable
-#' object (a function) which must return a numeric.
-#' @param out optional sub-trajectory in case of reneging.
-#' @param keep_seized whether to keep already seized resources. By default, all
-#' resources are released.
-#'
-#' @return Returns the trajectory object.
-#'
-#' @details Note that \code{renege_if} works similarly to \code{\link{trap}},
-#' but in contrast to that, reneging is triggered even if the arrival is waiting
-#' in a queue or is part of a non-permanent \code{\link{batch}}.
-#'
-#' @examples
-#' bank <- trajectory() %>%
-#'   log_("here I am") %>%
-#'   # renege in 5 minutes
-#'   renege_in(
-#'     5,
-#'     out = trajectory() %>%
-#'       log_("lost my patience. Reneging...")) %>%
-#'   seize("clerk") %>%
-#'   # stay if I'm being attended within 5 minutes
-#'   renege_abort() %>%
-#'   log_("I'm being attended") %>%
-#'   timeout(10) %>%
-#'   release("clerk") %>%
-#'   log_("finished")
-#'
-#' simmer() %>%
-#'   add_resource("clerk", 1) %>%
-#'   add_generator("customer", bank, at(0, 1)) %>%
-#'   run() %>% invisible
-#'
-#' @export
-renege_in <- function(.trj, t, out=NULL, keep_seized=FALSE)
-  UseMethod("renege_in")
-
-#' @export
-renege_in.trajectory <- function(.trj, t, out=NULL, keep_seized=FALSE) {
-  check_args(
-    t = c("number", "function"),
-    out = c("trajectory", "NULL"),
-    keep_seized = "flag"
-  )
-  traj <- as.list(c(out[]))
-  switch(
-    binarise(is.function(t)),
-    add_activity(.trj, RenegeIn__new(t, traj, keep_seized)),
-    add_activity(.trj, RenegeIn__new_func(t, traj, keep_seized))
-  )
-}
-
-#' @param signal signal to trigger reneging, accepts either a string or a
-#' callable object (a function) which must return a string.
-#'
-#' @rdname renege_in
-#' @seealso \code{\link{send}}, \code{\link{leave}}
-#' @export
-renege_if <- function(.trj, signal, out=NULL, keep_seized=FALSE)
-  UseMethod("renege_if")
-
-#' @export
-renege_if.trajectory <- function(.trj, signal, out=NULL, keep_seized=FALSE) {
-  check_args(
-    signal = c("string", "function"),
-    out = c("trajectory", "NULL"),
-    keep_seized = "flag"
-  )
-  traj <- as.list(c(out[]))
-  switch(
-    binarise(is.function(signal)),
-    add_activity(.trj, RenegeIf__new(signal, traj, keep_seized)),
-    add_activity(.trj, RenegeIf__new_func(signal, traj, keep_seized))
-  )
-}
-
-#' @rdname renege_in
-#' @export
-renege_abort <- function(.trj) UseMethod("renege_abort")
-
-#' @export
-renege_abort.trajectory <- function(.trj) add_activity(.trj, RenegeAbort__new())
 
 #' Clone/Synchronize Arrivals
 #'

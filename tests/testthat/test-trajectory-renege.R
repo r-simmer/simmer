@@ -1,4 +1,4 @@
-# Copyright (C) 2016,2018-2019 Iñaki Ucar
+# Copyright (C) 2016-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -16,6 +16,72 @@
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
 context("renege")
+
+test_that("an arrival leaves", {
+  t0 <- trajectory() %>%
+    seize("dummy", 1) %>%
+    timeout(1) %>%
+    leave(1) %>%
+    timeout(1) %>%
+    release("dummy", 1)
+
+  t1 <- trajectory() %>%
+    seize("dummy", 1) %>%
+    timeout(1) %>%
+    leave(function() 1) %>%
+    timeout(1) %>%
+    release("dummy", 1)
+
+  env0 <- simmer(verbose = T) %>%
+    add_resource("dummy") %>%
+    add_generator("arrival", t0, at(0))
+
+  env1 <- simmer(verbose = T) %>%
+    add_resource("dummy") %>%
+    add_generator("arrival", t1, at(0))
+
+  expect_warning(run(env0))
+  expect_warning(run(env1))
+
+  arrivals0 <- get_mon_arrivals(env0)
+  arrivals1 <- get_mon_arrivals(env1)
+
+  expect_false(arrivals0$finished)
+  expect_false(arrivals1$finished)
+  expect_equal(arrivals0$activity_time, 1)
+  expect_equal(arrivals1$activity_time, 1)
+})
+
+test_that("an arrival continues", {
+  t0 <- trajectory() %>%
+    seize("dummy", 1) %>%
+    timeout(1) %>%
+    leave(0) %>%
+    timeout(1) %>%
+    release("dummy", 1)
+
+  t1 <- trajectory() %>%
+    seize("dummy", 1) %>%
+    timeout(1) %>%
+    leave(function() 0) %>%
+    timeout(1) %>%
+    release("dummy", 1)
+
+  arrivals0 <- simmer(verbose = T) %>%
+    add_resource("dummy") %>%
+    add_generator("arrival", t0, at(0)) %>%
+    run() %>% get_mon_arrivals()
+
+  arrivals1 <- simmer(verbose = T) %>%
+    add_resource("dummy") %>%
+    add_generator("arrival", t1, at(0)) %>%
+    run() %>% get_mon_arrivals()
+
+  expect_true(arrivals0$finished)
+  expect_true(arrivals1$finished)
+  expect_equal(arrivals0$activity_time, 2)
+  expect_equal(arrivals1$activity_time, 2)
+})
 
 test_that("an arrival in a timeout reneges (1)", {
   t <- trajectory() %>%
@@ -40,12 +106,27 @@ test_that("an arrival in a timeout reneges (2)", {
 
   env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
-    run(1000)
+    run()
 
   arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 1)
   expect_equal(arr$activity_time, 1)
   expect_false(arr$finished)
+})
+
+test_that("a leaving arrival can follow a secondary sub-trajectory", {
+  t <- trajectory() %>%
+    leave(1, out = trajectory() %>% timeout(1)) %>%
+    timeout(4)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("arrival", t, at(0)) %>%
+    run()
+
+  arr <- get_mon_arrivals(env, per_resource = FALSE)
+  expect_equal(arr$end_time, 1)
+  expect_equal(arr$activity_time, 1)
+  expect_true(arr$finished)
 })
 
 test_that("a reneging arrival can follow a secondary sub-trajectory (1)", {
@@ -71,7 +152,7 @@ test_that("a reneging arrival can follow a secondary sub-trajectory (2)", {
 
   env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
-    run(1000)
+    run()
 
   arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 2)
@@ -80,6 +161,21 @@ test_that("a reneging arrival can follow a secondary sub-trajectory (2)", {
 })
 
 test_that("an empty subtrajectory is equivalent to NULL (1)", {
+  t <- trajectory() %>%
+    leave(1, out = trajectory()) %>%
+    timeout(4)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("arrival", t, at(0)) %>%
+    run()
+
+  arr <- get_mon_arrivals(env, per_resource = FALSE)
+  expect_equal(arr$end_time, 0)
+  expect_equal(arr$activity_time, 0)
+  expect_false(arr$finished)
+})
+
+test_that("an empty subtrajectory is equivalent to NULL (2)", {
   t <- trajectory() %>%
     renege_in(1, out = trajectory()) %>%
     timeout(4)
@@ -94,7 +190,7 @@ test_that("an empty subtrajectory is equivalent to NULL (1)", {
   expect_false(arr$finished)
 })
 
-test_that("an empty subtrajectory is equivalent to NULL (2)", {
+test_that("an empty subtrajectory is equivalent to NULL (3)", {
   t <- trajectory() %>%
     send("sig", 1) %>%
     renege_if("sig", out = trajectory()) %>%
@@ -102,7 +198,7 @@ test_that("an empty subtrajectory is equivalent to NULL (2)", {
 
   env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
-    run(1000)
+    run()
 
   arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 1)
@@ -137,7 +233,7 @@ test_that("a second renege_if resets the timeout", {
 
   env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
-    run(1000)
+    run()
 
   arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 5)
@@ -155,7 +251,7 @@ test_that("a second renege_in resets the signal", {
 
   env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
-    run(1000)
+    run()
 
   arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 5)
@@ -173,7 +269,7 @@ test_that("a second renege_if resets the signal", {
 
   env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
-    run(1000)
+    run()
 
   arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 10)
@@ -208,7 +304,7 @@ test_that("reneging can be aborted (2)", {
 
   env <- simmer(verbose = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
-    run(1000)
+    run()
 
   arr <- get_mon_arrivals(env, per_resource = FALSE)
   expect_equal(arr$end_time, 10)
@@ -527,13 +623,14 @@ test_that("seizes across nested batches are correctly reported", {
   expect_equal(arr_res$activity_time, c(2, 2, 2))
 })
 
-test_that("a reneging arrival keeps seized resources", {
+test_that("a leaving arrival keeps seized resources", {
   out <- trajectory() %>% timeout(1)
 
   t <- trajectory() %>%
-    renege_in(1, out=out, keep_seized=TRUE) %>%
     seize("dummy") %>%
-    timeout(4)
+    timeout(1) %>%
+    leave(1, out=out, keep_seized=TRUE) %>%
+    timeout(3)
 
   env <- simmer(verbose = TRUE) %>%
     add_resource("dummy") %>%
@@ -549,6 +646,10 @@ test_that("a reneging arrival keeps seized resources", {
   expect_true(arr$finished)
   expect_equal(res$time, 0)
   expect_equal(res$server, 1)
+})
+
+test_that("a reneging arrival keeps seized resources (1)", {
+  out <- trajectory() %>% timeout(1)
 
   t <- trajectory() %>%
     renege_in(1, out=out, keep_seized=TRUE) %>%
@@ -573,9 +674,14 @@ test_that("a reneging arrival keeps seized resources", {
   expect_equal(res$time, c(0, 0, 1))
   expect_equal(res$server, c(1, 0, 0))
   expect_equal(res$queue, c(0, 1, 0))
+})
+
+test_that("a reneging arrival keeps seized resources (2)", {
+  out <- trajectory() %>% timeout(1)
 
   t <- trajectory() %>%
-    renege_in(1, out=out, keep_seized=TRUE) %>%
+    send("sig", 1) %>%
+    renege_if("sig", out=out, keep_seized=TRUE) %>%
     seize("dummy") %>%
     batch(1) %>%
     seize("other") %>%
