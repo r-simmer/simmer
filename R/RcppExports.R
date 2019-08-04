@@ -173,16 +173,16 @@ Rollback__new_func <- function(amount, check) {
     .Call(`_simmer_Rollback__new_func`, amount, check)
 }
 
-Leave__new <- function(prob) {
-    .Call(`_simmer_Leave__new`, prob)
+Leave__new <- function(prob, trj, keep_seized) {
+    .Call(`_simmer_Leave__new`, prob, trj, keep_seized)
 }
 
 HandleUnfinished__new <- function(trj) {
     .Call(`_simmer_HandleUnfinished__new`, trj)
 }
 
-Leave__new_func <- function(prob) {
-    .Call(`_simmer_Leave__new_func`, prob)
+Leave__new_func <- function(prob, trj, keep_seized) {
+    .Call(`_simmer_Leave__new_func`, prob, trj, keep_seized)
 }
 
 Clone__new <- function(n, trj) {

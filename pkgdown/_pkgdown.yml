@@ -20,9 +20,8 @@ reference:
     - batch
     - branch
     - clone
-    - leave
     - handle_unfinished
-    - renege_in
+    - renege
     - rollback
     - seize
     - select

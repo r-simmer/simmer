@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Iñaki Ucar
+// Copyright (C) 2018-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -34,7 +34,6 @@
 #include <simmer/activity/source.h>
 #include <simmer/activity/branch.h>
 #include <simmer/activity/rollback.h>
-#include <simmer/activity/leave.h>
 #include <simmer/activity/renege.h>
 #include <simmer/activity/async.h>
 
