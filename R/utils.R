@@ -89,7 +89,7 @@ envs_apply <- function(envs, method, ...) {
   args <- list(...)
 
   do.call(rbind, lapply(1:length(envs), function(i) {
-    stats <- do.call(method, c(envs[i], args))
+    stats <- do.call(method, c(envs[[i]], args))
     if (nrow(stats)) stats$replication <- i
     else cbind(stats, data.frame(replication = character()))
     stats

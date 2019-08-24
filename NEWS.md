@@ -6,6 +6,10 @@
   in `renege_in()` and `renege_if()`. Code and documentation of these functions
   are now integrated under `help(renege)` (#208).
 
+## Minor changes and fixes:
+
+- Fix `get_mon_*()` dispatch for named lists (#210).
+
 # simmer 4.3.0
 
 ## New features
