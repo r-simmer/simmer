@@ -9,6 +9,8 @@
 ## Minor changes and fixes:
 
 - Fix `get_mon_*()` dispatch for named lists (#210).
+- Get/put the RNG state only when random numbers are required in the backend
+  (#218). This solves an unnoticed issue with `leave` in some cases.
 
 # simmer 4.3.0
 
