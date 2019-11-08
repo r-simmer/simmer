@@ -22,37 +22,37 @@
 using namespace Rcpp;
 using namespace simmer;
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 SEXP Simulator__new(const std::string& name, bool verbose, SEXP mon, int log_level) {
   return XPtr<Simulator>(new Simulator(name, verbose, XPtr<Monitor>(mon), log_level));
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 void reset_(SEXP sim_) {
   XPtr<Simulator>(sim_)->reset();
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 double now_(SEXP sim_) {
   return XPtr<Simulator>(sim_)->now();
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 DataFrame peek_(SEXP sim_, int steps) {
   return XPtr<Simulator>(sim_)->peek(steps);
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 void stepn_(SEXP sim_, unsigned int n) {
   XPtr<Simulator>(sim_)->step(n);
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 void run_(SEXP sim_, double until) {
   XPtr<Simulator>(sim_)->run(until);
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 bool add_generator_(SEXP sim_, const std::string& name_prefix, const Environment& trj,
                     const Function& dist, int mon, int priority, int preemptible, bool restart)
 {
@@ -67,7 +67,7 @@ bool add_generator_(SEXP sim_, const std::string& name_prefix, const Environment
   return ret;
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 bool add_dataframe_(SEXP sim_, const std::string& name_prefix, const Environment& trj,
                     const DataFrame& data, int mon, int batch, const std::string& time,
                     const std::vector<std::string>& attrs,
@@ -89,7 +89,7 @@ bool add_dataframe_(SEXP sim_, const std::string& name_prefix, const Environment
   return ret;
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 bool add_resource_(SEXP sim_, const std::string& name, int capacity, int queue_size,
                    bool mon, bool preemptive, const std::string& preempt_order,
                    bool queue_size_strict, int queue_priority_min, int queue_priority_max)
@@ -118,7 +118,7 @@ bool add_resource_(SEXP sim_, const std::string& name, int capacity, int queue_s
   return ret;
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 bool add_resource_manager_(SEXP sim_, const std::string& name,
                            const std::string& param, int init,
                            const std::vector<double>& intervals,
@@ -145,7 +145,7 @@ bool add_resource_manager_(SEXP sim_, const std::string& name,
   return ret;
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 bool add_global_manager_(SEXP sim_, const std::string& key, double init,
                          const std::vector<double>& intervals,
                          const std::vector<double>& values, int period)
@@ -162,7 +162,7 @@ bool add_global_manager_(SEXP sim_, const std::string& key, double init,
   return ret;
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 void record_ongoing_(SEXP sim_, bool per_resource) {
   XPtr<Simulator>(sim_)->record_ongoing(per_resource);
 }

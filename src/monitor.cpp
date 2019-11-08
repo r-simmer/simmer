@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Iñaki Ucar
+// Copyright (C) 2018-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -20,12 +20,12 @@
 using namespace Rcpp;
 using namespace simmer;
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 SEXP MemMonitor__new() {
   return XPtr<MemMonitor>(new MemMonitor());
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 SEXP CsvMonitor__new(const std::string& ends_path, const std::string& releases_path,
                      const std::string& attributes_path, const std::string& resources_path,
                      const std::string& sep)
@@ -34,17 +34,17 @@ SEXP CsvMonitor__new(const std::string& ends_path, const std::string& releases_p
     new CsvMonitor(ends_path, releases_path, attributes_path, resources_path, sep[0]));
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 DataFrame get_arrivals_(SEXP mon_, bool per_resource) {
   return XPtr<MemMonitor>(mon_)->get_arrivals(per_resource);
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 DataFrame get_attributes_(SEXP mon_) {
   return XPtr<MemMonitor>(mon_)->get_attributes();
 }
 
-//[[Rcpp::export]]
+//[[Rcpp::export(rng=false)]]
 DataFrame get_resources_(SEXP mon_) {
   return XPtr<MemMonitor>(mon_)->get_resources();
 }

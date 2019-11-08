@@ -161,7 +161,10 @@ namespace simmer { namespace internal {
       }
       if (!available.size())
         Rcpp::stop("policy '%s' found no resource available", name);
-      return available[Rcpp::sample(available.size(), 1)[0] - 1];
+      GetRNGstate();
+      double x = Rcpp::sample(available.size(), 1)[0];
+      PutRNGstate();
+      return available[x - 1];
     }
   };
 
