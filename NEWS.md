@@ -4,7 +4,7 @@
 
 - Add `out` and `keep_seized` parameters to `leave()` with the same behaviour as
   in `renege_in()` and `renege_if()`. Code and documentation of these functions
-  are now integrated under `help(renege)` (#208).
+  are now integrated under `help(renege)` (#208, #217).
 
 ## Minor changes and fixes:
 

@@ -192,7 +192,7 @@ namespace simmer {
       cancel_renege();
       timer = new Task(sim, "Renege-Timer",
                        BIND(&Arrival::renege, this, next, keep_seized),
-                       PRIORITY_MIN);
+                       PRIORITY_MAX);
       timer->activate(timeout);
     }
 
