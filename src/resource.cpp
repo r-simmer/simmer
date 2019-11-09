@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Bart Smeets
 // Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-// Copyright (C) 2015-2019 Iñaki Ucar
+// Copyright (C) 2015-2018 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -42,53 +42,53 @@ Vector<RTYPE> get_param(SEXP sim_, int id, const Fn<T(Resource*)>& param) {
   return out;
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_capacity_(SEXP sim_, const std::vector<std::string>& names) {
   return get_param<INTSXP,int>(sim_, names, boost::mem_fn(&Resource::get_capacity));
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_capacity_selected_(SEXP sim_, int id) {
   return get_param<INTSXP,int>(sim_, id, boost::mem_fn(&Resource::get_capacity));
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_queue_size_(SEXP sim_, const std::vector<std::string>& names) {
   return get_param<INTSXP,int>(sim_, names, boost::mem_fn(&Resource::get_queue_size));
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_queue_size_selected_(SEXP sim_, int id) {
   return get_param<INTSXP,int>(sim_, id, boost::mem_fn(&Resource::get_queue_size));
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_server_count_(SEXP sim_, const std::vector<std::string>& names) {
   return get_param<INTSXP,int>(sim_, names, boost::mem_fn(&Resource::get_server_count));
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_server_count_selected_(SEXP sim_, int id) {
   return get_param<INTSXP,int>(sim_, id, boost::mem_fn(&Resource::get_server_count));
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_queue_count_(SEXP sim_, const std::vector<std::string>& names) {
   return get_param<INTSXP,int>(sim_, names, boost::mem_fn(&Resource::get_queue_count));
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_queue_count_selected_(SEXP sim_, int id) {
   return get_param<INTSXP,int>(sim_, id, boost::mem_fn(&Resource::get_queue_count));
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_seized_(SEXP sim_, const std::vector<std::string>& names) {
   Arrival* arrival = XPtr<Simulator>(sim_)->get_running_arrival();
   return get_param<INTSXP,int>(sim_, names, BIND(&Resource::get_seized, _1, arrival));
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_seized_selected_(SEXP sim_, int id) {
   Arrival* arrival = XPtr<Simulator>(sim_)->get_running_arrival();
   return get_param<INTSXP,int>(sim_, id, BIND(&Resource::get_seized, _1, arrival));
@@ -96,7 +96,7 @@ SEXP get_seized_selected_(SEXP sim_, int id) {
 
 std::string get_name(Resource* res) { return res->name; }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_selected_(SEXP sim_, int id) {
   return get_param<STRSXP>(sim_, id, Fn<std::string(Resource*)>(get_name));
 }

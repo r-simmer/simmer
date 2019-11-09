@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Bart Smeets
 // Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-// Copyright (C) 2015-2019 Iñaki Ucar
+// Copyright (C) 2015-2018 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -33,22 +33,22 @@ Vector<RTYPE> get_param(SEXP sim_, const VEC<std::string>& names,
   return out;
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_n_generated_(SEXP sim_, const std::vector<std::string>& names) {
   return get_param<INTSXP,int>(sim_, names, boost::mem_fn(&Source::get_n_generated));
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_trajectory_(SEXP sim_, const std::vector<std::string>& names) {
   return get_param<VECSXP,Environment>(sim_, names, boost::mem_fn(&Source::get_trajectory));
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 std::string get_name_(SEXP sim_) {
   return XPtr<Simulator>(sim_)->get_running_arrival()->name;
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bool global) {
   XPtr<Simulator> sim(sim_);
   NumericVector attrs(keys.size());
@@ -64,7 +64,7 @@ SEXP get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bool global
   return attrs;
 }
 
-//[[Rcpp::export(rng=false)]]
+//[[Rcpp::export]]
 SEXP get_prioritization_(SEXP sim_) {
   Arrival* a = XPtr<Simulator>(sim_)->get_running_arrival();
   return IntegerVector::create(
