@@ -22,7 +22,8 @@ when_activated(n = 1)
 \arguments{
 \item{...}{a vector or multiple parameters of times at which to initiate an arrival.}
 
-\item{start_time}{the time at which to launch the initial arrival.}
+\item{start_time}{the time at which to launch the initial arrival
+(numeric or function).}
 
 \item{dist}{a function modelling the interarrival times. It is supposed to be
 an infinite source of values \code{>= 0} (e.g., \code{rexp} and the like). If
@@ -34,9 +35,9 @@ If set to \code{FALSE}, will initiate \code{dist} at \code{start_time}
 (and the first arrival will most likely start at a time later than
 \code{start_time}).}
 
-\item{stop_time}{the time at which to stop the generator.}
+\item{stop_time}{the time at which to stop the generator (numeric or function).}
 
-\item{every}{repeat with this time cycle.}
+\item{every}{repeat with this time cycle (numeric or function).}
 
 \item{n}{number of arrivals to generate when activated.}
 }

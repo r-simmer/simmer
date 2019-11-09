@@ -5,11 +5,15 @@
 - Add `out` and `keep_seized` parameters to `leave()` with the same behaviour as
   in `renege_in()` and `renege_if()`. Code and documentation of these functions
   are now integrated under `help(renege)` (#208, #217).
+- Convenience functions `from`, `to` and `from_to` accept dynamic parameters
+  for arguments `start_time`, `stop_time` and `every` (#219).
 
 ## Minor changes and fixes:
 
 - Fix `get_mon_*()` dispatch for named lists (#210).
 - Get/put the RNG state when random numbers are required in the backend (#218).
+- Fix convenience functions `from`, `to` and `from_to` to preserve the
+  environment of the supplied functions (as part of #219).
 
 # simmer 4.3.0
 

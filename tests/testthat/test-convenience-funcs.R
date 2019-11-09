@@ -50,8 +50,6 @@ test_that("to returns the correct values", {
 })
 
 test_that("from_to returns the correct values", {
-  expect_error(from_to(5, 8, function() 1, every=7))
-
   gen_func <- from_to(5, 8, function() 1)
   expect_equal(gen_func(), 5)
   expect_equal(gen_func(), 1)
@@ -118,6 +116,31 @@ test_that("from_to returns the correct values", {
   expect_equal(gen_func(), c(6, 1))
   expect_equal(gen_func(), c(9, 1))
   expect_equal(gen_func(), c(9, 1))
+})
+
+test_that("environments are properly replaced and variables transferred", {
+  start_time <- local({ start <- 1; function() start })
+  stop_time <- local({ stop <- 2; function() stop })
+  dist <- local({ x <- 3; function() x })
+  every <- local({ ev <- 4; function() ev })
+
+  gen_func <- from(start_time, dist)
+  expect_equal(environment(gen_func)$start, 1)
+  expect_equal(environment(gen_func)$stop, NULL)
+  expect_equal(environment(gen_func)$x, 3)
+  expect_equal(environment(gen_func)$ev, NULL)
+
+  gen_func <- to(stop_time, dist)
+  expect_equal(environment(gen_func)$start, NULL)
+  expect_equal(environment(gen_func)$stop, 2)
+  expect_equal(environment(gen_func)$x, 3)
+  expect_equal(environment(gen_func)$ev, NULL)
+
+  gen_func <- from_to(start_time, stop_time, dist, every=every)
+  expect_equal(environment(gen_func)$start, 1)
+  expect_equal(environment(gen_func)$stop, 2)
+  expect_equal(environment(gen_func)$x, 3)
+  expect_equal(environment(gen_func)$ev, 4)
 })
 
 test_that("schedule returns the correct values", {
