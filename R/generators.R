@@ -53,7 +53,8 @@ at <- function(...) {
 }
 
 #' @rdname generators
-#' @param start_time the time at which to launch the initial arrival.
+#' @param start_time the time at which to launch the initial arrival
+#' (numeric or function).
 #' @param dist a function modelling the interarrival times. It is supposed to be
 #' an infinite source of values \code{>= 0} (e.g., \code{rexp} and the like). If
 #' the function provided returns any negative value, the behaviour is undefined.
@@ -95,7 +96,7 @@ from <- function(start_time, dist, arrive=TRUE) {
 }
 
 #' @rdname generators
-#' @param stop_time the time at which to stop the generator.
+#' @param stop_time the time at which to stop the generator (numeric or function).
 #'
 #' @details \code{\link{to}} generates inter-arrivals following a given
 #' distribution with a specified stop time.
@@ -121,7 +122,7 @@ to <- function(stop_time, dist) {
 }
 
 #' @rdname generators
-#' @param every repeat with this time cycle.
+#' @param every repeat with this time cycle (numeric or function).
 #'
 #' @details \code{\link{from_to}} is the union of \code{from} and \code{to}.
 #' @export
