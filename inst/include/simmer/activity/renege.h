@@ -42,10 +42,9 @@ namespace simmer {
 
     double run(Arrival* arrival) {
       Activity* next = NULL;
-      GetRNGstate();
-      double x = R::runif(0, 1);
-      PutRNGstate();
-      if (get<double>(prob, arrival) < x)
+      double ret = get<double>(prob, arrival);
+      Rcpp::RNGScope scope;
+      if (R::runif(0, 1) > ret)
         return 0;
       if (heads.size())
         next = heads[0];
