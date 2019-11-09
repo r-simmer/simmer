@@ -75,7 +75,7 @@ at <- function(...) {
 #'   get_mon_arrivals()
 #'
 from <- function(start_time, dist, arrive=TRUE) {
-  replace_env(dist)
+  replace_env(start_time, dist)
   .started <- FALSE
   function() {
     if (!.started) {
@@ -108,7 +108,7 @@ from <- function(start_time, dist, arrive=TRUE) {
 #'   get_mon_arrivals()
 #'
 to <- function(stop_time, dist) {
-  replace_env(dist)
+  replace_env(stop_time, dist)
   .counter <- 0
   function() {
     dt <- dist()
@@ -133,28 +133,27 @@ to <- function(stop_time, dist) {
 #'   get_mon_arrivals()
 #'
 from_to <- function(start_time, stop_time, dist, arrive=TRUE, every=NULL) {
-  stopifnot(is.null(every) || (
-    is.numeric(c(start_time, stop_time)) && every >= stop_time))
-  replace_env(dist)
+  replace_env(start_time, stop_time, every, dist)
   .started <- FALSE
   .init <- 0
   .counter <- 0
+  .every <- 0
   function() {
     while (TRUE){
       if (!.started) {
         .started <<- TRUE
         if (arrive) {
-          dt <- getval(start_time) - .init
+          dt <- getval(start_time) + .every - .init
         } else {
           dt <- dist()
           if (dt[1] >= 0)
-            dt[1] <- dt[1] + getval(start_time) - .init
+            dt[1] <- dt[1] + getval(start_time) + .every - .init
         }
       } else {
         dt <- dist()
       }
       len <- length(dt)
-      dt <- dt[cumsum(dt) + .counter < getval(stop_time)]
+      dt <- dt[cumsum(dt) + .counter < getval(stop_time) + .every]
       .counter <<- .counter + sum(dt)
       if (len == length(dt))
         return(dt)
@@ -162,10 +161,9 @@ from_to <- function(start_time, stop_time, dist, arrive=TRUE, every=NULL) {
         return(c(dt, -1))
       if (length(dt))
         return(dt)
-      start_time <<- start_time + every
-      stop_time <<- stop_time + every
       .started <<- FALSE
       .init <<- .counter
+      .every <<- .every + getval(every)
     }
   }
 }

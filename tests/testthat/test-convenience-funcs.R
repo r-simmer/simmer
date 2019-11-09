@@ -50,8 +50,6 @@ test_that("to returns the correct values", {
 })
 
 test_that("from_to returns the correct values", {
-  expect_error(from_to(5, 8, function() 1, every=7))
-
   gen_func <- from_to(5, 8, function() 1)
   expect_equal(gen_func(), 5)
   expect_equal(gen_func(), 1)

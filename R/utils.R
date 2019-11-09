@@ -116,10 +116,13 @@ make_resetable <- function(func) {
 
 getval <- function(x) if (is.function(x)) x() else x
 
-replace_env <- function(func, envir=parent.frame()) {
-  for (var in ls(environment(func)))
-    assign(var, get(var, environment(func)), envir)
-  environment(func) <- envir
+replace_env <- function(..., envir=parent.frame()) {
+  for (obj in list(...)) {
+    if (!is.function(obj)) next
+    for (var in ls(environment(obj)))
+      assign(var, get(var, environment(obj)), envir)
+    environment(obj) <- envir
+  }
 }
 
 binarise <- function(...) {
