@@ -168,57 +168,60 @@ SEXP SetAttribute__new_func3(const Function& keys, const Function& values,
 }
 
 //[[Rcpp::export]]
-SEXP Activate__new(const std::string& source) {
-  return XPtr<Activate<std::string> >(new Activate<std::string>(source));
+SEXP Activate__new(const std::vector<std::string>& sources) {
+  return XPtr<Activate<VEC<std::string> > >(
+      new Activate<VEC<std::string> >(sources));
 }
 
 //[[Rcpp::export]]
-SEXP Activate__new_func(const Function& source) {
-  return XPtr<Activate<Function> >(new Activate<Function>(source));
+SEXP Activate__new_func(const Function& sources) {
+  return XPtr<Activate<Function> >(new Activate<Function>(sources));
 }
 
 //[[Rcpp::export]]
-SEXP Deactivate__new(const std::string& source) {
-  return XPtr<Deactivate<std::string> >(new Deactivate<std::string>(source));
+SEXP Deactivate__new(const std::vector<std::string>& sources) {
+  return XPtr<Deactivate<VEC<std::string> > >(
+      new Deactivate<VEC<std::string> >(sources));
 }
 
 //[[Rcpp::export]]
-SEXP Deactivate__new_func(const Function& source) {
-  return XPtr<Deactivate<Function> >(new Deactivate<Function>(source));
+SEXP Deactivate__new_func(const Function& sources) {
+  return XPtr<Deactivate<Function> >(new Deactivate<Function>(sources));
 }
 
 //[[Rcpp::export]]
-SEXP SetTraj__new(const std::string& source, const Environment& trj) {
-  return XPtr<SetTraj<std::string> >(new SetTraj<std::string>(source, trj));
+SEXP SetTraj__new(const std::vector<std::string>& sources, const Environment& trj) {
+  return XPtr<SetTraj<VEC<std::string> > >(
+      new SetTraj<VEC<std::string> >(sources, trj));
 }
 
 //[[Rcpp::export]]
-SEXP SetTraj__new_func(const Function& source, const Environment& trj) {
-  return XPtr<SetTraj<Function> >(new SetTraj<Function>(source, trj));
+SEXP SetTraj__new_func(const Function& sources, const Environment& trj) {
+  return XPtr<SetTraj<Function> >(new SetTraj<Function>(sources, trj));
 }
 
 //[[Rcpp::export]]
-SEXP SetSourceFn__new(const std::string& source, const Function& dist) {
-  return XPtr<SetSource<std::string, Function> >(
-      new SetSource<std::string, Function>(source, dist));
+SEXP SetSourceFn__new(const std::vector<std::string>& sources, const Function& dist) {
+  return XPtr<SetSource<VEC<std::string>, Function> >(
+      new SetSource<VEC<std::string>, Function>(sources, dist));
 }
 
 //[[Rcpp::export]]
-SEXP SetSourceFn__new_func(const Function& source, const Function& dist) {
+SEXP SetSourceFn__new_func(const Function& sources, const Function& dist) {
   return XPtr<SetSource<Function, Function> >(
-      new SetSource<Function, Function>(source, dist));
+      new SetSource<Function, Function>(sources, dist));
 }
 
 //[[Rcpp::export]]
-SEXP SetSourceDF__new(const std::string& source, const DataFrame& data) {
-  return XPtr<SetSource<std::string, DataFrame> >(
-      new SetSource<std::string, DataFrame>(source, data));
+SEXP SetSourceDF__new(const std::vector<std::string>& sources, const DataFrame& data) {
+  return XPtr<SetSource<VEC<std::string>, DataFrame> >(
+      new SetSource<VEC<std::string>, DataFrame>(sources, data));
 }
 
 //[[Rcpp::export]]
-SEXP SetSourceDF__new_func(const Function& source, const DataFrame& data) {
+SEXP SetSourceDF__new_func(const Function& sources, const DataFrame& data) {
   return XPtr<SetSource<Function, DataFrame> >(
-      new SetSource<Function, DataFrame>(source, data));
+      new SetSource<Function, DataFrame>(sources, data));
 }
 
 //[[Rcpp::export]]

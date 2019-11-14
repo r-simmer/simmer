@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2019 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -19,110 +19,117 @@
 #define simmer__activity_source_h
 
 #include <simmer/activity.h>
+#include <simmer/process/source.h>
 
 namespace simmer {
 
   /**
-   * Activate a source.
+   * Activate sources.
    */
   template <typename T>
   class Activate : public Activity {
   public:
     CLONEABLE(Activate<T>)
 
-    Activate(const T& source)
-      : Activity("Activate"), source(source) {}
+    Activate(const T& sources)
+      : Activity("Activate"), sources(sources) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      internal::print(brief, true, ARG(source));
+      internal::print(brief, true, ARG(sources));
     }
 
     double run(Arrival* arrival) {
-      arrival->sim->get_source(get<std::string>(source, arrival))->activate();
+      VEC<std::string> src = get<VEC<std::string> >(sources, arrival);
+      for (unsigned int i = 0; i < src.size(); i++)
+        arrival->sim->get_source(src[i])->activate();
       return 0;
     }
 
   protected:
-    T source;
+    T sources;
   };
 
   /**
-   * Deactivate a source.
+   * Deactivate sources.
    */
   template <typename T>
   class Deactivate : public Activity {
   public:
     CLONEABLE(Deactivate<T>)
 
-    Deactivate(const T& source)
-      : Activity("Deactivate"), source(source) {}
+    Deactivate(const T& sources)
+      : Activity("Deactivate"), sources(sources) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      internal::print(brief, true, ARG(source));
+      internal::print(brief, true, ARG(sources));
     }
 
     double run(Arrival* arrival) {
-      arrival->sim->get_source(get<std::string>(source, arrival))->deactivate();
+      VEC<std::string> src = get<VEC<std::string> >(sources, arrival);
+      for (unsigned int i = 0; i < src.size(); i++)
+        arrival->sim->get_source(src[i])->deactivate();
       return 0;
     }
 
   protected:
-    T source;
+    T sources;
   };
 
   /**
-   * Set a source's source.
+   * Set sources' source.
    */
   template <typename T, typename U>
   class SetSource : public Activity {
   public:
     CLONEABLE(SetSource<T COMMA U>)
 
-    SetSource(const T& source, const U& object)
-      : Activity("SetSource"), source(source), object(object) {}
+    SetSource(const T& sources, const U& object)
+      : Activity("SetSource"), sources(sources), object(object) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      internal::print(brief, true, ARG(source), ARG(object));
+      internal::print(brief, true, ARG(sources), ARG(object));
     }
 
     double run(Arrival* arrival) {
-      arrival->sim->
-        get_source(get<std::string>(source, arrival))->set_source(object);
+      VEC<std::string> src = get<VEC<std::string> >(sources, arrival);
+      for (unsigned int i = 0; i < src.size(); i++)
+        arrival->sim->get_source(src[i])->set_source(object);
       return 0;
     }
 
   protected:
-    T source;
+    T sources;
     U object;
   };
 
   /**
-   * Set a source's trajectory.
+   * Set sources' trajectory.
    */
   template <typename T>
   class SetTraj : public Activity {
   public:
     CLONEABLE(SetTraj<T>)
 
-    SetTraj(const T& source, const REnv& trajectory)
-      : Activity("SetTraj"), source(source), trajectory(trajectory) {}
+    SetTraj(const T& sources, const REnv& trajectory)
+      : Activity("SetTraj"), sources(sources), trajectory(trajectory) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      internal::print(brief, true, ARG(source), ARG(trajectory));
+      internal::print(brief, true, ARG(sources), ARG(trajectory));
     }
 
     double run(Arrival* arrival) {
-      arrival->sim->
-        get_source(get<std::string>(source, arrival))->set_trajectory(trajectory);
+      VEC<std::string> src = get<VEC<std::string> >(sources, arrival);
+      for (unsigned int i = 0; i < src.size(); i++)
+        arrival->sim->get_source(src[i])->set_trajectory(trajectory);
       return 0;
     }
 
   protected:
-    T source;
+    T sources;
     REnv trajectory;
   };
 

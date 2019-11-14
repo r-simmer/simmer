@@ -594,7 +594,7 @@ set_global.trajectory <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=
 #' \code{\link{add_generator}}, \code{\link{add_dataframe}}).
 #'
 #' @inheritParams seize
-#' @param source the name of the source or a function returning a name.
+#' @param sources the name(s) of the source(s) or a function returning the name(s).
 #'
 #' @return Returns the trajectory object.
 #'
@@ -612,29 +612,29 @@ set_global.trajectory <- function(.trj, keys, values, mod=c(NA, "+", "*"), init=
 #'   get_mon_arrivals()
 #'
 #' @export
-activate <- function(.trj, source) UseMethod("activate")
+activate <- function(.trj, sources) UseMethod("activate")
 
 #' @export
-activate.trajectory <- function(.trj, source) {
-  check_args(source=c("string", "function"))
+activate.trajectory <- function(.trj, sources) {
+  check_args(sources=c("string vector", "function"))
   switch(
-    binarise(is.function(source)),
-    add_activity(.trj, Activate__new(source)),
-    add_activity(.trj, Activate__new_func(source))
+    binarise(is.function(sources)),
+    add_activity(.trj, Activate__new(sources)),
+    add_activity(.trj, Activate__new_func(sources))
   )
 }
 
 #' @rdname activate
 #' @export
-deactivate <- function(.trj, source) UseMethod("deactivate")
+deactivate <- function(.trj, sources) UseMethod("deactivate")
 
 #' @export
-deactivate.trajectory <- function(.trj, source) {
-  check_args(source=c("string", "function"))
+deactivate.trajectory <- function(.trj, sources) {
+  check_args(sources=c("string vector", "function"))
   switch(
-    binarise(is.function(source)),
-    add_activity(.trj, Deactivate__new(source)),
-    add_activity(.trj, Deactivate__new_func(source))
+    binarise(is.function(sources)),
+    add_activity(.trj, Deactivate__new(sources)),
+    add_activity(.trj, Deactivate__new_func(sources))
   )
 }
 
@@ -667,15 +667,15 @@ deactivate.trajectory <- function(.trj, source) {
 #'   get_mon_arrivals()
 #'
 #' @export
-set_trajectory <- function(.trj, source, trajectory) UseMethod("set_trajectory")
+set_trajectory <- function(.trj, sources, trajectory) UseMethod("set_trajectory")
 
 #' @export
-set_trajectory.trajectory <- function(.trj, source, trajectory) {
-  check_args(source=c("string", "function"), trajectory="trajectory")
+set_trajectory.trajectory <- function(.trj, sources, trajectory) {
+  check_args(sources=c("string vector", "function"), trajectory="trajectory")
   switch(
-    binarise(is.function(source)),
-    add_activity(.trj, SetTraj__new(source, trajectory[])),
-    add_activity(.trj, SetTraj__new_func(source, trajectory[]))
+    binarise(is.function(sources)),
+    add_activity(.trj, SetTraj__new(sources, trajectory[])),
+    add_activity(.trj, SetTraj__new_func(sources, trajectory[]))
   )
 }
 
@@ -684,17 +684,17 @@ set_trajectory.trajectory <- function(.trj, source, trajectory) {
 #' is a generator; returning a negative value stops the generator) or a data frame
 #' (if the source type is a data source).
 #' @export
-set_source <- function(.trj, source, object) UseMethod("set_source")
+set_source <- function(.trj, sources, object) UseMethod("set_source")
 
 #' @export
-set_source.trajectory <- function(.trj, source, object) {
-  check_args(source=c("string", "function"), object=c("function", "data.frame"))
+set_source.trajectory <- function(.trj, sources, object) {
+  check_args(sources=c("string vector", "function"), object=c("function", "data.frame"))
   switch(
-    binarise(is.function(source), is.function(object)),
-    add_activity(.trj, SetSourceDF__new(source, object)),
-    add_activity(.trj, SetSourceDF__new_func(source, object)),
-    add_activity(.trj, SetSourceFn__new(source, make_resetable(object))),
-    add_activity(.trj, SetSourceFn__new_func(source, make_resetable(object)))
+    binarise(is.function(sources), is.function(object)),
+    add_activity(.trj, SetSourceDF__new(sources, object)),
+    add_activity(.trj, SetSourceDF__new_func(sources, object)),
+    add_activity(.trj, SetSourceFn__new(sources, make_resetable(object))),
+    add_activity(.trj, SetSourceFn__new_func(sources, make_resetable(object)))
   )
 }
 

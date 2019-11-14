@@ -101,44 +101,44 @@ SetAttribute__new_func3 <- function(keys, values, global, mod, init) {
     .Call(`_simmer_SetAttribute__new_func3`, keys, values, global, mod, init)
 }
 
-Activate__new <- function(source) {
-    .Call(`_simmer_Activate__new`, source)
+Activate__new <- function(sources) {
+    .Call(`_simmer_Activate__new`, sources)
 }
 
-Activate__new_func <- function(source) {
-    .Call(`_simmer_Activate__new_func`, source)
+Activate__new_func <- function(sources) {
+    .Call(`_simmer_Activate__new_func`, sources)
 }
 
-Deactivate__new <- function(source) {
-    .Call(`_simmer_Deactivate__new`, source)
+Deactivate__new <- function(sources) {
+    .Call(`_simmer_Deactivate__new`, sources)
 }
 
-Deactivate__new_func <- function(source) {
-    .Call(`_simmer_Deactivate__new_func`, source)
+Deactivate__new_func <- function(sources) {
+    .Call(`_simmer_Deactivate__new_func`, sources)
 }
 
-SetTraj__new <- function(source, trj) {
-    .Call(`_simmer_SetTraj__new`, source, trj)
+SetTraj__new <- function(sources, trj) {
+    .Call(`_simmer_SetTraj__new`, sources, trj)
 }
 
-SetTraj__new_func <- function(source, trj) {
-    .Call(`_simmer_SetTraj__new_func`, source, trj)
+SetTraj__new_func <- function(sources, trj) {
+    .Call(`_simmer_SetTraj__new_func`, sources, trj)
 }
 
-SetSourceFn__new <- function(source, dist) {
-    .Call(`_simmer_SetSourceFn__new`, source, dist)
+SetSourceFn__new <- function(sources, dist) {
+    .Call(`_simmer_SetSourceFn__new`, sources, dist)
 }
 
-SetSourceFn__new_func <- function(source, dist) {
-    .Call(`_simmer_SetSourceFn__new_func`, source, dist)
+SetSourceFn__new_func <- function(sources, dist) {
+    .Call(`_simmer_SetSourceFn__new_func`, sources, dist)
 }
 
-SetSourceDF__new <- function(source, data) {
-    .Call(`_simmer_SetSourceDF__new`, source, data)
+SetSourceDF__new <- function(sources, data) {
+    .Call(`_simmer_SetSourceDF__new`, sources, data)
 }
 
-SetSourceDF__new_func <- function(source, data) {
-    .Call(`_simmer_SetSourceDF__new_func`, source, data)
+SetSourceDF__new_func <- function(sources, data) {
+    .Call(`_simmer_SetSourceDF__new_func`, sources, data)
 }
 
 SetPrior__new <- function(values, mod) {

@@ -337,118 +337,118 @@ BEGIN_RCPP
 END_RCPP
 }
 // Activate__new
-SEXP Activate__new(const std::string& source);
-RcppExport SEXP _simmer_Activate__new(SEXP sourceSEXP) {
+SEXP Activate__new(const std::vector<std::string>& sources);
+RcppExport SEXP _simmer_Activate__new(SEXP sourcesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const std::string& >::type source(sourceSEXP);
-    rcpp_result_gen = Rcpp::wrap(Activate__new(source));
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type sources(sourcesSEXP);
+    rcpp_result_gen = Rcpp::wrap(Activate__new(sources));
     return rcpp_result_gen;
 END_RCPP
 }
 // Activate__new_func
-SEXP Activate__new_func(const Function& source);
-RcppExport SEXP _simmer_Activate__new_func(SEXP sourceSEXP) {
+SEXP Activate__new_func(const Function& sources);
+RcppExport SEXP _simmer_Activate__new_func(SEXP sourcesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Function& >::type source(sourceSEXP);
-    rcpp_result_gen = Rcpp::wrap(Activate__new_func(source));
+    Rcpp::traits::input_parameter< const Function& >::type sources(sourcesSEXP);
+    rcpp_result_gen = Rcpp::wrap(Activate__new_func(sources));
     return rcpp_result_gen;
 END_RCPP
 }
 // Deactivate__new
-SEXP Deactivate__new(const std::string& source);
-RcppExport SEXP _simmer_Deactivate__new(SEXP sourceSEXP) {
+SEXP Deactivate__new(const std::vector<std::string>& sources);
+RcppExport SEXP _simmer_Deactivate__new(SEXP sourcesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const std::string& >::type source(sourceSEXP);
-    rcpp_result_gen = Rcpp::wrap(Deactivate__new(source));
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type sources(sourcesSEXP);
+    rcpp_result_gen = Rcpp::wrap(Deactivate__new(sources));
     return rcpp_result_gen;
 END_RCPP
 }
 // Deactivate__new_func
-SEXP Deactivate__new_func(const Function& source);
-RcppExport SEXP _simmer_Deactivate__new_func(SEXP sourceSEXP) {
+SEXP Deactivate__new_func(const Function& sources);
+RcppExport SEXP _simmer_Deactivate__new_func(SEXP sourcesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Function& >::type source(sourceSEXP);
-    rcpp_result_gen = Rcpp::wrap(Deactivate__new_func(source));
+    Rcpp::traits::input_parameter< const Function& >::type sources(sourcesSEXP);
+    rcpp_result_gen = Rcpp::wrap(Deactivate__new_func(sources));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetTraj__new
-SEXP SetTraj__new(const std::string& source, const Environment& trj);
-RcppExport SEXP _simmer_SetTraj__new(SEXP sourceSEXP, SEXP trjSEXP) {
+SEXP SetTraj__new(const std::vector<std::string>& sources, const Environment& trj);
+RcppExport SEXP _simmer_SetTraj__new(SEXP sourcesSEXP, SEXP trjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const std::string& >::type source(sourceSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type sources(sourcesSEXP);
     Rcpp::traits::input_parameter< const Environment& >::type trj(trjSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetTraj__new(source, trj));
+    rcpp_result_gen = Rcpp::wrap(SetTraj__new(sources, trj));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetTraj__new_func
-SEXP SetTraj__new_func(const Function& source, const Environment& trj);
-RcppExport SEXP _simmer_SetTraj__new_func(SEXP sourceSEXP, SEXP trjSEXP) {
+SEXP SetTraj__new_func(const Function& sources, const Environment& trj);
+RcppExport SEXP _simmer_SetTraj__new_func(SEXP sourcesSEXP, SEXP trjSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Function& >::type source(sourceSEXP);
+    Rcpp::traits::input_parameter< const Function& >::type sources(sourcesSEXP);
     Rcpp::traits::input_parameter< const Environment& >::type trj(trjSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetTraj__new_func(source, trj));
+    rcpp_result_gen = Rcpp::wrap(SetTraj__new_func(sources, trj));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetSourceFn__new
-SEXP SetSourceFn__new(const std::string& source, const Function& dist);
-RcppExport SEXP _simmer_SetSourceFn__new(SEXP sourceSEXP, SEXP distSEXP) {
+SEXP SetSourceFn__new(const std::vector<std::string>& sources, const Function& dist);
+RcppExport SEXP _simmer_SetSourceFn__new(SEXP sourcesSEXP, SEXP distSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const std::string& >::type source(sourceSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type sources(sourcesSEXP);
     Rcpp::traits::input_parameter< const Function& >::type dist(distSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetSourceFn__new(source, dist));
+    rcpp_result_gen = Rcpp::wrap(SetSourceFn__new(sources, dist));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetSourceFn__new_func
-SEXP SetSourceFn__new_func(const Function& source, const Function& dist);
-RcppExport SEXP _simmer_SetSourceFn__new_func(SEXP sourceSEXP, SEXP distSEXP) {
+SEXP SetSourceFn__new_func(const Function& sources, const Function& dist);
+RcppExport SEXP _simmer_SetSourceFn__new_func(SEXP sourcesSEXP, SEXP distSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Function& >::type source(sourceSEXP);
+    Rcpp::traits::input_parameter< const Function& >::type sources(sourcesSEXP);
     Rcpp::traits::input_parameter< const Function& >::type dist(distSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetSourceFn__new_func(source, dist));
+    rcpp_result_gen = Rcpp::wrap(SetSourceFn__new_func(sources, dist));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetSourceDF__new
-SEXP SetSourceDF__new(const std::string& source, const DataFrame& data);
-RcppExport SEXP _simmer_SetSourceDF__new(SEXP sourceSEXP, SEXP dataSEXP) {
+SEXP SetSourceDF__new(const std::vector<std::string>& sources, const DataFrame& data);
+RcppExport SEXP _simmer_SetSourceDF__new(SEXP sourcesSEXP, SEXP dataSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const std::string& >::type source(sourceSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type sources(sourcesSEXP);
     Rcpp::traits::input_parameter< const DataFrame& >::type data(dataSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetSourceDF__new(source, data));
+    rcpp_result_gen = Rcpp::wrap(SetSourceDF__new(sources, data));
     return rcpp_result_gen;
 END_RCPP
 }
 // SetSourceDF__new_func
-SEXP SetSourceDF__new_func(const Function& source, const DataFrame& data);
-RcppExport SEXP _simmer_SetSourceDF__new_func(SEXP sourceSEXP, SEXP dataSEXP) {
+SEXP SetSourceDF__new_func(const Function& sources, const DataFrame& data);
+RcppExport SEXP _simmer_SetSourceDF__new_func(SEXP sourcesSEXP, SEXP dataSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Function& >::type source(sourceSEXP);
+    Rcpp::traits::input_parameter< const Function& >::type sources(sourcesSEXP);
     Rcpp::traits::input_parameter< const DataFrame& >::type data(dataSEXP);
-    rcpp_result_gen = Rcpp::wrap(SetSourceDF__new_func(source, data));
+    rcpp_result_gen = Rcpp::wrap(SetSourceDF__new_func(sources, data));
     return rcpp_result_gen;
 END_RCPP
 }
