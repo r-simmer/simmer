@@ -35,9 +35,15 @@
 #' @param post.seize an optional trajectory object which will be followed after
 #' a successful seize.
 #' @param reject an optional trajectory object which will be followed if the
-#' arrival is rejected. Note that if the arrival is accepted (either in the
-#' queue or in the server) and then it is dropped afterwards due to preemption
-#' or resource shrinkage, then this trajectory won't be executed. Instead, see
+#' arrival is rejected (dropped).
+#'
+#' @details Rejection happens when a resource is at full capacity and there is
+#' no room in the queue (either because there is a finite \code{queue_size} and
+#' it is full, or because \code{queue_size=0} and thus it is disabled). In those
+#' cases, the \code{reject} parameter defines a fallback trajectory. Note,
+#' however, that, if the arrival is accepted (either in the queue or in the
+#' server) and then it is dropped afterwards due to preemption or resource
+#' shrinkage, then this trajectory will not be executed. Instead, see
 #' \code{\link{handle_unfinished}} for another, more general, method for
 #' handling all kinds of unfinished arrivals.
 #'

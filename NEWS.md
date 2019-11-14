@@ -14,6 +14,7 @@
 - Get/put the RNG state when random numbers are required in the backend (#218).
 - Fix convenience functions `from`, `to` and `from_to` to preserve the
   environment of the supplied functions (as part of #219).
+- Documentation improvements (#212, #220).
 
 # simmer 4.3.0
 

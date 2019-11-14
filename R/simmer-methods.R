@@ -154,6 +154,24 @@ reset.simmer <- function(.env) {
 #' @param steps number of steps to show as progress (it takes effect only if
 #' \code{progress} is provided).
 #'
+#' @examples
+#' ## show the progress just printing the steps
+#' simmer() %>%
+#'   run(progress=message, steps=5)
+#'
+#' ## using the 'progress' package
+#' \dontrun{
+#' mm1 <- trajectory() %>%
+#'   seize("server", 1) %>%
+#'   timeout(function() rexp(1, 66)) %>%
+#'   release("server", 1)
+#'
+#' simmer() %>%
+#'   add_resource("server", 1) %>%
+#'   add_generator("customer", mm1, function() rexp(100, 60)) %>%
+#'   run(3000, progress=progress::progress_bar$new()$update)
+#' }
+#'
 #' @return Returns the simulation environment.
 #' @seealso \code{\link{reset}}.
 #' @export
@@ -221,35 +239,50 @@ peek.simmer <- function(.env, steps=1, verbose=FALSE) {
 
 #' Add a Resource
 #'
-#' Define a new resource in a simulation environment.
+#' Define a new resource in a simulation environment. Resources are conceived
+#' with queuing systems in mind, and therefore they comprise two internal
+#' self-managed parts: a \emph{server}, which is the active part, with a
+#' specified capacity that can be seized and released (see \code{\link{seize}});
+#' and a priority \emph{queue} of a certain size, in which arrivals may wait for
+#' the server to be available.
 #'
 #' @inheritParams reset
 #' @param name the name of the resource.
-#' @param capacity the capacity of the server, either a numeric or a
+#' @param capacity the capacity of the server, either an integer or a
 #' \code{\link{schedule}}, so that the value may change during the simulation.
-#' @param queue_size the size of the queue, either a numeric or a
+#' @param queue_size the size of the queue, either an integer or a
 #' \code{\link{schedule}}, so that the value may change during the simulation.
 #' @param mon whether the simulator must monitor this resource or not.
 #' @param preemptive whether arrivals in the server can be preempted or not based
 #' on seize priorities.
-#' @param preempt_order if the resource is preemptive and preemption occurs with
-#' more than one arrival in the server, this parameter defines which arrival should
-#' be preempted first. It must be \code{fifo} (First In First Out: older preemptible
-#' tasks are preempted first) or \code{lifo} (Last In First Out: newer preemptible tasks
-#' are preempted first).
-#' @param queue_size_strict if the resource is preemptive and preemption occurs,
-#' this parameter controls whether the \code{queue_size} is a hard limit. By default,
-#' preempted arrivals go to a dedicated queue, so that \code{queue_size} may be
-#' exceeded. If this option is \code{TRUE}, preempted arrivals go to the standard
-#' queue, and the maximum \code{queue_size} is guaranteed (rejection may occur).
+#' @param preempt_order if \code{preemptive=TRUE} and several arrivals are
+#' preempted, this parameter defines which arrival should be preempted first.
+#' Either \code{fifo} (First In First Out: older preemptible tasks are preempted
+#' first) or \code{lifo} (Last In First Out: newer preemptible tasks are
+#' preempted first).
+#' @param queue_size_strict whether the \code{queue_size} is a hard limit (see
+#' details).
+#' @param queue_priority the priority range required to be able to access the
+#' queue if there is no room in the server (if a single value is provided, it is
+#' treated as the minimum priority). By default, all arrivals can be enqueued.
+#'
+#' @details An entity trying to seize a resource (see \code{\link{seize}}) may
+#' 1) access the server straightaway if there is enough capacity, 2) wait in the
+#' queue if there is no room in the server but there is room in the queue, or 3)
+#' rejected if there is no room in the queue either.
+#'
+#' There are two special situations regarding queue management: 1) the
+#' \code{queue_size} is shrinked below the actual number of items waiting, and
+#' 2) preemption occurs, and an item previously in the server goes to the queue.
+#' By default in both cases, the excess of items in the queue is allowed.
+#' However, with \code{queue_size_strict=TRUE}, the maximum \code{queue_size} is
+#' guaranteed, and thus some entities will be rejected (dropped) by the resource.
+#'
 #' Whenever an arrival is rejected (due to a server drop or a queue drop), it
 #' will set the \code{finished} flag to \code{FALSE} in the output of
 #' \code{\link{get_mon_arrivals}}. Unfinished arrivals can be handled with a
 #' drop-out trajectory that can be set using the \code{\link{handle_unfinished}}
 #' activity.
-#' @param queue_priority the priority range required to be able to access the
-#' queue if there is no room in the server (if a single value is provided, it is
-#' treated as the minimum priority). By default, all arrivals can be enqueued.
 #'
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \code{\link{schedule}}.
