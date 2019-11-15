@@ -5,14 +5,14 @@
 \alias{deactivate}
 \title{Activate/Deactivate Sources}
 \usage{
-activate(.trj, source)
+activate(.trj, sources)
 
-deactivate(.trj, source)
+deactivate(.trj, sources)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
 
-\item{source}{the name of the source or a function returning a name.}
+\item{sources}{the name(s) of the source(s) or a function returning the name(s).}
 }
 \value{
 Returns the trajectory object.

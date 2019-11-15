@@ -7,6 +7,8 @@
   are now integrated under `help(renege)` (#208, #217).
 - Convenience functions `from`, `to` and `from_to` accept dynamic parameters
   for arguments `start_time`, `stop_time` and `every` (#219).
+- Activities to interact with sources have been vectorised to modify multiple
+  sources at once (#222).
 
 ## Minor changes and fixes:
 
