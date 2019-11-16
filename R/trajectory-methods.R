@@ -94,12 +94,7 @@ trajectory <- function(name="anonymous", verbose=FALSE) {
   check_args(name="character", verbose="flag")
 
   env <- list2env(list(
-    name = name,
-    verbose = verbose,
-    n_activities = 0,
-    names = NULL,
-    ptrs = NULL
-  ))
+    name=name, verbose=verbose, n_activities=0, names=NULL, ptrs=NULL))
   env$head <- function() env$ptrs[[1]]
   env$tail <- function() env$ptrs[[length(env)]]
   env$clone <- function() subset.trajectory(env)

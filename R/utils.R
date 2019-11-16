@@ -52,7 +52,7 @@ check_args <- function(..., env.=parent.frame()) {
     check <- sapply(types[[var]], function(type) {
       func <- paste0("is_", sub(" ", "_", type))
       if (exists(func, ns, inherits=FALSE))
-        return(do.call(ns[[func]], args=list(var, env.), envir=env.))
+        return(do.call(ns[[func]], list(var, env.)))
       inherits(env.[[var]], type)
     })
     if (!any(check)) msg <- c(msg, paste0(

@@ -52,11 +52,7 @@ monitor <- function(name, xptr, get_arrivals, get_attributes, get_resources,
              handlers=c("list", "NULL"), finalize="function")
 
   env <- list2env(list(
-    name = name,
-    xptr = xptr,
-    handlers = handlers,
-    finalize = finalize
-  ))
+    name=name, xptr=xptr, handlers=handlers, finalize=finalize))
   env$get_arrivals <- function(...) get_arrivals(env$xptr, ...)
   env$get_attributes <- function(...) get_attributes(env$xptr, ...)
   env$get_resources <- function(...) get_resources(env$xptr, ...)
