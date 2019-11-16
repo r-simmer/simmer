@@ -25,6 +25,8 @@ is_flag <- function(name, env)
 
 is_NA <- function(name, env) is.na(env[[name]])
 
+is_numeric <- function(name, env) is.numeric(env[[name]])
+
 is_function <- function(name, env) {
   if (!is.function(env[[name]])) return(FALSE)
   env[[name]] <- magrittr_workaround(env[[name]])
@@ -47,10 +49,11 @@ check_args <- function(..., env.=parent.frame()) {
   ns <- getNamespace("simmer")
 
   for (var in names(types)) {
-    check <- sapply(paste0("is_", sub(" ", "_", types[[var]])), function(func) {
-      if (!exists(func, ns, inherits=FALSE))
-        return(inherits(env.[[var]], sub("is_", "", func)))
-      do.call(ns[[func]], args=list(var, env.), envir=env.)
+    check <- sapply(types[[var]], function(type) {
+      func <- paste0("is_", sub(" ", "_", type))
+      if (exists(func, ns, inherits=FALSE))
+        return(do.call(ns[[func]], args=list(var, env.), envir=env.))
+      inherits(env.[[var]], type)
     })
     if (!any(check)) msg <- c(msg, paste0(
       "'", sub("dots.", "...", var), "' is not a valid ", paste0(types[[var]], collapse=" or ")))
