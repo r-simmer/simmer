@@ -11,7 +11,8 @@ add_resource(.env, name, capacity = 1, queue_size = Inf, mon = TRUE,
 \arguments{
 \item{.env}{the simulation environment.}
 
-\item{name}{the name of the resource.}
+\item{name}{the name of the resource. If several names are provided, several
+resources will be defined with the same parameters.}
 
 \item{capacity}{the capacity of the server, either an integer or a
 \code{\link{schedule}}, so that the value may change during the simulation.}

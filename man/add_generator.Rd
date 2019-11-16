@@ -10,7 +10,8 @@ add_generator(.env, name_prefix, trajectory, distribution, mon = 1,
 \arguments{
 \item{.env}{the simulation environment.}
 
-\item{name_prefix}{the name prefix of the generated arrivals.}
+\item{name_prefix}{the name prefix of the generated arrivals. If several
+names are provided, several generators will be defined with the same parameters.}
 
 \item{trajectory}{the trajectory that the generated arrivals will follow (see
 \code{\link{trajectory}}).}

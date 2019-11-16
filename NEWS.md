@@ -9,6 +9,9 @@
   for arguments `start_time`, `stop_time` and `every` (#219).
 - Activities to interact with sources have been vectorised to modify multiple
   sources at once (#222).
+- Several generators or resources with the same parameters can be added with a
+  single call to `add_generator()` and `add_resource()` respectively if a vector
+  of names is provided (#221).
 
 ## Minor changes and fixes:
 

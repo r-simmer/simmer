@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2015-2018 Iñaki Ucar
+# Copyright (C) 2015-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -163,4 +163,11 @@ test_that("arrivals are correctly monitored", {
   expect_equal(arr2$end_time, c(5, 5, 11, NA))
   expect_equal(arr2$activity_time, c(5, 5, 6, NA))
   expect_equal(arr2$resource, c("res1", "res2", "res1", "res1"))
+})
+
+test_that("several generators can be attached at once", {
+  env <- simmer(verbose=TRUE) %>%
+    add_generator(letters[1:3], trajectory(), function() 1)
+
+  expect_equal(get_sources(env), letters[1:3])
 })

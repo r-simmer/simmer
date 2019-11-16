@@ -246,7 +246,8 @@ peek.simmer <- function(.env, steps=1, verbose=FALSE) {
 #' the server to be available.
 #'
 #' @inheritParams reset
-#' @param name the name of the resource.
+#' @param name the name of the resource. If several names are provided, several
+#' resources will be defined with the same parameters.
 #' @param capacity the capacity of the server, either an integer or a
 #' \code{\link{schedule}}, so that the value may change during the simulation.
 #' @param queue_size the size of the queue, either an integer or a
@@ -319,21 +320,23 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
     queue_size <- queue_size_schedule$schedule$init
   } else queue_size_schedule <- NA
 
-  ret <- add_resource_(.env$sim_obj, name, positive(capacity), positive(queue_size),
-                       mon, preemptive, preempt_order, queue_size_strict,
-                       queue_priority[1], queue_priority[2])
-  if (ret) .env$resources[[name]] <- c(mon=mon, preemptive=preemptive)
+  for (i in name) {
+    ret <- add_resource_(.env$sim_obj, i, positive(capacity), positive(queue_size),
+                         mon, preemptive, preempt_order, queue_size_strict,
+                         queue_priority[1], queue_priority[2])
+    if (ret) .env$resources[[i]] <- c(mon=mon, preemptive=preemptive)
 
-  if (inherits(capacity_schedule, "schedule"))
-    add_resource_manager_(.env$sim_obj, name, "capacity", positive(capacity),
-                          capacity_schedule$schedule$intervals,
-                          capacity_schedule$schedule$values,
-                          capacity_schedule$schedule$period)
-  if (inherits(queue_size_schedule, "schedule"))
-    add_resource_manager_(.env$sim_obj, name, "queue_size", positive(queue_size),
-                          queue_size_schedule$schedule$intervals,
-                          queue_size_schedule$schedule$values,
-                          queue_size_schedule$schedule$period)
+    if (inherits(capacity_schedule, "schedule"))
+      add_resource_manager_(.env$sim_obj, i, "capacity", positive(capacity),
+                            capacity_schedule$schedule$intervals,
+                            capacity_schedule$schedule$values,
+                            capacity_schedule$schedule$period)
+    if (inherits(queue_size_schedule, "schedule"))
+      add_resource_manager_(.env$sim_obj, i, "queue_size", positive(queue_size),
+                            queue_size_schedule$schedule$intervals,
+                            queue_size_schedule$schedule$values,
+                            queue_size_schedule$schedule$period)
+  }
   .env
 }
 
@@ -342,7 +345,8 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
 #' Attach a new source of arrivals to a trajectory from a generator function.
 #'
 #' @inheritParams reset
-#' @param name_prefix the name prefix of the generated arrivals.
+#' @param name_prefix the name prefix of the generated arrivals. If several
+#' names are provided, several generators will be defined with the same parameters.
 #' @param trajectory the trajectory that the generated arrivals will follow (see
 #' \code{\link{trajectory}}).
 #' @param distribution a function modelling the interarrival times (returning a
@@ -377,10 +381,13 @@ add_generator.simmer <- function(.env, name_prefix, trajectory, distribution, mo
              distribution="function", mon="flag", priority="numeric",
              preemptible="numeric", restart="flag")
 
-  ret <- add_generator_(.env$sim_obj, name_prefix, trajectory[],
-                        make_resetable(distribution), mon,
-                        positive(priority), positive(preemptible), restart)
-  if (ret) .env$sources[[name_prefix]] <- c(mon=mon)
+  trajectory <- trajectory[]
+  distribution <- make_resetable(distribution)
+  for (i in name_prefix) {
+    ret <- add_generator_(.env$sim_obj, i, trajectory, distribution, mon,
+                          positive(priority), positive(preemptible), restart)
+    if (ret) .env$sources[[i]] <- c(mon=mon)
+  }
   .env
 }
 
@@ -389,6 +396,7 @@ add_generator.simmer <- function(.env, name_prefix, trajectory, distribution, mo
 #' Attach a new source of arrivals to a trajectory from a data frame.
 #'
 #' @inheritParams add_generator
+#' @param name_prefix the name prefix of the generated arrivals.
 #' @param data a data frame with, at least, a column of (inter)arrival times (see details).
 #' @param batch number of arrivals generated at a time. Arrivals are read from
 #' the data frame and attached to the trajectory in batches depending on this
