@@ -23,32 +23,12 @@
 is_flag <- function(name, env)
   is.numeric(env[[name]]) || is.logical(env[[name]])
 
-is_string <- function(name, env)
-  is.character(env[[name]]) && length(env[[name]]) == 1
-
-is_string_vector <- function(name, env) is.character(env[[name]])
-
-is_number <- function(name, env) {
-  if (is.numeric(env[[name]]) && length(env[[name]]) == 1) {
-    if (is.infinite(env[[name]]))
-      env[[name]] <- -1
-    else env[[name]] <- abs(env[[name]])
-    TRUE
-  } else FALSE
-}
-
-is_number_vector <- function(name, env) {
-  if (is.numeric(env[[name]]) && length(env[[name]]) > 1) {
-    env[[name]] <- abs(env[[name]])
-    TRUE
-  } else FALSE
-}
+is_NA <- function(name, env) is.na(env[[name]])
 
 is_function <- function(name, env) {
-  if (is.function(env[[name]])) {
-    env[[name]] <- magrittr_workaround(env[[name]])
-    TRUE
-  } else FALSE
+  if (!is.function(env[[name]])) return(FALSE)
+  env[[name]] <- magrittr_workaround(env[[name]])
+  TRUE
 }
 
 is_trajectory <- function(name, env) {
@@ -56,10 +36,6 @@ is_trajectory <- function(name, env) {
     all(sapply(env[[name]], inherits, what="trajectory"))
   else inherits(env[[name]], "trajectory")
 }
-
-is_numeric <- function(name, env) is.numeric(env[[name]])
-is_NA <- function(name, env) is.na(env[[name]])
-is_NULL <- function(name, env) is.null(env[[name]])
 
 get_caller <- function(n=1) {
   sub("\\.[[:alpha:]]+$", "", as.character(sys.call(-n-1))[[1]])
@@ -73,7 +49,7 @@ check_args <- function(..., env.=parent.frame()) {
   for (var in names(types)) {
     check <- sapply(paste0("is_", sub(" ", "_", types[[var]])), function(func) {
       if (!exists(func, ns, inherits=FALSE))
-       return(inherits(env.[[var]], sub("is_", "", func)))
+        return(inherits(env.[[var]], sub("is_", "", func)))
       do.call(ns[[func]], args=list(var, env.), envir=env.)
     })
     if (!any(check)) msg <- c(msg, paste0(
@@ -82,6 +58,12 @@ check_args <- function(..., env.=parent.frame()) {
 
   if (length(msg))
     stop(get_caller(2), ": ", paste0(msg, collapse=", "), call.=FALSE)
+}
+
+positive <- function(x) {
+  x <- abs(x)
+  x[is.infinite(x)] <- -1
+  x
 }
 
 envs_apply <- function(envs, method, ...) {

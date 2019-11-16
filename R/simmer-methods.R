@@ -75,16 +75,11 @@
 #' env %>% stepn()         # execute next event
 #'
 simmer <- function(name="anonymous", verbose=FALSE, mon=monitor_mem(), log_level=0) {
-  check_args(name="string", verbose="flag", mon="monitor", log_level="number")
+  check_args(name="character", verbose="flag", mon="monitor", log_level="numeric")
 
   env <- list2env(list(
-    name = name,
-    mon = mon,
-    resources = list(),
-    sources = list(),
-    globals = list(),
-    sim_obj = Simulator__new(name, verbose, mon$xptr, log_level)
-  ))
+    name=name, mon=mon, resources=list(), sources=list(), globals=list(),
+    sim_obj=Simulator__new(name, verbose, mon$xptr, positive(log_level))))
 
   class(env) <- "simmer"
   env
@@ -179,7 +174,10 @@ run <- function(.env, until=Inf, progress=NULL, steps=10) UseMethod("run")
 
 #' @export
 run.simmer <- function(.env, until=Inf, progress=NULL, steps=10) {
-  check_args(until="number", progress=c("function", "NULL"), steps="number")
+  check_args(until="numeric", progress=c("function", "NULL"), steps="numeric")
+
+  until <- positive(until)
+  steps <- positive(steps)
   if (is.function(progress)) {
     progress(0)
     for (i in seq(until/steps, until, until/steps)) {
@@ -231,8 +229,9 @@ peek <- function(.env, steps=1, verbose=FALSE) UseMethod("peek")
 
 #' @export
 peek.simmer <- function(.env, steps=1, verbose=FALSE) {
-  check_args(steps="number", verbose="flag")
-  ret <- peek_(.env$sim_obj, steps)
+  check_args(steps="numeric", verbose="flag")
+
+  ret <- peek_(.env$sim_obj, positive(steps))
   if (!verbose) ret$time
   else ret # nocov
 }
@@ -298,19 +297,14 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
                                 queue_size_strict=FALSE, queue_priority=c(0, Inf))
 {
   check_args(
-    name = "string",
-    capacity = c("number", "schedule"),
-    queue_size = c("number", "schedule"),
-    mon = "flag",
-    preemptive = "flag",
-    queue_size_strict = "flag",
-    queue_priority = c("number", "number vector")
-  )
+    name="character", capacity=c("numeric", "schedule"),
+    queue_size=c("numeric", "schedule"), mon="flag", preemptive="flag",
+    queue_size_strict="flag", queue_priority="numeric")
   preempt_order <- match.arg(preempt_order)
 
   if (length(queue_priority) == 1)
     queue_priority <- c(queue_priority, Inf)
-  queue_priority <- replace(queue_priority, is.infinite(queue_priority), -1)
+  queue_priority <- positive(queue_priority)
   if (length(queue_priority) != 2 ||
       !(queue_priority[2] < 0 || queue_priority[2]-queue_priority[1] >= 0))
     stop(get_caller(), ": 'queue_priority' is not a valid numeric range", call.=FALSE)
@@ -325,18 +319,18 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
     queue_size <- queue_size_schedule$schedule$init
   } else queue_size_schedule <- NA
 
-  ret <- add_resource_(.env$sim_obj, name, capacity, queue_size, mon,
-                       preemptive, preempt_order, queue_size_strict,
+  ret <- add_resource_(.env$sim_obj, name, positive(capacity), positive(queue_size),
+                       mon, preemptive, preempt_order, queue_size_strict,
                        queue_priority[1], queue_priority[2])
   if (ret) .env$resources[[name]] <- c(mon=mon, preemptive=preemptive)
 
   if (inherits(capacity_schedule, "schedule"))
-    add_resource_manager_(.env$sim_obj, name, "capacity", capacity,
+    add_resource_manager_(.env$sim_obj, name, "capacity", positive(capacity),
                           capacity_schedule$schedule$intervals,
                           capacity_schedule$schedule$values,
                           capacity_schedule$schedule$period)
   if (inherits(queue_size_schedule, "schedule"))
-    add_resource_manager_(.env$sim_obj, name, "queue_size", queue_size,
+    add_resource_manager_(.env$sim_obj, name, "queue_size", positive(queue_size),
                           queue_size_schedule$schedule$intervals,
                           queue_size_schedule$schedule$values,
                           queue_size_schedule$schedule$period)
@@ -379,18 +373,13 @@ add_generator <- function(.env, name_prefix, trajectory, distribution, mon=1,
 add_generator.simmer <- function(.env, name_prefix, trajectory, distribution, mon=1,
                                  priority=0, preemptible=priority, restart=FALSE)
 {
-  check_args(
-    name_prefix = "string",
-    trajectory = "trajectory",
-    distribution = "function",
-    mon = "flag",
-    priority = "number",
-    preemptible = "number",
-    restart = "flag"
-  )
+  check_args(name_prefix="character", trajectory="trajectory",
+             distribution="function", mon="flag", priority="numeric",
+             preemptible="numeric", restart="flag")
+
   ret <- add_generator_(.env$sim_obj, name_prefix, trajectory[],
                         make_resetable(distribution), mon,
-                        priority, preemptible, restart)
+                        positive(priority), positive(preemptible), restart)
   if (ret) .env$sources[[name_prefix]] <- c(mon=mon)
   .env
 }
@@ -451,17 +440,10 @@ add_dataframe.simmer <- function(.env, name_prefix, trajectory, data, mon=1, bat
                                  col_preemptible=col_priority, col_restart="restart")
 {
   check_args(
-    name_prefix = "string",
-    trajectory = "trajectory",
-    data = "data.frame",
-    mon = "flag",
-    batch = "number",
-    col_time = "string",
-    col_attributes = c("string vector", "NULL"),
-    col_priority = c("string", "NULL"),
-    col_preemptible = c("string", "NULL"),
-    col_restart = c("string", "NULL")
-  )
+    name_prefix="character", trajectory="trajectory", data="data.frame",
+    mon="flag", batch="numeric", col_time="character",
+    col_attributes=c("character", "NULL"), col_priority=c("character", "NULL"),
+    col_preemptible=c("character", "NULL"), col_restart=c("character", "NULL"))
   time <- match.arg(time)
 
   col_attributes <- as.character(col_attributes)
@@ -494,8 +476,9 @@ add_dataframe.simmer <- function(.env, name_prefix, trajectory, data, mon=1, bat
     data[[col_time]] <- c(data[[col_time]][1], diff(data[[col_time]]))
   }
 
-  ret <- add_dataframe_(.env$sim_obj, name_prefix, trajectory[], data, mon, batch,
-                        col_time, col_attributes, col_priority, col_preemptible, col_restart)
+  ret <- add_dataframe_(
+    .env$sim_obj, name_prefix, trajectory[], data, mon, positive(batch),
+    col_time, col_attributes, col_priority, col_preemptible, col_restart)
   if (ret) .env$sources[[name_prefix]] <- c(mon=mon)
   .env
 }
@@ -516,7 +499,7 @@ add_global <- function(.env, key, value) UseMethod("add_global")
 
 #' @export
 add_global.simmer <- function(.env, key, value) {
-  check_args(key = "string", value = c("numeric", "schedule"))
+  check_args(key="character", value=c("numeric", "schedule"))
 
   intervals <- values <- numeric(0); period <- -1
   if (inherits(value, "schedule")) {

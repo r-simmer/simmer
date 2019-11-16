@@ -91,7 +91,7 @@
 #' x
 #'
 trajectory <- function(name="anonymous", verbose=FALSE) {
-  check_args(name="string", verbose="flag")
+  check_args(name="character", verbose="flag")
 
   env <- list2env(list(
     name = name,

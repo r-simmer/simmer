@@ -93,8 +93,9 @@ now.wrap <- function(.env) .env$now_val
 
 #' @export
 peek.wrap <- function(.env, steps=1, verbose=FALSE) {
-  check_args(steps="number", verbose="flag")
-  steps <- min(steps, nrow(.env$peek_val))
+  check_args(steps="numeric", verbose="flag")
+
+  steps <- min(positive(steps), nrow(.env$peek_val))
   ret <- .env$peek_val[0:steps, ]
   if (!verbose) ret$time
   else ret # nocov
