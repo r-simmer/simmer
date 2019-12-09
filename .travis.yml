@@ -27,6 +27,9 @@ jobs:
   include:
     - stage: downstream
       if: branch = master AND type = push AND fork = false
+      configure: skip
+      announce: skip
+      install: skip
       script: |
         curl -LO --retry 3 https://raw.githubusercontent.com/r-simmer/trigger-travis/master/trigger-travis.sh
         sh trigger-travis.sh r-simmer simmer.plot $TRAVIS_ACCESS_TOKEN
