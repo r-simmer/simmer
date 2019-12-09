@@ -12,9 +12,8 @@ monitor(name, xptr, get_arrivals, get_attributes, get_resources,
 
 monitor_mem()
 
-monitor_delim(path = tempdir(), keep = FALSE, sep = " ",
-  ext = ".txt", reader = read.delim, args = list(stringsAsFactors =
-  FALSE))
+monitor_delim(path = tempdir(), keep = FALSE, sep = " ", ext = ".txt",
+  reader = read.delim, args = list(stringsAsFactors = FALSE))
 
 monitor_csv(path = tempdir(), keep = FALSE, reader = read.csv,
   args = list(stringsAsFactors = FALSE))
