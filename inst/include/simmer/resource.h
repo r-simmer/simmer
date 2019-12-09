@@ -84,8 +84,8 @@ namespace simmer {
       }
 
       arrival->register_entity(this);
-      if (is_monitored())
-        sim->mon->record_resource(name, sim->now(), server_count, queue_count, capacity, queue_size);
+      if (is_monitored()) sim->mon->record_resource(
+        name, sim->now(), server_count, queue_count, capacity, queue_size);
       return status;
     }
 
@@ -123,8 +123,8 @@ namespace simmer {
         return false;
       }
 
-      if (is_monitored())
-        sim->mon->record_resource(name, sim->now(), server_count, queue_count, capacity, queue_size);
+      if (is_monitored()) sim->mon->record_resource(
+        name, sim->now(), server_count, queue_count, capacity, queue_size);
       return true;
     }
 
@@ -143,8 +143,8 @@ namespace simmer {
           if (!try_free_server())
             break;
       }
-      if (is_monitored())
-        sim->mon->record_resource(name, sim->now(), server_count, queue_count, capacity, queue_size);
+      if (is_monitored()) sim->mon->record_resource(
+        name, sim->now(), server_count, queue_count, capacity, queue_size);
     }
 
     void set_queue_size(int value) {
@@ -152,12 +152,12 @@ namespace simmer {
         return;
       int last = queue_size;
       queue_size = value;
-      if (queue_size_strict && (last < 0 || (queue_size < last && queue_size >= 0))) {
+      if (queue_size_strict && (last<0 || (queue_size<last && queue_size>=0))) {
         while (queue_count > queue_size)
           try_free_queue();
       }
-      if (is_monitored())
-        sim->mon->record_resource(name, sim->now(), server_count, queue_count, capacity, queue_size);
+      if (is_monitored()) sim->mon->record_resource(
+        name, sim->now(), server_count, queue_count, capacity, queue_size);
     }
 
     int get_capacity() const { return capacity; }
@@ -182,8 +182,8 @@ namespace simmer {
         if (!try_serve_from_queue())
           break;
 
-      if (is_monitored())
-        sim->mon->record_resource(name, sim->now(), server_count, queue_count, capacity, queue_size);
+      if (is_monitored()) sim->mon->record_resource(
+        name, sim->now(), server_count, queue_count, capacity, queue_size);
       return STATUS_SUCCESS;
     }
 
