@@ -74,6 +74,7 @@ namespace simmer {
       }
       // enqueue
       else if (room_in_queue(amount, arrival->order.get_priority())) {
+        arrival->pause();
         insert_in_queue(arrival, amount);
         status = STATUS_ENQUEUE;
       }
