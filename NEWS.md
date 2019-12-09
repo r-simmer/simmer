@@ -1,4 +1,4 @@
-# simmer 4.3.0.9000
+# simmer 4.4.0
 
 ## New features
 
@@ -20,6 +20,7 @@
 - Fix convenience functions `from`, `to` and `from_to` to preserve the
   environment of the supplied functions (as part of #219).
 - Documentation improvements (#212, #220).
+- Fix queueing in multiple resources after preemption (#224 addressing #206).
 
 # simmer 4.3.0
 

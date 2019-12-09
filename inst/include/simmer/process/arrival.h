@@ -64,7 +64,7 @@ namespace simmer {
     */
     Arrival(Simulator* sim, const std::string& name, int mon, Order order,
             Activity* first_activity, int priority = 0)
-      : Process(sim, name, mon, priority), order(order), paused(false),
+      : Process(sim, name, mon, priority), order(order), paused(0),
         clones(new int(0)), activity(first_activity), timer(NULL),
         dropout(NULL), batch(NULL) { init(); }
 
@@ -108,23 +108,25 @@ namespace simmer {
     }
 
     void restart() {
+      if (--paused) return;
       set_busy(sim->now() + status.remaining);
       activate(status.remaining);
       set_remaining(0);
-      paused = false;
     }
 
     void pause() {
+      if (paused++) return;
       deactivate();
+      if (status.busy_until < sim->now())
+        return;
       unset_busy(sim->now());
       if (status.remaining && order.get_restart()) {
         unset_remaining();
         activity = activity->get_prev();
       }
-      paused = true;
     }
 
-    bool is_paused() const { return paused; }
+    bool is_paused() const { return paused > 0; }
 
     void stop() {
       deactivate();
@@ -214,7 +216,7 @@ namespace simmer {
     }
 
   private:
-    bool paused;
+    int paused;
     int* clones;          /**< number of active clones */
     ArrStatus status;     /**< arrival timing status */
     ArrTime lifetime;     /**< time spent in the whole trajectory */
@@ -251,7 +253,7 @@ namespace simmer {
       sim->mon->record_release(name, start, sim->now(), activity, resource);
     }
 
-    void leave_resources(bool was_batched, bool keep_seized);
+    void leave_resources(bool keep_seized);
 
     virtual void update_activity(double value) {
       lifetime.activity += value;

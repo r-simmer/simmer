@@ -245,3 +245,60 @@ test_that("preemption works properly for a previously stopped arrival", {
   expect_equal(arr$end_time, c(22, 23))
   expect_equal(arr$activity_time, c(20, 3))
 })
+
+test_that("arrivals wait until dequeued from all resources", {
+  lprio <- trajectory() %>%
+    seize("one") %>%           # "one" seized
+    seize("two") %>%           # enqueued in "two"
+    timeout(10) %>%
+    release_all()
+
+  hprio <- trajectory() %>%
+    seize("one") %>%           # preempts lprio in "one"
+    set_capacity("two", 1) %>% # dequeues lprio in "two"
+    timeout(100) %>%
+    release_all()
+
+  arr <- simmer(verbose=TRUE) %>%
+    add_resource("one", 1, preemptive=TRUE) %>%
+    add_resource("two", 0) %>%
+    add_generator("lprio", lprio, at(0), priority=0) %>%
+    add_generator("hprio", hprio, at(1), priority=1) %>%
+    run() %>%
+    get_mon_arrivals()
+
+  expect_equal(arr$start_time, c(1, 0))
+  expect_equal(arr$end_time, c(101, 111))
+  expect_equal(arr$activity_time, c(100, 10))
+  expect_equal(arr$finished, c(TRUE, TRUE))
+})
+
+test_that("rejected arrivals leave all queues", {
+  out <- trajectory() %>%
+    timeout(1)
+
+  lprio <- trajectory() %>%
+    handle_unfinished(out) %>%
+    seize("one") %>%           # "one" seized
+    seize("two") %>%           # enqueued in "two"
+    timeout(10) %>%
+    release_all()
+
+  hprio <- trajectory() %>%
+    seize("one") %>%           # preempts and rejects lprio from "one"
+    timeout(100) %>%
+    release_all()
+
+  arr <- simmer(verbose=TRUE) %>%
+    add_resource("one", 1, 0, preemptive=TRUE, queue_size_strict=TRUE) %>%
+    add_resource("two", 0) %>%
+    add_generator("lprio", lprio, at(0), priority=0) %>%
+    add_generator("hprio", hprio, at(1), priority=1) %>%
+    run() %>%
+    get_mon_arrivals()
+
+  expect_equal(arr$start_time, c(0, 1))
+  expect_equal(arr$end_time, c(2, 101))
+  expect_equal(arr$activity_time, c(1, 100))
+  expect_equal(arr$finished, c(TRUE, TRUE))
+})

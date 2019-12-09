@@ -74,6 +74,7 @@ namespace simmer {
       }
       // enqueue
       else if (room_in_queue(amount, arrival->order.get_priority())) {
+        arrival->pause();
         insert_in_queue(arrival, amount);
         status = STATUS_ENQUEUE;
       }
@@ -111,17 +112,16 @@ namespace simmer {
       return STATUS_SUCCESS;
     }
 
-    bool erase(Arrival* arrival, bool stay = false) {
-      if (stay) {
-        int amount = remove_from_server(arrival, -1);
-        server_count += amount;
+    bool remove(Arrival* arrival, bool stay = false) {
+      if (!is_waiting(arrival)) {
+        if (stay) {
+          int amount = remove_from_server(arrival, -1);
+          server_count += amount;
+        } else release(arrival, -1);
         return false;
       }
 
-      if (!remove_from_queue(arrival)) {
-        release(arrival, -1);
-        return false;
-      }
+      remove_from_queue(arrival);
 
       if (is_monitored()) sim->mon->record_resource(
         name, sim->now(), server_count, queue_count, capacity, queue_size);
@@ -166,6 +166,7 @@ namespace simmer {
     int get_queue_count() const { return queue_count; }
 
     virtual int get_seized(Arrival* arrival) const = 0;
+    virtual bool is_waiting(Arrival* arrival) const = 0;
 
   protected:
     int capacity;

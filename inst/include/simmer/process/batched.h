@@ -75,7 +75,7 @@ namespace simmer {
       arrival->register_entity(this);
     }
 
-    bool erase(Arrival* arrival) {
+    bool remove(Arrival* arrival) {
       if (permanent) return false;
       bool del = activity;
       if (arrivals.size() > 1 || (batch && batch->permanent)) {
@@ -88,12 +88,12 @@ namespace simmer {
           }
         }
       } else if (arrivals.size() == 1 && !batch) {
-        leave_resources(false, false);
+        leave_resources(false);
         deactivate();
       } else {
         del = true;
-        batch->erase(this);
-        leave_resources(true, false);
+        batch->remove(this);
+        leave_resources(false);
       }
       arrivals.erase(std::remove(arrivals.begin(), arrivals.end(), arrival), arrivals.end());
       arrival->unregister_entity(this);
