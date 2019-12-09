@@ -1,4 +1,4 @@
-language: R
+language: r
 sudo: false
 latex: true
 cache: packages
@@ -22,7 +22,12 @@ r_github_packages:
 
 after_success:
   - Rscript -e 'covr::codecov()'
-  - test $TRAVIS_BRANCH != "master" && exit 0
-  - curl -LO --retry 3 https://raw.githubusercontent.com/r-simmer/trigger-travis/master/trigger-travis.sh
-  - sh trigger-travis.sh r-simmer simmer.plot $TRAVIS_ACCESS_TOKEN
-  - sh trigger-travis.sh r-simmer simmer.bricks $TRAVIS_ACCESS_TOKEN
+
+jobs:
+  include:
+    - stage: downstream
+      if: branch = master AND type = push AND fork = false
+      script: |
+        curl -LO --retry 3 https://raw.githubusercontent.com/r-simmer/trigger-travis/master/trigger-travis.sh
+        sh trigger-travis.sh r-simmer simmer.plot $TRAVIS_ACCESS_TOKEN
+        sh trigger-travis.sh r-simmer simmer.bricks $TRAVIS_ACCESS_TOKEN

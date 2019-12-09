@@ -13,7 +13,7 @@ written in Julia".
 ## Test environments
 
 - Fedora 31 + GCC + clang (local), R 3.6.1
-- Ubuntu 14.04 + GCC (on Travis-CI), R 3.5.3, 3.6.1, devel
+- Ubuntu 16.04 + GCC (on Travis-CI), R 3.5.3, 3.6.1, devel
 - linux-x86_64-rocker-gcc-san (on r-hub)
 - ubuntu-rchk (on r-hub)
 - win-builder, R devel
