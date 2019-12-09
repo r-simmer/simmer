@@ -59,11 +59,6 @@ func <- function() {
 }
 
 test_that("argument matching work as expected", {
-  var <- "asdf"
-  expect_true(is_string("var", environment()))
-  var <- c("asdf", "asdf")
-  expect_false(is_string("var", environment()))
-
   var <- TRUE
   expect_true(is_flag("var", environment()))
   var <- 2
@@ -73,35 +68,10 @@ test_that("argument matching work as expected", {
   var <- c(2, 0)
   expect_true(is_flag("var", environment()))
 
-  var <- 1
-  expect_true(is_number("var", environment()))
-  expect_equal(var, 1)
-  var <- -1
-  expect_true(is_number("var", environment()))
-  expect_equal(var, 1)
-  var <- Inf
-  expect_true(is_number("var", environment()))
-  expect_equal(var, -1)
-  var <- c(1, 1)
-  expect_false(is_number("var", environment()))
-
-  var <- c(1, 1)
-  expect_true(is_number_vector("var", environment()))
-  expect_equal(var, c(1, 1))
-  var <- c(1, -1)
-  expect_true(is_number_vector("var", environment()))
-  expect_equal(var, c(1, 1))
-  var <- c(1, Inf)
-  expect_true(is_number_vector("var", environment()))
-  expect_equal(var, c(1, Inf))
-  var <- 1
-  expect_false(is_number_vector("var", environment()))
-
   expect_false(is_function("var", environment()))
   var <- function() 1
   expect_true(is_function("var", environment()))
 
-  expect_silent(func())
   var <- trajectory()
   expect_error(check_args(var="flag"))
   var <- "asdf"
@@ -120,7 +90,7 @@ test_that("is_* checkers are searched in the simmer namespace only", {
 test_that("envs_apply works", {
   env <- new.env()
   func <- function(env, x, y) data.frame(x=x, y=y)
-  df <- envs_apply(list(env, env), func, 1, 2)
+  df <- envs_apply(list(a=env, b=env), func, 1, 2)
   expect_equal(df, data.frame(x=c(1, 1), y=c(2, 2), replication=1:2))
 })
 

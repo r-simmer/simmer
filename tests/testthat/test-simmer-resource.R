@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2015-2018 Iñaki Ucar
+# Copyright (C) 2015-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -144,4 +144,11 @@ test_that("a big departure triggers more than one small seize from the queue", {
 
   expect_equal(as.character(arrs_ordered$name), c("a0", "b0", "b1"))
   expect_equal(arrs_ordered$end_time, c(10, 20, 20))
+})
+
+test_that("several resources can be attached at once", {
+  env <- simmer(verbose=TRUE) %>%
+    add_resource(letters[1:3])
+
+  expect_equal(get_resources(env), letters[1:3])
 })

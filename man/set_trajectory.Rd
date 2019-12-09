@@ -5,14 +5,14 @@
 \alias{set_source}
 \title{Set Source Parameters}
 \usage{
-set_trajectory(.trj, source, trajectory)
+set_trajectory(.trj, sources, trajectory)
 
-set_source(.trj, source, object)
+set_source(.trj, sources, object)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
 
-\item{source}{the name of the source or a function returning a name.}
+\item{sources}{the name(s) of the source(s) or a function returning the name(s).}
 
 \item{trajectory}{the trajectory that the generated arrivals will follow.}
 

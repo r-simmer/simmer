@@ -75,16 +75,11 @@
 #' env %>% stepn()         # execute next event
 #'
 simmer <- function(name="anonymous", verbose=FALSE, mon=monitor_mem(), log_level=0) {
-  check_args(name="string", verbose="flag", mon="monitor", log_level="number")
+  check_args(name="character", verbose="flag", mon="monitor", log_level="numeric")
 
   env <- list2env(list(
-    name = name,
-    mon = mon,
-    resources = list(),
-    sources = list(),
-    globals = list(),
-    sim_obj = Simulator__new(name, verbose, mon$xptr, log_level)
-  ))
+    name=name, mon=mon, resources=list(), sources=list(), globals=list(),
+    sim_obj=Simulator__new(name, verbose, mon$xptr, positive(log_level))))
 
   class(env) <- "simmer"
   env
@@ -154,6 +149,24 @@ reset.simmer <- function(.env) {
 #' @param steps number of steps to show as progress (it takes effect only if
 #' \code{progress} is provided).
 #'
+#' @examples
+#' ## show the progress just printing the steps
+#' simmer() %>%
+#'   run(progress=message, steps=5)
+#'
+#' ## using the 'progress' package
+#' \dontrun{
+#' mm1 <- trajectory() %>%
+#'   seize("server", 1) %>%
+#'   timeout(function() rexp(1, 66)) %>%
+#'   release("server", 1)
+#'
+#' simmer() %>%
+#'   add_resource("server", 1) %>%
+#'   add_generator("customer", mm1, function() rexp(100, 60)) %>%
+#'   run(3000, progress=progress::progress_bar$new()$update)
+#' }
+#'
 #' @return Returns the simulation environment.
 #' @seealso \code{\link{reset}}.
 #' @export
@@ -161,7 +174,10 @@ run <- function(.env, until=Inf, progress=NULL, steps=10) UseMethod("run")
 
 #' @export
 run.simmer <- function(.env, until=Inf, progress=NULL, steps=10) {
-  check_args(until="number", progress=c("function", "NULL"), steps="number")
+  check_args(until="numeric", progress=c("function", "NULL"), steps="numeric")
+
+  until <- positive(until)
+  steps <- positive(steps)
   if (is.function(progress)) {
     progress(0)
     for (i in seq(until/steps, until, until/steps)) {
@@ -213,43 +229,60 @@ peek <- function(.env, steps=1, verbose=FALSE) UseMethod("peek")
 
 #' @export
 peek.simmer <- function(.env, steps=1, verbose=FALSE) {
-  check_args(steps="number", verbose="flag")
-  ret <- peek_(.env$sim_obj, steps)
+  check_args(steps="numeric", verbose="flag")
+
+  ret <- peek_(.env$sim_obj, positive(steps))
   if (!verbose) ret$time
   else ret # nocov
 }
 
 #' Add a Resource
 #'
-#' Define a new resource in a simulation environment.
+#' Define a new resource in a simulation environment. Resources are conceived
+#' with queuing systems in mind, and therefore they comprise two internal
+#' self-managed parts: a \emph{server}, which is the active part, with a
+#' specified capacity that can be seized and released (see \code{\link{seize}});
+#' and a priority \emph{queue} of a certain size, in which arrivals may wait for
+#' the server to be available.
 #'
 #' @inheritParams reset
-#' @param name the name of the resource.
-#' @param capacity the capacity of the server, either a numeric or a
+#' @param name the name of the resource. If several names are provided, several
+#' resources will be defined with the same parameters.
+#' @param capacity the capacity of the server, either an integer or a
 #' \code{\link{schedule}}, so that the value may change during the simulation.
-#' @param queue_size the size of the queue, either a numeric or a
+#' @param queue_size the size of the queue, either an integer or a
 #' \code{\link{schedule}}, so that the value may change during the simulation.
 #' @param mon whether the simulator must monitor this resource or not.
 #' @param preemptive whether arrivals in the server can be preempted or not based
 #' on seize priorities.
-#' @param preempt_order if the resource is preemptive and preemption occurs with
-#' more than one arrival in the server, this parameter defines which arrival should
-#' be preempted first. It must be \code{fifo} (First In First Out: older preemptible
-#' tasks are preempted first) or \code{lifo} (Last In First Out: newer preemptible tasks
-#' are preempted first).
-#' @param queue_size_strict if the resource is preemptive and preemption occurs,
-#' this parameter controls whether the \code{queue_size} is a hard limit. By default,
-#' preempted arrivals go to a dedicated queue, so that \code{queue_size} may be
-#' exceeded. If this option is \code{TRUE}, preempted arrivals go to the standard
-#' queue, and the maximum \code{queue_size} is guaranteed (rejection may occur).
+#' @param preempt_order if \code{preemptive=TRUE} and several arrivals are
+#' preempted, this parameter defines which arrival should be preempted first.
+#' Either \code{fifo} (First In First Out: older preemptible tasks are preempted
+#' first) or \code{lifo} (Last In First Out: newer preemptible tasks are
+#' preempted first).
+#' @param queue_size_strict whether the \code{queue_size} is a hard limit (see
+#' details).
+#' @param queue_priority the priority range required to be able to access the
+#' queue if there is no room in the server (if a single value is provided, it is
+#' treated as the minimum priority). By default, all arrivals can be enqueued.
+#'
+#' @details An entity trying to seize a resource (see \code{\link{seize}}) may
+#' 1) access the server straightaway if there is enough capacity, 2) wait in the
+#' queue if there is no room in the server but there is room in the queue, or 3)
+#' rejected if there is no room in the queue either.
+#'
+#' There are two special situations regarding queue management: 1) the
+#' \code{queue_size} is shrinked below the actual number of items waiting, and
+#' 2) preemption occurs, and an item previously in the server goes to the queue.
+#' By default in both cases, the excess of items in the queue is allowed.
+#' However, with \code{queue_size_strict=TRUE}, the maximum \code{queue_size} is
+#' guaranteed, and thus some entities will be rejected (dropped) by the resource.
+#'
 #' Whenever an arrival is rejected (due to a server drop or a queue drop), it
 #' will set the \code{finished} flag to \code{FALSE} in the output of
 #' \code{\link{get_mon_arrivals}}. Unfinished arrivals can be handled with a
 #' drop-out trajectory that can be set using the \code{\link{handle_unfinished}}
 #' activity.
-#' @param queue_priority the priority range required to be able to access the
-#' queue if there is no room in the server (if a single value is provided, it is
-#' treated as the minimum priority). By default, all arrivals can be enqueued.
 #'
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \code{\link{schedule}}.
@@ -265,19 +298,14 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
                                 queue_size_strict=FALSE, queue_priority=c(0, Inf))
 {
   check_args(
-    name = "string",
-    capacity = c("number", "schedule"),
-    queue_size = c("number", "schedule"),
-    mon = "flag",
-    preemptive = "flag",
-    queue_size_strict = "flag",
-    queue_priority = c("number", "number vector")
-  )
+    name="character", capacity=c("numeric", "schedule"),
+    queue_size=c("numeric", "schedule"), mon="flag", preemptive="flag",
+    queue_size_strict="flag", queue_priority="numeric")
   preempt_order <- match.arg(preempt_order)
 
   if (length(queue_priority) == 1)
     queue_priority <- c(queue_priority, Inf)
-  queue_priority <- replace(queue_priority, is.infinite(queue_priority), -1)
+  queue_priority <- positive(queue_priority)
   if (length(queue_priority) != 2 ||
       !(queue_priority[2] < 0 || queue_priority[2]-queue_priority[1] >= 0))
     stop(get_caller(), ": 'queue_priority' is not a valid numeric range", call.=FALSE)
@@ -292,21 +320,23 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
     queue_size <- queue_size_schedule$schedule$init
   } else queue_size_schedule <- NA
 
-  ret <- add_resource_(.env$sim_obj, name, capacity, queue_size, mon,
-                       preemptive, preempt_order, queue_size_strict,
-                       queue_priority[1], queue_priority[2])
-  if (ret) .env$resources[[name]] <- c(mon=mon, preemptive=preemptive)
+  for (i in name) {
+    ret <- add_resource_(.env$sim_obj, i, positive(capacity), positive(queue_size),
+                         mon, preemptive, preempt_order, queue_size_strict,
+                         queue_priority[1], queue_priority[2])
+    if (ret) .env$resources[[i]] <- c(mon=mon, preemptive=preemptive)
 
-  if (inherits(capacity_schedule, "schedule"))
-    add_resource_manager_(.env$sim_obj, name, "capacity", capacity,
-                          capacity_schedule$schedule$intervals,
-                          capacity_schedule$schedule$values,
-                          capacity_schedule$schedule$period)
-  if (inherits(queue_size_schedule, "schedule"))
-    add_resource_manager_(.env$sim_obj, name, "queue_size", queue_size,
-                          queue_size_schedule$schedule$intervals,
-                          queue_size_schedule$schedule$values,
-                          queue_size_schedule$schedule$period)
+    if (inherits(capacity_schedule, "schedule"))
+      add_resource_manager_(.env$sim_obj, i, "capacity", positive(capacity),
+                            capacity_schedule$schedule$intervals,
+                            capacity_schedule$schedule$values,
+                            capacity_schedule$schedule$period)
+    if (inherits(queue_size_schedule, "schedule"))
+      add_resource_manager_(.env$sim_obj, i, "queue_size", positive(queue_size),
+                            queue_size_schedule$schedule$intervals,
+                            queue_size_schedule$schedule$values,
+                            queue_size_schedule$schedule$period)
+  }
   .env
 }
 
@@ -315,7 +345,8 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
 #' Attach a new source of arrivals to a trajectory from a generator function.
 #'
 #' @inheritParams reset
-#' @param name_prefix the name prefix of the generated arrivals.
+#' @param name_prefix the name prefix of the generated arrivals. If several
+#' names are provided, several generators will be defined with the same parameters.
 #' @param trajectory the trajectory that the generated arrivals will follow (see
 #' \code{\link{trajectory}}).
 #' @param distribution a function modelling the interarrival times (returning a
@@ -346,19 +377,17 @@ add_generator <- function(.env, name_prefix, trajectory, distribution, mon=1,
 add_generator.simmer <- function(.env, name_prefix, trajectory, distribution, mon=1,
                                  priority=0, preemptible=priority, restart=FALSE)
 {
-  check_args(
-    name_prefix = "string",
-    trajectory = "trajectory",
-    distribution = "function",
-    mon = "flag",
-    priority = "number",
-    preemptible = "number",
-    restart = "flag"
-  )
-  ret <- add_generator_(.env$sim_obj, name_prefix, trajectory[],
-                        make_resetable(distribution), mon,
-                        priority, preemptible, restart)
-  if (ret) .env$sources[[name_prefix]] <- c(mon=mon)
+  check_args(name_prefix="character", trajectory="trajectory",
+             distribution="function", mon="flag", priority="numeric",
+             preemptible="numeric", restart="flag")
+
+  trajectory <- trajectory[]
+  distribution <- make_resetable(distribution)
+  for (i in name_prefix) {
+    ret <- add_generator_(.env$sim_obj, i, trajectory, distribution, mon,
+                          positive(priority), positive(preemptible), restart)
+    if (ret) .env$sources[[i]] <- c(mon=mon)
+  }
   .env
 }
 
@@ -367,6 +396,7 @@ add_generator.simmer <- function(.env, name_prefix, trajectory, distribution, mo
 #' Attach a new source of arrivals to a trajectory from a data frame.
 #'
 #' @inheritParams add_generator
+#' @param name_prefix the name prefix of the generated arrivals.
 #' @param data a data frame with, at least, a column of (inter)arrival times (see details).
 #' @param batch number of arrivals generated at a time. Arrivals are read from
 #' the data frame and attached to the trajectory in batches depending on this
@@ -418,17 +448,10 @@ add_dataframe.simmer <- function(.env, name_prefix, trajectory, data, mon=1, bat
                                  col_preemptible=col_priority, col_restart="restart")
 {
   check_args(
-    name_prefix = "string",
-    trajectory = "trajectory",
-    data = "data.frame",
-    mon = "flag",
-    batch = "number",
-    col_time = "string",
-    col_attributes = c("string vector", "NULL"),
-    col_priority = c("string", "NULL"),
-    col_preemptible = c("string", "NULL"),
-    col_restart = c("string", "NULL")
-  )
+    name_prefix="character", trajectory="trajectory", data="data.frame",
+    mon="flag", batch="numeric", col_time="character",
+    col_attributes=c("character", "NULL"), col_priority=c("character", "NULL"),
+    col_preemptible=c("character", "NULL"), col_restart=c("character", "NULL"))
   time <- match.arg(time)
 
   col_attributes <- as.character(col_attributes)
@@ -461,8 +484,9 @@ add_dataframe.simmer <- function(.env, name_prefix, trajectory, data, mon=1, bat
     data[[col_time]] <- c(data[[col_time]][1], diff(data[[col_time]]))
   }
 
-  ret <- add_dataframe_(.env$sim_obj, name_prefix, trajectory[], data, mon, batch,
-                        col_time, col_attributes, col_priority, col_preemptible, col_restart)
+  ret <- add_dataframe_(
+    .env$sim_obj, name_prefix, trajectory[], data, mon, positive(batch),
+    col_time, col_attributes, col_priority, col_preemptible, col_restart)
   if (ret) .env$sources[[name_prefix]] <- c(mon=mon)
   .env
 }
@@ -483,7 +507,7 @@ add_global <- function(.env, key, value) UseMethod("add_global")
 
 #' @export
 add_global.simmer <- function(.env, key, value) {
-  check_args(key = "string", value = c("numeric", "schedule"))
+  check_args(key="character", value=c("numeric", "schedule"))
 
   intervals <- values <- numeric(0); period <- -1
   if (inherits(value, "schedule")) {

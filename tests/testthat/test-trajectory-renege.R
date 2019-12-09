@@ -52,6 +52,18 @@ test_that("an arrival leaves", {
   expect_equal(arrivals1$activity_time, 1)
 })
 
+test_that("an arrival leaves immediately!", {
+  t <- trajectory() %>%
+    leave(1) %>%
+    seize("dummy", 1)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("dummy") %>%
+    add_generator("arrival", t, at(0))
+
+  expect_silent(capture.output(run(env)))
+})
+
 test_that("an arrival continues", {
   t0 <- trajectory() %>%
     seize("dummy", 1) %>%

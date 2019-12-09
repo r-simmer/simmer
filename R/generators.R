@@ -1,5 +1,5 @@
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2019 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -53,7 +53,8 @@ at <- function(...) {
 }
 
 #' @rdname generators
-#' @param start_time the time at which to launch the initial arrival.
+#' @param start_time the time at which to launch the initial arrival
+#' (numeric or function).
 #' @param dist a function modelling the interarrival times. It is supposed to be
 #' an infinite source of values \code{>= 0} (e.g., \code{rexp} and the like). If
 #' the function provided returns any negative value, the behaviour is undefined.
@@ -75,16 +76,17 @@ at <- function(...) {
 #'   get_mon_arrivals()
 #'
 from <- function(start_time, dist, arrive=TRUE) {
-  started <- FALSE
+  replace_env(start_time, dist)
+  .started <- FALSE
   function() {
-    if (!started) {
-      started <<- TRUE
+    if (!.started) {
+      .started <<- TRUE
       if (arrive) {
-        dt <- start_time
+        dt <- getval(start_time)
       } else {
         dt <- dist()
         if (dt[1] >= 0)
-          dt[1] <- dt[1] + start_time
+          dt[1] <- dt[1] + getval(start_time)
       }
     } else {
       dt <- dist()
@@ -94,7 +96,7 @@ from <- function(start_time, dist, arrive=TRUE) {
 }
 
 #' @rdname generators
-#' @param stop_time the time at which to stop the generator.
+#' @param stop_time the time at which to stop the generator (numeric or function).
 #'
 #' @details \code{\link{to}} generates inter-arrivals following a given
 #' distribution with a specified stop time.
@@ -107,19 +109,20 @@ from <- function(start_time, dist, arrive=TRUE) {
 #'   get_mon_arrivals()
 #'
 to <- function(stop_time, dist) {
-  counter <- 0
+  replace_env(stop_time, dist)
+  .counter <- 0
   function() {
     dt <- dist()
     len <- length(dt)
-    dt <- dt[cumsum(dt) + counter < stop_time]
-    counter <<- counter + sum(dt)
+    dt <- dt[cumsum(dt) + .counter < getval(stop_time)]
+    .counter <<- .counter + sum(dt)
     if (len == length(dt)) return(dt)
     return(c(dt, -1))
   }
 }
 
 #' @rdname generators
-#' @param every repeat with this time cycle.
+#' @param every repeat with this time cycle (numeric or function).
 #'
 #' @details \code{\link{from_to}} is the union of \code{from} and \code{to}.
 #' @export
@@ -131,37 +134,37 @@ to <- function(stop_time, dist) {
 #'   get_mon_arrivals()
 #'
 from_to <- function(start_time, stop_time, dist, arrive=TRUE, every=NULL) {
-  stopifnot(is.null(every) || every >= stop_time)
-  started <- FALSE
-  init <- 0
-  counter <- 0
+  replace_env(start_time, stop_time, every, dist)
+  .started <- FALSE
+  .init <- 0
+  .counter <- 0
+  .every <- 0
   function() {
     while (TRUE){
-      if (!started) {
-        started <<- TRUE
+      if (!.started) {
+        .started <<- TRUE
         if (arrive) {
-          dt <- start_time - init
+          dt <- getval(start_time) + .every - .init
         } else {
           dt <- dist()
           if (dt[1] >= 0)
-            dt[1] <- dt[1] + start_time - init
+            dt[1] <- dt[1] + getval(start_time) + .every - .init
         }
       } else {
         dt <- dist()
       }
       len <- length(dt)
-      dt <- dt[cumsum(dt) + counter < stop_time]
-      counter <<- counter + sum(dt)
+      dt <- dt[cumsum(dt) + .counter < getval(stop_time) + .every]
+      .counter <<- .counter + sum(dt)
       if (len == length(dt))
         return(dt)
       if (is.null(every))
         return(c(dt, -1))
       if (length(dt))
         return(dt)
-      start_time <<- start_time + every
-      stop_time <<- stop_time + every
-      started <<- FALSE
-      init <<- counter
+      .started <<- FALSE
+      .init <<- .counter
+      .every <<- .every + getval(every)
     }
   }
 }

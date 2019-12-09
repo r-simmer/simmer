@@ -11,12 +11,13 @@ add_resource(.env, name, capacity = 1, queue_size = Inf, mon = TRUE,
 \arguments{
 \item{.env}{the simulation environment.}
 
-\item{name}{the name of the resource.}
+\item{name}{the name of the resource. If several names are provided, several
+resources will be defined with the same parameters.}
 
-\item{capacity}{the capacity of the server, either a numeric or a
+\item{capacity}{the capacity of the server, either an integer or a
 \code{\link{schedule}}, so that the value may change during the simulation.}
 
-\item{queue_size}{the size of the queue, either a numeric or a
+\item{queue_size}{the size of the queue, either an integer or a
 \code{\link{schedule}}, so that the value may change during the simulation.}
 
 \item{mon}{whether the simulator must monitor this resource or not.}
@@ -24,22 +25,14 @@ add_resource(.env, name, capacity = 1, queue_size = Inf, mon = TRUE,
 \item{preemptive}{whether arrivals in the server can be preempted or not based
 on seize priorities.}
 
-\item{preempt_order}{if the resource is preemptive and preemption occurs with
-more than one arrival in the server, this parameter defines which arrival should
-be preempted first. It must be \code{fifo} (First In First Out: older preemptible
-tasks are preempted first) or \code{lifo} (Last In First Out: newer preemptible tasks
-are preempted first).}
+\item{preempt_order}{if \code{preemptive=TRUE} and several arrivals are
+preempted, this parameter defines which arrival should be preempted first.
+Either \code{fifo} (First In First Out: older preemptible tasks are preempted
+first) or \code{lifo} (Last In First Out: newer preemptible tasks are
+preempted first).}
 
-\item{queue_size_strict}{if the resource is preemptive and preemption occurs,
-this parameter controls whether the \code{queue_size} is a hard limit. By default,
-preempted arrivals go to a dedicated queue, so that \code{queue_size} may be
-exceeded. If this option is \code{TRUE}, preempted arrivals go to the standard
-queue, and the maximum \code{queue_size} is guaranteed (rejection may occur).
-Whenever an arrival is rejected (due to a server drop or a queue drop), it
-will set the \code{finished} flag to \code{FALSE} in the output of
-\code{\link{get_mon_arrivals}}. Unfinished arrivals can be handled with a
-drop-out trajectory that can be set using the \code{\link{handle_unfinished}}
-activity.}
+\item{queue_size_strict}{whether the \code{queue_size} is a hard limit (see
+details).}
 
 \item{queue_priority}{the priority range required to be able to access the
 queue if there is no room in the server (if a single value is provided, it is
@@ -49,7 +42,31 @@ treated as the minimum priority). By default, all arrivals can be enqueued.}
 Returns the simulation environment.
 }
 \description{
-Define a new resource in a simulation environment.
+Define a new resource in a simulation environment. Resources are conceived
+with queuing systems in mind, and therefore they comprise two internal
+self-managed parts: a \emph{server}, which is the active part, with a
+specified capacity that can be seized and released (see \code{\link{seize}});
+and a priority \emph{queue} of a certain size, in which arrivals may wait for
+the server to be available.
+}
+\details{
+An entity trying to seize a resource (see \code{\link{seize}}) may
+1) access the server straightaway if there is enough capacity, 2) wait in the
+queue if there is no room in the server but there is room in the queue, or 3)
+rejected if there is no room in the queue either.
+
+There are two special situations regarding queue management: 1) the
+\code{queue_size} is shrinked below the actual number of items waiting, and
+2) preemption occurs, and an item previously in the server goes to the queue.
+By default in both cases, the excess of items in the queue is allowed.
+However, with \code{queue_size_strict=TRUE}, the maximum \code{queue_size} is
+guaranteed, and thus some entities will be rejected (dropped) by the resource.
+
+Whenever an arrival is rejected (due to a server drop or a queue drop), it
+will set the \code{finished} flag to \code{FALSE} in the output of
+\code{\link{get_mon_arrivals}}. Unfinished arrivals can be handled with a
+drop-out trajectory that can be set using the \code{\link{handle_unfinished}}
+activity.
 }
 \seealso{
 Convenience functions: \code{\link{schedule}}.

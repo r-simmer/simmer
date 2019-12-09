@@ -1,10 +1,26 @@
-# simmer 4.3.0.9000
+# simmer 4.4.0
 
 ## New features
 
 - Add `out` and `keep_seized` parameters to `leave()` with the same behaviour as
   in `renege_in()` and `renege_if()`. Code and documentation of these functions
-  are now integrated under `help(renege)` (#208).
+  are now integrated under `help(renege)` (#208, #217).
+- Convenience functions `from`, `to` and `from_to` accept dynamic parameters
+  for arguments `start_time`, `stop_time` and `every` (#219).
+- Activities to interact with sources have been vectorised to modify multiple
+  sources at once (#222).
+- Several generators or resources with the same parameters can be added with a
+  single call to `add_generator()` and `add_resource()` respectively if a vector
+  of names is provided (#221).
+
+## Minor changes and fixes:
+
+- Fix `get_mon_*()` dispatch for named lists (#210).
+- Get/put the RNG state when random numbers are required in the backend (#218).
+- Fix convenience functions `from`, `to` and `from_to` to preserve the
+  environment of the supplied functions (as part of #219).
+- Documentation improvements (#212, #220).
+- Fix queueing in multiple resources after preemption (#224 addressing #206).
 
 # simmer 4.3.0
 

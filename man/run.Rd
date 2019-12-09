@@ -28,6 +28,25 @@ Returns the simulation environment.
 \description{
 Execute steps until a given criterion.
 }
+\examples{
+## show the progress just printing the steps
+simmer() \%>\%
+  run(progress=message, steps=5)
+
+## using the 'progress' package
+\dontrun{
+mm1 <- trajectory() \%>\%
+  seize("server", 1) \%>\%
+  timeout(function() rexp(1, 66)) \%>\%
+  release("server", 1)
+
+simmer() \%>\%
+  add_resource("server", 1) \%>\%
+  add_generator("customer", mm1, function() rexp(100, 60)) \%>\%
+  run(3000, progress=progress::progress_bar$new()$update)
+}
+
+}
 \seealso{
 \code{\link{reset}}.
 }

@@ -47,22 +47,12 @@
 monitor <- function(name, xptr, get_arrivals, get_attributes, get_resources,
                     handlers=NULL, finalize=function() {})
 {
-  check_args(
-    name = "string",
-    xptr = "externalptr",
-    get_arrivals = "function",
-    get_attributes = "function",
-    get_resources = "function",
-    handlers = c("list", "NULL"),
-    finalize = "function"
-  )
+  check_args(name="character", xptr="externalptr", get_arrivals="function",
+             get_attributes="function", get_resources="function",
+             handlers=c("list", "NULL"), finalize="function")
 
   env <- list2env(list(
-    name = name,
-    xptr = xptr,
-    handlers = handlers,
-    finalize = finalize
-  ))
+    name=name, xptr=xptr, handlers=handlers, finalize=finalize))
   env$get_arrivals <- function(...) get_arrivals(env$xptr, ...)
   env$get_attributes <- function(...) get_attributes(env$xptr, ...)
   env$get_resources <- function(...) get_resources(env$xptr, ...)
@@ -109,7 +99,8 @@ monitor_mem <- function() monitor(
 monitor_delim <- function(path=tempdir(), keep=FALSE, sep=" ", ext=".txt",
                           reader=read.delim, args=list(stringsAsFactors=FALSE))
 {
-  check_args(path="string", sep="string", ext="string", reader="function", args="list")
+  check_args(path="character", sep="character", ext="character",
+             reader="function", args="list")
 
   path <- path.expand(path)
   if (!dir.exists(path))

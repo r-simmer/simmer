@@ -1,5 +1,5 @@
-language: R
-sudo: true
+language: r
+sudo: false
 latex: true
 r:
   - release

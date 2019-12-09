@@ -26,6 +26,10 @@
 namespace simmer {
 
   inline void Arrival::terminate(bool finished) {
+    foreach_ (ResVec::value_type& itr, resources) {
+      if (itr->is_waiting(this))
+        itr->remove(this);
+    }
     if (!finished && dropout) {
       activity = dropout;
       sim->schedule(0, this, priority);
@@ -34,7 +38,7 @@ namespace simmer {
 
     foreach_ (ResVec::value_type& itr, resources) {
       Rcpp::warning("'%s': leaving without releasing '%s'", name, itr->name);
-      itr->erase(this, true);
+      itr->remove(this, true);
     }
     unset_remaining();
     if (is_monitored() >= 1 && !dynamic_cast<Batched*>(this))
@@ -70,24 +74,22 @@ namespace simmer {
     resources.erase(search);
   }
 
-  inline void Arrival::leave_resources(bool was_batched, bool keep_seized) {
+  inline void Arrival::leave_resources(bool keep_seized) {
     if (status.busy_until > sim->now())
       unset_busy(sim->now());
     unset_remaining();
-    if (!keep_seized) {
-      while (resources.begin() != resources.end())
-        (*resources.begin())->erase(this);
-    } else if (!sim->is_scheduled(this) && !was_batched)
-      resources.back()->erase(this);
+    foreach_ (ResVec::value_type& itr, resources) {
+      if (!keep_seized || itr->is_waiting(this))
+        itr->remove(this);
+    }
   }
 
   inline void Arrival::renege(Activity* next, bool keep_seized) {
-    bool in_batch = batch != NULL;
     timer = NULL;
     cancel_renege();
-    if (batch && !batch->erase(this))
+    if (batch && !batch->remove(this))
       return;
-    leave_resources(in_batch, keep_seized);
+    leave_resources(keep_seized);
     deactivate();
     if (next) {
       activity = next;

@@ -23,32 +23,14 @@
 is_flag <- function(name, env)
   is.numeric(env[[name]]) || is.logical(env[[name]])
 
-is_string <- function(name, env)
-  is.character(env[[name]]) && length(env[[name]]) == 1
+is_NA <- function(name, env) is.na(env[[name]])
 
-is_string_vector <- function(name, env) is.character(env[[name]])
-
-is_number <- function(name, env) {
-  if (is.numeric(env[[name]]) && length(env[[name]]) == 1) {
-    if (is.infinite(env[[name]]))
-      env[[name]] <- -1
-    else env[[name]] <- abs(env[[name]])
-    TRUE
-  } else FALSE
-}
-
-is_number_vector <- function(name, env) {
-  if (is.numeric(env[[name]]) && length(env[[name]]) > 1) {
-    env[[name]] <- abs(env[[name]])
-    TRUE
-  } else FALSE
-}
+is_numeric <- function(name, env) is.numeric(env[[name]])
 
 is_function <- function(name, env) {
-  if (is.function(env[[name]])) {
-    env[[name]] <- magrittr_workaround(env[[name]])
-    TRUE
-  } else FALSE
+  if (!is.function(env[[name]])) return(FALSE)
+  env[[name]] <- magrittr_workaround(env[[name]])
+  TRUE
 }
 
 is_trajectory <- function(name, env) {
@@ -56,10 +38,6 @@ is_trajectory <- function(name, env) {
     all(sapply(env[[name]], inherits, what="trajectory"))
   else inherits(env[[name]], "trajectory")
 }
-
-is_numeric <- function(name, env) is.numeric(env[[name]])
-is_NA <- function(name, env) is.na(env[[name]])
-is_NULL <- function(name, env) is.null(env[[name]])
 
 get_caller <- function(n=1) {
   sub("\\.[[:alpha:]]+$", "", as.character(sys.call(-n-1))[[1]])
@@ -71,10 +49,11 @@ check_args <- function(..., env.=parent.frame()) {
   ns <- getNamespace("simmer")
 
   for (var in names(types)) {
-    check <- sapply(paste0("is_", sub(" ", "_", types[[var]])), function(func) {
-      if (!exists(func, ns, inherits=FALSE))
-       return(inherits(env.[[var]], sub("is_", "", func)))
-      do.call(ns[[func]], args=list(var, env.), envir=env.)
+    check <- sapply(types[[var]], function(type) {
+      func <- paste0("is_", sub(" ", "_", type))
+      if (exists(func, ns, inherits=FALSE))
+        return(do.call(ns[[func]], list(var, env.)))
+      inherits(env.[[var]], type)
     })
     if (!any(check)) msg <- c(msg, paste0(
       "'", sub("dots.", "...", var), "' is not a valid ", paste0(types[[var]], collapse=" or ")))
@@ -84,12 +63,18 @@ check_args <- function(..., env.=parent.frame()) {
     stop(get_caller(2), ": ", paste0(msg, collapse=", "), call.=FALSE)
 }
 
+positive <- function(x) {
+  x <- abs(x)
+  x[is.infinite(x)] <- -1
+  x
+}
+
 envs_apply <- function(envs, method, ...) {
   if (!is.list(envs)) envs <- list(envs)
   args <- list(...)
 
   do.call(rbind, lapply(1:length(envs), function(i) {
-    stats <- do.call(method, c(envs[i], args))
+    stats <- do.call(method, c(envs[[i]], args))
     if (nrow(stats)) stats$replication <- i
     else cbind(stats, data.frame(replication = character()))
     stats
@@ -112,6 +97,17 @@ make_resetable <- function(func) {
   }
   environment(attr(func, "reset")) <- env
   func
+}
+
+getval <- function(x) if (is.function(x)) x() else x
+
+replace_env <- function(..., envir=parent.frame()) {
+  for (obj in list(...)) {
+    if (!is.function(obj)) next
+    for (var in ls(environment(obj)))
+      assign(var, get(var, environment(obj)), envir)
+    environment(obj) <- envir
+  }
 }
 
 binarise <- function(...) {
