@@ -58,6 +58,13 @@ namespace simmer {
       return 0;
     }
 
+    bool is_waiting(Arrival* arrival) const {
+      typename QueueMap::const_iterator search = queue_map.find(arrival);
+      if (search != queue_map.end())
+        return true;
+      return false;
+    }
+
   protected:
     T server;
     ServerMap server_map;

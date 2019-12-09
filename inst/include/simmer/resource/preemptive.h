@@ -47,6 +47,13 @@ namespace simmer {
       preempted_map.clear();
     }
 
+    bool is_waiting(Arrival* arrival) const {
+      typename QueueMap::const_iterator search = preempted_map.find(arrival);
+      if (search != preempted_map.end())
+        return true;
+      return PriorityRes<T>::is_waiting(arrival);
+    }
+
   protected:
     using Resource::sim;
     using Resource::capacity;

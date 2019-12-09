@@ -253,7 +253,7 @@ namespace simmer {
       sim->mon->record_release(name, start, sim->now(), activity, resource);
     }
 
-    void leave_resources(bool was_batched, bool keep_seized);
+    void leave_resources(bool keep_seized);
 
     virtual void update_activity(double value) {
       lifetime.activity += value;
