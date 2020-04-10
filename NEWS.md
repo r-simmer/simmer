@@ -4,6 +4,11 @@
 
 - Fix pause status of reneging arrivals that are kicked from a resource queue
   (#228 addressing #227).
+- Set the minimum execution priority for the `timeout()` activity. This makes
+  possible to set a null timeout so that the next event is processed in the last
+  place if several more events happen at the same time (#229).
+- Extend the `Queueing Systems` vignette with a section about custom service
+  policies (as part of #229).
 
 # simmer 4.4.0
 
