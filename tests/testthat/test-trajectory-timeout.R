@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2015-2018 Iñaki Ucar
+# Copyright (C) 2015-2018,2020 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -80,4 +80,40 @@ test_that("an infinite timeout can be defined", {
     get_mon_arrivals()
 
   expect_equal(arr$end_time, Inf)
+})
+
+test_that("a null timeout is processed in the last place", {
+  # custom service policy
+  custom <- trajectory() %>%
+    set_attribute("arrival time", function() now(env)) %>%
+    renege_if(
+      "recompute priority",
+      out = trajectory() %>%
+        # e.g., increase priority if wait_time < 3
+        set_prioritization(function() {
+          if (now(env) - get_attribute(env, "arrival time") < 3)
+            c(1, NA, NA)     # only change the priority
+          else c(NA, NA, NA) # don't change anything
+        }, mod="+") %>%
+        # go 2 steps back to renege_if
+        rollback(2)) %>%
+    seize("resource") %>%
+    renege_abort() %>%
+    timeout(5) %>%
+    # trigger this before releasing the resource
+    send("recompute priority") %>%
+    timeout(0) %>%
+    release("resource")
+
+  env <- simmer(verbose=TRUE) %>%
+    add_resource("resource") %>%
+    add_generator("dummy", custom, at(0:4))
+
+  run(env)
+  arr <- get_mon_arrivals(env)
+
+  expect_equal(arr$start_time, c(0, 3, 4, 1, 2))
+  expect_equal(arr$end_time, seq(5, 25, 5))
+  expect_equal(arr$activity_time, rep(5, 5))
+  expect_true(all(arr$finished))
 })
