@@ -1,3 +1,10 @@
+# simmer 4.4.1
+
+## Minor changes and fixes
+
+- Fix pause status of reneging arrivals that are kicked from a resource queue
+  (#228 addressing #227).
+
 # simmer 4.4.0
 
 ## New features

@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2019 Iñaki Ucar
+# Copyright (C) 2016-2020 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -716,4 +716,31 @@ test_that("a reneging arrival keeps seized resources (2)", {
   expect_equal(res$time, c(0, 0, 1))
   expect_equal(res$server, c(1, 0, 0))
   expect_equal(res$queue, c(0, 1, 0))
+})
+
+test_that("a reneging arrival is able to seize a resource again", {
+  t <- trajectory() %>%
+    renege_in(
+      t = 5,
+      out = trajectory() %>%
+        rollback(2)) %>%
+    seize("resource") %>%
+    renege_abort() %>%
+    timeout(10) %>%
+    release("resource")
+
+  env <- simmer(verbose=TRUE) %>%
+    add_resource("resource") %>%
+    add_generator("dummy", t, at(0, 3)) %>%
+    run()
+
+  arr <- get_mon_arrivals(env)
+  res <- get_mon_resources(env)
+
+  expect_equal(arr$end_time, c(10, 20))
+  expect_equal(arr$activity_time, c(10, 10))
+  expect_true(all(arr$finished))
+  expect_equal(res$time, c(0, 3, 8, 8, 10, 20))
+  expect_equal(res$server, c(1, 1, 1, 1, 1, 0))
+  expect_equal(res$queue, c(0, 1, 0, 1, 0, 0))
 })
