@@ -77,6 +77,64 @@ plot(get_mon_resources(mm23.env), "usage", "server", items="system") +
   geom_hline(yintercept=mm23.N)
 ```
 
+## Custom service policies
+
+Resources implement a FIFO (or FCFS) priority queue, which means that arrivals with a higher priority are processed first, and among those with the same priority, the first-in-first-out policy applies. These priorities can be statically assigned to all arrivals coming from a particular source (using the `priority` argument in `add_generator()` or a dedicated column in the data frame passed to `add_dataframe()`).
+
+However, there is a useful activity to change priorities dynamically (as well as the other two prioritization values, `preemtible` and `restart`), and that is `set_prioritization()`. Such an activity allows us, for example, to implement a LIFO queue just by assigning an increasing priority to incoming arrivals:
+
+```{r}
+env <- simmer()
+
+lifo <- trajectory() %>%
+  set_global("resource prio", 1, mod="+") %>%
+  set_prioritization(function() c(get_global(env, "resource prio"), NA, NA)) %>%
+  seize("resource") %>%
+  log_("processing") %>%
+  timeout(5) %>%
+  release("resource")
+
+env %>%
+  add_resource("resource") %>%
+  add_generator("dummy", lifo, at(0:4)) %>%
+  run() %>% invisible()
+```
+
+This mechanism, together with signaling, serves as the basis to implement any custom servicing policy. The main idea is to signal whenever an arrival is going to release the resource so that all the arrivals in the queue can leave the queue momentarily to recompute their priorities:
+
+```{r}
+env <- simmer()
+
+custom <- trajectory() %>%
+  set_attribute("arrival time", function() now(env)) %>%
+  renege_if(
+    "recompute priority",
+    out = trajectory() %>%
+      # e.g., increase priority if wait_time < 3
+      set_prioritization(function() {
+        if (now(env) - get_attribute(env, "arrival time") < 3)
+          c(1, NA, NA)     # only change the priority
+        else c(NA, NA, NA) # don't change anything
+      }, mod="+") %>%
+      # go 2 steps back to renege_if
+      rollback(2)) %>%
+  seize("resource") %>%
+  renege_abort() %>%
+  log_("processing") %>%
+  timeout(5) %>%
+  # trigger this before releasing the resource
+  send("recompute priority") %>%
+  timeout(0) %>%
+  release("resource")
+
+env %>%
+  add_resource("resource") %>%
+  add_generator("dummy", custom, at(0:4)) %>%
+  run() %>% invisible()
+```
+
+Note that a null timeout was added so that the resource is released in the last place. In this way, all arrivals recompute their priorities and enter the queue again before the resource is released.
+
 ## State-dependent service rates
 
 In many practical queueing scenarios, the speed of the server depends on the state of the system. Here we consider a multi-server resource that is able to distribute the processing capacity evenly among the arrivals. This means that if, for example, `capacity=2` and there is a single arrival in the server, it would be served twice as fast.
