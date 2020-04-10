@@ -21,7 +21,7 @@ r_github_packages:
   - RcppCore/Rcpp
 
 after_success:
-  - Rscript -e 'covr::codecov()'
+  - test $TRAVIS_R_VERSION_STRING = "devel" && Rscript -e 'covr::codecov()'
 
 jobs:
   include:
