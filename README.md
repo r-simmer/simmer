@@ -11,13 +11,13 @@
 
 ## Extensions
 
-| Package          | Description                                     | Status
-| ---------------- | ----------------------------------------------- | ------------------
-| [**simmer.plot**](http://r-simmer.org/extensions/plot)  |  Plotting Methods for 'simmer' | [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/simmer.plot)](https://cran.r-project.org/package=simmer.plot)
-| [**simmer.bricks**](http://r-simmer.org/extensions/bricks)  |  Helper Methods for 'simmer' Trajectories | [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/simmer.bricks)](https://cran.r-project.org/package=simmer.bricks)
-| [**simmer.optim**](https://github.com/r-simmer/simmer.optim) | Parameter Optimization Functions for 'simmer' | [![Status\_Badge](https://img.shields.io/badge/lifecycle-dormant-blue.svg)](https://www.tidyverse.org/lifecycle/#dormant)
-| [**simmer.json**](https://github.com/r-simmer/simmer.json)  | Read / Load 'simmer' Definitions in JSON Format | [![Status\_Badge](https://img.shields.io/badge/lifecycle-dormant-blue.svg)](https://www.tidyverse.org/lifecycle/#dormant)
-| [**simmer.mon**](https://github.com/r-simmer/simmer.mon)  | Monitoring Backends for 'simmer' | [![Status\_Badge](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+Package          | Description                                     | Status
+---------------- | ----------------------------------------------- | ------------------
+[**simmer.plot**](http://r-simmer.org/extensions/plot)  |  Plotting Methods for `simmer` | [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/simmer.plot)](https://cran.r-project.org/package=simmer.plot)
+[**simmer.bricks**](http://r-simmer.org/extensions/bricks)  |  Helper Methods for `simmer` Trajectories | [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/simmer.bricks)](https://cran.r-project.org/package=simmer.bricks)
+[**simmer.optim**](https://github.com/r-simmer/simmer.optim) | Parameter Optimization Functions for `simmer` | [![Status\_Badge](https://img.shields.io/badge/lifecycle-dormant-blue.svg)](https://www.tidyverse.org/lifecycle/#dormant)
+[**simmer.json**](https://github.com/r-simmer/simmer.json)  | Read / Load `simmer` Definitions in JSON Format | [![Status\_Badge](https://img.shields.io/badge/lifecycle-dormant-blue.svg)](https://www.tidyverse.org/lifecycle/#dormant)
+[**simmer.mon**](https://github.com/r-simmer/simmer.mon)  | Monitoring Backends for `simmer` | [![Status\_Badge](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
 ## Mailing list
 
@@ -45,10 +45,10 @@ The installation from GitHub requires the [remotes](https://cran.r-project.org/p
 remotes::install_github("r-simmer/simmer")
 ```
 
-Please note that the package contains some C++ code and thus you need a development environment to build the package (e.g. [Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows).
+Please note that the package contains some C++ code and thus you need a development environment to build the package (e.g., [Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows).
 
 ## Hexagon stickers!
 
 You can purchase `simmer` hex stickers on Redbubble ([sticker 1](https://www.redbubble.com/es/people/puratura/works/32157547-simmer-des-for-r?p=sticker), [sticker 2](https://www.redbubble.com/es/people/puratura/works/32155608-simmer-des-for-r?p=sticker)). Browse there for more stuff such as T-shirts and mugs!
 
-<img src="https://r-simmer.org/images/simmer-hex-01.svg" alt="design1" width="150" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://r-simmer.org/images/simmer-hex-02.svg" alt="design2" width="150" />
+<img src="https://r-simmer.org/images/simmer-hex-01.svg" alt="design1" width="150" /><span style="margin:10px"></span><img src="https://r-simmer.org/images/simmer-hex-02.svg" alt="design2" width="150" />
