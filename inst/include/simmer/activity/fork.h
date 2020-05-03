@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2018,2020 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -24,11 +24,10 @@
 namespace simmer {
 
   // abstract class for multipath activities
-  class Fork : public Activity {
+  class Fork : public virtual Activity {
   public:
-    Fork(const std::string& name, const VEC<bool>& cont,
-         const VEC<REnv>& trj, int priority = 0)
-      : Activity(name, priority), cont(cont), trj(trj), path(-1)
+    Fork(const VEC<bool>& cont, const VEC<REnv>& trj)
+      : Activity("Fork"), cont(cont), trj(trj), path(-1)
     {
       foreach_ (const VEC<REnv>::value_type& itr, trj) {
         Activity* head = internal::head(itr);

@@ -1,6 +1,6 @@
 ## Patch release
 
-Bug fixes + improved documentation.
+Fix random issues due to dangling pointers under memory reuse.
 
 Regarding the package title, Uwe asked us in a past submission to remove
 "for R" because it is redundant. If it is not an issue, we would like to keep
@@ -13,7 +13,7 @@ written in Julia".
 ## Test environments
 
 - Fedora 31 + GCC + clang (local), R 3.6.3
-- Ubuntu 16.04 + GCC (on Travis-CI), R 3.5.3, 3.6.3, devel
+- Ubuntu 16.04 + GCC (on Travis-CI), R 3.6.3, 4.0.0, devel
 - linux-x86_64-rocker-gcc-san (on r-hub)
 - ubuntu-rchk (on r-hub)
 - win-builder, R devel

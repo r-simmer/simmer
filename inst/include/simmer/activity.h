@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2018,2020 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -84,6 +84,11 @@ namespace simmer {
      */
     virtual Activity* get_prev() { return prev; }
     virtual void set_prev(Activity* activity) { prev = activity; }
+
+    /**
+     * Remove any stored information
+     */
+    virtual void remove(Arrival* arrival) {}
 
   protected:
     Activity* next;

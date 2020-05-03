@@ -1,3 +1,17 @@
+# simmer 4.4.2
+
+## Minor changes and fixes
+
+- Fix memory issues in `trap()`, `synchronize()` and `rollback()`. These are
+  stateful activities that require storing information about passing arrivals to
+  manage clones or redirections. These activities were not properly cleaning
+  their storage when arrivals were rejected at some point in the trajectory. As
+  a result, certain simulations with these activities involved may show random
+  improper behaviour depending on how memory reuse happens. This patch unifies
+  storage management for stateful activities, adds a new interface to register
+  these activities and another interface for arrivals to notify their
+  termination, so that the stored information is properly cleaned up (#231).
+
 # simmer 4.4.1
 
 ## Minor changes and fixes
