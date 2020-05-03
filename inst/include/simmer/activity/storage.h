@@ -44,7 +44,7 @@ namespace simmer {
   template <typename U, typename V>
   class Storage : public virtual Activity {
   public:
-    Storage() {}
+    Storage() : Activity("Storage") {}
 
     void remove(Arrival* arrival) {
       typename UMAP<U, V>::iterator search =

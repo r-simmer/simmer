@@ -27,7 +27,7 @@ namespace simmer {
   class Fork : public virtual Activity {
   public:
     Fork(const VEC<bool>& cont, const VEC<REnv>& trj)
-      : cont(cont), trj(trj), path(-1)
+      : Activity("Fork"), cont(cont), trj(trj), path(-1)
     {
       foreach_ (const VEC<REnv>::value_type& itr, trj) {
         Activity* head = internal::head(itr);
@@ -38,7 +38,7 @@ namespace simmer {
       }
     }
 
-    Fork(const Fork& o) : cont(o.cont), trj(o.trj), path(-1) {
+    Fork(const Fork& o) : Activity(o), cont(o.cont), trj(o.trj), path(-1) {
       heads.clear();
       tails.clear();
       foreach_ (VEC<REnv>::value_type& itr, trj) {
