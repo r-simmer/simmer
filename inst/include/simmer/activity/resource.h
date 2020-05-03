@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2018,2020 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -35,12 +35,12 @@ namespace simmer {
 
     Seize(const std::string& resource, const T& amount, const VEC<bool>& cont,
           const VEC<REnv>& trj, unsigned short mask)
-      : Fork("Seize", cont, trj),
+      : Activity("Seize"), Fork(cont, trj),
         internal::ResGetter("Seize", resource), amount(amount), mask(mask) {}
 
     Seize(int id, const T& amount, const VEC<bool>& cont,
           const VEC<REnv>& trj, unsigned short mask)
-      : Fork("Seize", cont, trj),
+      : Activity("Seize"), Fork(cont, trj),
         internal::ResGetter("Seize", id), amount(amount), mask(mask) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
