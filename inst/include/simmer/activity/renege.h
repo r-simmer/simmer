@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2019 Iñaki Ucar
+// Copyright (C) 2016-2020 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -31,7 +31,7 @@ namespace simmer {
     CLONEABLE(Leave<T>)
 
     Leave(const T& prob, const VEC<REnv>& trj, bool keep_seized)
-      : Fork("Leave", VEC<bool>(trj.size(), false), trj), prob(prob),
+      : Activity("Leave"), Fork(VEC<bool>(trj.size(), false), trj), prob(prob),
         keep_seized(keep_seized) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
@@ -66,7 +66,7 @@ namespace simmer {
     CLONEABLE(RenegeIn<T>)
 
     RenegeIn(const T& t, const VEC<REnv>& trj, bool keep_seized)
-      : Fork("RenegeIn", VEC<bool>(trj.size(), false), trj), t(t),
+      : Activity("RenegeIn"), Fork(VEC<bool>(trj.size(), false), trj), t(t),
         keep_seized(keep_seized) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
@@ -97,7 +97,7 @@ namespace simmer {
     CLONEABLE(RenegeIf<T>)
 
     RenegeIf(const T& signal, const VEC<REnv>& trj, bool keep_seized)
-      : Fork("RenegeIf", VEC<bool>(trj.size(), false), trj), signal(signal),
+      : Activity("RenegeIf"), Fork(VEC<bool>(trj.size(), false), trj), signal(signal),
         keep_seized(keep_seized) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
@@ -147,7 +147,7 @@ namespace simmer {
     CLONEABLE(HandleUnfinished)
 
     HandleUnfinished(const VEC<REnv>& trj)
-      : Fork("HandleUnfinished", VEC<bool>(trj.size(), false), trj) {}
+      : Activity("HandleUnfinished"), Fork(VEC<bool>(trj.size(), false), trj) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);

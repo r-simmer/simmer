@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2019 Iñaki Ucar
+// Copyright (C) 2016-2020 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -49,6 +49,7 @@ namespace simmer {
     typedef UMAP<std::string, ArrTime> ResTime;
     typedef UMAP<int, Resource*> SelMap;
     typedef VEC<Resource*> ResVec;
+    typedef VEC<Activity*> ActVec;
 
     CLONEABLE(Arrival)
 
@@ -66,12 +67,12 @@ namespace simmer {
             Activity* first_activity, int priority = 0)
       : Process(sim, name, mon, priority), order(order), paused(0),
         clones(new int(0)), activity(first_activity), timer(NULL),
-        dropout(NULL), batch(NULL) { init(); }
+        dropout(NULL), batch(NULL), act_shd(new ActVec()) { init(); }
 
     Arrival(const Arrival& o)
       : Process(o), order(o.order), paused(o.paused), clones(o.clones),
         activity(NULL), attributes(o.attributes), timer(NULL),
-        dropout(NULL), batch(NULL) { init(); }
+        dropout(NULL), batch(NULL), act_shd(o.act_shd) { init(); }
 
     ~Arrival() { reset(); }
 
@@ -181,11 +182,23 @@ namespace simmer {
       if (!ptr) Rcpp::stop("illegal register of arrival '%s'", name); // # nocov
       batch = ptr;
     }
-
     void unregister_entity(Batched* ptr) {
       if (ptr != batch)
         Rcpp::stop("illegal unregister of arrival '%s'", name); // # nocov
       batch = NULL;
+    }
+
+    void register_entity(Activity* ptr, bool shared=false) {
+      if (!ptr) Rcpp::stop("illegal register of arrival '%s'", name); // # nocov
+      ActVec& act = shared ? *act_shd : act_this;
+      act.push_back(ptr);
+    }
+    void unregister_entity(Activity* ptr, bool shared=false) {
+      ActVec& act = shared ? *act_shd : act_this;
+      ActVec::iterator search = std::find(act.begin(), act.end(), ptr);
+      if (!ptr || search == act.end())
+        Rcpp::stop("illegal unregister of arrival '%s'", name); // # nocov
+      act.erase(search);
     }
 
     void set_dropout(Activity* next) { dropout = next; }
@@ -229,6 +242,8 @@ namespace simmer {
     Activity* dropout;    /**< drop-out trajectory */
     Batched* batch;       /**< batch that contains this arrival */
     ResVec resources;     /**< resources that contain this arrival */
+    ActVec act_this;      /**< activities that contain this arrival */
+    ActVec* act_shd;      /**< activities that contain any clone */
 
     void init() {
       (*clones)++;
@@ -237,8 +252,14 @@ namespace simmer {
 
     void reset() {
       cancel_renege();
-      if (!--(*clones))
+      foreach_ (ActVec::value_type& itr, act_this)
+        itr->remove(this);
+      if (!--(*clones)) {
+        foreach_ (ActVec::value_type& itr, *act_shd)
+          itr->remove(this);
+        delete act_shd;
         delete clones;
+      }
       sim->unregister_arrival(this);
     }
 

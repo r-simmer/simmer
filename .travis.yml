@@ -26,6 +26,6 @@ addons:
     project:
       name: "r-simmer/simmer"
       description: "Build submitted via Travis CI"
-    notification_email: i.ucar86@gmail.com
+    notification_email: iucar@fedoraproject.org
     build_command: "R CMD INSTALL --no-R --no-data --no-help --no-demo --no-inst --no-docs --no-exec --no-multiarch --no-test-load --preclean ."
     branch_pattern: coverity_scan

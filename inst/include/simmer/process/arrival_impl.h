@@ -1,5 +1,5 @@
 // Copyright (C) 2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2019 Iñaki Ucar
+// Copyright (C) 2016-2020 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -79,6 +79,8 @@ namespace simmer {
       unset_busy(sim->now());
     unset_remaining();
     foreach_ (ResVec::value_type& itr, resources) {
+      if (itr->is_waiting(this))
+        --paused;
       if (!keep_seized || itr->is_waiting(this))
         itr->remove(this);
     }

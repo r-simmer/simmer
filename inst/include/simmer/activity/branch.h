@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2018,2020 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -21,6 +21,7 @@
 
 #include <simmer/activity.h>
 #include <simmer/activity/fork.h>
+#include <simmer/activity/storage.h>
 
 namespace simmer {
 
@@ -33,7 +34,7 @@ namespace simmer {
     CLONEABLE(Branch)
 
     Branch(const RFn& option, const VEC<bool>& cont, const VEC<REnv>& trj)
-      : Fork("Branch", cont, trj), option(option) {}
+      : Activity("Branch"), Fork(cont, trj), option(option) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
@@ -62,7 +63,7 @@ namespace simmer {
     CLONEABLE(Clone<T>)
 
     Clone(const T& n, const VEC<REnv>& trj)
-      : Fork("Clone", VEC<bool>(trj.size(), true), trj), n(n) {}
+      : Activity("Clone"), Fork(VEC<bool>(trj.size(), true), trj), n(n) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
@@ -91,7 +92,7 @@ namespace simmer {
   /**
    * Synchronize clones.
    */
-  class Synchronize : public Activity {
+  class Synchronize : public virtual Activity, public Storage<std::string, int> {
   public:
     CLONEABLE(Synchronize)
 
@@ -99,7 +100,7 @@ namespace simmer {
       : Activity("Synchronize"), wait(wait), terminate(terminate) {}
 
     Synchronize(const Synchronize& o)
-      : Activity(o), wait(o.wait), terminate(o.terminate) { pending.clear(); }
+      : Activity(o), wait(o.wait), terminate(o.terminate) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
@@ -108,16 +109,12 @@ namespace simmer {
 
     double run(Arrival* arrival) {
       if (!wait) {
-        UMAP<std::string, int>::iterator search = pending.find(arrival->name);
-        if (search == pending.end()) {
+        if (!storage_find(arrival)) {
           if (arrival->get_clones() > 1)
-            pending.emplace(arrival->name, arrival->get_clones()-1);
+            storage_get(arrival) = arrival->get_clones() - 1;
           return 0;
-        } else {
-          search->second--;
-          if (!search->second)
-            pending.erase(search);
-        }
+        } else if (!--storage_get(arrival))
+          remove(arrival);
       } else if (arrival->get_clones() == 1)
         return 0;
 
@@ -131,7 +128,6 @@ namespace simmer {
   protected:
     bool wait;
     bool terminate;
-    UMAP<std::string, int> pending;
   };
 
 } // namespace simmer

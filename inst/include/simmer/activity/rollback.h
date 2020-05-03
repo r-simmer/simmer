@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2018,2020 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -20,13 +20,14 @@
 #define simmer__activity_rollback_h
 
 #include <simmer/activity.h>
+#include <simmer/activity/storage.h>
 
 namespace simmer {
 
   /**
    * Rollback to a previous activity.
    */
-  class Rollback : public Activity {
+  class Rollback : public virtual Activity, public Storage<Arrival*, int> {
   public:
     CLONEABLE(Rollback)
 
@@ -36,7 +37,7 @@ namespace simmer {
 
     Rollback(const Rollback& o)
       : Activity(o), amount(o.amount), times(o.times), check(o.check),
-        selected(NULL) { pending.clear(); }
+        selected(NULL) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
@@ -50,13 +51,13 @@ namespace simmer {
         if (!get<bool>(*check, arrival))
           return 0;
       } else if (times >= 0) {
-        if (pending.find(arrival) == pending.end())
-          pending[arrival] = times;
-        if (!pending[arrival]) {
-          pending.erase(arrival);
+        if (!storage_find(arrival))
+          storage_get(arrival) = times;
+        if (!storage_get(arrival)) {
+          remove(arrival);
           return 0;
         }
-        pending[arrival]--;
+        storage_get(arrival)--;
       }
       selected = goback();
       return 0;
@@ -76,7 +77,6 @@ namespace simmer {
     int times;
     OPT<RFn> check;
     Activity* selected;
-    UMAP<Arrival*, int> pending;
 
     Activity* goback() {
       int n = amount;

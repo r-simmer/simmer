@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2019 Iñaki Ucar
+// Copyright (C) 2016-2020 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -20,6 +20,7 @@
 
 #include <simmer/activity.h>
 #include <simmer/activity/fork.h>
+#include <simmer/activity/storage.h>
 
 namespace simmer {
 
@@ -59,22 +60,23 @@ namespace simmer {
    * Subscribe to signals and assign a handler.
    */
   template <typename T>
-  class Trap : public Fork {
+  class Trap : public Fork, public Storage<Arrival*, VEC<Activity*> > {
   public:
     CLONEABLE(Trap<T>)
 
     Trap(const T& signals, const VEC<REnv>& trj, bool interruptible)
-      : Fork("Trap", VEC<bool>(trj.size(), false), trj, PRIORITY_TRAP),
+      : Activity("Trap", PRIORITY_TRAP), Fork(VEC<bool>(trj.size(), false), trj),
         signals(signals), interruptible(interruptible)
     {
       if (tails.size() && tails[0])
         tails[0]->set_next(this);
     }
 
-    Trap(const Trap& o) : Fork(o), signals(o.signals), interruptible(o.interruptible) {
+    Trap(const Trap& o)
+      : Activity(o), Fork(o), signals(o.signals), interruptible(o.interruptible)
+    {
       if (tails.size() && tails[0])
         tails[0]->set_next(this);
-      pending.clear();
     }
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
@@ -84,11 +86,11 @@ namespace simmer {
     }
 
     double run(Arrival* arrival) {
-      if (pending.find(arrival) != pending.end()) {
-        arrival->set_activity(pending[arrival].back());
-        pending[arrival].pop_back();
-        if (pending[arrival].empty())
-          pending.erase(arrival);
+      if (storage_find(arrival)) {
+        arrival->set_activity(storage_get(arrival).back());
+        storage_get(arrival).pop_back();
+        if (storage_get(arrival).empty())
+          remove(arrival);
         arrival->activate();
         return STATUS_REJECT;
       }
@@ -100,14 +102,13 @@ namespace simmer {
   protected:
     T signals;
     bool interruptible;
-    UMAP<Arrival*, VEC<Activity*> > pending;
 
     void launch_handler(Arrival* arrival) {
       if (!arrival->sim->is_scheduled(arrival))
         return;
       arrival->stop();
       if (heads.size() && heads[0]) {
-        pending[arrival].push_back(arrival->get_activity());
+        storage_get(arrival).push_back(arrival->get_activity());
         arrival->set_activity(heads[0]);
       }
       if (interruptible || heads.empty())

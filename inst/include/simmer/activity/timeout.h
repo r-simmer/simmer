@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2018,2020 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -31,7 +31,7 @@ namespace simmer {
   public:
     CLONEABLE(Timeout<T>)
 
-    Timeout(const T& delay) : Activity("Timeout"), delay(delay) {}
+    Timeout(const T& delay) : Activity("Timeout", PRIORITY_MIN), delay(delay) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
