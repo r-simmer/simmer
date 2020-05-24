@@ -27,7 +27,7 @@ dir.create(deps, showWarnings=FALSE, recursive=TRUE)
 .libPaths(deps)
 install_required(c(
   tools::package_dependencies("simmer")$simmer,
-  "microbenchmark", "remotes"))
+  "microbenchmark", "remotes", "callr"))
 
 ## resolve tags and create dirs if necessary
 tags <- sapply(names(tags), function(tag) {
@@ -45,39 +45,45 @@ tags <- sapply(names(tags), function(tag) {
 parallel::mclapply(tags, function(tag) {
   .libPaths(tag$paths)
   if (!dir.exists(file.path(.libPaths()[1], "simmer")))
-    remotes::install_github("r-simmer/simmer", ref=tag$hash)
+    callr::r(function(ref)
+      remotes::install_github("r-simmer/simmer", ref=ref), list(tag$hash))
 }, mc.cores=getOption("Ncpus", 1L))
 
 ## benchmark
-benchmark <- rbind(do.call(rbind, parallel::mclapply(tags, function(tag) {
+benchmark <- rbind(do.call(rbind, lapply(tags, function(tag) {
   message("running... ", tag$name)
 
   .libPaths(tag$paths)
-  library(simmer)
+  res <- callr::r(function() {
+    library(simmer)
 
-  mm1 <- {
-    if (exists("trajectory")) trajectory()
-    else create_trajectory()
-  } %>%
-    seize("server", 1) %>%
-    timeout(function() rexp(1, 66)) %>%
-    release("server", 1)
+    message(exists("trajectory"))
 
-  gen <- function() rexp(100, 60)
+    mm1 <- {
+      if (exists("trajectory")) trajectory()
+      else create_trajectory()
+    } %>%
+      seize("server", 1) %>%
+      timeout(function() rexp(1, 66)) %>%
+      release("server", 1)
 
-  test <- function(t) {
-    set.seed(1234)
-    simmer(verbose=F) %>%
-      add_resource("server", 1) %>%
-      add_generator("customer", mm1, gen, mon=F) %>%
-      run(t)
-  }
+    gen <- function() rexp(100, 60)
 
-  res <- microbenchmark::microbenchmark(test(2000), times=10L)
+    test <- function(t) {
+      set.seed(1234)
+      simmer(verbose=F) %>%
+        add_resource("server", 1) %>%
+        add_generator("customer", mm1, gen, mon=F) %>%
+        run(t)
+    }
+
+    microbenchmark::microbenchmark(test(1000), times=10L)
+  })
+
   res$date <- tag$date
   res$expr <- tag$name
   res
-}, mc.cores=1L)), benchmark)
+})), benchmark)
 
 save(benchmark, file=db)
 
