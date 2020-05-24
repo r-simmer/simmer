@@ -12,7 +12,7 @@ install_required(c("git2r", "ggplot2"))
 tmp <- file.path(getwd(), "working_dir/tmp")
 tags <- git2r::tags()
 version <- package_version(gsub("v", "", names(tags)))
-tags <- tags[version$major >= 3 & version$minor >= 3] # from 3.3.0 on
+tags <- tags[version >= "3.3.0"]
 
 ## load saved data and filter out existing tags
 benchmark <- NULL
@@ -24,7 +24,7 @@ tags <- tags[!(names(tags) %in% benchmark$expr)]
 deps <- file.path(tmp, "deps")
 dir.create(deps, showWarnings=FALSE, recursive=TRUE)
 .libPaths.bkp <- .libPaths()
-.libPaths(c(deps, .Library))
+.libPaths(deps)
 install_required(c(
   tools::package_dependencies("simmer")$simmer,
   "microbenchmark", "remotes"))
@@ -35,16 +35,16 @@ tags <- sapply(names(tags), function(tag) {
   dir.create(path, showWarnings=FALSE)
   list(
     name = tag,
-    hash = tags[[tag]]@sha,
-    date = methods::as(tags[[tag]]@author@when, "POSIXct"),
+    hash = tags[[tag]]$sha,
+    date = as.POSIXct(tags[[tag]]$author$when),
     paths = c(path, deps)
   )
 }, simplify=FALSE)
 
 ## install tags if necessary
 parallel::mclapply(tags, function(tag) {
-  .libPaths(c(tag$paths, .Library))
-  if (!requireNamespace("simmer", quietly=TRUE))
+  .libPaths(tag$paths)
+  if (!dir.exists(file.path(.libPaths()[1], "simmer")))
     remotes::install_github("r-simmer/simmer", ref=tag$hash)
 }, mc.cores=getOption("Ncpus", 1L))
 
@@ -52,7 +52,7 @@ parallel::mclapply(tags, function(tag) {
 benchmark <- rbind(do.call(rbind, parallel::mclapply(tags, function(tag) {
   message("running... ", tag$name)
 
-  .libPaths(c(tag$paths, .Library))
+  .libPaths(tag$paths)
   library(simmer)
 
   mm1 <- {
@@ -73,7 +73,7 @@ benchmark <- rbind(do.call(rbind, parallel::mclapply(tags, function(tag) {
       run(t)
   }
 
-  res <- microbenchmark::microbenchmark(test(1000), times=10L)
+  res <- microbenchmark::microbenchmark(test(2000), times=10L)
   res$date <- tag$date
   res$expr <- tag$name
   res
