@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2019 Iñaki Ucar
+# Copyright (C) 2016-2020 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -85,7 +85,8 @@ test_that("core selection algorithms work: round-robin", {
     add_resource("r3", 1) %>%
     add_generator("dummy0", t0, at(0)) %>%
     add_generator("dummy1", t1, at(0, 0)) %>%
-    add_generator("dummy2", t2, at(seq(1, 6)))
+    add_generator("dummy2", t2, at(seq(1, 2))) %>%
+    add_generator("dummy3", t2, at(seq(3, 6)))
 
   expect_warning(env %>% run)
 
@@ -114,7 +115,8 @@ test_that("core selection algorithms work: round-robin-available", {
     add_resource("r3", 1) %>%
     add_generator("dummy0", t0, at(0)) %>%
     add_generator("dummy1", t1, at(0, 0)) %>%
-    add_generator("dummy2", t2, at(seq(1, 6)))
+    add_generator("dummy2", t2, at(seq(1, 2))) %>%
+    add_generator("dummy3", t2, at(seq(3, 6)))
 
   expect_warning(env %>% run)
 

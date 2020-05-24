@@ -11,6 +11,7 @@
   storage management for stateful activities, adds a new interface to register
   these activities and another interface for arrivals to notify their
   termination, so that the stored information is properly cleaned up (#231).
+- Fix state sharing in round-robin policy operation in `select()` (#233).
 
 # simmer 4.4.1
 

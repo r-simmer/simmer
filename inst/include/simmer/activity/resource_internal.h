@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2019 Iñaki Ucar
+// Copyright (C) 2016-2020 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -62,7 +62,7 @@ namespace simmer { namespace internal {
     typedef UMAP<std::string, method> MethodMap;
 
   public:
-    explicit Policy(const std::string& policy) : name(policy), rri(-1),
+    explicit Policy(const std::string& policy) : name(policy), state(new int(-1)),
       check_available(policy.find("-available") != std::string::npos)
     {
       policies["shortest-queue"]            = &Policy::policy_shortest_queue;
@@ -74,7 +74,7 @@ namespace simmer { namespace internal {
       policies["random-available"]          = &Policy::policy_random;
     }
 
-    Policy(const Policy& o) : name(o.name), rri(-1),
+    Policy(const Policy& o) : name(o.name), state(o.state),
       check_available(o.check_available), policies(o.policies) {}
 
     friend std::ostream& operator<<(std::ostream& out, const Policy& policy) {
@@ -90,7 +90,7 @@ namespace simmer { namespace internal {
 
   private:
     std::string name;
-    int rri;
+    SHD<int> state;
     bool check_available;
     MethodMap policies;
 
@@ -117,9 +117,9 @@ namespace simmer { namespace internal {
     Resource* policy_round_robin(Simulator* sim, const VEC<std::string>& resources) {
       Resource* selected;
       for (size_t i = 0; i < resources.size(); i++) {
-        if (++rri >= (int)resources.size())
-          rri = 0;
-        selected = sim->get_resource(resources[rri]);
+        if (++(*state) >= (int)resources.size())
+          *state = 0;
+        selected = sim->get_resource(resources[*state]);
         if (!check_available || selected->get_capacity())
           goto select;
       }
