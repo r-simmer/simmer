@@ -78,3 +78,23 @@ jobs:
       with:
         name: ${{ matrix.config.os }}-r${{ matrix.config.r }}-results
         path: check
+
+    - name: Test coverage
+      if: ${{ success() && matrix.config.covr == 'yes' }}
+      run: covr::codecov()
+      shell: Rscript {0}
+
+  dispatch:
+    needs: build
+    if: ${{ github.ref == 'refs/heads/master' }}
+    strategy:
+      matrix:
+        repo: ['plot', 'bricks']
+    runs-on: ubuntu-latest
+    steps:
+    - name: Dispatch builds in dependent packages
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.SIMMER_TOKEN }}
+        repository: r-simmer/simmer.${{ matrix.repo }}
+        event-type: simmer
