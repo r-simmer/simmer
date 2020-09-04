@@ -1151,7 +1151,7 @@ synchronize.trajectory <- function(.trj, wait=TRUE, mon_all=FALSE) {
 #' across all your \code{batch} activities.
 #' @param rule an optional callable object (a function) which will be applied to
 #' every arrival to determine whether it should be included into the batch, thus
-#  it must return a boolean.
+#' it must return a boolean.
 #'
 #' @return Returns the trajectory object.
 #'

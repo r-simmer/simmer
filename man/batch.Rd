@@ -27,7 +27,8 @@ different trajectories into a same batch, you need to specify a common name
 across all your \code{batch} activities.}
 
 \item{rule}{an optional callable object (a function) which will be applied to
-every arrival to determine whether it should be included into the batch, thus}
+every arrival to determine whether it should be included into the batch, thus
+it must return a boolean.}
 }
 \value{
 Returns the trajectory object.
