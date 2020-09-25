@@ -417,3 +417,5 @@ env %>%
   add_generator("car", car, function() sample(T_INTER[1]:T_INTER[2], 1)) %>%
   run(SIM_TIME)
 ```
+
+Note though that this model has an important flaw, both in the original and in this adaptation, as discussed in [#239](https://github.com/r-simmer/simmer/issues/239): when two cars require more fuel than available, but the level is still above the threshold, these cars completely block the queue, and the refilling truck is never called. It could be solved by detecting this situation in the controller.
