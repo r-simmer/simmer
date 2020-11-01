@@ -1380,15 +1380,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// record_ongoing_
-void record_ongoing_(SEXP sim_, bool per_resource);
-RcppExport SEXP _simmer_record_ongoing_(SEXP sim_SEXP, SEXP per_resourceSEXP) {
+// get_ongoing_
+DataFrame get_ongoing_(SEXP sim_, bool per_resource);
+RcppExport SEXP _simmer_get_ongoing_(SEXP sim_SEXP, SEXP per_resourceSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
     Rcpp::traits::input_parameter< bool >::type per_resource(per_resourceSEXP);
-    record_ongoing_(sim_, per_resource);
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(get_ongoing_(sim_, per_resource));
+    return rcpp_result_gen;
 END_RCPP
 }
 
@@ -1503,7 +1504,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_add_resource_", (DL_FUNC) &_simmer_add_resource_, 10},
     {"_simmer_add_resource_manager_", (DL_FUNC) &_simmer_add_resource_manager_, 7},
     {"_simmer_add_global_manager_", (DL_FUNC) &_simmer_add_global_manager_, 6},
-    {"_simmer_record_ongoing_", (DL_FUNC) &_simmer_record_ongoing_, 2},
+    {"_simmer_get_ongoing_", (DL_FUNC) &_simmer_get_ongoing_, 2},
     {NULL, NULL, 0}
 };
 

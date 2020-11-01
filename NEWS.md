@@ -1,3 +1,9 @@
+# simmer 4.4.2.9000
+
+## Minor changes and fixes
+
+- Fix multiple reporting of ongoing arrivals (#240).
+
 # simmer 4.4.2
 
 ## Minor changes and fixes

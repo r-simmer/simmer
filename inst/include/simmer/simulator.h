@@ -1,6 +1,6 @@
 // Copyright (C) 2014-2015 Bart Smeets
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2018,2020 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -154,7 +154,7 @@ namespace simmer {
     Source* get_source(const std::string& name) const;
     Resource* get_resource(const std::string& name) const;
     Arrival* get_running_arrival() const;
-    void record_ongoing(bool per_resource) const;
+    RData get_ongoing(bool per_resource) const;
 
     VEC<std::string> get_resources() const {
       VEC<std::string> out;

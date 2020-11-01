@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2015 Bart Smeets
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2019 Iñaki Ucar
+# Copyright (C) 2016-2020 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -541,8 +541,10 @@ get_mon_arrivals <- function(.envs, per_resource=FALSE, ongoing=FALSE)
 #' @export
 get_mon_arrivals.simmer <- function(.envs, per_resource=FALSE, ongoing=FALSE) {
   envs_apply(.envs, function(x) {
-    if (ongoing) record_ongoing_(x$sim_obj, per_resource)
-    x$mon$get_arrivals(per_resource)
+    out <- x$mon$get_arrivals(per_resource)
+    if (ongoing)
+      out <- rbind(out, get_ongoing_(x$sim_obj, per_resource))
+    out
   })
 }
 

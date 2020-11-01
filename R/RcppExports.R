@@ -441,7 +441,7 @@ add_global_manager_ <- function(sim_, key, init, intervals, values, period) {
     .Call(`_simmer_add_global_manager_`, sim_, key, init, intervals, values, period)
 }
 
-record_ongoing_ <- function(sim_, per_resource) {
-    invisible(.Call(`_simmer_record_ongoing_`, sim_, per_resource))
+get_ongoing_ <- function(sim_, per_resource) {
+    .Call(`_simmer_get_ongoing_`, sim_, per_resource)
 }
 

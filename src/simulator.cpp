@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Bart Smeets
 // Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-// Copyright (C) 2015-2019 Iñaki Ucar
+// Copyright (C) 2015-2020 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -163,6 +163,6 @@ bool add_global_manager_(SEXP sim_, const std::string& key, double init,
 }
 
 //[[Rcpp::export]]
-void record_ongoing_(SEXP sim_, bool per_resource) {
-  XPtr<Simulator>(sim_)->record_ongoing(per_resource);
+DataFrame get_ongoing_(SEXP sim_, bool per_resource) {
+  return XPtr<Simulator>(sim_)->get_ongoing(per_resource);
 }
