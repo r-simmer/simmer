@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2019 Iñaki Ucar
+# Copyright (C) 2016-2020 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -68,7 +68,7 @@ wrap <- function(.env) {
     queue_size = list(),
     server_count = list(),
     queue_count = list()
-  ))
+  ), parent = asNamespace("simmer"))
 
   sources <- names(env$sources)
   resources <- names(env$resources)

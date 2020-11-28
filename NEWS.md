@@ -3,6 +3,7 @@
 ## Minor changes and fixes
 
 - Fix multiple reporting of ongoing arrivals (#240).
+- Set package namespace as parent of `simmer` and `wrap` environments (#241).
 
 # simmer 4.4.2
 

@@ -79,7 +79,8 @@ simmer <- function(name="anonymous", verbose=FALSE, mon=monitor_mem(), log_level
 
   env <- list2env(list(
     name=name, mon=mon, resources=list(), sources=list(), globals=list(),
-    sim_obj=Simulator__new(name, verbose, mon$xptr, positive(log_level))))
+    sim_obj=Simulator__new(name, verbose, mon$xptr, positive(log_level))
+  ), parent = asNamespace("simmer"))
 
   class(env) <- "simmer"
   env
