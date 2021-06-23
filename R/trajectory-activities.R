@@ -237,7 +237,7 @@ release_selected_all.trajectory <- function(.trj, id=0) {
 #' @inheritParams select
 #' @inheritParams set_attribute
 #' @param resource the name of the resource.
-#' @param value new value to set.
+#' @param value numeric value to set, or a callable object (a function) which must return a numeric value.
 #'
 #' @return Returns the trajectory object.
 #'
