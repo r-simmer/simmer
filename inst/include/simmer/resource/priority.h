@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2019 Iñaki Ucar
+// Copyright (C) 2016-2019,2021 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -109,6 +109,8 @@ namespace simmer {
       count += last->amount;
       queue_count -= last->amount;
       queue_map.erase(last->arrival);
+      last->arrival->restart();
+      last->arrival->stop();
       last->arrival->unregister_entity(this);
       last->arrival->terminate(false);
       queue.erase(last);

@@ -1,4 +1,4 @@
-# Copyright (C) 2018 Iñaki Ucar
+# Copyright (C) 2018,2021 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -76,4 +76,48 @@ test_that("a dropout trajectory can be unset", {
   expect_equal(arr$end_time, 0)
   expect_equal(arr$activity_time, 0)
   expect_equal(arr$finished, FALSE)
+})
+
+test_that("unfinished arrivals coming from a queue are restarted", {
+  prio <- 0
+  dropout <- trajectory() %>%
+    set_prioritization(function() {
+      prio <<- prio + 1
+      c(prio, NA, NA)
+    }, mod="+") %>%
+    rollback(2)
+
+  t1 <- trajectory() %>%
+    handle_unfinished(dropout) %>%
+    seize("res") %>%
+    timeout(1) %>%
+    release("res")
+
+  t2 <- trajectory() %>%
+    timeout(5) %>%
+    # flush queue and restore
+    set_queue_size("res", 0) %>%
+    set_queue_size("res", Inf) %>%
+    timeout(5) %>%
+    # open the server
+    set_capacity("res", 1)
+
+  env <- simmer(verbose = TRUE) %>%
+    add_resource("res", 0, queue_size_strict=TRUE) %>%
+    add_generator("dummy", t1, at(0, 0, 0)) %>%
+    add_generator("trigger", t2, at(0)) %>%
+    run()
+
+  arr <- get_mon_arrivals(env)
+  res <- get_mon_arrivals(env, per_resource = TRUE)
+
+  expect_equal(arr$start_time, c(0, 0, 0, 0))
+  expect_equal(arr$end_time, 10:13)
+  expect_equal(arr$activity_time, c(10, 1, 1, 1))
+  expect_equal(arr$finished, rep(TRUE, 4))
+
+  expect_equal(res$name, paste0("dummy", c(2:0, 2:0)))
+  expect_equal(res$start_time, c(0, 0, 0, 5, 5, 5))
+  expect_equal(res$end_time, c(5, 5, 5, 11, 12, 13))
+  expect_equal(res$activity_time, c(0, 0, 0, 1, 1, 1))
 })
