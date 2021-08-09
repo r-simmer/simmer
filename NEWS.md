@@ -5,6 +5,7 @@
 - Fix multiple reporting of ongoing arrivals (#240).
 - Set package namespace as parent of `simmer` and `wrap` environments (#241).
 - Fix arrival restart after queue drops (#257).
+- Fix segfault printing activities with empty vectors (#253).
 
 ## New features
 

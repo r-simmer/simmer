@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018,2020 Iñaki Ucar
+// Copyright (C) 2016-2018,2020-2021 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -100,9 +100,11 @@ namespace simmer {
   template <typename T>
   std::ostream& operator<<(std::ostream& out, const VEC<T>& v) {
     out << "[";
-    if (!v.empty())
+    if (!v.empty()) {
       std::copy(v.begin(), v.end() - 1, std::ostream_iterator<T>(out, ", "));
-    out << *(v.end() - 1) << "]";
+      out << *(v.end() - 1);
+    }
+    out << "]";
     return out;
   }
 
