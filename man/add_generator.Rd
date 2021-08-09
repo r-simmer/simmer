@@ -17,7 +17,7 @@ names are provided, several generators will be defined with the same parameters.
 \code{\link{trajectory}}).}
 
 \item{distribution}{a function modelling the interarrival times (returning a
-negative value stops the generator).}
+negative value or a missing value stops the generator).}
 
 \item{mon}{whether the simulator must monitor the generated arrivals or not
 (0 = no monitoring, 1 = simple arrival monitoring, 2 = level 1 + arrival

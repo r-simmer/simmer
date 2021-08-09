@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2015 Bart Smeets
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2019 Iñaki Ucar
+# Copyright (C) 2016-2019,2021 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -685,8 +685,8 @@ set_trajectory.trajectory <- function(.trj, sources, trajectory) {
 
 #' @rdname set_trajectory
 #' @param object a function modelling the interarrival times (if the source type
-#' is a generator; returning a negative value stops the generator) or a data frame
-#' (if the source type is a data source).
+#' is a generator; returning a negative value or a missing value stops the
+#' generator) or a data frame (if the source type is a data source).
 #' @export
 set_source <- function(.trj, sources, object) UseMethod("set_source")
 

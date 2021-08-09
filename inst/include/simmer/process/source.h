@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Iñaki Ucar
+// Copyright (C) 2018,2021 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -72,6 +72,12 @@ namespace simmer {
           MakeString() << (sim->now() + delay));
 
       return arrival;
+    }
+
+    bool check_stop(double delay) {
+      if (delay < 0 || RNum::is_na(delay))
+        return true;
+      return false;
     }
 
   private:

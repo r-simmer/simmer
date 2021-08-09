@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2015 Bart Smeets
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2020 Iñaki Ucar
+# Copyright (C) 2016-2021 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -351,7 +351,7 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
 #' @param trajectory the trajectory that the generated arrivals will follow (see
 #' \code{\link{trajectory}}).
 #' @param distribution a function modelling the interarrival times (returning a
-#' negative value stops the generator).
+#' negative value or a missing value stops the generator).
 #' @param mon whether the simulator must monitor the generated arrivals or not
 #' (0 = no monitoring, 1 = simple arrival monitoring, 2 = level 1 + arrival
 #' attribute monitoring)

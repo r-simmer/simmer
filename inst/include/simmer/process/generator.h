@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2018,2021 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -52,7 +52,7 @@ namespace simmer {
       double delay = 0;
 
       for (size_t i = 0; i < n; ++i) {
-        if (delays[i] < 0)
+        if (check_stop(delays[i]))
           return;
         delay += delays[i];
 

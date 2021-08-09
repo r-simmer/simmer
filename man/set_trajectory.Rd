@@ -17,8 +17,8 @@ set_source(.trj, sources, object)
 \item{trajectory}{the trajectory that the generated arrivals will follow.}
 
 \item{object}{a function modelling the interarrival times (if the source type
-is a generator; returning a negative value stops the generator) or a data frame
-(if the source type is a data source).}
+is a generator; returning a negative value or a missing value stops the
+generator) or a data frame (if the source type is a data source).}
 }
 \value{
 Returns the trajectory object.

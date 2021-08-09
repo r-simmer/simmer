@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Iñaki Ucar
+// Copyright (C) 2018,2021 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -39,7 +39,7 @@ namespace simmer {
       int i = 0;
 
       while (i++ != batch) {
-        if (time.size() <= count)
+        if (time.size() <= count || check_stop(time[count]))
           return;
         delay += time[count];
 

@@ -6,6 +6,8 @@
 - Set package namespace as parent of `simmer` and `wrap` environments (#241).
 - Fix arrival restart after queue drops (#257).
 - Fix segfault printing activities with empty vectors (#253).
+- Fix source behaviour with missing values, which now stop arrival generation
+  in the same way as negative values do (#256).
 
 ## New features
 
