@@ -175,7 +175,7 @@ test_that("when_activated returns the correct values", {
   expect_equal(gen_func(), -1)
   expect_equal(gen_func(), c(0, -1))
 
-  gen_func <- when_activated(5)
+  gen_func <- when_activated(function() 5)
   expect_equal(gen_func(), -1)
   expect_equal(gen_func(), c(rep(0, 5), -1))
 })

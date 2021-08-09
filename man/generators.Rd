@@ -39,7 +39,8 @@ If set to \code{FALSE}, will initiate \code{dist} at \code{start_time}
 
 \item{every}{repeat with this time cycle (numeric or function).}
 
-\item{n}{number of arrivals to generate when activated.}
+\item{n}{an integer or a callable object (a function) which must return
+a number of arrivals to generate when activated.}
 }
 \value{
 Returns a generator function (a closure).

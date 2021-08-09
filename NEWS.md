@@ -6,6 +6,10 @@
 - Set package namespace as parent of `simmer` and `wrap` environments (#241).
 - Fix arrival restart after queue drops (#257).
 
+## New features
+
+- Add support for functions in `when_activated` (#250).
+
 # simmer 4.4.2
 
 ## Minor changes and fixes

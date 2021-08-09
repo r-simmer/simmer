@@ -170,7 +170,8 @@ from_to <- function(start_time, stop_time, dist, arrive=TRUE, every=NULL) {
 }
 
 #' @rdname generators
-#' @param n number of arrivals to generate when activated.
+#' @param n an integer or a callable object (a function) which must return
+#' a number of arrivals to generate when activated.
 #'
 #' @details \code{\link{when_activated}} sets up an initially inactive generator
 #' which generates \code{n} arrivals each time it is activated from any
@@ -194,6 +195,6 @@ when_activated <- function(n=1) {
       first <<- FALSE
       return(-1)
     }
-    c(rep(0, n), -1)
+    c(rep(0, if (is.function(n)) n() else n), -1)
   }
 }
