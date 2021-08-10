@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("stop_if")
-
 test_that("execution is stopped with a warning and can be continued", {
   t <- trajectory() %>%
     stop_if(function() FALSE) %>%

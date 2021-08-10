@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("handle_unfinished")
-
 test_that("unfinished arrivals follow the drop-out trajectory", {
   dropout <- trajectory() %>%
     timeout(1)

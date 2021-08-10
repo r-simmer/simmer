@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("set_prioritization")
-
 test_that("the wrong number of parameters fails", {
   expect_output(trajectory() %>% set_prioritization(c(0, 0, 0)) %>% print,
                 ".*SetPrior.*values:.*0, 0, 0.*")

@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("set_trajectory/set_source")
-
 test_that("we can set a new trajectory", {
   t <- trajectory() %>%
     set_trajectory("dummy_gen", trajectory() %>% timeout(2)) %>%

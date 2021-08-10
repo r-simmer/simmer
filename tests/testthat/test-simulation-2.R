@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("simulation 2")
-
 test_that("a release is executed before a seize in the same instant", {
   t0 <- trajectory() %>%
     seize("server", 1) %>%

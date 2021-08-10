@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("monitor")
-
 test_that("delim monitors create new files with right headers", {
   expect_error(monitor_csv(path="asdf"))
   mon <- monitor_csv()

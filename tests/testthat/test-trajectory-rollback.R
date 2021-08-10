@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("rollback")
-
 test_that("a rollback points to the correct activity", {
   t0 <- trajectory() %>%
     seize("nurse", 1) %>%

@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("seize/release")
-
 test_that("resources are seized/released as expected (1)", {
   t0 <- trajectory() %>%
     seize("dummy", -1) %>%

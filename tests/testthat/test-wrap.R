@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("wrap")
-
 test_that("the wrapper behaves as expected", {
   expect_error("asdf" %>% wrap())
 

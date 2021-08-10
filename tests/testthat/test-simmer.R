@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("basic simmer functionality")
-
 test_that("an empty environment behaves as expected", {
   output <- paste0(
     "simmer environment: SuperDuperSim | now: 0 | next: 0",

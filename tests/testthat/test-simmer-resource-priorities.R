@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("resource-priorities")
-
 test_that("priority queues are adhered to", {
   t <- trajectory() %>%
     seize("server", 1) %>%

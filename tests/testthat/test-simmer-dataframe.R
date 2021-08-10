@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("dataframe")
-
 test_that("a data source name conflicts with a generator name", {
   expect_warning(
     simmer(verbose = TRUE) %>%

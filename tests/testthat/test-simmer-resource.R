@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("resource")
-
 test_that("resources are correctly created", {
   env <- simmer(verbose = TRUE) %>%
     add_resource("dummy", 5, Inf)

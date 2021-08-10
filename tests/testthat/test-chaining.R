@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("method chaining")
-
 test_that("trajectory's method chaining works", {
   t0 <- trajectory() %>%
     seize("one", 1) %>%

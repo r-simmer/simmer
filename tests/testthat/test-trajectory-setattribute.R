@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("set attributes")
-
 test_that("only valid types can be passed to functions", {
   expect_error(trajectory() %>% set_attribute("test", "string_value"))
   expect_error(trajectory() %>% set_attribute("test", NA))

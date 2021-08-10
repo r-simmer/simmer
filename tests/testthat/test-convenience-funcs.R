@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("convenience funcs")
-
 test_that("at returns the correct values", {
   gen_func <- at(c(0, 10, 15)) # values passed as vector
   expect_equal(gen_func(), c(0, 10, 5, -1))

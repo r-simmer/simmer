@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("set_capacity/set_queue_size")
-
 test_that("capacity and queue size change as expected (1)", {
   t <- trajectory() %>%
     set_capacity("dummy", 0) %>%

@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("global")
-
 test_that("globals are correctly initialised and managed", {
   inf_sch <- schedule(c(8, 16, 24), c(1, 2, 3), Inf)
   fin_sch <- schedule(c(8, 16, 24), c(1, 2, 3), 24)

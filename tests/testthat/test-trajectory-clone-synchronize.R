@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("clone/synchronize")
-
 test_that("each clone follows a trajectory (1)", {
   t <- trajectory() %>%
     batch(1) %>%

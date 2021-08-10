@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("log")
-
 test_that("messages are correctly printed depending on the log_level", {
   t <- trajectory() %>%
     log_(function() "Message 0") %>%

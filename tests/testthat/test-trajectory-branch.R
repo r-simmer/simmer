@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("branch")
-
 test_that("a non-function option fails", {
   expect_error(trajectory() %>% branch(1, TRUE, trajectory()))
 })

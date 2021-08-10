@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("basic trajectory functionality")
-
 t0 <- trajectory(verbose = TRUE) %>%
   seize("nurse", 1) %>%
   select(c("a", "b")) %>%

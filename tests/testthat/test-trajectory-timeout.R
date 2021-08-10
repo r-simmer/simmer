@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("timeout")
-
 test_that("incorrect types fail", {
   expect_error(trajectory() %>% timeout("dummy"))
   expect_error(trajectory() %>% timeout_from_attribute(2))

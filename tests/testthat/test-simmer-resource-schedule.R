@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("resource-schedule")
-
 test_that("a schedule name conflicts with a generator name", {
   env <- simmer(verbose = TRUE) %>%
     add_generator("asdf", trajectory(), at(0)) %>%

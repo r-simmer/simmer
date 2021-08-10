@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-context("printing")
-
 test_that("print methods return the objects invisibly", {
   expect_output(env1 <- print(simmer()))
   expect_output(env2 <- print(wrap(simmer())))
