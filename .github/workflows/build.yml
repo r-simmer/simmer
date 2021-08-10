@@ -18,7 +18,7 @@ jobs:
         - {os: macOS-latest, r: 'devel'}
         - {os: macOS-latest, r: 'release'}
         - {os: windows-latest, r: 'release'}
-        - {os: ubuntu-latest, r: 'release'}
+        - {os: ubuntu-latest, r: 'release', covr: 'yes'}
         - {os: ubuntu-latest, r: 'oldrel'}
 
     env:

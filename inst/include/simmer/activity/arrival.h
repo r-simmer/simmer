@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2019 Iñaki Ucar
+// Copyright (C) 2016-2019,2021 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -109,12 +109,12 @@ namespace simmer {
   /**
    * Create a batch.
    */
-  template <typename T>
+  template <typename T, typename U>
   class Batch : public Activity {
   public:
-    CLONEABLE(Batch<T>)
+    CLONEABLE(Batch<T COMMA U>)
 
-    Batch(int n, const T& timeout, bool permanent,
+    Batch(const T& n, const U& timeout, bool permanent,
           const std::string& id = "", const OPT<RFn>& rule = NONE)
       : Activity("Batch"),
         n(n), timeout(timeout), permanent(permanent), id(id), rule(rule) {}
@@ -131,14 +131,14 @@ namespace simmer {
       if (!(*ptr))
         *ptr = init(arrival);
       (*ptr)->insert(arrival);
-      if ((int)(*ptr)->size() == n)
+      if ((int)(*ptr)->size() == (*ptr)->max_size())
         trigger(arrival->sim, *ptr);
       return STATUS_REJECT;
     }
 
   protected:
-    int n;
-    T timeout;
+    T n;
+    U timeout;
     bool permanent;
     std::string id;
     OPT<RFn> rule;
@@ -146,13 +146,14 @@ namespace simmer {
     Batched* init(Arrival* arrival) {
       std::string str;
       Batched* ptr = NULL;
+      int N = get<int>(n, arrival);
       if (id.size()) {
         str = "batch_" + id;
-        ptr = new Batched(arrival->sim, str, permanent);
+        ptr = new Batched(arrival->sim, str, N, permanent);
       } else {
         int count = arrival->sim->get_batch_count();
         str = MakeString() << "batch" << count;
-        ptr = new Batched(arrival->sim, str, permanent, count);
+        ptr = new Batched(arrival->sim, str, N, permanent, count);
       }
       double dt = std::abs(get<double>(timeout, arrival));
       if (dt) {

@@ -1139,7 +1139,8 @@ synchronize.trajectory <- function(.trj, wait=TRUE, mon_all=FALSE) {
 #' and splitting a previously established batch.
 #'
 #' @inheritParams seize
-#' @param n batch size, accepts a numeric.
+#' @param n batch size, accepts a numeric or a callable object (a function)
+#' which must return a numeric.
 #' @param timeout set an optional timer which triggers batches every
 #' \code{timeout} time units even if the batch size has not been fulfilled,
 #' accepts a numeric or a callable object (a function) which must return a
@@ -1208,15 +1209,19 @@ batch <- function(.trj, n, timeout=0, permanent=FALSE, name="", rule=NULL)
 
 #' @export
 batch.trajectory <- function(.trj, n, timeout=0, permanent=FALSE, name="", rule=NULL) {
-  check_args(n="numeric", timeout=c("numeric", "function"), permanent="flag",
-             name="character", rule=c("function", "NULL"))
+  check_args(n=c("numeric", "function"), timeout=c("numeric", "function"),
+             permanent="flag", name="character", rule=c("function", "NULL"))
 
   switch(
-    binarise(is.function(timeout), is.function(rule)),
+    binarise(is.function(n), is.function(timeout), is.function(rule)),
     add_activity(.trj, Batch__new(positive(n), timeout, permanent, name)),
-    add_activity(.trj, Batch__new_func1(positive(n), timeout, permanent, name)),
-    add_activity(.trj, Batch__new_func2(positive(n), timeout, permanent, name, rule)),
-    add_activity(.trj, Batch__new_func3(positive(n), timeout, permanent, name, rule))
+    add_activity(.trj, Batch__new_func1(n, timeout, permanent, name)),
+    add_activity(.trj, Batch__new_func2(positive(n), timeout, permanent, name)),
+    add_activity(.trj, Batch__new_func3(n, timeout, permanent, name)),
+    add_activity(.trj, Batch__new_func4(positive(n), timeout, permanent, name, rule)),
+    add_activity(.trj, Batch__new_func5(n, timeout, permanent, name, rule)),
+    add_activity(.trj, Batch__new_func6(positive(n), timeout, permanent, name, rule)),
+    add_activity(.trj, Batch__new_func7(n, timeout, permanent, name, rule))
   )
 }
 

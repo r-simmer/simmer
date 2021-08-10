@@ -1,5 +1,5 @@
 # Copyright (C) 2015-2016 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2018,2021 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -41,6 +41,8 @@ t0 <- trajectory(verbose = TRUE) %>%
   clone(function() 2, trajectory(verbose = TRUE) %>% timeout(1)) %>%
   synchronize() %>%
   batch(1, rule = function() 0) %>%
+  batch(function() 1, rule = function() 0) %>%
+  batch(function() 1, function() 0, rule = function() 0) %>%
   separate() %>%
   renege_in(function() 1, trajectory(verbose = TRUE) %>% timeout(1)) %>%
   renege_if(function() "1", trajectory(verbose = TRUE) %>% timeout(1)) %>%
@@ -84,6 +86,8 @@ trajs <- c(
                                        trajectory(verbose = TRUE) %>% timeout(1)),
   trajectory(verbose = TRUE) %>% synchronize(),
   trajectory(verbose = TRUE) %>% batch(1, rule = function() 0),
+  trajectory(verbose = TRUE) %>% batch(function() 1, rule = function() 0),
+  trajectory(verbose = TRUE) %>% batch(function() 1, function() 0, rule = function() 0),
   trajectory(verbose = TRUE) %>% separate(),
   trajectory(verbose = TRUE) %>% renege_in(function() 1,
                                            trajectory(verbose = TRUE) %>% timeout(1)),
