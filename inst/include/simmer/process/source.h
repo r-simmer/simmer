@@ -47,13 +47,16 @@ namespace simmer {
       : Process(sim, name_prefix, mon, PRIORITY_MIN), count(0), order(order),
         first_activity(internal::head(trj)), trj(trj) {}
 
-    virtual void reset() { count = 0; }
+    virtual void reset() {
+      count = 0;
+      ahead.clear();
+    }
 
     virtual bool deactivate() {
       foreach_ (Arrival* arrival, ahead) {
-        count--;
         arrival->deactivate();
         delete arrival;
+        count--;
       }
       ahead.clear();
       return Process::deactivate();
