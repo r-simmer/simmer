@@ -1,8 +1,9 @@
-# simmer 4.4.2.9000
+# simmer 4.4.3
 
 ## New features
 
-- Add support for functions in `when_activated` (#250).
+- Add support for functions in `when_activated()` (#250).
+- Add support for dynamic batch sizes (#258 addressing #245).
 
 ## Minor changes and fixes
 
