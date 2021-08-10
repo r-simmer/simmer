@@ -1,8 +1,7 @@
 # <img src="https://raw.githubusercontent.com/r-simmer/r-simmer.github.io/master/images/simmer-logo.png" alt="simmer" width="200" />
 
-[![Build Status](https://travis-ci.org/r-simmer/simmer.svg?branch=master)](https://travis-ci.org/r-simmer/simmer)
+[![build](https://github.com/r-simmer/simmer/actions/workflows/build.yml/badge.svg)](https://github.com/r-simmer/simmer/actions/workflows/build.yml)
 [![Coverage Status](https://codecov.io/gh/r-simmer/simmer/branch/master/graph/badge.svg)](https://codecov.io/gh/r-simmer/simmer)
-[![Coverity Status](https://scan.coverity.com/projects/13226/badge.svg?flat=1)](https://scan.coverity.com/projects/r-simmer-simmer)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/simmer)](https://cran.r-project.org/package=simmer)
 [![Downloads](https://cranlogs.r-pkg.org/badges/simmer)](https://cran.r-project.org/package=simmer)
 [![DOI](https://img.shields.io/badge/doi-10.18637/jss.v090.i02-informational.svg)](https://doi.org/10.18637/jss.v090.i02)
