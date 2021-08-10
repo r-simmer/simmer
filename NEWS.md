@@ -1,5 +1,9 @@
 # simmer 4.4.2.9000
 
+## New features
+
+- Add support for functions in `when_activated` (#250).
+
 ## Minor changes and fixes
 
 - Fix multiple reporting of ongoing arrivals (#240).
@@ -9,10 +13,6 @@
 - Fix source behaviour with missing values, which now stop arrival generation
   in the same way as negative values do (#256).
 - Fix `deactivate()`, which now unschedules future arrivals (#249).
-
-## New features
-
-- Add support for functions in `when_activated` (#250).
 
 # simmer 4.4.2
 
