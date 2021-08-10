@@ -24,13 +24,14 @@ jobs:
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       _R_CHECK_CRAN_INCOMING_REMOTE_: false
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
     - uses: actions/checkout@v2
-    - uses: r-lib/actions/setup-r@master
+    - uses: r-lib/actions/setup-r@v1
       with:
         r-version: ${{ matrix.config.r }}
-    - uses: r-lib/actions/setup-pandoc@master
+    - uses: r-lib/actions/setup-pandoc@v1
     - uses: r-lib/actions/setup-tinytex@v1
       if: ${{ runner.os != 'Windows' }}
 
