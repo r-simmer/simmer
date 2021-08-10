@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2017,2019 Iñaki Ucar
+# Copyright (C) 2016-2017,2019,2021 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -78,7 +78,7 @@ test_that("batches are separated", {
 
 test_that("permanent batches are NOT separated", {
   t <- trajectory(verbose = TRUE) %>%
-    batch(2, timeout = 0, permanent = TRUE, rule = NULL) %>%
+    batch(function() 2, timeout = 0, permanent = TRUE, rule = NULL) %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
     release("dummy", 1) %>%
@@ -128,7 +128,7 @@ test_that("a rule can prevent batching", {
 
 test_that("a timeout can trigger early batches", {
   t <- trajectory(verbose = TRUE) %>%
-    batch(2, timeout = 0.5, permanent = FALSE, rule = NULL) %>%
+    batch(function() 2, timeout = function() 0.5, permanent = FALSE, rule = NULL) %>%
     seize("dummy", 1) %>%
     timeout(1) %>%
     release("dummy", 1) %>%
