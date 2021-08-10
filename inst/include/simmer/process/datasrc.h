@@ -54,11 +54,6 @@ namespace simmer {
           arrival->order.set_preemptible(preemptible[count-1]);
         if (col_restart)
           arrival->order.set_restart(restart[count-1]);
-
-        // schedule the arrival
-        sim->schedule(delay, arrival,
-                      first_activity && first_activity->priority ?
-                        first_activity->priority : count);
       }
       // schedule the generator
       sim->schedule(delay, this, Source::priority);

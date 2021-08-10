@@ -1,5 +1,5 @@
 // Copyright (C) 2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2020 Iñaki Ucar
+// Copyright (C) 2016-2021 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -21,9 +21,16 @@
 
 #include <simmer/process/arrival.h>
 #include <simmer/process/batched.h>
+#include <simmer/process/source.h>
 #include <simmer/resource.h>
 
 namespace simmer {
+
+  inline void Arrival::first_run() {
+    lifetime.start = sim->now();
+    if (src) src->unregister_arrival(this);
+    src = NULL;
+  }
 
   inline void Arrival::terminate(bool finished) {
     foreach_ (ResVec::value_type& itr, resources) {

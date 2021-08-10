@@ -24,12 +24,15 @@
 #include <simmer/activity.h>
 
 namespace simmer {
-
   /**
    * Abstract class for source processes.
    */
   class Source : public Process {
+    friend class Arrival;
+
   public:
+    typedef USET<Arrival*> ArrSet;
+
     /**
     * Constructor.
     * @param sim             a pointer to the simulator
@@ -45,6 +48,16 @@ namespace simmer {
         first_activity(internal::head(trj)), trj(trj) {}
 
     virtual void reset() { count = 0; }
+
+    virtual bool deactivate() {
+      foreach_ (Arrival* arrival, ahead) {
+        count--;
+        arrival->deactivate();
+        delete arrival;
+      }
+      ahead.clear();
+      return Process::deactivate();
+    }
 
     int get_n_generated() const { return count; }
 
@@ -65,13 +78,22 @@ namespace simmer {
     Arrival* new_arrival(double delay) {
       // format the name and create the next arrival
       std::string arr_name = MakeString() << name << count++;
-      Arrival* arrival = new Arrival(sim, arr_name, is_monitored(),
-                                     order, first_activity, count);
+      Arrival* arrival = new Arrival(
+        sim, arr_name, is_monitored(), order, first_activity, count, this);
+      ahead.emplace(arrival);
 
       if (sim->verbose) sim->print("source", name, "new", arr_name,
           MakeString() << (sim->now() + delay));
 
+      // schedule the arrival
+      sim->schedule(delay, arrival, first_activity && first_activity->priority ?
+                      first_activity->priority : count);
+
       return arrival;
+    }
+
+    void unregister_arrival(Arrival* arrival) {
+      ahead.erase(arrival);
     }
 
     bool check_stop(double delay) {
@@ -82,6 +104,7 @@ namespace simmer {
 
   private:
     REnv trj;
+    ArrSet ahead;
   };
 
 } // namespace simmer

@@ -56,10 +56,7 @@ namespace simmer {
           return;
         delay += delays[i];
 
-        // schedule the arrival
-        sim->schedule(delay, new_arrival(delay),
-                      first_activity && first_activity->priority ?
-                        first_activity->priority : count);
+        new_arrival(delay);
       }
       // schedule the generator
       sim->schedule(delay, this, priority);

@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2020 Iñaki Ucar
+// Copyright (C) 2016-2021 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -28,6 +28,7 @@ namespace simmer {
 
   class Batched;
   class Resource;
+  class Source;
 
   /**
    *  Arrival process.
@@ -64,15 +65,15 @@ namespace simmer {
     * @param first_activity  the first activity of a user-defined R trajectory
     */
     Arrival(Simulator* sim, const std::string& name, int mon, Order order,
-            Activity* first_activity, int priority = 0)
-      : Process(sim, name, mon, priority), order(order), paused(0),
+            Activity* first_activity, int priority = 0, Source* src = NULL)
+      : Process(sim, name, mon, priority), order(order), src(src), paused(0),
         clones(new int(0)), activity(first_activity), timer(NULL),
         dropout(NULL), batch(NULL), act_shd(new ActVec()) { init(); }
 
     Arrival(const Arrival& o)
-      : Process(o), order(o.order), paused(o.paused), clones(o.clones),
-        activity(NULL), attributes(o.attributes), timer(NULL),
-        dropout(NULL), batch(NULL), act_shd(o.act_shd) { init(); }
+      : Process(o), order(o.order), src(o.src), paused(o.paused),
+        clones(o.clones), activity(NULL), attributes(o.attributes),
+        timer(NULL), dropout(NULL), batch(NULL), act_shd(o.act_shd) { init(); }
 
     ~Arrival() { reset(); }
 
@@ -80,7 +81,7 @@ namespace simmer {
       double delay;
 
       if (lifetime.start < 0)
-        lifetime.start = sim->now();
+        first_run();
       if (!activity)
         goto finish;
 
@@ -229,6 +230,7 @@ namespace simmer {
     }
 
   private:
+    Source* src;
     int paused;
     int* clones;          /**< number of active clones */
     ArrStatus status;     /**< arrival timing status */
@@ -249,6 +251,8 @@ namespace simmer {
       (*clones)++;
       sim->register_arrival(this);
     }
+
+    void first_run();
 
     void reset() {
       cancel_renege();
