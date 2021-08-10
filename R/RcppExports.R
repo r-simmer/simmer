@@ -205,12 +205,28 @@ Batch__new_func1 <- function(n, timeout, permanent, name) {
     .Call(`_simmer_Batch__new_func1`, n, timeout, permanent, name)
 }
 
-Batch__new_func2 <- function(n, timeout, permanent, name, rule) {
-    .Call(`_simmer_Batch__new_func2`, n, timeout, permanent, name, rule)
+Batch__new_func2 <- function(n, timeout, permanent, name) {
+    .Call(`_simmer_Batch__new_func2`, n, timeout, permanent, name)
 }
 
-Batch__new_func3 <- function(n, timeout, permanent, name, rule) {
-    .Call(`_simmer_Batch__new_func3`, n, timeout, permanent, name, rule)
+Batch__new_func3 <- function(n, timeout, permanent, name) {
+    .Call(`_simmer_Batch__new_func3`, n, timeout, permanent, name)
+}
+
+Batch__new_func4 <- function(n, timeout, permanent, name, rule) {
+    .Call(`_simmer_Batch__new_func4`, n, timeout, permanent, name, rule)
+}
+
+Batch__new_func5 <- function(n, timeout, permanent, name, rule) {
+    .Call(`_simmer_Batch__new_func5`, n, timeout, permanent, name, rule)
+}
+
+Batch__new_func6 <- function(n, timeout, permanent, name, rule) {
+    .Call(`_simmer_Batch__new_func6`, n, timeout, permanent, name, rule)
+}
+
+Batch__new_func7 <- function(n, timeout, permanent, name, rule) {
+    .Call(`_simmer_Batch__new_func7`, n, timeout, permanent, name, rule)
 }
 
 Separate__new <- function() {

@@ -12,7 +12,8 @@ separate(.trj)
 \arguments{
 \item{.trj}{the trajectory object.}
 
-\item{n}{batch size, accepts a numeric.}
+\item{n}{batch size, accepts a numeric or a callable object (a function)
+which must return a numeric.}
 
 \item{timeout}{set an optional timer which triggers batches every
 \code{timeout} time units even if the batch size has not been fulfilled,

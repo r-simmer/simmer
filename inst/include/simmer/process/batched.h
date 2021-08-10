@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2019 Iñaki Ucar
+// Copyright (C) 2016-2019,2021 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -29,8 +29,8 @@ namespace simmer {
   public:
     CLONEABLE(Batched)
 
-    Batched(Simulator* sim, const std::string& name, bool permanent, int priority = 0)
-      : Arrival(sim, name, true, Order(), NULL, priority), permanent(permanent) {}
+    Batched(Simulator* sim, const std::string& name, int n, bool permanent, int priority = 0)
+      : Arrival(sim, name, true, Order(), NULL, priority), n(n), permanent(permanent) {}
 
     Batched(const Batched& o) : Arrival(o), arrivals(o.arrivals), permanent(o.permanent) {
       for (size_t i=0; i<arrivals.size(); i++) {
@@ -68,8 +68,11 @@ namespace simmer {
     }
 
     size_t size() const { return arrivals.size(); }
+    int max_size() const { return n; }
 
     void insert(Arrival* arrival) {
+      if ((int)arrivals.size() == n)
+        Rcpp::stop("cannot insert into '%s', max. capacity %d reached", name, n); // # nocov
       arrival->set_activity(NULL);
       arrivals.push_back(arrival);
       arrival->register_entity(this);
@@ -103,6 +106,7 @@ namespace simmer {
 
   private:
     VEC<Arrival*> arrivals;
+    int n;
     bool permanent;
 
     void reset() {

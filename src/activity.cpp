@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Bart Smeets
 // Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-// Copyright (C) 2015-2020 Iñaki Ucar
+// Copyright (C) 2015-2021 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -293,26 +293,56 @@ SEXP Synchronize__new(bool wait, bool terminate) {
 
 //[[Rcpp::export]]
 SEXP Batch__new(int n, double timeout, bool permanent, const std::string& name) {
-  return XPtr<Activity>(new Batch<double>(n, timeout, permanent, name));
+  return XPtr<Activity>(new Batch<int, double>(n, timeout, permanent, name));
 }
 
 //[[Rcpp::export]]
-SEXP Batch__new_func1(int n, const Function& timeout, bool permanent, const std::string& name) {
-  return XPtr<Activity>(new Batch<Function>(n, timeout, permanent, name));
+SEXP Batch__new_func1(const Function& n, double timeout, bool permanent,
+                      const std::string& name)
+{
+  return XPtr<Activity>(new Batch<Function, double>(n, timeout, permanent, name));
 }
 
 //[[Rcpp::export]]
-SEXP Batch__new_func2(int n, double timeout, bool permanent,
+SEXP Batch__new_func2(int n, const Function& timeout, bool permanent,
+                      const std::string& name)
+{
+  return XPtr<Activity>(new Batch<int, Function>(n, timeout, permanent, name));
+}
+
+//[[Rcpp::export]]
+SEXP Batch__new_func3(const Function& n, const Function& timeout, bool permanent,
+                      const std::string& name)
+{
+  return XPtr<Activity>(new Batch<Function, Function>(n, timeout, permanent, name));
+}
+
+//[[Rcpp::export]]
+SEXP Batch__new_func4(int n, double timeout, bool permanent,
                       const std::string& name, const Function& rule)
 {
-  return XPtr<Activity>(new Batch<double>(n, timeout, permanent, name, rule));
+  return XPtr<Activity>(new Batch<int, double>(n, timeout, permanent, name, rule));
 }
 
 //[[Rcpp::export]]
-SEXP Batch__new_func3(int n, const Function& timeout, bool permanent,
-                      const std::string& name,const Function& rule)
+SEXP Batch__new_func5(const Function& n, double timeout, bool permanent,
+                      const std::string& name, const Function& rule)
 {
-  return XPtr<Activity>(new Batch<Function>(n, timeout, permanent, name, rule));
+  return XPtr<Activity>(new Batch<Function, double>(n, timeout, permanent, name, rule));
+}
+
+//[[Rcpp::export]]
+SEXP Batch__new_func6(int n, const Function& timeout, bool permanent,
+                      const std::string& name, const Function& rule)
+{
+  return XPtr<Activity>(new Batch<int, Function>(n, timeout, permanent, name, rule));
+}
+
+//[[Rcpp::export]]
+SEXP Batch__new_func7(const Function& n, const Function& timeout, bool permanent,
+                      const std::string& name, const Function& rule)
+{
+  return XPtr<Activity>(new Batch<Function, Function>(n, timeout, permanent, name, rule));
 }
 
 //[[Rcpp::export]]
