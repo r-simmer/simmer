@@ -201,7 +201,7 @@ env %>%
 
 ## Queueing Networks
 
-Let us consider the following network of queues (example taken from [Grotto Networking](http://www.grotto-networking.com/DiscreteEventPython.html#NetQueues)):
+Let us consider the following network of queues (example taken from [Grotto Networking](https://www.grotto-networking.com/DiscreteEventPython.html#NetQueues)):
 
 ![A network of queues.](includes/queueing-network.svg)
 

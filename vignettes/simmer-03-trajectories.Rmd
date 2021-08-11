@@ -39,7 +39,7 @@ Usage examples are provided in the help page for each activity. The complete set
 methods(class="trajectory")
 ```
 
-Additionally, you may want to try the `simmer.bricks` package, a plugin for `simmer` which provides helper methods for trajectories. Each *brick* wraps a common activity pattern that can be used to build trajectories more conveniently (see the [_Introduction to `simmer.bricks`_](http://r-simmer.org/extensions/bricks/articles/introduction.html)).
+Additionally, you may want to try the `simmer.bricks` package, a plugin for `simmer` which provides helper methods for trajectories. Each *brick* wraps a common activity pattern that can be used to build trajectories more conveniently (see the [_Introduction to `simmer.bricks`_](https://r-simmer.org/extensions/bricks/articles/introduction.html)).
 
 ## Dynamic arguments
 

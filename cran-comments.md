@@ -1,6 +1,6 @@
-## Patch release
+## Patch release (resubmission)
 
-Maintenance release, several bug fixes and minor enhancements.
+URLs fixed. Maintenance release, several bug fixes and minor enhancements.
 
 Regarding the package title, Uwe asked us in a past submission to remove
 "for R" because it is redundant. If it is not an issue, we would like to keep
