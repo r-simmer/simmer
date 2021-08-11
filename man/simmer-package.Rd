@@ -39,7 +39,7 @@ Fast DES Prototyping."
 \doi{10.1109/MCOM.2018.1700960}.
 }
 \seealso{
-\pkg{simmer}'s homepage \url{http://r-simmer.org} and
+\pkg{simmer}'s homepage \url{https://r-simmer.org} and
 GitHub repository \url{https://github.com/r-simmer/simmer}.
 }
 \author{

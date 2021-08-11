@@ -38,7 +38,7 @@
 #' \emph{IEEE Communications Magazine}, \strong{56}(11), 145-151.
 #' \doi{10.1109/MCOM.2018.1700960}.
 #'
-#' @seealso \pkg{simmer}'s homepage \url{http://r-simmer.org} and
+#' @seealso \pkg{simmer}'s homepage \url{https://r-simmer.org} and
 #' GitHub repository \url{https://github.com/r-simmer/simmer}.
 #'
 #' @examples
