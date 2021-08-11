@@ -13,9 +13,11 @@ vignette: >
 
 ```{r setup, cache=FALSE, include=FALSE}
 knitr::opts_chunk$set(collapse=TRUE, echo=TRUE, eval=FALSE)
-knitr::read_chunk("includes/5G-1.R")
-knitr::read_chunk("includes/5G-2.R")
-knitr::read_chunk("includes/5G-3.R")
+# workaround for pkgdown
+# https://github.com/r-lib/pkgdown/issues/1159#issuecomment-541356531
+do.call(knitr::read_chunk, list("includes/5G-1.R"))
+do.call(knitr::read_chunk, list("includes/5G-2.R"))
+do.call(knitr::read_chunk, list("includes/5G-3.R"))
 ```
 
 ## Abstract
