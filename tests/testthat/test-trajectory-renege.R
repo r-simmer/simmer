@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2020 Iñaki Ucar
+# Copyright (C) 2016-2021 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -631,6 +631,30 @@ test_that("seizes across nested batches are correctly reported", {
   expect_equal(arr_res$start_time, c(0, 0, 0))
   expect_equal(arr_res$end_time, c(2, 2, 2))
   expect_equal(arr_res$activity_time, c(2, 2, 2))
+})
+
+test_that("a leaving arrival releases seized resources", {
+  t <- trajectory() %>%
+    seize("dummy1") %>%
+    seize("dummy2") %>%
+    seize("dummy3") %>%
+    timeout(1) %>%
+    leave(1, keep_seized=FALSE)
+
+  env <- simmer(verbose=TRUE) %>%
+    add_resource(paste0("dummy", 1:3)) %>%
+    add_generator("arrival", t, at(0)) %>%
+    run()
+
+  arr <- get_mon_arrivals(env)
+  res <- get_mon_resources(env)
+
+  expect_equal(arr$end_time, 1)
+  expect_equal(arr$activity_time, 1)
+  expect_false(arr$finished)
+  expect_equal(res$resource, paste0("dummy", c(1:3, 1:3)))
+  expect_equal(res$time, c(rep(0, 3), rep(1, 3)))
+  expect_equal(res$server, c(rep(1, 3), rep(0, 3)))
 })
 
 test_that("a leaving arrival keeps seized resources", {

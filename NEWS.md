@@ -1,3 +1,10 @@
+# simmer 4.4.3.9000
+
+## Minor changes and fixes
+
+- Fix memory issues ("not previously seized" error) when reneging from multiple
+  resources (#268).
+
 # simmer 4.4.3
 
 ## New features

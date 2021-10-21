@@ -49,8 +49,8 @@ namespace simmer {
     };
     typedef UMAP<std::string, ArrTime> ResTime;
     typedef UMAP<int, Resource*> SelMap;
-    typedef VEC<Resource*> ResVec;
-    typedef VEC<Activity*> ActVec;
+    typedef std::deque<Resource*> ResVec;
+    typedef std::deque<Activity*> ActVec;
 
     CLONEABLE(Arrival)
 
