@@ -43,7 +43,7 @@ namespace simmer {
 
     void terminate(bool finished) {
       foreach_ (Arrival* arrival, arrivals)
-      arrival->terminate(finished);
+        arrival->terminate(finished);
       arrivals.clear();
       Arrival::terminate(finished);
     }
@@ -133,8 +133,8 @@ namespace simmer {
 
     void report(Arrival* arrival) const {
       foreach_ (const ResTime::value_type& itr, restime)
-      arrival->report(itr.first, itr.second.start,
-                      itr.second.activity - status.busy_until + sim->now());
+        arrival->report(itr.first, itr.second.start,
+                        itr.second.activity - status.busy_until + sim->now());
     }
 
     void update_activity(double value) {
