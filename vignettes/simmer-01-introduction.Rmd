@@ -47,7 +47,7 @@ patient <- trajectory("patients' path") %>%
   release("administration", 1)
 ```
 
-In this case, the argument of the `timeout` activity is a function, which is evaluated dynamically to produce an stochastic waiting time, but it could be a constant too. Apart from that, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources' status, make decisions according to the latter...
+In this case, the argument of the `timeout` activity is a function, which is evaluated dynamically to produce a stochastic waiting time, but it could be a constant too. Apart from that, this function may be as complex as you need and may do whatever you want: interact with entities in your simulation model, get resources' status, make decisions according to the latter...
 
 Once the trajectory is known, you may attach arrivals to it and define the resources needed. In the example below, three types of resources are added: the *nurse* and *administration* resources, each one with a capacity of 1, and the *doctor* resource, with a capacity of 2. The last method adds a generator of arrivals (patients) following the trajectory `patient`. The time between patients is about 10 minutes (a Gaussian of `mean=10` and `sd=2`). (Note: returning a negative interarrival time at some point would stop the generator).
 
