@@ -15,59 +15,30 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - {os: macOS-latest, r: 'devel'}
         - {os: macOS-latest, r: 'release'}
         - {os: windows-latest, r: 'release'}
+        - {os: ubuntu-latest, r: 'devel', http-user-agent: 'release'}
         - {os: ubuntu-latest, r: 'release', covr: 'yes'}
         - {os: ubuntu-latest, r: 'oldrel'}
 
     env:
-      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-      _R_CHECK_CRAN_INCOMING_REMOTE_: false
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
 
     steps:
     - uses: actions/checkout@v2
     - uses: r-lib/actions/setup-r@v1
       with:
         r-version: ${{ matrix.config.r }}
+        http-user-agent: ${{ matrix.config.http-user-agent }}
+        use-public-rspm: true
+    - uses: r-lib/actions/setup-r-dependencies@v1
+      with:
+        extra-packages: rcmdcheck, covr
     - uses: r-lib/actions/setup-pandoc@v1
     - uses: r-lib/actions/setup-tinytex@v1
-      if: ${{ runner.os != 'Windows' }}
-
-    - name: Query dependencies
-      run: |
-        install.packages('remotes')
-        saveRDS(remotes::dev_package_deps(dependencies=TRUE), ".github/depends.Rds", version=2)
-      shell: Rscript {0}
-
-    - name: Cache R packages
-      if: ${{ runner.os != 'Windows' }}
-      uses: actions/cache@v1
-      with:
-        path: ${{ env.R_LIBS_USER }}
-        key: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-1-${{ hashFiles('.github/depends.Rds') }}
-        restore-keys: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-1-
-
-    - name: Install Linux dependencies
-      if: ${{ runner.os == 'Linux' }}
-      run: sudo apt-get install devscripts libcurl4-openssl-dev
-
-    - name: Install dependencies
-      run: |
-        remotes::install_deps(dependencies=TRUE)
-        remotes::install_cran(c("rcmdcheck", "covr"))
-      shell: Rscript {0}
-
-    - name: Check ignoring vignettes
-      if: ${{ runner.os == 'Windows' }}
-      run: |
-        rcmdcheck::rcmdcheck(args=c("--no-manual", "--as-cran", "--ignore-vignettes"),
-          build_args="--no-build-vignettes", error_on="warning", check_dir="check")
-      shell: Rscript {0}
 
     - name: Check
-      if: ${{ runner.os != 'Windows' }}
       run: |
         rcmdcheck::rcmdcheck(args=c("--no-manual", "--as-cran"),
           build_args="--compact-vignettes=both", error_on="warning", check_dir="check")
