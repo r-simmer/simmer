@@ -169,8 +169,13 @@ sd.queue <- trajectory() %>%
   # initialisation
   set_attribute(c("start", "multiplier", "delay"), function()
     c(now(env), 1, rexp(1, mu))) %>%
-  # set the handler and trigger it
+  # set the handler
   trap("update delay", handler=update.delay) %>%
+  # the following null timeout is required to act as a priority "fence"
+  # and get a properly ordered set of simultaneous events
+  # (see https://groups.google.com/g/simmer-devel/c/SkOcpu12sT8/m/xG8p5nmTAAAJ)
+  timeout(0) %>%
+  # trigger the handler
   send("update delay") %>%
   # returning point
   untrap("update delay") %>%
