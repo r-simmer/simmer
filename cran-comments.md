@@ -1,6 +1,7 @@
-## Patch release (resubmission)
+## Patch release
 
-URLs fixed. Maintenance release, several bug fixes and minor enhancements.
+- Use 'given' instead of 'middle', as requested by CRAN.
+- Fixes for some memory issues.
 
 Regarding the package title, Uwe asked us in a past submission to remove
 "for R" because it is redundant. If it is not an issue, we would like to keep
@@ -12,7 +13,7 @@ written in Julia".
 
 ## Test environments
 
-- Fedora 34 + GCC (local), R 4.0.5
+- Fedora 35 + GCC (local), R 4.1.2
 - macOS-latest, windows-latest, ubuntu-latest (on GA), R devel, release, oldrel
 - win-builder, R devel
 

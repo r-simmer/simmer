@@ -1,9 +1,10 @@
-# simmer 4.4.3.9000
+# simmer 4.4.4
 
 ## Minor changes and fixes
 
 - Fix memory issues ("not previously seized" error) when reneging from multiple
   resources (#268).
+- Use 'given' instead of 'middle' in CITATION (#273).
 
 # simmer 4.4.3
 

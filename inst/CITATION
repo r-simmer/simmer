@@ -18,7 +18,7 @@ bibentry(
   bibtype = "Article",
   title   = "Design and Analysis of 5G Scenarios with {simmer}: An {R} Package for Fast DES Prototyping",
   author  = c(person("I{\\~n}aki", "Ucar"),
-              person("José", "Hernández", "Alberto"),
+              person("José Alberto", "Hernández"),
               person("Pablo", "Serrano"),
               person("Arturo", "Azcorra")),
   journal = "IEEE Communications Magazine",
