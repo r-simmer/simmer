@@ -23,5 +23,4 @@ There were no ERRORs, WARNINGs or NOTEs.
 
 ## Downstream dependencies
 
-There are 2 downstream dependencies, simmer.plot and simmer.bricks, for which
-I'm the maintainer too. No issues found.
+No issues expected.
