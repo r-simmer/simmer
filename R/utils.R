@@ -81,13 +81,19 @@ envs_apply <- function(envs, method, ...) {
   }))
 }
 
+has_simmer_obj <- function(x) {
+  if (inherits(x, "simmer") || inherits(x, "monitor"))
+    TRUE
+  FALSE
+}
+
 #' @importFrom codetools findGlobals
 make_resetable <- function(func) {
   # find globals and get init values
   init <- sapply(findGlobals(func, merge=FALSE)$variables,
                  get0, envir=environment(func), simplify=FALSE)
   # avoid simulator overwrite in some circumstances
-  init <- init[!sapply(init, function(x) is.null(x) | inherits(x, "simmer"))]
+  init <- init[!sapply(init, function(x) is.null(x) | has_simmer_obj(x))]
 
   # attach reset attribute
   env <- list2env(list(init=init, env=environment(func)))
@@ -107,7 +113,7 @@ replace_env <- function(..., envir=parent.frame()) {
     obj <- magrittr_workaround(obj)
     for (var in ls(environment(obj))) {
       x <- get(var, environment(obj))
-      if (inherits(x, "simmer")) next
+      if (has_simmer_obj(x)) next
       assign(var, x, envir)
     }
     environment(obj) <- envir
