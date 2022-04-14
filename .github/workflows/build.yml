@@ -25,6 +25,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
       _R_CHECK_CRAN_INCOMING_REMOTE_: false
+      TINYTEX_INSTALLER: TinyTeX
 
     steps:
     - uses: actions/checkout@v2
