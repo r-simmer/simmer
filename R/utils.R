@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2015-2019 Iñaki Ucar
+# Copyright (C) 2016-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -104,8 +104,12 @@ getval <- function(x) if (is.function(x)) x() else x
 replace_env <- function(..., envir=parent.frame()) {
   for (obj in list(...)) {
     if (!is.function(obj)) next
-    for (var in ls(environment(obj)))
-      assign(var, get(var, environment(obj)), envir)
+    obj <- magrittr_workaround(obj)
+    for (var in ls(environment(obj))) {
+      x <- get(var, environment(obj))
+      if (inherits(x, "simmer")) next
+      assign(var, x, envir)
+    }
     environment(obj) <- envir
   }
 }

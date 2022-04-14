@@ -1,5 +1,5 @@
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2019,2021 Iñaki Ucar
+# Copyright (C) 2017-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -189,12 +189,13 @@ from_to <- function(start_time, stop_time, dist, arrive=TRUE, every=NULL) {
 #'   get_mon_arrivals()
 #'
 when_activated <- function(n=1) {
+  replace_env(n)
   first <- TRUE
   function() {
     if (first) {
       first <<- FALSE
       return(-1)
     }
-    c(rep(0, if (is.function(n)) n() else n), -1)
+    c(rep(0, getval(n)), -1)
   }
 }
