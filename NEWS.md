@@ -1,3 +1,10 @@
+# simmer 4.4.4.1
+
+## Minor changes and fixes
+
+- Apply magrittr workaround and avoid copying `simmer` and `monitor` objects in
+  function environments for generators too (#279).
+
 # simmer 4.4.4
 
 ## Minor changes and fixes
