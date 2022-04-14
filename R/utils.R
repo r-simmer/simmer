@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2015-2019 Iñaki Ucar
+# Copyright (C) 2016-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -81,13 +81,19 @@ envs_apply <- function(envs, method, ...) {
   }))
 }
 
+has_simmer_obj <- function(x) {
+  if (inherits(x, "simmer") || inherits(x, "monitor"))
+    TRUE
+  FALSE
+}
+
 #' @importFrom codetools findGlobals
 make_resetable <- function(func) {
   # find globals and get init values
   init <- sapply(findGlobals(func, merge=FALSE)$variables,
                  get0, envir=environment(func), simplify=FALSE)
   # avoid simulator overwrite in some circumstances
-  init <- init[!sapply(init, function(x) is.null(x) | inherits(x, "simmer"))]
+  init <- init[!sapply(init, function(x) is.null(x) | has_simmer_obj(x))]
 
   # attach reset attribute
   env <- list2env(list(init=init, env=environment(func)))
@@ -104,8 +110,12 @@ getval <- function(x) if (is.function(x)) x() else x
 replace_env <- function(..., envir=parent.frame()) {
   for (obj in list(...)) {
     if (!is.function(obj)) next
-    for (var in ls(environment(obj)))
-      assign(var, get(var, environment(obj)), envir)
+    obj <- magrittr_workaround(obj)
+    for (var in ls(environment(obj))) {
+      x <- get(var, environment(obj))
+      if (has_simmer_obj(x)) next
+      assign(var, x, envir)
+    }
     environment(obj) <- envir
   }
 }
