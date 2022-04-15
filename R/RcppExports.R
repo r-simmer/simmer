@@ -337,6 +337,10 @@ CsvMonitor__new <- function(ends_path, releases_path, attributes_path, resources
     .Call(`_simmer_CsvMonitor__new`, ends_path, releases_path, attributes_path, resources_path, sep)
 }
 
+close_files_ <- function(mon_) {
+    invisible(.Call(`_simmer_close_files_`, mon_))
+}
+
 get_arrivals_ <- function(mon_, per_resource) {
     .Call(`_simmer_get_arrivals_`, mon_, per_resource)
 }

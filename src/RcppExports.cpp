@@ -1057,6 +1057,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// close_files_
+void close_files_(SEXP mon_);
+RcppExport SEXP _simmer_close_files_(SEXP mon_SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type mon_(mon_SEXP);
+    close_files_(mon_);
+    return R_NilValue;
+END_RCPP
+}
 // get_arrivals_
 DataFrame get_arrivals_(SEXP mon_, bool per_resource);
 RcppExport SEXP _simmer_get_arrivals_(SEXP mon_SEXP, SEXP per_resourceSEXP) {
@@ -1541,6 +1551,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_activity_clone_", (DL_FUNC) &_simmer_activity_clone_, 1},
     {"_simmer_MemMonitor__new", (DL_FUNC) &_simmer_MemMonitor__new, 0},
     {"_simmer_CsvMonitor__new", (DL_FUNC) &_simmer_CsvMonitor__new, 5},
+    {"_simmer_close_files_", (DL_FUNC) &_simmer_close_files_, 1},
     {"_simmer_get_arrivals_", (DL_FUNC) &_simmer_get_arrivals_, 2},
     {"_simmer_get_attributes_", (DL_FUNC) &_simmer_get_attributes_, 1},
     {"_simmer_get_resources_", (DL_FUNC) &_simmer_get_resources_, 1},

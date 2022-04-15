@@ -123,7 +123,7 @@ monitor_delim <- function(path=tempdir(), keep=FALSE, sep=" ", ext=".txt",
     function(xptr) do.call(reader, c(files[[3]], args)),
     function(xptr) do.call(reader, c(files[[4]], args)),
     files,
-    function(...) if(!keep) unlink(files)
+    function(x) if(!keep) { close_files_(x); unlink(files) }
   )
 }
 

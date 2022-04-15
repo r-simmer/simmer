@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Iñaki Ucar
+// Copyright (C) 2018-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -32,6 +32,11 @@ SEXP CsvMonitor__new(const std::string& ends_path, const std::string& releases_p
 {
   return XPtr<CsvMonitor>(
     new CsvMonitor(ends_path, releases_path, attributes_path, resources_path, sep[0]));
+}
+
+//[[Rcpp::export]]
+void close_files_(SEXP mon_) {
+  XPtr<CsvMonitor>(mon_)->close();
 }
 
 //[[Rcpp::export]]

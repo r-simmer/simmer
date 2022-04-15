@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Iñaki Ucar
+// Copyright (C) 2018-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -66,23 +66,26 @@ namespace simmer {
                const std::string& attributes_path, const std::string& resources_path,
                char sep=',')
       : Monitor(), ends_path(ends_path), releases_path(releases_path),
-        attributes_path(attributes_path), resources_path(resources_path), sep(sep)
-    {
+        attributes_path(attributes_path), resources_path(resources_path),
+        sep(sep) { open(); }
+
+    void open() {
       ends.open(ends_path, ends_h, sep);
       releases.open(releases_path, releases_h, sep);
       attributes.open(attributes_path, attributes_h, sep);
       resources.open(resources_path, resources_h, sep);
     }
 
-    void clear() {
+    void close() {
       ends.close();
       releases.close();
       attributes.close();
       resources.close();
-      ends.open(ends_path, ends_h, sep);
-      releases.open(releases_path, releases_h, sep);
-      attributes.open(attributes_path, attributes_h, sep);
-      resources.open(resources_path, resources_h, sep);
+    }
+
+    void clear() {
+      close();
+      open();
     }
 
     void flush() {
