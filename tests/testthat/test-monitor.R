@@ -1,4 +1,4 @@
-# Copyright (C) 2018 Iñaki Ucar
+# Copyright (C) 2018-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -22,11 +22,9 @@ test_that("delim monitors create new files with right headers", {
   expect_equal(names(mon$handlers), c("arrivals", "releases", "attributes", "resources"))
   expect_output(print(mon), "^simmer monitor:.*disk.*delimited")
 
-  for (name in names(mon$handlers)) {
-    expect_true(file.exists(mon$handlers[[name]]))
-    expect_equal(dirname(mon$handlers[[name]]), gsub("\\\\", "/", tempdir()))
-    expect_match(basename(mon$handlers[[name]]), paste0(name, ".csv"))
-  }
+  expect_true(all(file.exists(unlist(mon$handlers))))
+  expect_equal(unique(dirname(unlist(mon$handlers))), gsub("\\\\", "/", tempdir()))
+  expect_match(basename(unlist(mon$handlers)), "\\.csv$")
 
   arr <- mon$get_arrivals(FALSE)
   rel <- mon$get_arrivals(TRUE)
@@ -45,6 +43,21 @@ test_that("delim monitors create new files with right headers", {
   expect_equal(colnames(rel), c("name", "start_time", "end_time", "activity_time", "resource"))
   expect_equal(colnames(atr), c("time", "name", "key", "value"))
   expect_equal(colnames(res), c("resource", "time", "server", "queue", "capacity", "queue_size"))
+})
+
+test_that("delim monitors honor 'keep' argument upon destruction", {
+  mon_keep <- monitor_csv(keep=TRUE)
+  mon_del <- monitor_csv(keep=FALSE)
+
+  files_keep <- unlist(mon_keep$handlers)
+  files_del <- unlist(mon_del$handlers)
+
+  expect_true(all(file.exists(files_keep)))
+  expect_true(all(file.exists(files_del)))
+  rm(mon_keep, mon_del); invisible(gc())
+  expect_true(all(file.exists(files_keep)))
+  expect_true(all(!file.exists(files_del)))
+  unlink(files_keep)
 })
 
 test_that("delim monitors collect the same values as in-memory monitors", {

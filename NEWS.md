@@ -1,9 +1,10 @@
-# simmer 4.4.4.1
+# simmer 4.4.4.2
 
 ## Minor changes and fixes
 
 - Apply magrittr workaround and avoid copying `simmer` and `monitor` objects in
   function environments for generators too (#279).
+- Fix file removal on object destruction for file-backed monitors (#277).
 
 # simmer 4.4.4
 

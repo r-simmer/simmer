@@ -8,7 +8,7 @@
 \title{Create a Monitor}
 \usage{
 monitor(name, xptr, get_arrivals, get_attributes, get_resources,
-  handlers = NULL, finalize = function() { })
+  handlers = NULL, finalizer = NULL)
 
 monitor_mem()
 
@@ -39,10 +39,10 @@ the \code{xptr} as a first argument, even if it is not needed.}
 the same name. For example, \code{monitor_mem} does not use this slot, but
 \code{monitor_delim} and \code{monitor_csv} store the path to the created files.}
 
-\item{finalize}{an optional function to be called when the object is destroyed.
-For example, \code{monitor_mem} does not require any finalizer, but
-\code{monitor_delim} and \code{monitor_csv} use this to remove the created
-files when the monitor is destroyed.}
+\item{finalizer}{an optional one-argument function to be called when the
+object is destroyed. For example, \code{monitor_mem} does not require any
+finalizer, but \code{monitor_delim} and \code{monitor_csv} use this to remove
+the created files when the monitor is destroyed.}
 
 \item{path}{directory where files will be created (must exist).}
 

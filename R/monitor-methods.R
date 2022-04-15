@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2019 Iñaki Ucar
+# Copyright (C) 2018-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -33,10 +33,10 @@
 #' @param handlers an optional list of handlers that will be stored in a slot of
 #' the same name. For example, \code{monitor_mem} does not use this slot, but
 #' \code{monitor_delim} and \code{monitor_csv} store the path to the created files.
-#' @param finalize an optional function to be called when the object is destroyed.
-#' For example, \code{monitor_mem} does not require any finalizer, but
-#' \code{monitor_delim} and \code{monitor_csv} use this to remove the created
-#' files when the monitor is destroyed.
+#' @param finalizer an optional one-argument function to be called when the
+#' object is destroyed. For example, \code{monitor_mem} does not require any
+#' finalizer, but \code{monitor_delim} and \code{monitor_csv} use this to remove
+#' the created files when the monitor is destroyed.
 #'
 #' @details The \code{monitor} method is a generic function to instantiate a
 #' \code{monitor} object. It should not be used in general unless you want to
@@ -45,17 +45,17 @@
 #' @return A \code{monitor} object.
 #' @export
 monitor <- function(name, xptr, get_arrivals, get_attributes, get_resources,
-                    handlers=NULL, finalize=function() {})
+                    handlers=NULL, finalizer=NULL)
 {
   check_args(name="character", xptr="externalptr", get_arrivals="function",
              get_attributes="function", get_resources="function",
-             handlers=c("list", "NULL"), finalize="function")
+             handlers=c("list", "NULL"), finalizer=c("function", "NULL"))
 
-  env <- list2env(list(
-    name=name, xptr=xptr, handlers=handlers, finalize=finalize))
+  env <- list2env(list(name=name, xptr=xptr, handlers=handlers))
   env$get_arrivals <- function(...) get_arrivals(env$xptr, ...)
   env$get_attributes <- function(...) get_attributes(env$xptr, ...)
   env$get_resources <- function(...) get_resources(env$xptr, ...)
+  if (is.function(finalizer)) reg.finalizer(xptr, finalizer, TRUE)
 
   class(env) <- "monitor"
   env
@@ -123,7 +123,7 @@ monitor_delim <- function(path=tempdir(), keep=FALSE, sep=" ", ext=".txt",
     function(xptr) do.call(reader, c(files[[3]], args)),
     function(xptr) do.call(reader, c(files[[4]], args)),
     files,
-    function() if(!keep) unlink(files)
+    function(...) if(!keep) unlink(files)
   )
 }
 
