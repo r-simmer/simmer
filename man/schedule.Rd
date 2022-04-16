@@ -17,7 +17,8 @@ schedule(timetable, values, period = Inf)
 Returns a \code{schedule} object.
 }
 \description{
-Resource convenience function to generate a scheduling object from a timetable specification.
+Resource convenience function to generate a scheduling object from a
+timetable specification.
 }
 \examples{
 # Schedule 3 units from 8 to 16 h
@@ -27,6 +28,12 @@ capacity_schedule <- schedule(c(8, 16, 24), c(3, 2, 1), period=24)
 
 env <- simmer() \%>\%
   add_resource("dummy", capacity_schedule)
+
+# Composition of schedules
+sch1 <- schedule(c(8, 16), c(3, 0), period=24)
+sch2 <- schedule(c(16, 24), c(2, 1), period=24)
+all.equal(sch1 + sch2, capacity_schedule)
+
 }
 \seealso{
 \code{\link{add_resource}}.

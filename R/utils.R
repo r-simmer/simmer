@@ -138,3 +138,19 @@ recycle <- function(param, n) {
     return(param)
   rep(param, n)
 }
+
+lcm <- function(x, y) {
+  if (any(!is.finite(c(x, y))))
+    return(Inf)
+
+  gcd <- function(x, y) {
+    while (y != 0) {
+      t <- y
+      y <- x %% y
+      x <- t
+    }
+    x
+  }
+
+  x * y / gcd(x, y)
+}

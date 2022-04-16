@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2019 Iñaki Ucar
+# Copyright (C) 2016-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -17,7 +17,8 @@
 
 #' Generate a Scheduling Object
 #'
-#' Resource convenience function to generate a scheduling object from a timetable specification.
+#' Resource convenience function to generate a scheduling object from a
+#' timetable specification.
 #'
 #' @param timetable absolute points in time in which the desired value changes.
 #' @param values one value for each point in time.
@@ -35,6 +36,12 @@
 #'
 #' env <- simmer() %>%
 #'   add_resource("dummy", capacity_schedule)
+#'
+#' # Composition of schedules
+#' sch1 <- schedule(c(8, 16), c(3, 0), period=24)
+#' sch2 <- schedule(c(16, 24), c(2, 1), period=24)
+#' all.equal(sch1 + sch2, capacity_schedule)
+#'
 schedule <- function(timetable, values, period=Inf) {
   stopifnot(is.numeric(c(timetable, period, values)))
   stopifnot(!is.unsorted(timetable), all(period >= timetable),
@@ -78,4 +85,34 @@ print.schedule <- function(x, ...) {
     "{ values:    ", paste(out[-timetable], collapse=" "), " }\n"
   ))
   invisible(x)
+}
+
+#' @export
+`+.schedule` <- function(e1, e2) {
+  if (!inherits(e1, "schedule") || !inherits(e2, "schedule"))
+    stop("both operands must be 'schedule'")
+
+  e1$values <- with(e1, replace(values, values == -1, Inf))
+  e1$period <- with(e1, replace(period, period == -1, Inf))
+  e2$values <- with(e2, replace(values, values == -1, Inf))
+  e2$period <- with(e2, replace(period, period == -1, Inf))
+
+  if (sum(is.finite(c(e1$period, e2$period))) == 1)
+    stop("not compatible periods")
+
+  if (is.finite(period <- lcm(e1$period, e2$period))) {
+    e1$timetable <- e1$timetable +
+      rep(seq(0, period-e1$period, e1$period), each=e1$n)
+    e2$timetable <- e2$timetable +
+      rep(seq(0, period-e2$period, e2$period), each=e2$n)
+    e1$values <- rep(e1$values, period/e1$period)
+    e2$values <- rep(e2$values, period/e2$period)
+  }
+
+  e1f <- stats::stepfun(e1$timetable, c(0, e1$values))
+  e2f <- stats::stepfun(e2$timetable, c(0, e2$values))
+
+  timetable <- unique(sort(c(e1$timetable, e2$timetable)))
+  values <- e1f(timetable) + e2f(timetable)
+  schedule(timetable, values, period)
 }

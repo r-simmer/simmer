@@ -1,4 +1,4 @@
-# simmer 4.4.4.3
+# simmer 4.4.4.4
 
 ## Minor changes and fixes
 
@@ -6,6 +6,10 @@
   function environments for generators too (#279).
 - Fix file removal on object destruction for file-backed monitors (#277).
 - Remove cap on the number of nested branches for trajectory printing (#262).
+
+## New features
+
+- Add arithmetic support for `schedule` objects (#272).
 
 # simmer 4.4.4
 
