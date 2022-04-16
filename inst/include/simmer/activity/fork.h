@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018,2020 Iñaki Ucar
+// Copyright (C) 2017-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -53,7 +53,6 @@ namespace simmer {
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       indent += 2;
       if (!brief) {
-        if (indent > 10) return; // max 6 levels
         for (unsigned int i = 0; i < trj.size(); i++) {
           Rcpp::Rcout << IND(indent) <<
             "Fork " << i+1 << (cont[i] ? ", continue," : ", stop,");

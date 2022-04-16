@@ -1,10 +1,11 @@
-# simmer 4.4.4.2
+# simmer 4.4.4.3
 
 ## Minor changes and fixes
 
 - Apply magrittr workaround and avoid copying `simmer` and `monitor` objects in
   function environments for generators too (#279).
 - Fix file removal on object destruction for file-backed monitors (#277).
+- Remove cap on the number of nested branches for trajectory printing (#262).
 
 # simmer 4.4.4
 
