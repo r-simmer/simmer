@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2017-2022 Iñaki Ucar
+// Copyright (C) 2016-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //

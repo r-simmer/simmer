@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2015 Bart Smeets
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2021 Iñaki Ucar
+# Copyright (C) 2016-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -602,7 +602,8 @@ get_resources.simmer <- function(.env) names(.env$resources)
 #'
 #' Getters for processes (sources and arrivals) number of arrivals generated
 #' by a source, the name of the active arrival, an attribute from the active
-#' arrival or a global one, and prioritization values.
+#' arrival or a global one, prioritization values, or the number of arrivals
+#' in an active batch.
 #'
 #' @inheritParams reset
 #' @param sources one or more resource names.
@@ -673,6 +674,13 @@ get_prioritization <- function(.env) UseMethod("get_prioritization")
 
 #' @export
 get_prioritization.simmer <- function(.env) get_prioritization_(.env$sim_obj)
+
+#' @rdname get_n_generated
+#' @export
+get_batch_size <- function(.env) UseMethod("get_batch_size")
+
+#' @export
+get_batch_size.simmer <- function(.env) get_batch_size_(.env$sim_obj)
 
 #' Get Resource Parameters
 #'

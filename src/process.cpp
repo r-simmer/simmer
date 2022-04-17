@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Bart Smeets
 // Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-// Copyright (C) 2015-2018 Iñaki Ucar
+// Copyright (C) 2015-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -70,4 +70,10 @@ SEXP get_prioritization_(SEXP sim_) {
   return IntegerVector::create(
     a->order.get_priority(), a->order.get_preemptible(), (int)a->order.get_restart()
   );
+}
+
+//[[Rcpp::export]]
+int get_batch_size_(SEXP sim_) {
+  Arrival* a = XPtr<Simulator>(sim_)->get_running_arrival();
+  return (int)a->size();
 }

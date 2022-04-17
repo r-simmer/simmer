@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2019,2021 Iñaki Ucar
+// Copyright (C) 2016-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -127,12 +127,19 @@ namespace simmer {
     double run(Arrival* arrival) {
       if (rule && !get<bool>(*rule, arrival))
         return 0;
-      Batched** ptr = arrival->sim->get_batch(this, id);
-      if (!(*ptr))
-        *ptr = init(arrival);
-      (*ptr)->insert(arrival);
-      if ((int)(*ptr)->size() == (*ptr)->max_size())
-        trigger(arrival->sim, *ptr);
+      Batched* ptr = arrival->sim->get_batch(this, id);
+      if (!ptr) {
+        ptr = init(arrival);
+        arrival->sim->set_batch(this, id, ptr);
+      }
+      ptr->insert(arrival);
+      if ((int)ptr->size() == ptr->max_size()) {
+        if (ptr->timer) {
+          ptr->timer->deactivate();
+          delete ptr->timer;
+        }
+        trigger(arrival->sim, ptr);
+      }
       return STATUS_REJECT;
     }
 
@@ -161,19 +168,18 @@ namespace simmer {
                               BIND(&Batch::trigger, this, arrival->sim, ptr),
                               PRIORITY_MIN);
         task->activate(dt);
+        ptr->timer = task;
       }
       return ptr;
     }
 
     void trigger(Simulator* sim, Batched* target) {
-      Batched** ptr = sim->get_batch(this, id);
-      if (!(*ptr) || *ptr != target)
-        return;
+      target->timer = NULL;
       if (target->size()) {
         target->set_activity(get_next());
         target->activate();
       } else delete target;
-      *ptr = NULL;
+      sim->set_batch(this, id, NULL);
     }
   };
 

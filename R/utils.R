@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2016-2022 Iñaki Ucar
+# Copyright (C) 2015-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #

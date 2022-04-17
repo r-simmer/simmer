@@ -1,6 +1,6 @@
 // Copyright (C) 2014-2015 Bart Smeets
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018,2020 Iñaki Ucar
+// Copyright (C) 2016-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -163,16 +163,16 @@ namespace simmer {
       return out;
     }
 
-    Batched** get_batch(Activity* ptr, const std::string& id) {
-      if (id.size()) {
-        if (namedb_map.find(id) == namedb_map.end())
-          namedb_map[id] = NULL;
-        return &namedb_map[id];
-      } else {
-        if (unnamedb_map.find(ptr) == unnamedb_map.end())
-          unnamedb_map[ptr] = NULL;
-        return &unnamedb_map[ptr];
-      }
+    void set_batch(Activity* ptr, const std::string& id, Batched* arr) {
+      if (id.size())
+        namedb_map[id] = arr;
+      else unnamedb_map[ptr] = arr;
+    }
+
+    Batched* get_batch(Activity* ptr, const std::string& id) {
+      if (id.size())
+        return namedb_map[id];
+      return unnamedb_map[ptr];
     }
 
     size_t get_batch_count() { return b_count++; }

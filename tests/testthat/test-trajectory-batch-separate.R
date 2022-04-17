@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2017,2019,2021 Iñaki Ucar
+# Copyright (C) 2016-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -369,4 +369,29 @@ test_that("an infinite timeout is equivalent to a disabled timeout", {
     get_mon_arrivals()
 
   expect_equal(arr$end_time, c(2, 2))
+})
+
+test_that("batch size is correctly retrieved", {
+  t <- trajectory() %>%
+    set_attribute("bsize", function() get_batch_size(env))
+
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("dummy", t, at(0))
+
+  expect_error(run(env))
+
+  t <- trajectory() %>%
+    batch(3, timeout=5) %>%
+    set_attribute("bsize", function() get_batch_size(env)) %>%
+    separate()
+
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("dummy", t, at(0, 1, 2, 3), mon=2)
+
+  attr <- run(env) %>% get_mon_attributes()
+
+  expect_equal(attr$time, c(rep(2, 3), 8))
+  expect_equal(attr$name, paste0("dummy", 0:3))
+  expect_equal(attr$key, rep("bsize", 4))
+  expect_equal(attr$value, c(rep(3, 3), 1))
 })

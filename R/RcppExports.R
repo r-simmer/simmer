@@ -373,6 +373,10 @@ get_prioritization_ <- function(sim_) {
     .Call(`_simmer_get_prioritization_`, sim_)
 }
 
+get_batch_size_ <- function(sim_) {
+    .Call(`_simmer_get_batch_size_`, sim_)
+}
+
 get_capacity_ <- function(sim_, names) {
     .Call(`_simmer_get_capacity_`, sim_, names)
 }

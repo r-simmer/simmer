@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2021 Iñaki Ucar
+// Copyright (C) 2016-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -139,6 +139,8 @@ namespace simmer {
     }
 
     virtual void terminate(bool finished);
+
+    virtual size_t size() const { Rcpp::stop("'%s' is not a batch", name); }
 
     int get_clones() const { return *clones; }
 

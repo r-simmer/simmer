@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2019,2021 Iñaki Ucar
+// Copyright (C) 2016-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -28,11 +28,12 @@ namespace simmer {
   class Batched : public Arrival {
   public:
     CLONEABLE(Batched)
+    Task* timer;
 
     Batched(Simulator* sim, const std::string& name, int n, bool permanent, int priority = 0)
-      : Arrival(sim, name, true, Order(), NULL, priority), n(n), permanent(permanent) {}
+      : Arrival(sim, name, true, Order(), NULL, priority), timer(NULL), n(n), permanent(permanent) {}
 
-    Batched(const Batched& o) : Arrival(o), arrivals(o.arrivals), permanent(o.permanent) {
+    Batched(const Batched& o) : Arrival(o), timer(NULL), arrivals(o.arrivals), permanent(o.permanent) {
       for (size_t i=0; i<arrivals.size(); i++) {
         arrivals[i] = arrivals[i]->clone();
         arrivals[i]->register_entity(this);
