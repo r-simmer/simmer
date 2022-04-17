@@ -1,4 +1,4 @@
-# Copyright (C) 2016,2019 Iñaki Ucar
+# Copyright (C) 2016-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -411,4 +411,57 @@ test_that("handler linking is done per arrival", {
   expect_equal(arr$start_time, c(6, 0, 5))
   expect_equal(arr$end_time, c(6, 16, 21))
   expect_equal(arr$activity_time, c(0, 16, 16))
+})
+
+test_that("activity time is correctly retrieved, even with preemption", {
+  t <- trajectory() %>%
+    timeout(1) %>%
+    trap(
+      "interrupt",
+      handler=trajectory() %>%
+        set_attribute("lifetime", function() get_activity_time(env)) %>%
+        set_attribute("restime1", function() get_activity_time(env, "resource1")) %>%
+        set_attribute("restime2", function() get_activity_time_selected(env)) %>%
+        timeout(function() get_attribute(env, "restime1") - 5)
+    ) %>%
+    seize("resource1") %>%
+    timeout(1) %>%
+    select("resource2") %>%
+    seize_selected() %>%
+    timeout(4) %>%
+    release_all()
+
+  signal <- trajectory() %>%
+    send("interrupt") %>%
+    timeout(1) %>%
+    send("interrupt")
+
+  env <- simmer(verbose=TRUE) %>%
+    add_resource(paste0("resource", 1:2), preemptive=TRUE) %>%
+    add_generator("dummy", t, at(0), mon=2) %>%
+    add_generator("prio", t, at(2), priority=1) %>%
+    add_generator("signal", signal, at(8))
+  env <- run(env)
+
+  arr_trj <- subset(get_mon_arrivals(env), name == "dummy0")
+  arr_res <- subset(get_mon_arrivals(env, TRUE), name == "dummy0")
+  res <- get_mon_resources(env)
+  attr <- get_mon_attributes(env)
+
+  expect_equal(arr_trj$start_time, 0)
+  expect_equal(arr_trj$end_time, 11)
+  expect_equal(arr_trj$activity_time, 6)
+  expect_equal(arr_res$start_time, c(1, 2))
+  expect_equal(arr_res$end_time, c(11, 11))
+  expect_equal(arr_res$activity_time, c(5, 4))
+  expect_equal(arr_res$resource, paste0("resource", 1:2))
+
+  expect_equal(res$resource, rep(paste0("resource", 1:2), 4))
+  expect_equal(res$time, c(1:4, 8, 8, 11, 11))
+  expect_equal(res$server, c(rep(1, 6), 0, 0))
+  expect_equal(res$queue, c(0, 0, 1, 1, rep(0, 4)))
+
+  expect_equal(attr$time, rep(c(8, 9), each=3))
+  expect_equal(attr$key, rep(c("lifetime", paste0("restime", 1:2)), 2))
+  expect_equal(attr$value, c(3:1, 4:2))
 })

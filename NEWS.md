@@ -1,4 +1,4 @@
-# simmer 4.4.4.5
+# simmer 4.4.4.6
 
 ## Minor changes and fixes
 
@@ -12,6 +12,8 @@
 
 - Add arithmetic support for `schedule` objects (#272).
 - New `get_batch_size()` getter allows a batch to retrieve its size (#263).
+- New `get_activity_time()` and `get_activity_time_selected()` getters allow an
+  arrival to retrieve the amount of activity time spent in resources (#186).
 
 # simmer 4.4.4
 

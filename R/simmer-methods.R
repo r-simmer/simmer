@@ -685,11 +685,14 @@ get_batch_size.simmer <- function(.env) get_batch_size_(.env$sim_obj)
 #' Get Resource Parameters
 #'
 #' Getters for resources: server capacity/count and queue size/count, seized
-#' amount and selected resources.
+#' amount, activity time, and selected resources.
 #'
 #' @inheritParams reset
 #' @inheritParams select
 #' @param resources one or more resource names.
+#'
+#' @details If no resources are provided to \code{get_activity_time}, the
+#' overall activity time is reported.
 #'
 #' @return Return a vector (character for \code{get_selected}, numeric for the
 #' rest of them).
@@ -786,6 +789,26 @@ get_seized_selected <- function(.env, id=0) UseMethod("get_seized_selected")
 #' @export
 get_seized_selected.simmer <- function(.env, id=0) {
   get_seized_selected_(.env$sim_obj, id)
+}
+
+#' @rdname get_capacity
+#' @export
+get_activity_time <- function(.env, resources) UseMethod("get_activity_time")
+
+#' @export
+get_activity_time.simmer <- function(.env, resources) {
+  if (missing(resources))
+    resources <- character(0)
+  get_activity_time_(.env$sim_obj, resources)
+}
+
+#' @rdname get_capacity
+#' @export
+get_activity_time_selected <- function(.env, id=0) UseMethod("get_activity_time_selected")
+
+#' @export
+get_activity_time_selected.simmer <- function(.env, id=0) {
+  get_activity_time_selected_(.env$sim_obj, id)
 }
 
 #' @rdname get_capacity

@@ -1303,6 +1303,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_activity_time_
+SEXP get_activity_time_(SEXP sim_, const std::vector<std::string>& names);
+RcppExport SEXP _simmer_get_activity_time_(SEXP sim_SEXP, SEXP namesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type names(namesSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_activity_time_(sim_, names));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_activity_time_selected_
+SEXP get_activity_time_selected_(SEXP sim_, int id);
+RcppExport SEXP _simmer_get_activity_time_selected_(SEXP sim_SEXP, SEXP idSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    Rcpp::traits::input_parameter< int >::type id(idSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_activity_time_selected_(sim_, id));
+    return rcpp_result_gen;
+END_RCPP
+}
 // Simulator__new
 SEXP Simulator__new(const std::string& name, bool verbose, SEXP mon, int log_level);
 RcppExport SEXP _simmer_Simulator__new(SEXP nameSEXP, SEXP verboseSEXP, SEXP monSEXP, SEXP log_levelSEXP) {
@@ -1583,6 +1607,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_get_seized_", (DL_FUNC) &_simmer_get_seized_, 2},
     {"_simmer_get_seized_selected_", (DL_FUNC) &_simmer_get_seized_selected_, 2},
     {"_simmer_get_selected_", (DL_FUNC) &_simmer_get_selected_, 2},
+    {"_simmer_get_activity_time_", (DL_FUNC) &_simmer_get_activity_time_, 2},
+    {"_simmer_get_activity_time_selected_", (DL_FUNC) &_simmer_get_activity_time_selected_, 2},
     {"_simmer_Simulator__new", (DL_FUNC) &_simmer_Simulator__new, 4},
     {"_simmer_reset_", (DL_FUNC) &_simmer_reset_, 1},
     {"_simmer_now_", (DL_FUNC) &_simmer_now_, 1},

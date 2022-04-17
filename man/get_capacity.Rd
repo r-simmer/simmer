@@ -11,6 +11,8 @@
 \alias{get_queue_count_selected}
 \alias{get_seized}
 \alias{get_seized_selected}
+\alias{get_activity_time}
+\alias{get_activity_time_selected}
 \alias{get_selected}
 \title{Get Resource Parameters}
 \usage{
@@ -34,6 +36,10 @@ get_seized(.env, resources)
 
 get_seized_selected(.env, id = 0)
 
+get_activity_time(.env, resources)
+
+get_activity_time_selected(.env, id = 0)
+
 get_selected(.env, id = 0)
 }
 \arguments{
@@ -49,7 +55,11 @@ rest of them).
 }
 \description{
 Getters for resources: server capacity/count and queue size/count, seized
-amount and selected resources.
+amount, activity time, and selected resources.
+}
+\details{
+If no resources are provided to \code{get_activity_time}, the
+overall activity time is reported.
 }
 \seealso{
 \code{\link{get_resources}}, \code{\link{set_capacity}},

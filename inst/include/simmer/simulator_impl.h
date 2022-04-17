@@ -1,6 +1,6 @@
 // Copyright (C) 2014-2015 Bart Smeets
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2020 Iñaki Ucar
+// Copyright (C) 2016-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -153,9 +153,9 @@ namespace simmer {
       if (dynamic_cast<Batched*>(itr1.first) || !itr1.first->is_monitored())
         continue;
       if (!per_resource)
-        mon.record_end(itr1.first->name, itr1.first->get_start(), R_NaReal, R_NaReal, false);
+        mon.record_end(itr1.first->name, itr1.first->get_start_time(), R_NaReal, R_NaReal, false);
       else foreach_ (const EntMap::value_type& itr2, resource_map) {
-        double start = itr1.first->get_start(itr2.second->name);
+        double start = itr1.first->get_start_time(itr2.second->name);
         if (start < 0)
           continue;
         mon.record_release(itr1.first->name, start, R_NaReal, R_NaReal, itr2.second->name);

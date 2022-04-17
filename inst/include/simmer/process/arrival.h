@@ -159,14 +159,15 @@ namespace simmer {
       return search->second;
     }
 
-    double get_start(const std::string& name);
+    double get_start_time(const std::string& name);
+    double get_start_time() const { return lifetime.start; }
 
-    double get_start() const { return lifetime.start; }
+    double get_activity_time(const std::string& name) const;
+    double get_activity_time() const { return lifetime.activity; }
 
     double get_remaining() const { return status.remaining; }
 
     void set_activity(Activity* ptr) { activity = ptr; }
-
     Activity* get_activity() const { return activity; }
 
     void set_resource_selected(int id, Resource* res) { selected[id] = res; }

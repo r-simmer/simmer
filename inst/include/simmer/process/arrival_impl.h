@@ -1,5 +1,5 @@
 // Copyright (C) 2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2021 Iñaki Ucar
+// Copyright (C) 2016-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -53,14 +53,21 @@ namespace simmer {
     delete this;
   }
 
-  inline double Arrival::get_start(const std::string& name) {
+  inline double Arrival::get_start_time(const std::string& name) {
     double start = restime[name].start;
     if (batch) {
-      double up = batch->get_start(name);
+      double up = batch->get_start_time(name);
       if (up >= 0 && (start < 0 || up < start))
         start = up;
     }
     return start;
+  }
+
+  inline double Arrival::get_activity_time(const std::string& name) const {
+    ResTime::const_iterator search = restime.find(name);
+    if (search == restime.end())
+      Rcpp::stop("'%s': resource '%s' not seized", this->name, name); // # nocov
+    return search->second.activity;
   }
 
   inline void Arrival::register_entity(Resource* ptr) {

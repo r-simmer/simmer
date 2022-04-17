@@ -421,6 +421,14 @@ get_selected_ <- function(sim_, id) {
     .Call(`_simmer_get_selected_`, sim_, id)
 }
 
+get_activity_time_ <- function(sim_, names) {
+    .Call(`_simmer_get_activity_time_`, sim_, names)
+}
+
+get_activity_time_selected_ <- function(sim_, id) {
+    .Call(`_simmer_get_activity_time_selected_`, sim_, id)
+}
+
 Simulator__new <- function(name, verbose, mon, log_level) {
     .Call(`_simmer_Simulator__new`, name, verbose, mon, log_level)
 }

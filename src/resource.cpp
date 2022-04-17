@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Bart Smeets
 // Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-// Copyright (C) 2015-2018 Iñaki Ucar
+// Copyright (C) 2015-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -90,6 +90,7 @@ SEXP get_seized_(SEXP sim_, const std::vector<std::string>& names) {
 
 //[[Rcpp::export]]
 SEXP get_seized_selected_(SEXP sim_, int id) {
+
   Arrival* arrival = XPtr<Simulator>(sim_)->get_running_arrival();
   return get_param<INTSXP,int>(sim_, id, BIND(&Resource::get_seized, _1, arrival));
 }
@@ -99,4 +100,23 @@ std::string get_name(Resource* res) { return res->name; }
 //[[Rcpp::export]]
 SEXP get_selected_(SEXP sim_, int id) {
   return get_param<STRSXP>(sim_, id, Fn<std::string(Resource*)>(get_name));
+}
+
+//[[Rcpp::export]]
+SEXP get_activity_time_(SEXP sim_, const std::vector<std::string>& names) {
+  Arrival* arrival = XPtr<Simulator>(sim_)->get_running_arrival();
+  Vector<REALSXP> out(names.size());
+  if (!names.empty()) for (int i = 0; i < out.size(); i++)
+    out[i] = arrival->get_activity_time(names[i]);
+  else out.push_back(arrival->get_activity_time());
+  return out;
+}
+
+//[[Rcpp::export]]
+SEXP get_activity_time_selected_(SEXP sim_, int id) {
+  Arrival* arrival = XPtr<Simulator>(sim_)->get_running_arrival();
+  Vector<REALSXP> out;
+  if (Resource* r = arrival->get_resource_selected(id))
+    out.push_back(arrival->get_activity_time(r->name));
+  return out;
 }
