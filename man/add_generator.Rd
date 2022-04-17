@@ -42,7 +42,7 @@ Attach a new source of arrivals to a trajectory from a generator function.
 }
 \seealso{
 Convenience functions: \code{\link{at}}, \code{\link{from}},
-\code{\link{to}}, \code{\link{from_to}}.
+\code{\link{to}}, \code{\link{from_to}}, \code{\link{when_activated}}.
 
 Other sources: \code{\link{add_dataframe}}.
 }

@@ -49,16 +49,20 @@ Available methods by category:
 \code{\link{now}}, \code{\link{peek}}, \code{\link{reset}}
 
 \item Resources: \code{\link{add_resource}}, \code{\link{get_resources}},
-\code{\link{get_capacity}}, \code{\link{get_queue_size}},
-\code{\link{get_server_count}}, \code{\link{get_queue_count}},
-\code{\link{get_capacity_selected}}, \code{\link{get_queue_size_selected}},
-\code{\link{get_server_count_selected}}, \code{\link{get_queue_count_selected}},
+\code{\link{get_capacity}}, \code{\link{get_capacity_selected}},
+\code{\link{get_queue_size}}, \code{\link{get_queue_size_selected}},
+\code{\link{get_server_count}}, \code{\link{get_server_count_selected}},
+\code{\link{get_queue_count}}, \code{\link{get_queue_count_selected}},
 \code{\link{get_seized}}, \code{\link{get_seized_selected}},
+\code{\link{get_activity_time}}, \code{\link{get_activity_time_selected}},
 \code{\link{get_selected}}
 
 \item Sources: \code{\link{add_generator}}, \code{\link{add_dataframe}},
 \code{\link{get_sources}}, \code{\link{get_n_generated}},
 \code{\link{get_trajectory}}
+
+\item Arrivals: \code{\link{get_name}}, \code{\link{get_attribute}},
+\code{\link{get_prioritization}}, \code{\link{get_batch_size}}
 
 \item Globals: \code{\link{add_global}}, \code{\link{get_global}}
 

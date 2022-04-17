@@ -36,16 +36,20 @@
 #' \code{\link{now}}, \code{\link{peek}}, \code{\link{reset}}
 #'
 #' \item Resources: \code{\link{add_resource}}, \code{\link{get_resources}},
-#' \code{\link{get_capacity}}, \code{\link{get_queue_size}},
-#' \code{\link{get_server_count}}, \code{\link{get_queue_count}},
-#' \code{\link{get_capacity_selected}}, \code{\link{get_queue_size_selected}},
-#' \code{\link{get_server_count_selected}}, \code{\link{get_queue_count_selected}},
+#' \code{\link{get_capacity}}, \code{\link{get_capacity_selected}},
+#' \code{\link{get_queue_size}}, \code{\link{get_queue_size_selected}},
+#' \code{\link{get_server_count}}, \code{\link{get_server_count_selected}},
+#' \code{\link{get_queue_count}}, \code{\link{get_queue_count_selected}},
 #' \code{\link{get_seized}}, \code{\link{get_seized_selected}},
+#' \code{\link{get_activity_time}}, \code{\link{get_activity_time_selected}},
 #' \code{\link{get_selected}}
 #'
 #' \item Sources: \code{\link{add_generator}}, \code{\link{add_dataframe}},
 #' \code{\link{get_sources}}, \code{\link{get_n_generated}},
 #' \code{\link{get_trajectory}}
+#'
+#' \item Arrivals: \code{\link{get_name}}, \code{\link{get_attribute}},
+#' \code{\link{get_prioritization}}, \code{\link{get_batch_size}}
 #'
 #' \item Globals: \code{\link{add_global}}, \code{\link{get_global}}
 #'
@@ -366,7 +370,7 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
 #'
 #' @return Returns the simulation environment.
 #' @seealso Convenience functions: \code{\link{at}}, \code{\link{from}},
-#' \code{\link{to}}, \code{\link{from_to}}.
+#' \code{\link{to}}, \code{\link{from_to}}, \code{\link{when_activated}}.
 #'
 #' Other sources: \code{\link{add_dataframe}}.
 #' @export
@@ -622,7 +626,7 @@ get_resources.simmer <- function(.env) names(.env$resources)
 #'
 #' @seealso \code{\link{get_sources}}, \code{\link{set_trajectory}},
 #' \code{\link{set_attribute}}, \code{\link{set_global}},
-#' \code{\link{set_prioritization}}.
+#' \code{\link{set_prioritization}}, \code{\link{batch}}.
 #' @export
 get_n_generated <- function(.env, sources) UseMethod("get_n_generated")
 
@@ -697,7 +701,7 @@ get_batch_size.simmer <- function(.env) get_batch_size_(.env$sim_obj)
 #' @return Return a vector (character for \code{get_selected}, numeric for the
 #' rest of them).
 #' @seealso \code{\link{get_resources}}, \code{\link{set_capacity}},
-#' \code{\link{set_queue_size}}.
+#' \code{\link{set_queue_size}}, \code{\link{seize}}, \code{\link{timeout}}.
 #' @export
 get_capacity <- function(.env, resources) UseMethod("get_capacity")
 

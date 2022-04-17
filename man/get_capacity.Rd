@@ -63,5 +63,5 @@ overall activity time is reported.
 }
 \seealso{
 \code{\link{get_resources}}, \code{\link{set_capacity}},
-\code{\link{set_queue_size}}.
+\code{\link{set_queue_size}}, \code{\link{seize}}, \code{\link{timeout}}.
 }

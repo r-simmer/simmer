@@ -53,5 +53,5 @@ and these functions will throw an error.
 \seealso{
 \code{\link{get_sources}}, \code{\link{set_trajectory}},
 \code{\link{set_attribute}}, \code{\link{set_global}},
-\code{\link{set_prioritization}}.
+\code{\link{set_prioritization}}, \code{\link{batch}}.
 }
