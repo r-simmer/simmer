@@ -205,7 +205,7 @@ bank <-
 
 bank %>% run(until = maxTime)
 
-number_balked <- sum(!get_mon_arrivals(bank)$finished)
+number_balked <- sum(get_mon_arrivals(bank)$activity_time == 0)
 paste("Balking rate is", number_balked / now(bank), "customers per minute.")
 ```
 
