@@ -517,7 +517,7 @@ been demonstrated.  Here, we simply summarise the data frame returned by the
 `get_mon_arrivals` function, using standard R functions.
 
 We also increase the number of customers to 50 (find the number '49' in the
-code.code).
+code).
 
 ```{r, message = FALSE}
 library(simmer)
