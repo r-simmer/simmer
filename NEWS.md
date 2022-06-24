@@ -1,4 +1,11 @@
-# simmer 4.4.4.6
+# simmer 4.4.4.7
+
+## New features
+
+- Add arithmetic support for `schedule` objects (#272).
+- New `get_batch_size()` getter allows a batch to retrieve its size (#263).
+- New `get_activity_time()` and `get_activity_time_selected()` getters allow an
+  arrival to retrieve the amount of activity time spent in resources (#186).
 
 ## Minor changes and fixes
 
@@ -7,13 +14,7 @@
 - Fix file removal on object destruction for file-backed monitors (#277).
 - Remove cap on the number of nested branches for trajectory printing (#262).
 - Fix duplicate time-based batch trigger (as part of #263).
-
-## New features
-
-- Add arithmetic support for `schedule` objects (#272).
-- New `get_batch_size()` getter allows a batch to retrieve its size (#263).
-- New `get_activity_time()` and `get_activity_time_selected()` getters allow an
-  arrival to retrieve the amount of activity time spent in resources (#186).
+- Fix typo and trajectory in bank vignettes (#283).
 
 # simmer 4.4.4
 
