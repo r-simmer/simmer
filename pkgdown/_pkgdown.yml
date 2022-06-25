@@ -7,6 +7,9 @@ template:
     ganalytics: UA-115358925-1
 
 reference:
+  - title: internal
+    contents:
+    - simmer-package
   - title: "Build and manage trajectories"
     desc: "Methods for building and manipulating trajectory objects"
     contents:
