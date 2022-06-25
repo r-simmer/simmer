@@ -1,4 +1,4 @@
-# simmer 4.4.4.7
+# simmer 4.4.4.8
 
 ## New features
 
@@ -15,6 +15,8 @@
 - Remove cap on the number of nested branches for trajectory printing (#262).
 - Fix duplicate time-based batch trigger (as part of #263).
 - Fix typo and trajectory in bank vignettes (#283).
+- Fix clone synchronization with `wait=FALSE`, i.e., arrivals don't need to
+  trigger the same `synchronize()` activity to be in sync (#275).
 
 # simmer 4.4.4
 

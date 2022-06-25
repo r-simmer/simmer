@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -86,7 +86,7 @@ test_that("each clone follows a trajectory (4)", {
   expect_equal(arrivals$finished, rep(TRUE, 3))
 })
 
-test_that("clones synchonize with the last (1)", {
+test_that("clones synchronize with the last (1)", {
   t <- trajectory() %>%
     batch(1) %>%
     clone(3,
@@ -108,7 +108,7 @@ test_that("clones synchonize with the last (1)", {
   expect_equal(arrivals$finished, TRUE)
 })
 
-test_that("clones synchonize with the last (2)", {
+test_that("clones synchronize with the last (2)", {
   t <- trajectory() %>%
     batch(1) %>%
     clone(3,
@@ -130,7 +130,7 @@ test_that("clones synchonize with the last (2)", {
   expect_equal(arrivals$finished, rep(TRUE, 3))
 })
 
-test_that("clones synchonize with the first (1)", {
+test_that("clones synchronize with the first (1)", {
   t <- trajectory() %>%
     batch(1) %>%
     clone(3,
@@ -152,7 +152,7 @@ test_that("clones synchonize with the first (1)", {
   expect_equal(arrivals$finished, TRUE)
 })
 
-test_that("clones synchonize with the first (2)", {
+test_that("clones synchronize with the first (2)", {
   t <- trajectory() %>%
     batch(1) %>%
     clone(3,
@@ -172,6 +172,27 @@ test_that("clones synchonize with the first (2)", {
 
   expect_equal(arrivals$activity_time, c(1.5, 2, 3))
   expect_equal(arrivals$finished, rep(TRUE, 3))
+})
+
+test_that("synchronization occurs globally", {
+  t <- trajectory() %>%
+    clone(n = 2,
+          trajectory() %>%
+            renege_in(t = 1, out = trajectory() %>%
+                        synchronize(wait = FALSE)) %>%
+            timeout(5),
+          trajectory() %>%
+            timeout(3)) %>%
+    synchronize(wait = FALSE)
+
+  arrivals <- simmer(verbose = TRUE) %>%
+    add_generator("dummy", t, at(0)) %>%
+    run() %>%
+    get_mon_arrivals()
+
+  expect_equal(arrivals$end_time, 1)
+  expect_equal(arrivals$activity_time, 1)
+  expect_equal(arrivals$finished, TRUE)
 })
 
 test_that("synchronize does not affect other arrivals", {

@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018,2020 Iñaki Ucar
+// Copyright (C) 2016-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -92,7 +92,7 @@ namespace simmer {
   /**
    * Synchronize clones.
    */
-  class Synchronize : public virtual Activity, public Storage<std::string, int> {
+  class Synchronize : public virtual Activity {
   public:
     CLONEABLE(Synchronize)
 
@@ -108,14 +108,7 @@ namespace simmer {
     }
 
     double run(Arrival* arrival) {
-      if (!wait) {
-        if (!storage_find(arrival)) {
-          if (arrival->get_clones() > 1)
-            storage_get(arrival) = arrival->get_clones() - 1;
-          return 0;
-        } else if (!--storage_get(arrival))
-          remove(arrival);
-      } else if (arrival->get_clones() == 1)
+      if (arrival->sync_keep(wait))
         return 0;
 
       if (!terminate)
