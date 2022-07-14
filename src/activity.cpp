@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Bart Smeets
 // Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-// Copyright (C) 2015-2021 Iñaki Ucar
+// Copyright (C) 2015-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -252,13 +252,23 @@ SEXP Branch__new(const Function& option, std::vector<bool> cont,
 }
 
 //[[Rcpp::export]]
-SEXP Rollback__new(int amount, int times) {
-  return XPtr<Activity>(new Rollback(amount, times));
+SEXP Rollback__new1(const std::string& target, int times) {
+  return XPtr<Activity>(new Rollback(target, times));
 }
 
 //[[Rcpp::export]]
-SEXP Rollback__new_func(int amount, const Function& check) {
-  return XPtr<Activity>(new Rollback(amount, 0, check));
+SEXP Rollback__new2(int target, int times) {
+  return XPtr<Activity>(new Rollback(target, times));
+}
+
+//[[Rcpp::export]]
+SEXP Rollback__new_func1(const std::string& target, const Function& check) {
+  return XPtr<Activity>(new Rollback(target, 0, check));
+}
+
+//[[Rcpp::export]]
+SEXP Rollback__new_func2(int target, const Function& check) {
+  return XPtr<Activity>(new Rollback(target, 0, check));
 }
 
 //[[Rcpp::export]]
@@ -475,4 +485,9 @@ void activity_chain_(SEXP first_, SEXP second_) {
 //[[Rcpp::export]]
 SEXP activity_clone_(SEXP activity_) {
   return XPtr<Activity>(XPtr<Activity>(activity_)->clone());
+}
+
+//[[Rcpp::export]]
+void activity_set_tag_(SEXP activity_, const std::string& tag) {
+  XPtr<Activity>(activity_)->tag = tag;
 }

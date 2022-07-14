@@ -7,13 +7,13 @@
 \alias{set_queue_size_selected}
 \title{Set Resource Parameters}
 \usage{
-set_capacity(.trj, resource, value, mod = c(NA, "+", "*"))
+set_capacity(.trj, resource, value, mod = c(NA, "+", "*"), ..., tag)
 
-set_capacity_selected(.trj, value, id = 0, mod = c(NA, "+", "*"))
+set_capacity_selected(.trj, value, id = 0, mod = c(NA, "+", "*"), ..., tag)
 
-set_queue_size(.trj, resource, value, mod = c(NA, "+", "*"))
+set_queue_size(.trj, resource, value, mod = c(NA, "+", "*"), ..., tag)
 
-set_queue_size_selected(.trj, value, id = 0, mod = c(NA, "+", "*"))
+set_queue_size_selected(.trj, value, id = 0, mod = c(NA, "+", "*"), ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -23,6 +23,11 @@ set_queue_size_selected(.trj, value, id = 0, mod = c(NA, "+", "*"))
 \item{value}{numeric value to set, or a callable object (a function) which must return a numeric value.}
 
 \item{mod}{if set, \code{values} modify the attributes rather than substituting them.}
+
+\item{...}{unused.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 
 \item{id}{selection identifier for nested usage.}
 }

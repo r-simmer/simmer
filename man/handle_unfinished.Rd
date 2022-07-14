@@ -4,13 +4,18 @@
 \alias{handle_unfinished}
 \title{Handle Unfinished Arrivals}
 \usage{
-handle_unfinished(.trj, handler)
+handle_unfinished(.trj, handler, ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
 
 \item{handler}{trajectory object to handle unfinished arrivals. A \code{NULL}
 value will unset the drop-out trajectory.}
+
+\item{...}{unused.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 }
 \value{
 Returns the trajectory object.

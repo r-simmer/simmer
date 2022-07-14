@@ -4,7 +4,7 @@
 \alias{set_prioritization}
 \title{Set Prioritization Values}
 \usage{
-set_prioritization(.trj, values, mod = c(NA, "+", "*"))
+set_prioritization(.trj, values, mod = c(NA, "+", "*"), ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -15,6 +15,11 @@ A negative value leaves the corresponding parameter unchanged.
 See \code{\link{add_generator}} for more information about these parameters.}
 
 \item{mod}{if set, \code{values} modify the attributes rather than substituting them.}
+
+\item{...}{unused.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 }
 \value{
 Returns the trajectory object.

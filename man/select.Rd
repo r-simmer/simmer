@@ -6,7 +6,7 @@
 \usage{
 select(.trj, resources, policy = c("shortest-queue",
   "shortest-queue-available", "round-robin", "round-robin-available",
-  "first-available", "random", "random-available"), id = 0)
+  "first-available", "random", "random-available"), id = 0, ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -19,6 +19,11 @@ determines the criteria for selecting a resource among the set of policies
 available (see details).}
 
 \item{id}{selection identifier for nested usage.}
+
+\item{...}{unused.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 }
 \value{
 Returns the trajectory object.

@@ -1,6 +1,6 @@
 # Copyright (C) 2015-2016 Iñaki Ucar
 # Copyright (C) 2016 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -90,7 +90,7 @@ test_that("a negative amount is converted to positive", {
   t0 <- trajectory() %>% seize("dummy", 1)
 
   expect_silent(t0 %>% rollback(-1, -1))
-  expect_output(activity_print_(t0$tail(), 0, 0), "amount: 1 (Seize), times: 1", fixed = TRUE)
+  expect_output(activity_print_(t0$tail(), 0, 0), "target: 1 (Seize), times: 1", fixed = TRUE)
 })
 
 test_that("a check function that returns a non-boolean value fails", {
@@ -104,7 +104,6 @@ test_that("a check function that returns a non-boolean value fails", {
 })
 
 test_that("incorrect types fail", {
-  expect_error(trajectory() %>% rollback("dummy", 0))
   expect_error(trajectory() %>% rollback(0, "dummy"))
   expect_error(trajectory() %>% rollback(0, check = 0))
 })

@@ -8,13 +8,13 @@
 \alias{renege_abort}
 \title{Renege on some Condition}
 \usage{
-leave(.trj, prob, out = NULL, keep_seized = TRUE)
+leave(.trj, prob, out = NULL, keep_seized = TRUE, ..., tag)
 
-renege_in(.trj, t, out = NULL, keep_seized = FALSE)
+renege_in(.trj, t, out = NULL, keep_seized = FALSE, ..., tag)
 
-renege_if(.trj, signal, out = NULL, keep_seized = FALSE)
+renege_if(.trj, signal, out = NULL, keep_seized = FALSE, ..., tag)
 
-renege_abort(.trj)
+renege_abort(.trj, ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -25,6 +25,11 @@ renege_abort(.trj)
 
 \item{keep_seized}{whether to keep already seized resources. By default, all
 resources are released.}
+
+\item{...}{unused.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 
 \item{t}{timeout to trigger reneging, accepts either a numeric or a callable
 object (a function) which must return a numeric.}

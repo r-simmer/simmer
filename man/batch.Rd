@@ -5,9 +5,10 @@
 \alias{separate}
 \title{Batch/Separate Arrivals}
 \usage{
-batch(.trj, n, timeout = 0, permanent = FALSE, name = "", rule = NULL)
+batch(.trj, n, timeout = 0, permanent = FALSE, name = "", rule = NULL,
+  ..., tag)
 
-separate(.trj)
+separate(.trj, ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -30,6 +31,11 @@ across all your \code{batch} activities.}
 \item{rule}{an optional callable object (a function) which will be applied to
 every arrival to determine whether it should be included into the batch, thus
 it must return a boolean.}
+
+\item{...}{unused.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 }
 \value{
 Returns the trajectory object.

@@ -5,14 +5,19 @@
 \alias{deactivate}
 \title{Activate/Deactivate Sources}
 \usage{
-activate(.trj, sources)
+activate(.trj, sources, ..., tag)
 
-deactivate(.trj, sources)
+deactivate(.trj, sources, ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
 
 \item{sources}{the name(s) of the source(s) or a function returning the name(s).}
+
+\item{...}{unused.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 }
 \value{
 Returns the trajectory object.

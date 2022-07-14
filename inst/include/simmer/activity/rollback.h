@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018,2020 Iñaki Ucar
+// Copyright (C) 2016-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -31,19 +31,25 @@ namespace simmer {
   public:
     CLONEABLE(Rollback)
 
+    Rollback(const std::string& target, int times, const OPT<RFn>& check = NONE)
+      : Activity("Rollback"), target(target), amount(0), times(times),
+        check(check), selected(NULL) {}
+
     Rollback(int amount, int times, const OPT<RFn>& check = NONE)
-      : Activity("Rollback"), amount(amount), times(times), check(check),
-        selected(NULL) {}
+      : Activity("Rollback"), target(""), amount(amount), times(times),
+        check(check), selected(NULL) {}
 
     Rollback(const Rollback& o)
-      : Activity(o), amount(o.amount), times(o.times), check(o.check),
-        selected(NULL) {}
+      : Activity(o), target(o.target), amount(o.amount), times(o.times),
+        check(o.check), selected(NULL) {}
 
     void print(unsigned int indent = 0, bool verbose = false, bool brief = false) {
       Activity::print(indent, verbose, brief);
-      std::string amount = MakeString() << this->amount << " (" << goback()->name << ")";
-      if (check) internal::print(brief, true, ARG(amount), ARG(*check));
-      else internal::print(brief, true, ARG(amount), ARG(times));
+      std::string target = this->target;
+      if (target.empty())
+        target = MakeString() << amount << " (" << goback()->name << ")";
+      if (check) internal::print(brief, true, ARG(target), ARG(*check));
+      else internal::print(brief, true, ARG(target), ARG(times));
     }
 
     double run(Arrival* arrival) {
@@ -73,12 +79,29 @@ namespace simmer {
     }
 
   protected:
+    std::string target;
     int amount;
     int times;
     OPT<RFn> check;
     Activity* selected;
 
     Activity* goback() {
+      if (target.empty())
+        return goback_amount();
+      return goback_target();
+    }
+
+  private:
+    Activity* goback_target() {
+      Activity* ptr = this;
+      while (ptr->get_prev() && target.compare(ptr->tag) != 0)
+        ptr = ptr->get_prev();
+      if (target.compare(ptr->tag) != 0)
+        Rcpp::stop("tag %s not found, rollback failed", target);
+      return ptr;
+    }
+
+    Activity* goback_amount() {
       int n = amount;
       Activity* ptr = this;
       while (ptr->get_prev() && n--)

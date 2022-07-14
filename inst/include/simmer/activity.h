@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018,2020 Iñaki Ucar
+// Copyright (C) 2016-2022 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -34,20 +34,22 @@ namespace simmer {
     BASE_CLONEABLE(Activity)
 
     std::string name;
+    std::string tag;
     int count;
     int priority;
 
     /**
      * Constructor.
      * @param name          the name of the activity
-     * @param resource      the resource associated
      * @param priority      simulation priority
      */
     Activity(const std::string& name, int priority = 0)
-      : name(name), count(1), priority(priority), next(NULL), prev(NULL) {}
+      : name(name), tag(""), count(1), priority(priority),
+        next(NULL), prev(NULL) {}
 
     Activity(const Activity& o)
-      : name(o.name), count(o.count), priority(o.priority), next(NULL), prev(NULL) {}
+      : name(o.name), tag(o.tag), count(o.count), priority(o.priority),
+        next(NULL), prev(NULL) {}
 
     virtual ~Activity() {}
 
@@ -64,6 +66,8 @@ namespace simmer {
         FMT(9, right) << prev << " <- " <<
         FMT(9, right) << this << " -> " <<
         FMT(9, left)  << next << " | ";
+      if (!tag.empty()) Rcpp::Rcout <<
+        "[" << tag << "] ";
       Rcpp::Rcout.flags(fmt);
     }
 

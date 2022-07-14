@@ -4,7 +4,7 @@
 \alias{branch}
 \title{Fork the Trajectory Path}
 \usage{
-branch(.trj, option, continue, ...)
+branch(.trj, option, continue, ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -20,6 +20,9 @@ one value is provided, it will be recycled to match the number of sub-trajectori
 
 \item{...}{\code{N} trajectory objects (or a list of \code{N} trajectory objects)
 describing each sub-trajectory.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 }
 \value{
 Returns the trajectory object.
