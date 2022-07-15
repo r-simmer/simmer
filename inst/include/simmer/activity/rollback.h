@@ -97,7 +97,7 @@ namespace simmer {
       while (ptr->get_prev() && target.compare(ptr->tag) != 0)
         ptr = ptr->get_prev();
       if (target.compare(ptr->tag) != 0)
-        Rcpp::stop("tag %s not found, rollback failed", target);
+        Rcpp::stop("tag '%s' not found, rollback failed", target);
       return ptr;
     }
 
