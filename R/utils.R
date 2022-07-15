@@ -41,7 +41,8 @@ is_trajectory <- function(name, env) {
 
 get_caller <- function(max.depth=10) {
   for (i in seq_len(max.depth)) {
-    fun <- as.character(sys.call(-i-1)[[1]])
+    if (!length(fun <- as.character(sys.call(-i-1)[[1]])))
+      break # end of the stack
     if (grepl("\\.(simmer|trajectory)$", fun))
       return(strsplit(fun, ".", fixed=TRUE)[[1]][1])
   }

@@ -488,7 +488,7 @@ timeout_from_attribute.trajectory <- function(.trj, key) {
 timeout_from_global <- function(.trj, key) UseMethod("timeout_from_global")
 
 #' @export
-timeout_from_global <- function(.trj, key) {
+timeout_from_global.trajectory <- function(.trj, key) {
   check_args(key="character")
 
   add_activity(.trj, Timeout__new_attr(key, TRUE))
