@@ -5,9 +5,9 @@
 \alias{set_source}
 \title{Set Source Parameters}
 \usage{
-set_trajectory(.trj, sources, trajectory)
+set_trajectory(.trj, sources, trajectory, ..., tag)
 
-set_source(.trj, sources, object)
+set_source(.trj, sources, object, ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -15,6 +15,11 @@ set_source(.trj, sources, object)
 \item{sources}{the name(s) of the source(s) or a function returning the name(s).}
 
 \item{trajectory}{the trajectory that the generated arrivals will follow.}
+
+\item{...}{unused.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 
 \item{object}{a function modelling the interarrival times (if the source type
 is a generator; returning a negative value or a missing value stops the

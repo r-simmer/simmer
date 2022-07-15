@@ -5,9 +5,9 @@
 \alias{synchronize}
 \title{Clone/Synchronize Arrivals}
 \usage{
-clone(.trj, n, ...)
+clone(.trj, n, ..., tag)
 
-synchronize(.trj, wait = TRUE, mon_all = FALSE)
+synchronize(.trj, wait = TRUE, mon_all = FALSE, ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -17,6 +17,9 @@ synchronize(.trj, wait = TRUE, mon_all = FALSE)
 
 \item{...}{a number of optional parallel sub-trajectories (or a list of
 sub-trajectories). Each clone will follow a different sub-trajectory if available.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 
 \item{wait}{if \code{FALSE}, all clones but the first to arrive are removed.
 if \code{TRUE} (default), all clones but the last to arrive are removed.}

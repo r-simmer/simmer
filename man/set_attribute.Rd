@@ -5,9 +5,9 @@
 \alias{set_global}
 \title{Set Attributes}
 \usage{
-set_attribute(.trj, keys, values, mod = c(NA, "+", "*"), init = 0)
+set_attribute(.trj, keys, values, mod = c(NA, "+", "*"), init = 0, ..., tag)
 
-set_global(.trj, keys, values, mod = c(NA, "+", "*"), init = 0)
+set_global(.trj, keys, values, mod = c(NA, "+", "*"), init = 0, ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -22,6 +22,11 @@ must return numeric value(s).}
 
 \item{init}{initial value, applied if \code{mod} is set and the attribute was
 not previously initialised. Useful for counters or indexes.}
+
+\item{...}{unused.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 }
 \value{
 Returns the trajectory object.

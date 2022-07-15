@@ -165,12 +165,20 @@ Branch__new <- function(option, cont, trj) {
     .Call(`_simmer_Branch__new`, option, cont, trj)
 }
 
-Rollback__new <- function(amount, times) {
-    .Call(`_simmer_Rollback__new`, amount, times)
+Rollback__new1 <- function(target, times) {
+    .Call(`_simmer_Rollback__new1`, target, times)
 }
 
-Rollback__new_func <- function(amount, check) {
-    .Call(`_simmer_Rollback__new_func`, amount, check)
+Rollback__new2 <- function(target, times) {
+    .Call(`_simmer_Rollback__new2`, target, times)
+}
+
+Rollback__new_func1 <- function(target, check) {
+    .Call(`_simmer_Rollback__new_func1`, target, check)
+}
+
+Rollback__new_func2 <- function(target, check) {
+    .Call(`_simmer_Rollback__new_func2`, target, check)
 }
 
 Leave__new <- function(prob, trj, keep_seized) {
@@ -327,6 +335,10 @@ activity_chain_ <- function(first_, second_) {
 
 activity_clone_ <- function(activity_) {
     .Call(`_simmer_activity_clone_`, activity_)
+}
+
+activity_set_tag_ <- function(activity_, tag) {
+    invisible(.Call(`_simmer_activity_set_tag_`, activity_, tag))
 }
 
 MemMonitor__new <- function() {

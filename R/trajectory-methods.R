@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2015 Bart Smeets
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2019 Iñaki Ucar
+# Copyright (C) 2016-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -112,7 +112,13 @@ print.trajectory <- function(x, indent=0, verbose=x$verbose, ...) {
   invisible(x)
 }
 
-add_activity <- function(x, activity) {
+add_activity <- function(x, activity, env.=parent.frame()) {
+  tag <- env.$tag
+  if (!missing(tag)) {
+    if (!is.character(tag))
+      stop(get_caller(), ": 'tag' is not a valid character", call.=FALSE)
+    activity_set_tag_(activity, tag)
+  }
   if (!is.null(x$ptrs))
     activity_chain_(x$tail(), activity)
   x$ptrs <- c(x$ptrs, activity)

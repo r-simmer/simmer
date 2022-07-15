@@ -7,13 +7,13 @@
 \alias{wait}
 \title{Inter-arrival Communication}
 \usage{
-send(.trj, signals, delay = 0)
+send(.trj, signals, delay = 0, ..., tag)
 
-trap(.trj, signals, handler = NULL, interruptible = TRUE)
+trap(.trj, signals, handler = NULL, interruptible = TRUE, ..., tag)
 
-untrap(.trj, signals)
+untrap(.trj, signals, ..., tag)
 
-wait(.trj)
+wait(.trj, ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -24,6 +24,11 @@ list of strings.}
 
 \item{delay}{optional timeout to trigger the signals, accepts either a
 numeric or a callable object (a function) which must return a numeric.}
+
+\item{...}{unused.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 
 \item{handler}{optional trajectory object to handle a signal received.}
 

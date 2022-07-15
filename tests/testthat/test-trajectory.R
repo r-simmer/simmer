@@ -1,5 +1,5 @@
 # Copyright (C) 2015-2016 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2016-2018,2021 Iñaki Ucar
+# Copyright (C) 2016-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -36,6 +36,7 @@ t0 <- trajectory(verbose = TRUE) %>%
   set_trajectory(function() "dummy", trajectory(verbose = TRUE) %>% timeout(1)) %>%
   set_source(function() "dummy", at(0)) %>%
   rollback(1) %>%
+  rollback("foo", tag="foo") %>%
   clone(function() 2, trajectory(verbose = TRUE) %>% timeout(1)) %>%
   synchronize() %>%
   batch(1, rule = function() 0) %>%
@@ -80,6 +81,7 @@ trajs <- c(
                                                   timeout(1)),
   trajectory(verbose = TRUE) %>% set_source(function() "dummy", at(0)),
   trajectory(verbose = TRUE) %>% rollback(1),
+  trajectory(verbose = TRUE) %>% rollback("foo", tag="foo"),
   trajectory(verbose = TRUE) %>% clone(function() 2,
                                        trajectory(verbose = TRUE) %>% timeout(1)),
   trajectory(verbose = TRUE) %>% synchronize(),
@@ -175,15 +177,16 @@ test_that("the trajectory stores the right number of activities", {
     ) %>%
     rollback(1) %>%
     rollback(1, check = function() FALSE) %>%
+    rollback("foo", check = function() FALSE) %>%
     set_attribute("dummy", 1) %>%
     set_attribute("dummy", function() 1)
 
   expect_is(t0, "trajectory")
-  expect_equal(length(t0), 8)
-  expect_equal(get_n_activities(t0), 15)
+  expect_equal(length(t0), 9)
+  expect_equal(get_n_activities(t0), 16)
 
   output <- paste0(".*(",
-    "15 activities",
+    "16 activities",
     ".*Seize.*nurse.*1",
     ".*Timeout.*function",
     ".*Release.*nurse.*1",
@@ -199,6 +202,7 @@ test_that("the trajectory stores the right number of activities", {
         ".*Release.*administration.*1",
     ".*Rollback.*1.*Branch.*1",
     ".*Rollback.*1.*Rollback.*function",
+    ".*Rollback.*foo.*function",
     ".*SetAttribute.*1",
     ".*SetAttribute.*function",
   ").*")

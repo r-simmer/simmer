@@ -10,18 +10,18 @@
 \title{Seize/Release Resources}
 \usage{
 seize(.trj, resource, amount = 1, continue = NULL, post.seize = NULL,
-  reject = NULL)
+  reject = NULL, ..., tag)
 
 seize_selected(.trj, amount = 1, id = 0, continue = NULL,
-  post.seize = NULL, reject = NULL)
+  post.seize = NULL, reject = NULL, ..., tag)
 
-release(.trj, resource, amount = 1)
+release(.trj, resource, amount = 1, ..., tag)
 
-release_selected(.trj, amount = 1, id = 0)
+release_selected(.trj, amount = 1, id = 0, ..., tag)
 
-release_all(.trj, resource)
+release_all(.trj, resource, ..., tag)
 
-release_selected_all(.trj, id = 0)
+release_selected_all(.trj, id = 0, ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -41,6 +41,11 @@ a successful seize.}
 
 \item{reject}{an optional trajectory object which will be followed if the
 arrival is rejected (dropped).}
+
+\item{...}{unused.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 
 \item{id}{selection identifier for nested usage.}
 }

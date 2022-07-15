@@ -1,6 +1,6 @@
 # Copyright (C) 2015-2016 Iñaki Ucar
 # Copyright (C) 2016 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2022 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
-test_that("a rollback points to the correct activity", {
+test_that("a numeric rollback points to the correct activity", {
   t0 <- trajectory() %>%
     seize("nurse", 1) %>%
     timeout(function() rnorm(1, 15)) %>%
@@ -55,6 +55,25 @@ test_that("a rollback points to the correct activity", {
   expect_equal(env %>% get_server_count("dummy"), 2)
 })
 
+test_that("a character rollback points to the correct activity", {
+  t0 <- trajectory() %>%
+    timeout(1, tag="foo")
+  t1 <- trajectory() %>%
+    rollback("foo", 1)
+
+  expect_output(activity_print_(t0$tail(), 0, 0), "| [foo]")
+  expect_output(activity_print_(t1$tail(), 0, 0), "target: foo")
+
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("dummy", t1, at(0))
+  expect_error(run(env), "rollback failed") # tag not found
+
+  env <- simmer(verbose = TRUE) %>%
+    add_generator("dummy", join(t0, t1), at(0)) %>%
+    run()
+  expect_equal(get_mon_arrivals(env)$end_time, 2)
+})
+
 test_that("a rollback loops the correct number of times", {
   three_times <- function() {
     count <- 0
@@ -90,7 +109,7 @@ test_that("a negative amount is converted to positive", {
   t0 <- trajectory() %>% seize("dummy", 1)
 
   expect_silent(t0 %>% rollback(-1, -1))
-  expect_output(activity_print_(t0$tail(), 0, 0), "amount: 1 (Seize), times: 1", fixed = TRUE)
+  expect_output(activity_print_(t0$tail(), 0, 0), "target: 1 (Seize), times: 1", fixed = TRUE)
 })
 
 test_that("a check function that returns a non-boolean value fails", {
@@ -104,7 +123,7 @@ test_that("a check function that returns a non-boolean value fails", {
 })
 
 test_that("incorrect types fail", {
-  expect_error(trajectory() %>% rollback("dummy", 0))
   expect_error(trajectory() %>% rollback(0, "dummy"))
   expect_error(trajectory() %>% rollback(0, check = 0))
+  expect_error(trajectory() %>% rollback(0, tag=0))
 })

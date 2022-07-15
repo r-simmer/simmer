@@ -6,11 +6,11 @@
 \alias{timeout_from_global}
 \title{Delay}
 \usage{
-timeout(.trj, task)
+timeout(.trj, task, ..., tag)
 
-timeout_from_attribute(.trj, key)
+timeout_from_attribute(.trj, key, ..., tag)
 
-timeout_from_global(.trj, key)
+timeout_from_global(.trj, key, ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -18,6 +18,11 @@ timeout_from_global(.trj, key)
 \item{task}{the timeout duration supplied by either passing a numeric or a
 callable object (a function) which must return a numeric (negative values are
 automatically coerced to positive).}
+
+\item{...}{unused.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 
 \item{key}{the attribute name, or a callable object (a function) which
 must return the attribute name.}

@@ -528,27 +528,51 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Rollback__new
-SEXP Rollback__new(int amount, int times);
-RcppExport SEXP _simmer_Rollback__new(SEXP amountSEXP, SEXP timesSEXP) {
+// Rollback__new1
+SEXP Rollback__new1(const std::string& target, int times);
+RcppExport SEXP _simmer_Rollback__new1(SEXP targetSEXP, SEXP timesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type amount(amountSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type target(targetSEXP);
     Rcpp::traits::input_parameter< int >::type times(timesSEXP);
-    rcpp_result_gen = Rcpp::wrap(Rollback__new(amount, times));
+    rcpp_result_gen = Rcpp::wrap(Rollback__new1(target, times));
     return rcpp_result_gen;
 END_RCPP
 }
-// Rollback__new_func
-SEXP Rollback__new_func(int amount, const Function& check);
-RcppExport SEXP _simmer_Rollback__new_func(SEXP amountSEXP, SEXP checkSEXP) {
+// Rollback__new2
+SEXP Rollback__new2(int target, int times);
+RcppExport SEXP _simmer_Rollback__new2(SEXP targetSEXP, SEXP timesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type amount(amountSEXP);
+    Rcpp::traits::input_parameter< int >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< int >::type times(timesSEXP);
+    rcpp_result_gen = Rcpp::wrap(Rollback__new2(target, times));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Rollback__new_func1
+SEXP Rollback__new_func1(const std::string& target, const Function& check);
+RcppExport SEXP _simmer_Rollback__new_func1(SEXP targetSEXP, SEXP checkSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type target(targetSEXP);
     Rcpp::traits::input_parameter< const Function& >::type check(checkSEXP);
-    rcpp_result_gen = Rcpp::wrap(Rollback__new_func(amount, check));
+    rcpp_result_gen = Rcpp::wrap(Rollback__new_func1(target, check));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Rollback__new_func2
+SEXP Rollback__new_func2(int target, const Function& check);
+RcppExport SEXP _simmer_Rollback__new_func2(SEXP targetSEXP, SEXP checkSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const Function& >::type check(checkSEXP);
+    rcpp_result_gen = Rcpp::wrap(Rollback__new_func2(target, check));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1030,6 +1054,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
     rcpp_result_gen = Rcpp::wrap(activity_clone_(activity_));
     return rcpp_result_gen;
+END_RCPP
+}
+// activity_set_tag_
+void activity_set_tag_(SEXP activity_, const std::string& tag);
+RcppExport SEXP _simmer_activity_set_tag_(SEXP activity_SEXP, SEXP tagSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type activity_(activity_SEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type tag(tagSEXP);
+    activity_set_tag_(activity_, tag);
+    return R_NilValue;
 END_RCPP
 }
 // MemMonitor__new
@@ -1543,8 +1578,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_Timeout__new_func", (DL_FUNC) &_simmer_Timeout__new_func, 1},
     {"_simmer_Timeout__new_attr", (DL_FUNC) &_simmer_Timeout__new_attr, 2},
     {"_simmer_Branch__new", (DL_FUNC) &_simmer_Branch__new, 3},
-    {"_simmer_Rollback__new", (DL_FUNC) &_simmer_Rollback__new, 2},
-    {"_simmer_Rollback__new_func", (DL_FUNC) &_simmer_Rollback__new_func, 2},
+    {"_simmer_Rollback__new1", (DL_FUNC) &_simmer_Rollback__new1, 2},
+    {"_simmer_Rollback__new2", (DL_FUNC) &_simmer_Rollback__new2, 2},
+    {"_simmer_Rollback__new_func1", (DL_FUNC) &_simmer_Rollback__new_func1, 2},
+    {"_simmer_Rollback__new_func2", (DL_FUNC) &_simmer_Rollback__new_func2, 2},
     {"_simmer_Leave__new", (DL_FUNC) &_simmer_Leave__new, 3},
     {"_simmer_HandleUnfinished__new", (DL_FUNC) &_simmer_HandleUnfinished__new, 1},
     {"_simmer_Leave__new_func", (DL_FUNC) &_simmer_Leave__new_func, 3},
@@ -1584,6 +1621,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_activity_get_prev_", (DL_FUNC) &_simmer_activity_get_prev_, 1},
     {"_simmer_activity_chain_", (DL_FUNC) &_simmer_activity_chain_, 2},
     {"_simmer_activity_clone_", (DL_FUNC) &_simmer_activity_clone_, 1},
+    {"_simmer_activity_set_tag_", (DL_FUNC) &_simmer_activity_set_tag_, 2},
     {"_simmer_MemMonitor__new", (DL_FUNC) &_simmer_MemMonitor__new, 0},
     {"_simmer_CsvMonitor__new", (DL_FUNC) &_simmer_CsvMonitor__new, 5},
     {"_simmer_close_files_", (DL_FUNC) &_simmer_close_files_, 1},

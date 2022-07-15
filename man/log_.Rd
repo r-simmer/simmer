@@ -5,9 +5,9 @@
 \alias{stop_if}
 \title{Debugging}
 \usage{
-log_(.trj, message, level = 0)
+log_(.trj, message, level = 0, ..., tag)
 
-stop_if(.trj, condition)
+stop_if(.trj, condition, ..., tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}
@@ -18,6 +18,11 @@ stop_if(.trj, condition)
 \item{level}{debugging level. The \code{message} will be printed if, and only if,
 the \code{level} provided is less or equal to the \code{log_level} defined in the
 simulation environment (see \code{\link{simmer}}).}
+
+\item{...}{unused.}
+
+\item{tag}{activity tag name to perform named rollbacks (see
+\code{\link{rollback}}) or just to better identify your activities.}
 
 \item{condition}{a boolean or a function returning a boolean.}
 }
