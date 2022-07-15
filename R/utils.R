@@ -39,8 +39,13 @@ is_trajectory <- function(name, env) {
   else inherits(env[[name]], "trajectory")
 }
 
-get_caller <- function(n=1) {
-  sub("\\.[[:alpha:]]+$", "", as.character(sys.call(-n-1))[[1]])
+get_caller <- function(max.depth=10) {
+  for (i in seq_len(max.depth)) {
+    fun <- as.character(sys.call(-i-1)[[1]])
+    if (grepl("\\.(simmer|trajectory)$", fun))
+      return(strsplit(fun, ".", fixed=TRUE)[[1]][1])
+  }
+  return("") # nocov
 }
 
 check_args <- function(..., env.=parent.frame()) {
@@ -60,7 +65,7 @@ check_args <- function(..., env.=parent.frame()) {
   }
 
   if (length(msg))
-    stop(get_caller(2), ": ", paste0(msg, collapse=", "), call.=FALSE)
+    stop(get_caller(), ": ", paste0(msg, collapse=", "), call.=FALSE)
 }
 
 positive <- function(x) {
