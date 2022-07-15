@@ -65,14 +65,14 @@ simulate <- function(fork_seq, time, thinking=function() rexp(1, 1),
     forks <- paste0("fork_", fork_seq[[i]])
 
     dining <- trajectory() %>%
-      timeout(thinking) %>%
+      timeout(thinking, tag="think") %>%
       seize(forks[[1]]) %>%
       timeout(lag) %>%
       seize(forks[[2]]) %>%
       timeout(eating) %>%
       release(forks[[1]]) %>%
       release(forks[[2]]) %>%
-      rollback(7) # back to think
+      rollback("think") # back to think
 
     env %>%
       add_resource(paste0("fork_", i)) %>%
