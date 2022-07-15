@@ -1126,12 +1126,12 @@ rollback <- function(
     ..., tag)
 {
   args <- list(...)
-  if (missing(target) && "amount" %in% names(args)) {
+  if (missing(target) && "amount" %in% names(args)) { # nocov start
     warning("argument 'amount' is deprecated, use 'target' instead")
     if (missing(tag))
       return(rollback(.trj, args$amount, times, check))
     return(rollback(.trj, args$amount, times, check, tag=tag))
-  }
+  } # nocov end
   UseMethod("rollback")
 }
 

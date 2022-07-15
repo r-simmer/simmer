@@ -125,4 +125,5 @@ test_that("a check function that returns a non-boolean value fails", {
 test_that("incorrect types fail", {
   expect_error(trajectory() %>% rollback(0, "dummy"))
   expect_error(trajectory() %>% rollback(0, check = 0))
+  expect_error(trajectory() %>% rollback(0, tag=0))
 })
