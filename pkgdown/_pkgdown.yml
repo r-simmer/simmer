@@ -2,6 +2,7 @@ title: simmer | DES for R
 url: https://r-simmer.org
 
 template:
+  bootstrap: 5
   params:
     bootswatch: yeti
     ganalytics: UA-115358925-1
@@ -64,9 +65,8 @@ reference:
     - schedule
 
 navbar:
+  bg: dark
   left:
-  - icon: fa-home
-    href: ./
   - text: "Reference"
     icon: fa-gears
     href: reference/index.html
@@ -96,12 +96,10 @@ navbar:
   - text: "News"
     icon: fa-newspaper-o
     href: news/index.html
-  - text: "GitHub"
-    icon: fa-github
-    href: https://github.com/r-simmer/simmer
   right:
-  - text: "Extensions"
-    icon: fa-puzzle-piece
+  - icon: fa-github
+    href: https://github.com/r-simmer/simmer
+  - icon: fa-puzzle-piece
     menu:
     - text: "simmer.plot"
       href: extensions/plot
