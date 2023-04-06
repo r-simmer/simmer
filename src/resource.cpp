@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Bart Smeets
 // Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-// Copyright (C) 2015-2022 Iñaki Ucar
+// Copyright (C) 2015-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -44,42 +44,42 @@ Vector<RTYPE> get_param(SEXP sim_, int id, const Fn<T(Resource*)>& param) {
 
 //[[Rcpp::export]]
 SEXP get_capacity_(SEXP sim_, const std::vector<std::string>& names) {
-  return get_param<INTSXP,int>(sim_, names, boost::mem_fn(&Resource::get_capacity));
+  return get_param<INTSXP,int>(sim_, names, std::mem_fn(&Resource::get_capacity));
 }
 
 //[[Rcpp::export]]
 SEXP get_capacity_selected_(SEXP sim_, int id) {
-  return get_param<INTSXP,int>(sim_, id, boost::mem_fn(&Resource::get_capacity));
+  return get_param<INTSXP,int>(sim_, id, std::mem_fn(&Resource::get_capacity));
 }
 
 //[[Rcpp::export]]
 SEXP get_queue_size_(SEXP sim_, const std::vector<std::string>& names) {
-  return get_param<INTSXP,int>(sim_, names, boost::mem_fn(&Resource::get_queue_size));
+  return get_param<INTSXP,int>(sim_, names, std::mem_fn(&Resource::get_queue_size));
 }
 
 //[[Rcpp::export]]
 SEXP get_queue_size_selected_(SEXP sim_, int id) {
-  return get_param<INTSXP,int>(sim_, id, boost::mem_fn(&Resource::get_queue_size));
+  return get_param<INTSXP,int>(sim_, id, std::mem_fn(&Resource::get_queue_size));
 }
 
 //[[Rcpp::export]]
 SEXP get_server_count_(SEXP sim_, const std::vector<std::string>& names) {
-  return get_param<INTSXP,int>(sim_, names, boost::mem_fn(&Resource::get_server_count));
+  return get_param<INTSXP,int>(sim_, names, std::mem_fn(&Resource::get_server_count));
 }
 
 //[[Rcpp::export]]
 SEXP get_server_count_selected_(SEXP sim_, int id) {
-  return get_param<INTSXP,int>(sim_, id, boost::mem_fn(&Resource::get_server_count));
+  return get_param<INTSXP,int>(sim_, id, std::mem_fn(&Resource::get_server_count));
 }
 
 //[[Rcpp::export]]
 SEXP get_queue_count_(SEXP sim_, const std::vector<std::string>& names) {
-  return get_param<INTSXP,int>(sim_, names, boost::mem_fn(&Resource::get_queue_count));
+  return get_param<INTSXP,int>(sim_, names, std::mem_fn(&Resource::get_queue_count));
 }
 
 //[[Rcpp::export]]
 SEXP get_queue_count_selected_(SEXP sim_, int id) {
-  return get_param<INTSXP,int>(sim_, id, boost::mem_fn(&Resource::get_queue_count));
+  return get_param<INTSXP,int>(sim_, id, std::mem_fn(&Resource::get_queue_count));
 }
 
 //[[Rcpp::export]]

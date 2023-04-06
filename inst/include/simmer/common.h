@@ -49,11 +49,11 @@
 #define NONE  boost::none
 #define ANY   boost::any
 
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
+#include <functional>
+using namespace std::placeholders;
 
-#define Fn    boost::function
-#define BIND  boost::bind
+#define Fn    std::function
+#define BIND  std::bind
 
 #define FMT(n, justify) std::setw(n) << std::justify
 #define IND(n) std::string(n, ' ')
