@@ -44,12 +44,10 @@
 #include <boost/optional.hpp>
 #include <boost/typeof/typeof.hpp>
 #include <boost/any.hpp>
-#include <boost/shared_ptr.hpp>
 
 #define OPT   boost::optional
 #define NONE  boost::none
 #define ANY   boost::any
-#define SHD   boost::shared_ptr
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>

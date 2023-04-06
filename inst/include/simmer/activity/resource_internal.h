@@ -90,7 +90,7 @@ namespace simmer { namespace internal {
 
   private:
     std::string name;
-    SHD<int> state;
+    std::shared_ptr<int> state;
     bool check_available;
     MethodMap policies;
 
