@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2022 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -21,7 +21,6 @@
 
 #include <simmer/common.h>
 
-#define MAX_PRINT_ARGS 5
 #define ARG(arg) (#arg": "), arg
 
 namespace simmer {
@@ -141,27 +140,12 @@ namespace simmer {
       else if (endl) Rcpp::Rcout << std::endl;
     }
 
-    #define ARG_NAME_TYPE(N, D) const char*
-    #define ARG_VAL_TYPE(N, D) BOOST_PP_CAT(T, BOOST_PP_ADD(N, D))&
-    #define ARG_EMPTY_TYPE(N, D) BOOST_PP_EMPTY()
-
-    #define PRINT_ARGS(Z, N, D) BOOST_PP_COMMA_IF(BOOST_PP_ADD(N, D))         \
-      BOOST_PP_IF(D, ARG_EMPTY_TYPE, ARG_NAME_TYPE)(N, D)                     \
-      BOOST_PP_CAT(n, BOOST_PP_ADD(N, D)) BOOST_PP_COMMA()                    \
-      BOOST_PP_IF(D, ARG_EMPTY_TYPE, ARG_VAL_TYPE)(N, D)                      \
-      BOOST_PP_CAT(v, BOOST_PP_ADD(N, D))
-
-    #define NO_LAST_ARG(N) BOOST_PP_IF(BOOST_PP_SUB(N, 1), true, false)
-
-    #define PRINT_FUNC(Z, N, D)                                               \
-    template<BOOST_PP_ENUM_PARAMS(N, typename T)>                             \
-    void print(bool brief, bool endl, BOOST_PP_REPEAT(N, PRINT_ARGS, 0)) {    \
-      using simmer::operator<<; /* gcc-4.8.4 fails miserably without this */  \
-      if (!brief) Rcpp::Rcout << n0;                                          \
-      Rcpp::Rcout << v0 << (NO_LAST_ARG(N) || (brief && !endl) ? ", " : "");  \
-      print(brief, endl BOOST_PP_REPEAT(BOOST_PP_SUB(N, 1), PRINT_ARGS, 1));  \
+    template <typename T, typename... Args>
+    void print(bool brief, bool endl, const char* n, const T& v, const Args&... args) {
+      if (!brief) Rcpp::Rcout << n;
+      Rcpp::Rcout << v << (sizeof...(args) > 0 || (brief && !endl) ? ", " : "");
+      print(brief, endl, args...);
     }
-    BOOST_PP_REPEAT_FROM_TO(1, BOOST_PP_ADD(MAX_PRINT_ARGS, 1), PRINT_FUNC, ~)
 
     template <typename T>
     Fn<T(T, T)> get_op(char mod) {
