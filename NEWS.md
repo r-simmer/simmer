@@ -1,4 +1,4 @@
-# simmer 4.4.5.2
+# simmer 4.4.5.3
 
 ## New features
 
@@ -6,6 +6,7 @@
 - Add support for named rollbacks via tags. The `amount` argument is deprecated
   in favor of the more generic name `target`. The former will still work, but
   raises a warning (#287 addressing #197).
+- Switch to C++17, drop Boost usage (#297).
 
 ## Minor changes and fixes
 
