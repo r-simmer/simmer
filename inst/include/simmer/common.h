@@ -41,10 +41,10 @@
 #define MAP   std::map
 #define VEC   std::vector
 
-#include <boost/optional.hpp>
+#include <optional>
 
-#define OPT   boost::optional
-#define NONE  boost::none
+#define OPT   std::optional
+#define NONE  std::nullopt
 
 #include <functional>
 using namespace std::placeholders;
