@@ -1,5 +1,5 @@
 // Copyright (C) 2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2022 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -33,7 +33,7 @@ namespace simmer {
   }
 
   inline void Arrival::terminate(bool finished) {
-    foreach_ (ResVec::value_type& itr, resources) {
+    for (auto& itr : resources) {
       if (itr->is_waiting(this))
         itr->remove(this);
     }
@@ -43,7 +43,7 @@ namespace simmer {
       return;
     }
 
-    foreach_ (ResVec::value_type& itr, resources) {
+    for (auto& itr : resources) {
       Rcpp::warning("'%s': leaving without releasing '%s'", name, itr->name);
       itr->remove(this, true);
     }
@@ -92,7 +92,7 @@ namespace simmer {
     if (status.busy_until > sim->now())
       unset_busy(sim->now());
     unset_remaining();
-    foreach_ (ResVec::value_type& itr, resources) {
+    for (auto& itr : resources) {
       if (itr->is_waiting(this))
         --paused;
       if (!keep_seized || itr->is_waiting(this))

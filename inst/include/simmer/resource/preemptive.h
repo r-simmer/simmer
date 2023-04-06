@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2019 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -41,7 +41,7 @@ namespace simmer {
 
     void reset() {
       PriorityRes<T>::reset();
-      foreach_ (RPQueue::value_type& itr, preempted)
+      for (auto& itr : preempted)
         delete itr.arrival;
       preempted.clear();
       preempted_map.clear();
@@ -81,7 +81,7 @@ namespace simmer {
       if (PriorityRes<T>::room_in_server(amount, priority))
         return true;
       int count = (capacity > 0) ? (capacity - server_count) : 0;
-      foreach_ (const typename T::value_type& itr, server) {
+      for (const auto& itr : server) {
         if (priority > itr.preemptible())
           count += itr.amount;
         else

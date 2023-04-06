@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018,2020 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -112,7 +112,7 @@ namespace simmer {
         return res->release(arrival, res->get_seized(arrival));
       }
 
-      foreach_ (const std::string& resource, arrival->sim->get_resources()) {
+      for (const auto& resource : arrival->sim->get_resources()) {
         Resource* res = arrival->sim->get_resource(resource);
         res->release(arrival, res->get_seized(arrival));
       }

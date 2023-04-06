@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2019,2021 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -43,7 +43,7 @@ namespace simmer {
 
     void reset() {
       Resource::reset();
-      foreach_ (RPQueue::value_type& itr, queue)
+      for (auto& itr : queue)
         delete itr.arrival;
       queue.clear();
       queue_map.clear();
@@ -89,9 +89,9 @@ namespace simmer {
       if (queue_size < 0 || queue_count + amount <= queue_size)
         return true;
       int count = (queue_size > 0) ? (queue_size - queue_count) : 0;
-      foreach_r_ (const RPQueue::value_type& itr, queue) {
-        if (priority > itr.priority())
-          count += itr.amount;
+      for (auto itr = queue.rbegin(); itr != queue.rend(); ++itr) {
+        if (priority > itr->priority())
+          count += itr->amount;
         else
           break;
         if (count >= amount)

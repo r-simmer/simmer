@@ -1,4 +1,4 @@
-// Copyright (C) 2018,2021 Iñaki Ucar
+// Copyright (C) 2018-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -66,7 +66,7 @@ namespace simmer {
 
       if (!df.containsElementNamed(col_time.c_str()))
         Rcpp::stop("column '%s' not present", col_time);
-      foreach_ (const std::string& col_attr, col_attrs) {
+      for (const auto& col_attr : col_attrs) {
         if (!df.containsElementNamed(col_attr.c_str()))
           Rcpp::stop("column '%s' not present", col_attr);
       }
@@ -80,7 +80,7 @@ namespace simmer {
       source = df;
       time = source[col_time];
       attrs.clear();
-      foreach_ (const std::string& col_attr, col_attrs)
+      for (const auto& col_attr : col_attrs)
         attrs.push_back(source[col_attr]);
       if (col_priority) priority = source[*col_priority];
       if (col_preemptible) preemptible = source[*col_preemptible];

@@ -1,4 +1,4 @@
-// Copyright (C) 2018,2021 Iñaki Ucar
+// Copyright (C) 2018-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -53,7 +53,7 @@ namespace simmer {
     }
 
     virtual bool deactivate() {
-      foreach_ (Arrival* arrival, ahead) {
+      for (auto arrival : ahead) {
         arrival->deactivate();
         delete arrival;
         count--;

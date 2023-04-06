@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018,2020-2021 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -50,11 +50,6 @@
 #define NONE  boost::none
 #define ANY   boost::any
 #define SHD   boost::shared_ptr
-
-#include <boost/foreach.hpp>
-
-#define foreach_    BOOST_FOREACH
-#define foreach_r_  BOOST_REVERSE_FOREACH
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>

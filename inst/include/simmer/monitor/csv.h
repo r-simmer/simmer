@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2022 Iñaki Ucar
+// Copyright (C) 2018-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -34,7 +34,7 @@ namespace simmer {
         i = 0;
         n_cols = (int) header.size();
         this->sep = sep;
-        foreach_ (const std::string& name, header)
+        for (const auto& name : header)
           *this << name;
         flush();
       }

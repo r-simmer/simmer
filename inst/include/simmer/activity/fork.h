@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2022 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -29,7 +29,7 @@ namespace simmer {
     Fork(const VEC<bool>& cont, const VEC<REnv>& trj)
       : Activity("Fork"), cont(cont), trj(trj), path(-1)
     {
-      foreach_ (const VEC<REnv>::value_type& itr, trj) {
+      for (const auto& itr : trj) {
         Activity* head = internal::head(itr);
         if (head) head->set_prev(this);
         heads.push_back(head);
@@ -41,7 +41,7 @@ namespace simmer {
     Fork(const Fork& o) : Activity(o), cont(o.cont), trj(o.trj), path(-1) {
       heads.clear();
       tails.clear();
-      foreach_ (VEC<REnv>::value_type& itr, trj) {
+      for (auto& itr : trj) {
         itr = internal::clone(itr);
         Activity* head = internal::head(itr);
         if (head) head->set_prev(this);

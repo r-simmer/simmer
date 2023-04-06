@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2022 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -43,7 +43,7 @@ namespace simmer {
     ~Batched() { reset(); }
 
     void terminate(bool finished) {
-      foreach_ (Arrival* arrival, arrivals)
+      for (auto arrival : arrivals)
         arrival->terminate(finished);
       arrivals.clear();
       Arrival::terminate(finished);
@@ -51,7 +51,7 @@ namespace simmer {
 
     bool pop_all(Activity* next) {
       if (permanent) return false;
-      foreach_ (Arrival* arrival, arrivals) {
+      for (auto arrival : arrivals) {
         arrival->set_activity(next);
         arrival->unregister_entity(this);
         arrival->activate();
@@ -64,7 +64,7 @@ namespace simmer {
     void set_attribute(const std::string& key, double value, bool global=false) {
       if (global) return sim->set_attribute(key, value);
       attributes[key] = value;
-      foreach_ (Arrival* arrival, arrivals)
+      for (auto arrival : arrivals)
         arrival->set_attribute(key, value);
     }
 
@@ -111,13 +111,13 @@ namespace simmer {
     bool permanent;
 
     void reset() {
-      foreach_ (Arrival* arrival, arrivals)
+      for (auto arrival : arrivals)
         delete arrival;
       arrivals.clear();
     }
 
     void report(const std::string& resource) const {
-      foreach_ (const Arrival* arrival, arrivals) {
+      for (const auto arrival : arrivals) {
         if (arrival->is_monitored()) {
           ArrTime time = restime.find(resource)->second;
           arrival->report(resource, time.start, time.activity);
@@ -126,33 +126,33 @@ namespace simmer {
     }
 
     void report(const std::string& resource, double start, double activity) const {
-      foreach_ (const Arrival* arrival, arrivals) {
+      for (const auto arrival : arrivals) {
         if (arrival->is_monitored())
           arrival->report(resource, start, activity);
       }
     }
 
     void report(Arrival* arrival) const {
-      foreach_ (const ResTime::value_type& itr, restime)
+      for (const auto& itr : restime)
         arrival->report(itr.first, itr.second.start,
                         itr.second.activity - status.busy_until + sim->now());
     }
 
     void update_activity(double value) {
       Arrival::update_activity(value);
-      foreach_ (Arrival* arrival, arrivals)
+      for (auto arrival : arrivals)
         arrival->update_activity(value);
     }
 
     void set_remaining(double value) {
       Arrival::set_remaining(value);
-      foreach_ (Arrival* arrival, arrivals)
+      for (auto arrival : arrivals)
         arrival->set_remaining(value);
     }
 
     void set_busy(double value) {
       Arrival::set_busy(value);
-      foreach_ (Arrival* arrival, arrivals)
+      for (auto arrival : arrivals)
         arrival->set_busy(value);
     }
   };

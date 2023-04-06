@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2020 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -154,7 +154,7 @@ namespace simmer { namespace internal {
 
     Resource* policy_random(Simulator* sim, const VEC<std::string>& resources) {
       VEC<Resource*> available;
-      foreach_ (const std::string& name, resources) {
+      for (const auto& name : resources) {
         Resource* res = sim->get_resource(name);
         if (!check_available || res->get_capacity())
           available.push_back(res);

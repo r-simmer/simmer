@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2022 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -268,10 +268,10 @@ namespace simmer {
 
     void reset() {
       cancel_renege();
-      foreach_ (ActVec::value_type& itr, act_this)
+      for (auto& itr : act_this)
         itr->remove(this);
       if (!--(*clones)) {
-        foreach_ (ActVec::value_type& itr, *act_shd)
+        for (auto& itr : *act_shd)
           itr->remove(this);
         delete act_shd;
         delete sync;
@@ -296,7 +296,7 @@ namespace simmer {
     virtual void update_activity(double value) {
       lifetime.activity += value;
       if (is_monitored()) {
-        foreach_ (ResTime::value_type& itr, restime)
+        for (auto& itr : restime)
           itr.second.activity += value;
       }
     }
