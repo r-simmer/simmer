@@ -42,12 +42,9 @@
 #define VEC   std::vector
 
 #include <boost/optional.hpp>
-#include <boost/typeof/typeof.hpp>
-#include <boost/any.hpp>
 
 #define OPT   boost::optional
 #define NONE  boost::none
-#define ANY   boost::any
 
 #include <functional>
 using namespace std::placeholders;

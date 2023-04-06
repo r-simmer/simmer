@@ -59,10 +59,10 @@ namespace simmer {
       sim->schedule(delay, this, Source::priority);
     }
 
-    void set_source(const ANY& new_source) {
+    void set_source(const std::any& new_source) {
       if (new_source.type() != typeid(RData))
         Rcpp::stop("data frame required");
-      RData df = boost::any_cast<RData>(new_source);
+      RData df = std::any_cast<RData>(new_source);
 
       if (!df.containsElementNamed(col_time.c_str()))
         Rcpp::stop("column '%s' not present", col_time);

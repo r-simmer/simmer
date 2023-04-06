@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018,2021 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -39,10 +39,10 @@ namespace simmer {
       reset_fun();
     }
 
-    void set_source(const ANY& new_source) {
+    void set_source(const std::any& new_source) {
       if (new_source.type() != typeid(RFn))
         Rcpp::stop("function required");
-      source = boost::any_cast<RFn>(new_source);
+      source = std::any_cast<RFn>(new_source);
     }
 
     void run() {
