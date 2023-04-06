@@ -21,6 +21,7 @@
 #include <simmer/common.h>
 #include <simmer/simulator.h>
 #include <simmer/resource.h>
+#include <memory>
 
 namespace simmer { namespace internal {
 

@@ -29,15 +29,15 @@
 #define RStr  Rcpp::CharacterVector
 #define RBool Rcpp::LogicalVector
 
-#include <boost/container/set.hpp>
-#include <boost/unordered_set.hpp>
-#include <boost/unordered_map.hpp>
+#include <set>
+#include <unordered_set>
+#include <unordered_map>
 #include <map>
 #include <vector>
 
-#define MSET  boost::container::multiset
-#define USET  boost::unordered_set
-#define UMAP  boost::unordered_map
+#define MSET  std::multiset
+#define USET  std::unordered_set
+#define UMAP  std::unordered_map
 #define MAP   std::map
 #define VEC   std::vector
 
