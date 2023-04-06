@@ -1,4 +1,4 @@
-// Copyright (C) 2018,2021 Iñaki Ucar
+// Copyright (C) 2018-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -22,6 +22,7 @@
 #include <simmer/process/order.h>
 #include <simmer/process/arrival.h>
 #include <simmer/activity.h>
+#include <any>
 
 namespace simmer {
   /**
@@ -53,7 +54,7 @@ namespace simmer {
     }
 
     virtual bool deactivate() {
-      foreach_ (Arrival* arrival, ahead) {
+      for (auto arrival : ahead) {
         arrival->deactivate();
         delete arrival;
         count--;
@@ -66,7 +67,7 @@ namespace simmer {
 
     REnv get_trajectory() const { return trj; }
 
-    virtual void set_source(const ANY& new_source) = 0;
+    virtual void set_source(const std::any& new_source) = 0;
 
     void set_trajectory(const REnv& new_trj) {
       trj = new_trj;

@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Bart Smeets
 // Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-// Copyright (C) 2015-2020 Iñaki Ucar
+// Copyright (C) 2015-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -79,9 +79,9 @@ bool add_dataframe_(SEXP sim_, const std::string& name_prefix, const Environment
 
   DataSrc* gen = new DataSrc(
     sim, name_prefix, mon, trj, data, batch, time, attrs,
-    priority.empty() ? NONE : boost::make_optional(priority[0]),
-    preemptible.empty() ? NONE : boost::make_optional(preemptible[0]),
-    restart.empty() ? NONE : boost::make_optional(restart[0]));
+    priority.empty() ? NONE : std::make_optional(priority[0]),
+    preemptible.empty() ? NONE : std::make_optional(preemptible[0]),
+    restart.empty() ? NONE : std::make_optional(restart[0]));
 
   bool ret = sim->add_process(gen);
 

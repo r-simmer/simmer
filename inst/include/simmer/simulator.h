@@ -1,6 +1,6 @@
 // Copyright (C) 2014-2015 Bart Smeets
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2022 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -158,7 +158,7 @@ namespace simmer {
 
     VEC<std::string> get_resources() const {
       VEC<std::string> out;
-      foreach_ (const EntMap::value_type& itr, resource_map)
+      for (const auto& itr : resource_map)
         out.push_back(itr.first);
       return out;
     }
@@ -183,11 +183,11 @@ namespace simmer {
       arrival_map[arrival].emplace(signal);
     }
     void subscribe(const VEC<std::string>& signals, Arrival* arrival, Fn<void()> handler) {
-      foreach_ (const std::string& signal, signals)
+      for (const auto& signal : signals)
         subscribe(signal, arrival, handler);
     }
     void subscribe(Arrival* arrival) {
-      foreach_ (const std::string& signal, arrival_map[arrival])
+      for (const auto& signal : arrival_map[arrival])
         signal_map[signal][arrival].first = true;
     }
     void unsubscribe(const std::string& signal, Arrival* arrival) {
@@ -195,11 +195,11 @@ namespace simmer {
       arrival_map[arrival].erase(signal);
     }
     void unsubscribe(const VEC<std::string>& signals, Arrival* arrival) {
-      foreach_ (const std::string& signal, signals)
+      for (const auto& signal : signals)
         unsubscribe(signal, arrival);
     }
     void unsubscribe(Arrival* arrival) {
-      foreach_ (const std::string& signal, arrival_map[arrival])
+      for (const auto& signal : arrival_map[arrival])
         signal_map[signal][arrival].first = false;
     }
 
@@ -216,7 +216,7 @@ namespace simmer {
 
     void register_arrival(Arrival* arrival) { arrival_map[arrival]; }
     void unregister_arrival(Arrival* arrival) {
-      foreach_ (const std::string& signal, arrival_map[arrival])
+      for (const auto& signal : arrival_map[arrival])
         signal_map[signal].erase(arrival);
       arrival_map.erase(arrival);
     }

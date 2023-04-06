@@ -1,4 +1,4 @@
-// Copyright (C) 2015-2018 Iñaki Ucar
+// Copyright (C) 2015-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -19,14 +19,14 @@
 #define simmer__monitor_memory_h
 
 #include <simmer/monitor.h>
-#include <boost/variant.hpp>
+#include <variant>
 
 namespace simmer {
 
   namespace internal {
 
     class MonitorMap {
-      typedef boost::variant< VEC<bool>, VEC<int>, VEC<double>, VEC<std::string> > _vec;
+      typedef std::variant< VEC<bool>, VEC<int>, VEC<double>, VEC<std::string> > _vec;
       typedef UMAP<std::string, _vec> _map;
 
     public:
@@ -34,7 +34,7 @@ namespace simmer {
       VEC<T> get(const std::string& key) const {
         _map::const_iterator search = map.find(key);
         if (search != map.end())
-          return boost::get< VEC<T> >(search->second);
+          return std::get< VEC<T> >(search->second);
         return VEC<T>();
       }
 
@@ -42,7 +42,7 @@ namespace simmer {
       void push_back(const std::string& key, const T& value) {
         if (map.find(key) == map.end())
           map[key] = VEC<T>();
-        boost::get< VEC<T> >(map[key]).push_back(value);
+        std::get< VEC<T> >(map[key]).push_back(value);
       }
 
       void clear() { map.clear(); }

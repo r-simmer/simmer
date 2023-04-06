@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018,2020-2021 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -29,38 +29,28 @@
 #define RStr  Rcpp::CharacterVector
 #define RBool Rcpp::LogicalVector
 
-#include <boost/container/set.hpp>
-#include <boost/unordered_set.hpp>
-#include <boost/unordered_map.hpp>
+#include <set>
+#include <unordered_set>
+#include <unordered_map>
 #include <map>
 #include <vector>
 
-#define MSET  boost::container::multiset
-#define USET  boost::unordered_set
-#define UMAP  boost::unordered_map
+#define MSET  std::multiset
+#define USET  std::unordered_set
+#define UMAP  std::unordered_map
 #define MAP   std::map
 #define VEC   std::vector
 
-#include <boost/optional.hpp>
-#include <boost/typeof/typeof.hpp>
-#include <boost/any.hpp>
-#include <boost/shared_ptr.hpp>
+#include <optional>
 
-#define OPT   boost::optional
-#define NONE  boost::none
-#define ANY   boost::any
-#define SHD   boost::shared_ptr
+#define OPT   std::optional
+#define NONE  std::nullopt
 
-#include <boost/foreach.hpp>
+#include <functional>
+using namespace std::placeholders;
 
-#define foreach_    BOOST_FOREACH
-#define foreach_r_  BOOST_REVERSE_FOREACH
-
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
-
-#define Fn    boost::function
-#define BIND  boost::bind
+#define Fn    std::function
+#define BIND  std::bind
 
 #define FMT(n, justify) std::setw(n) << std::justify
 #define IND(n) std::string(n, ' ')

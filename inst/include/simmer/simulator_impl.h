@@ -1,6 +1,6 @@
 // Copyright (C) 2014-2015 Bart Smeets
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2022 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -41,24 +41,24 @@
 namespace simmer {
 
   inline Simulator::~Simulator() {
-    foreach_ (EntMap::value_type& itr, resource_map)
+    for (auto& itr : resource_map)
       delete itr.second;
-    foreach_ (PQueue::value_type& itr, event_queue)
+    for (auto& itr : event_queue)
       if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
-    foreach_ (EntMap::value_type& itr, process_map)
+    for (auto& itr : process_map)
       delete itr.second;
-    foreach_ (NamBMap::value_type& itr, namedb_map)
+    for (auto& itr : namedb_map)
       if (itr.second) delete itr.second;
-    foreach_ (UnnBMap::value_type& itr, unnamedb_map)
+    for (auto& itr : unnamedb_map)
       if (itr.second) delete itr.second;
   }
 
   inline void Simulator::reset() {
     now_ = 0;
 
-    foreach_ (EntMap::value_type& itr, resource_map)
+    for (auto& itr : resource_map)
       static_cast<Resource*>(itr.second)->reset();
-    foreach_ (PQueue::value_type& itr, event_queue)
+    for (auto& itr : event_queue)
       if (dynamic_cast<Arrival*>(itr.process)) delete itr.process;
 
     event_queue.clear();
@@ -66,14 +66,14 @@ namespace simmer {
     attributes.clear();
     mon->clear();
 
-    foreach_ (EntMap::value_type& itr, process_map) {
+    for (auto& itr : process_map) {
       static_cast<Process*>(itr.second)->reset();
       static_cast<Process*>(itr.second)->activate();
     }
 
-    foreach_ (NamBMap::value_type& itr, namedb_map)
+    for (auto& itr : namedb_map)
       if (itr.second) delete itr.second;
-    foreach_ (UnnBMap::value_type& itr, unnamedb_map)
+    for (auto& itr : unnamedb_map)
       if (itr.second) delete itr.second;
 
     namedb_map.clear();
@@ -87,7 +87,7 @@ namespace simmer {
     VEC<double> time;
     VEC<std::string> process;
     if (steps) {
-      foreach_ (const PQueue::value_type& itr, event_queue) {
+      for (const auto& itr : event_queue) {
         time.push_back(itr.time);
         process.push_back(itr.process->name);
         if (!--steps) break;
@@ -149,12 +149,12 @@ namespace simmer {
 
   inline RData Simulator::get_ongoing(bool per_resource) const {
     MemMonitor mon;
-    foreach_ (const ArrMap::value_type& itr1, arrival_map) {
+    for (const auto& itr1 : arrival_map) {
       if (dynamic_cast<Batched*>(itr1.first) || !itr1.first->is_monitored())
         continue;
       if (!per_resource)
         mon.record_end(itr1.first->name, itr1.first->get_start_time(), R_NaReal, R_NaReal, false);
-      else foreach_ (const EntMap::value_type& itr2, resource_map) {
+      else for (const auto& itr2 : resource_map) {
         double start = itr1.first->get_start_time(itr2.second->name);
         if (start < 0)
           continue;
@@ -165,8 +165,8 @@ namespace simmer {
   }
 
   inline void Simulator::broadcast(const VEC<std::string>& signals) {
-    foreach_ (const std::string& signal, signals) {
-      foreach_ (const HandlerMap::value_type& itr, signal_map[signal]) {
+    for (const auto& signal : signals) {
+      for (const auto& itr : signal_map[signal]) {
         if (!itr.second.first)
           continue;
         if (is_scheduled(itr.first))

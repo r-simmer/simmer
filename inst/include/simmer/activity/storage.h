@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Iñaki Ucar
+// Copyright (C) 2020-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -52,7 +52,7 @@ namespace simmer {
       if (search == storage.end())
         Rcpp::stop("illegal removal of arrival '%s'", arrival->name); // # nocov
       storage.erase(search);
-      arrival->unregister_entity(this, boost::is_same<U, std::string>::value);
+      arrival->unregister_entity(this, std::is_same<U, std::string>::value);
     }
 
   protected:
@@ -64,7 +64,7 @@ namespace simmer {
 
     V& storage_get(Arrival* arrival) {
       if (!storage_find(arrival))
-        arrival->register_entity(this, boost::is_same<U, std::string>::value);
+        arrival->register_entity(this, std::is_same<U, std::string>::value);
       return storage[internal::storage_key<U>(arrival)];
     }
 

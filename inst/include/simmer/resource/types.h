@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2018 Iñaki Ucar
+// Copyright (C) 2016-2023 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -26,7 +26,7 @@ namespace simmer {
   struct RSeize {
     double arrived_at;
     Arrival* arrival;
-    int amount;
+    mutable int amount;
 
     RSeize(double arrived_at, Arrival* arrival, int amount)
       : arrived_at(arrived_at), arrival(arrival), amount(amount) {}
