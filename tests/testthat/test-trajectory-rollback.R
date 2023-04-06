@@ -1,6 +1,6 @@
 # Copyright (C) 2015-2016 Iñaki Ucar
 # Copyright (C) 2016 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2016-2022 Iñaki Ucar
+# Copyright (C) 2016-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -47,7 +47,7 @@ test_that("a numeric rollback points to the correct activity", {
            trajectory() %>%
              rollback(2))
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 2, 0) %>%
     add_generator("one", t0, at(0))
 
@@ -64,11 +64,11 @@ test_that("a character rollback points to the correct activity", {
   expect_output(activity_print_(t0$tail(), 0, 0), "| [foo]")
   expect_output(activity_print_(t1$tail(), 0, 0), "target: foo")
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t1, at(0))
   expect_error(run(env), "rollback failed") # tag not found
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", join(t0, t1), at(0)) %>%
     run()
   expect_equal(get_mon_arrivals(env)$end_time, 2)
@@ -116,7 +116,7 @@ test_that("a check function that returns a non-boolean value fails", {
   t0 <- trajectory() %>%
     rollback(1, check = function() "dummy")
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("entity", t0, function() 1)
 
   expect_error(env %>% run(100))

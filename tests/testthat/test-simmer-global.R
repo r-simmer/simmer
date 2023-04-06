@@ -1,4 +1,4 @@
-# Copyright (C) 2018 Iñaki Ucar
+# Copyright (C) 2018-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -19,7 +19,7 @@ test_that("globals are correctly initialised and managed", {
   inf_sch <- schedule(c(8, 16, 24), c(1, 2, 3), Inf)
   fin_sch <- schedule(c(8, 16, 24), c(1, 2, 3), 24)
 
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_global("a_fixed", 5.5) %>%
     add_global("b_inf_sch", inf_sch) %>%
     add_global("c_fin_sch", fin_sch)

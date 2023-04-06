@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2022 Iñaki Ucar
+# Copyright (C) 2016-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -19,7 +19,7 @@ test_that("an arrival waits", {
   t <- trajectory() %>%
     wait()
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0)) %>%
     run(1000)
 
@@ -57,7 +57,7 @@ test_that("a signal is untrapped", {
     timeout(8) %>%
     timeout(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run()
   arr <- get_mon_arrivals(env)
@@ -74,7 +74,7 @@ test_that("a signal is received while blocked", {
     wait() %>%
     timeout(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run()
   arr <- get_mon_arrivals(env)
@@ -91,7 +91,7 @@ test_that("an empty handler is equivalent to NULL", {
     wait() %>%
     timeout(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run()
   arr <- get_mon_arrivals(env)
@@ -108,7 +108,7 @@ test_that("a signal is received while in a timeout", {
     timeout(10) %>%
     timeout(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run()
   arr <- get_mon_arrivals(env)
@@ -127,7 +127,7 @@ test_that("a signal is received while blocked inside a resource", {
     timeout(1) %>%
     release("res", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 1) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run()
@@ -151,7 +151,7 @@ test_that("a signal is received while in a timeout inside a resource", {
     timeout(1) %>%
     release("res", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 1) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run()
@@ -176,7 +176,7 @@ test_that("a signal is ignored inside a batch (1)", {
     timeout(1) %>%
     release("res", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 1) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run(1000)
@@ -197,7 +197,7 @@ test_that("a signal is ignored inside a batch (2)", {
     timeout(1) %>%
     release("res", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 1) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run()
@@ -219,7 +219,7 @@ test_that("launch handler while blocked", {
     wait() %>%
     timeout(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run()
   arr <- get_mon_arrivals(env)
@@ -238,7 +238,7 @@ test_that("launch handler while blocked (not interruptible)", {
     wait() %>%
     timeout(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run()
   arr <- get_mon_arrivals(env)
@@ -255,7 +255,7 @@ test_that("launch handler while in a timeout", {
     timeout(10) %>%
     timeout(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run()
   arr <- get_mon_arrivals(env)
@@ -274,7 +274,7 @@ test_that("launch handler while in a timeout (not interruptible)", {
     timeout(10) %>%
     timeout(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run()
   arr <- get_mon_arrivals(env)
@@ -293,7 +293,7 @@ test_that("launch handler while blocked inside a resource", {
     timeout(1) %>%
     release("res", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 1) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run(1000)
@@ -317,7 +317,7 @@ test_that("launch handler while in a timeout inside a resource", {
     timeout(1) %>%
     release("res", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 1) %>%
     add_generator("dummy", t, at(0, 1, 2)) %>%
     run()
@@ -338,7 +338,7 @@ test_that("an arrival cannot trap its own previously broadcasted signal", {
     trap("signal") %>%
     timeout(1)
 
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0, 0, 0)) %>%
     run()
   arr <- get_mon_arrivals(env)
@@ -349,7 +349,7 @@ test_that("an arrival cannot trap its own previously broadcasted signal", {
     trap("signal") %>%
     send("signal")
 
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0, 0, 0))
 
   expect_error(run(env), NA)
@@ -359,7 +359,7 @@ test_that("an arrival cannot trap its own previously broadcasted signal", {
     send("signal") %>%
     timeout(1)
 
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0, 0, 0)) %>%
     run()
   arr <- get_mon_arrivals(env)
@@ -379,7 +379,7 @@ test_that("two consecutive signals execute a single handler", {
     send("signal") %>%
     send("signal")
 
-  arr <- simmer(verbose=TRUE) %>%
+  arr <- simmer(verbose = env_verbose) %>%
     add_generator("customer", customer, at(0)) %>%
     add_generator("blocker", blocker, at(2)) %>%
     run(10) %>%
@@ -402,7 +402,7 @@ test_that("handler linking is done per arrival", {
   signal <- trajectory() %>%
     send("signal")
 
-  arr <- simmer(verbose=TRUE) %>%
+  arr <- simmer(verbose = env_verbose) %>%
     add_generator("customer", customer, at(0, 5)) %>%
     add_generator("signal", signal, at(6)) %>%
     run() %>%
@@ -436,7 +436,7 @@ test_that("activity time is correctly retrieved, even with preemption", {
     timeout(1) %>%
     send("interrupt")
 
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource(paste0("resource", 1:2), preemptive=TRUE) %>%
     add_generator("dummy", t, at(0), mon=2) %>%
     add_generator("prio", t, at(2), priority=1) %>%

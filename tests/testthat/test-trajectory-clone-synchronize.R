@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2022 Iñaki Ucar
+# Copyright (C) 2016-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -26,7 +26,7 @@ test_that("each clone follows a trajectory (1)", {
             timeout(2)) %>%
     timeout(0.5)
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run() %>%
     get_mon_arrivals()
@@ -45,7 +45,7 @@ test_that("each clone follows a trajectory (2)", {
             timeout(2)) %>%
     timeout(0.5)
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run() %>%
     get_mon_arrivals()
@@ -62,7 +62,7 @@ test_that("each clone follows a trajectory (3)", {
             timeout(1)) %>%
     timeout(0.5)
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run() %>%
     get_mon_arrivals()
@@ -77,7 +77,7 @@ test_that("each clone follows a trajectory (4)", {
     clone(function() 3) %>%
     timeout(0.5)
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run() %>%
     get_mon_arrivals()
@@ -99,7 +99,7 @@ test_that("clones synchronize with the last (1)", {
     synchronize(wait = TRUE, mon_all = FALSE) %>%
     timeout(0.5)
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run() %>%
     get_mon_arrivals()
@@ -121,7 +121,7 @@ test_that("clones synchronize with the last (2)", {
     synchronize(wait = TRUE, mon_all = TRUE) %>%
     timeout(0.5)
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run() %>%
     get_mon_arrivals()
@@ -143,7 +143,7 @@ test_that("clones synchronize with the first (1)", {
     synchronize(wait = FALSE, mon_all = FALSE) %>%
     timeout(0.5)
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run() %>%
     get_mon_arrivals()
@@ -165,7 +165,7 @@ test_that("clones synchronize with the first (2)", {
     synchronize(wait = FALSE, mon_all = TRUE) %>%
     timeout(0.5)
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run() %>%
     get_mon_arrivals()
@@ -185,7 +185,7 @@ test_that("synchronization occurs globally", {
             timeout(3)) %>%
     synchronize(wait = FALSE)
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0)) %>%
     run() %>%
     get_mon_arrivals()
@@ -201,7 +201,7 @@ test_that("synchronize does not affect other arrivals", {
     synchronize(wait = TRUE, mon_all = TRUE) %>%
     timeout(0.5)
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0, 1)) %>%
     run() %>%
     get_mon_arrivals()
@@ -224,7 +224,7 @@ test_that("attributes are copied over", {
       increment("index", env)
     )
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0), mon=2)
   run(env)
 

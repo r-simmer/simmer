@@ -1,4 +1,4 @@
-# Copyright (C) 2016,2021 Iñaki Ucar
+# Copyright (C) 2016-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -19,7 +19,7 @@ test_that("several deactivates don't crash", {
   t <- trajectory() %>%
     deactivate("dummy0")
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy0", t, at(0, 2)) %>%
     add_generator("dummy1", t, at(1)) %>%
     run()
@@ -33,7 +33,7 @@ test_that("generators are deactivated and activated again as expected", {
     timeout(1) %>%
     activate("dummy")
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, function() 1) %>%
     run(10)
   arr <- get_mon_arrivals(env)

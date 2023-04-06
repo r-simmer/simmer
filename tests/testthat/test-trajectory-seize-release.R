@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2018 Iñaki Ucar
+# Copyright (C) 2015-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -27,7 +27,7 @@ test_that("resources are seized/released as expected (1)", {
     timeout(1) %>%
     seize("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 3, 0) %>%
     add_generator("arrival", t0, at(0))
 
@@ -56,7 +56,7 @@ test_that("resources are seized/released as expected (2)", {
 
   expect_output(print(t0))
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy0", 3, 0) %>%
     add_resource("dummy1", 3, 0) %>%
     add_generator("arrival", t0, at(0))
@@ -75,7 +75,7 @@ test_that("a release without a previous seize fails", {
   t <- trajectory() %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1) %>%
     add_generator("asdf", t, at(0))
 
@@ -87,7 +87,7 @@ test_that("a release greater than seize fails", {
     seize("dummy", 1) %>%
     release("dummy", 2)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1) %>%
     add_generator("asdf", t, at(0))
 
@@ -109,7 +109,7 @@ test_that("arrivals perform a post.seize and then stop", {
             release("dummy", 1)) %>%
     timeout(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
@@ -124,7 +124,7 @@ test_that("arrivals perform a post.seize and then stop (2)", {
     seize("dummy", 1, continue = FALSE, post.seize = trajectory()) %>%
     timeout(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0))
 
@@ -145,7 +145,7 @@ test_that("arrivals can retry a seize", {
     timeout(2) %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0, 1)) %>%
     run()
@@ -162,7 +162,7 @@ test_that("an empty reject + continue=FALSE rejects but sets finished to TRUE", 
     timeout(2) %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0, 1)) %>%
     run()
@@ -184,7 +184,7 @@ test_that("arrivals go through post.seize or reject and then continue", {
             timeout(3)) %>%
     timeout(3)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0, 1)) %>%
     run()
@@ -201,7 +201,7 @@ test_that("leaving without releasing throws a warning (arrivals)", {
     seize("dummy1", 1) %>%
     release("dummy0", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy0", 2) %>%
     add_resource("dummy1", 1) %>%
     add_generator("arrival", t, at(0))
@@ -216,7 +216,7 @@ test_that("leaving without releasing throws a warning (batches)", {
     seize("dummy1", 1) %>%
     release("dummy0", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy0", 2) %>%
     add_resource("dummy1", 1) %>%
     add_generator("arrival", t, at(0))
@@ -231,7 +231,7 @@ test_that("arrivals don't jump the queue if there is room in the server (1)", {
     timeout(10) %>%
     release("res", n)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 10) %>%
     add_generator("dummy7", dummy(7), at(0, 1)) %>%
     add_generator("dummy1", dummy(1), at(2)) %>%
@@ -252,7 +252,7 @@ test_that("arrivals don't jump the queue if there is room in the server (2)", {
     timeout(10) %>%
     release("res", n)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 10, preemptive = TRUE) %>%
     add_generator("dummy7a", dummy(7), at(0)) %>%
     add_generator("dummy7b", dummy(7), at(1), priority = 1) %>%
@@ -285,7 +285,7 @@ test_that("unknown amounts can be released", {
     release_selected_all(id=0) %>%
     release_all()
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res1", 10) %>%
     add_resource("res2", 10) %>%
     add_resource("res3", 10) %>%

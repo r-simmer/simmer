@@ -1,5 +1,5 @@
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -25,7 +25,7 @@ test_that("only valid types can be passed to functions", {
   t0 <- trajectory() %>%
     set_attribute(c("a", "b", "c"), c(1, 2))
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("entity", t0, at(0))
 
   expect_error(run(env))
@@ -68,7 +68,7 @@ test_that("an arrival attribute is correctly set and returned to a function", {
       c(5, 5), mod="*"
     )
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("entity", t0, at(0), mon=2)
 
   expect_output(run(env), ".*1NA1NA")
@@ -90,7 +90,7 @@ test_that("the attribute dataframe is returned with the expected columns", {
     set_global("test", 456)
 
   env <-
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
     add_generator("entity", t0, at(0), mon = 1) %>%
     run()
 
@@ -106,7 +106,7 @@ test_that("arrival attributes are returned empty when mon level is < 2", {
     set_global("test", 456)
 
   env <-
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
     add_generator("entity", t0, at(0), mon = 1) %>%
     run()
 

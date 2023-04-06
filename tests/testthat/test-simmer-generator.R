@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2015-2019 Iñaki Ucar
+# Copyright (C) 2015-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -18,26 +18,26 @@
 
 test_that("a generator without a trajectory fails", {
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_generator("customer", 4, 1))
 })
 
 test_that("a non-function dist fails", {
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_generator("customer", trajectory(), 1))
 })
 
 test_that("a dist that returns a non-numeric value fails", {
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_generator("customer", trajectory(), function() {}) %>%
       step())
 })
 
 test_that("generates the expected amount", {
   t <- trajectory() %>% timeout(0)
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("customer", t, at(1:3)) %>%
     run()
   arr <- get_mon_arrivals(env)
@@ -53,7 +53,7 @@ test_that("generates the expected amount", {
 })
 
 test_that("generators are reset", {
-  expect_equal(3, simmer(verbose = TRUE) %>%
+  expect_equal(3, simmer(verbose = env_verbose) %>%
     add_generator("dummy", trajectory(), at(0, 1, 2)) %>%
     run() %>% reset() %>% run() %>%
     get_mon_arrivals() %>% nrow()
@@ -62,7 +62,7 @@ test_that("generators are reset", {
 
 test_that("preemptible < priority shows a warning", {
   expect_warning(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_generator("dummy", trajectory(), at(0), priority = 3, preemptible = 1))
 })
 
@@ -97,7 +97,7 @@ test_that("arrivals are correctly monitored", {
     timeout(1) %>%
     rollback(1, times = Inf)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res1", 1) %>%
     add_resource("res2") %>%
     add_generator("a", a, at(0)) %>%

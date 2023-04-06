@@ -11,6 +11,7 @@
 ## Minor changes and fixes
 
 - Fix call identification on error (#286).
+- Make tests less verbose by default.
 
 # simmer 4.4.5
 

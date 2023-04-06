@@ -1,4 +1,4 @@
-# Copyright (C) 2018 Iñaki Ucar
+# Copyright (C) 2018-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -22,7 +22,7 @@ test_that("execution is stopped with a warning and can be continued", {
     stop_if(TRUE) %>%
     timeout(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0))
 
   expect_warning(run(env))

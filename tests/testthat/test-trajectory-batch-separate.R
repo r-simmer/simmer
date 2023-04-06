@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2022 Iñaki Ucar
+# Copyright (C) 2016-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -32,7 +32,7 @@ test_that("arrivals are batched", {
     #separate() %>%
     timeout(counter())
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0, 1, 2, 3)) %>%
     run()
@@ -58,7 +58,7 @@ test_that("batches are separated", {
     separate() %>%
     timeout(counter())
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0, 1, 2, 3)) %>%
     run()
@@ -83,7 +83,7 @@ test_that("permanent batches are NOT separated", {
     separate() %>%
     timeout(counter())
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0, 1, 2, 3)) %>%
     run()
@@ -108,7 +108,7 @@ test_that("a rule can prevent batching", {
     separate() %>%
     timeout(counter())
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0, 1, 2, 3)) %>%
     run()
@@ -133,7 +133,7 @@ test_that("a timeout can trigger early batches", {
     separate() %>%
     timeout(counter())
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1) %>%
     add_generator("arrival", t, at(0, 1, 2, 3)) %>%
     run()
@@ -154,7 +154,7 @@ test_that("a timeout does not crash if the batch was already triggered", {
     batch(1, timeout = 1, permanent = FALSE, rule = NULL) %>%
     timeout(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
@@ -172,7 +172,7 @@ test_that("a non-triggered batch does not crash if arrivals renege", {
     renege_in(1) %>%
     batch(2, timeout = 0, permanent = FALSE, rule = NULL)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -190,7 +190,7 @@ test_that("all arrivals inside a batch store an attribute change", {
     set_attribute("asdf", 3) %>%
     separate()
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0, 1, 2, 3), mon = 2) %>%
     run()
@@ -218,7 +218,7 @@ test_that("a shared name in different trajectories collects arrivals in the same
     batch(2, name = "asdf") %>%
     join(t)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival0", t1, at(0, 2)) %>%
     add_generator("arrival1", t2, at(1, 3)) %>%
@@ -252,7 +252,7 @@ test_that("unnamed batches in different trajectories collects arrivals in differ
     batch(2, name = "") %>%
     join(t)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival0", t1, at(0, 2)) %>%
     add_generator("arrival1", t2, at(1, 3)) %>%
@@ -281,7 +281,7 @@ test_that("nested batches' stats are correctly reported", {
     #separate() %>%
     timeout(counter())
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0, 1, 2, 3)) %>%
     run()
@@ -309,7 +309,7 @@ test_that("nested batches are separated", {
     separate() %>%
     timeout(counter())
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival", t, at(0, 1, 2, 3)) %>%
     run()
@@ -341,7 +341,7 @@ test_that("seizes across nested batches are correctly reported", {
     timeout(1) %>%
     release("dummy0", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy0", 1, 0) %>%
     add_resource("dummy1", 1, 0) %>%
     add_resource("dummy2", 1, 0) %>%
@@ -363,7 +363,7 @@ test_that("an infinite timeout is equivalent to a disabled timeout", {
   t <- trajectory() %>%
     batch(2, timeout = Inf)
 
-  arr <- simmer(verbose = TRUE) %>%
+  arr <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0, 2)) %>%
     run() %>%
     get_mon_arrivals()
@@ -375,7 +375,7 @@ test_that("batch size is correctly retrieved", {
   t <- trajectory() %>%
     set_attribute("bsize", function() get_batch_size(env))
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0))
 
   expect_error(run(env))
@@ -385,7 +385,7 @@ test_that("batch size is correctly retrieved", {
     set_attribute("bsize", function() get_batch_size(env)) %>%
     separate()
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0, 1, 2, 3), mon=2)
 
   attr <- run(env) %>% get_mon_attributes()

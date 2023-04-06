@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2021 Iñaki Ucar
+# Copyright (C) 2016-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -30,11 +30,11 @@ test_that("an arrival leaves", {
     timeout(1) %>%
     release("dummy", 1)
 
-  env0 <- simmer(verbose = T) %>%
+  env0 <- simmer(verbose = env_verbose) %>%
     add_resource("dummy") %>%
     add_generator("arrival", t0, at(0))
 
-  env1 <- simmer(verbose = T) %>%
+  env1 <- simmer(verbose = env_verbose) %>%
     add_resource("dummy") %>%
     add_generator("arrival", t1, at(0))
 
@@ -55,7 +55,7 @@ test_that("an arrival leaves immediately!", {
     leave(1) %>%
     seize("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy") %>%
     add_generator("arrival", t, at(0))
 
@@ -77,12 +77,12 @@ test_that("an arrival continues", {
     timeout(1) %>%
     release("dummy", 1)
 
-  arrivals0 <- simmer(verbose = T) %>%
+  arrivals0 <- simmer(verbose = env_verbose) %>%
     add_resource("dummy") %>%
     add_generator("arrival", t0, at(0)) %>%
     run() %>% get_mon_arrivals()
 
-  arrivals1 <- simmer(verbose = T) %>%
+  arrivals1 <- simmer(verbose = env_verbose) %>%
     add_resource("dummy") %>%
     add_generator("arrival", t1, at(0)) %>%
     run() %>% get_mon_arrivals()
@@ -98,7 +98,7 @@ test_that("an arrival in a timeout reneges (1)", {
     renege_in(1) %>%
     timeout(4)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -114,7 +114,7 @@ test_that("an arrival in a timeout reneges (2)", {
     renege_if("sig") %>%
     timeout(4)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -129,7 +129,7 @@ test_that("a leaving arrival can follow a secondary sub-trajectory", {
     leave(1, out = trajectory() %>% timeout(1)) %>%
     timeout(4)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -144,7 +144,7 @@ test_that("a reneging arrival can follow a secondary sub-trajectory (1)", {
     renege_in(1, out = trajectory() %>% timeout(1)) %>%
     timeout(4)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -160,7 +160,7 @@ test_that("a reneging arrival can follow a secondary sub-trajectory (2)", {
     renege_if("sig", out = trajectory() %>% timeout(1)) %>%
     timeout(4)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -175,7 +175,7 @@ test_that("an empty subtrajectory is equivalent to NULL (1)", {
     leave(1, out = trajectory()) %>%
     timeout(4)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -190,7 +190,7 @@ test_that("an empty subtrajectory is equivalent to NULL (2)", {
     renege_in(1, out = trajectory()) %>%
     timeout(4)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -206,7 +206,7 @@ test_that("an empty subtrajectory is equivalent to NULL (3)", {
     renege_if("sig", out = trajectory()) %>%
     timeout(4)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -223,7 +223,7 @@ test_that("a second renege_in resets the timeout", {
     renege_in(4) %>%
     timeout(9)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -241,7 +241,7 @@ test_that("a second renege_if resets the timeout", {
     renege_if("sig") %>%
     timeout(9)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -259,7 +259,7 @@ test_that("a second renege_in resets the signal", {
     renege_in(4) %>%
     timeout(9)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -277,7 +277,7 @@ test_that("a second renege_if resets the signal", {
     renege_if("asdf") %>%
     timeout(9)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -294,7 +294,7 @@ test_that("reneging can be aborted (1)", {
     renege_abort() %>%
     timeout(9)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -312,7 +312,7 @@ test_that("reneging can be aborted (2)", {
     renege_abort() %>%
     timeout(9)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
 
@@ -329,7 +329,7 @@ test_that("an arrival being served reneges (1)", {
     timeout(2) %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
@@ -354,7 +354,7 @@ test_that("an arrival being served reneges (2)", {
     timeout(2) %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, preemptive = TRUE) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
@@ -380,7 +380,7 @@ test_that("an enqueued arrival reneges", {
     timeout(2) %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1) %>%
     add_generator("arrival", t, at(0, 0)) %>%
     run()
@@ -411,7 +411,7 @@ test_that("a preempted arrival reneges (1)", {
     renege_in(2) %>%
     join(t1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, preemptive = TRUE) %>%
     add_generator("arrival0", t0, at(0), priority = 0) %>%
     add_generator("arrival1", t1, at(1), priority = 1) %>%
@@ -443,7 +443,7 @@ test_that("a preempted arrival reneges (2)", {
     renege_in(2) %>%
     join(t1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, preemptive = TRUE, queue_size_strict = TRUE) %>%
     add_generator("arrival0", t0, at(0), priority = 0) %>%
     add_generator("arrival1", t1, at(1), priority = 1) %>%
@@ -476,7 +476,7 @@ test_that("an arrival inside a batch reneges, but the batch continues", {
     renege_in(5) %>%
     join(t0)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1) %>%
     add_generator("arrival0", t0, at(0)) %>%
     add_generator("arrival1", t1, at(0)) %>%
@@ -509,7 +509,7 @@ test_that("the only arrival inside a batch reneges, and the batch stops", {
     renege_in(5) %>%
     join(t0)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1) %>%
     add_generator("arrival1", t1, at(0)) %>%
     run()
@@ -539,7 +539,7 @@ test_that("a permanent batch prevents reneging", {
     renege_in(5) %>%
     join(t0)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1) %>%
     add_generator("arrival1", t1, at(0)) %>%
     run()
@@ -575,7 +575,7 @@ test_that("a batch inside a batch reneges", {
     batch(2) %>%
     join(t)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, 0) %>%
     add_generator("arrival0", t0, at(0, 0)) %>%
     add_generator("arrival1", t1, at(0, 0)) %>%
@@ -615,7 +615,7 @@ test_that("seizes across nested batches are correctly reported", {
     separate() %>%
     release("dummy0", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy0", 1, 0) %>%
     add_resource("dummy1", 1, 0) %>%
     add_resource("dummy2", 1, 0) %>%
@@ -641,7 +641,7 @@ test_that("a leaving arrival releases seized resources", {
     timeout(1) %>%
     leave(1, keep_seized=FALSE)
 
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource(paste0("dummy", 1:3)) %>%
     add_generator("arrival", t, at(0)) %>%
     run()
@@ -666,7 +666,7 @@ test_that("a leaving arrival keeps seized resources", {
     leave(1, out=out, keep_seized=TRUE) %>%
     timeout(3)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy") %>%
     add_generator("arrival", t, at(0))
 
@@ -691,7 +691,7 @@ test_that("a reneging arrival keeps seized resources (1)", {
     seize("other") %>%
     timeout(4)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy") %>%
     add_resource("other", 0) %>%
     add_generator("arrival", t, at(0))
@@ -721,7 +721,7 @@ test_that("a reneging arrival keeps seized resources (2)", {
     seize("other") %>%
     timeout(4)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy") %>%
     add_resource("other", 0) %>%
     add_generator("arrival", t, at(0))
@@ -751,7 +751,7 @@ test_that("a reneging arrival is able to seize a resource again", {
     timeout(10) %>%
     release("resource")
 
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("resource") %>%
     add_generator("dummy", t, at(0, 3)) %>%
     run()

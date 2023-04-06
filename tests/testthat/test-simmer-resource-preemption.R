@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2017,2019 Iñaki Ucar
+# Copyright (C) 2016-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -21,7 +21,7 @@ test_that("a lower priority arrival gets rejected before accessing the server", 
     timeout(10) %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("p0a", t, at(0, 0)) %>%
     add_generator("p1a", t, at(2, 3), priority = 1) %>%
     add_resource("dummy", 1, 2, preemptive = TRUE) %>%
@@ -44,7 +44,7 @@ test_that("tasks are NOT restarted", {
     timeout(10) %>%
     release("dummy", 2)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("p0a", t0, at(0, 0), restart = FALSE) %>%
     add_generator("p1a", t1, at(2, 15), priority = 1) %>%
     add_resource("dummy", 2, preemptive = TRUE) %>%
@@ -68,7 +68,7 @@ test_that("tasks are restarted", {
     timeout(10) %>%
     release("dummy", 2)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("p0a", t0, at(0, 0), restart = TRUE) %>%
     add_generator("p1a", t1, at(2, 15), priority = 1) %>%
     add_resource("dummy", 2, preemptive = TRUE) %>%
@@ -87,7 +87,7 @@ test_that("tasks are preempted in a FIFO basis", {
     timeout(10) %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("p0a", t, at(0, 1), restart = TRUE) %>%
     add_generator("p1a", t, at(2, 3), priority = 1) %>%
     add_resource("dummy", 2, preemptive = TRUE, preempt_order = "fifo") %>%
@@ -106,7 +106,7 @@ test_that("tasks are preempted in a LIFO basis", {
     timeout(10) %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("p0a", t, at(0, 1), restart = TRUE) %>%
     add_generator("p1a", t, at(2, 3), priority = 1) %>%
     add_resource("dummy", 2, preemptive = TRUE, preempt_order = "lifo") %>%
@@ -125,7 +125,7 @@ test_that("queue can exceed queue_size by default", {
     timeout(10) %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("p0a", t, at(0, 0)) %>%
     add_generator("p1a", t, at(1), priority = 1) %>%
     add_resource("dummy", 1, 1, preemptive = TRUE) %>%
@@ -149,7 +149,7 @@ test_that("queue cannot exceed queue_size with hard limit (preempted rejected)",
     timeout(10) %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("p0a", t, at(0, 0)) %>%
     add_generator("p1a", t, at(1), priority = 1) %>%
     add_resource("dummy", 1, 1, preemptive = TRUE, queue_size_strict = TRUE) %>%
@@ -173,7 +173,7 @@ test_that("queue cannot exceed queue_size with hard limit (preempted to queue)",
     timeout(10) %>%
     release("dummy")
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("p0a", t, at(0), priority = 0) %>%
     add_generator("p1a", t, at(0), priority = 1) %>%
     add_generator("p2a", t, at(1), priority = 2) %>%
@@ -203,7 +203,7 @@ test_that("preemption works in non-saturated multi-server resources", {
     timeout(10) %>%
     release("res", 7)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 10, preemptive = TRUE) %>%
     add_generator("low_prio", low_prio, at(rep(0, 5))) %>%
     add_generator("high_prio", high_prio, at(1), priority = 1) %>%
@@ -232,7 +232,7 @@ test_that("preemption works properly for a previously stopped arrival", {
     timeout(20) %>%
     release("res")
 
-  arr <- simmer(verbose=TRUE) %>%
+  arr <- simmer(verbose = env_verbose) %>%
     add_resource("res", preemptive=TRUE) %>%
     add_generator("customer", customer, at(0)) %>%
     add_generator("blocker", blocker, at(2), priority=10) %>%
@@ -257,7 +257,7 @@ test_that("arrivals wait until dequeued from all resources", {
     timeout(100) %>%
     release_all()
 
-  arr <- simmer(verbose=TRUE) %>%
+  arr <- simmer(verbose = env_verbose) %>%
     add_resource("one", 1, preemptive=TRUE) %>%
     add_resource("two", 0) %>%
     add_generator("lprio", lprio, at(0), priority=0) %>%
@@ -287,7 +287,7 @@ test_that("rejected arrivals leave all queues", {
     timeout(100) %>%
     release_all()
 
-  arr <- simmer(verbose=TRUE) %>%
+  arr <- simmer(verbose = env_verbose) %>%
     add_resource("one", 1, 0, preemptive=TRUE, queue_size_strict=TRUE) %>%
     add_resource("two", 0) %>%
     add_generator("lprio", lprio, at(0), priority=0) %>%

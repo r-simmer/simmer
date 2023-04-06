@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2020 Iñaki Ucar
+# Copyright (C) 2016-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -18,7 +18,7 @@
 test_that("no selection throws an error", {
   t0 <- trajectory() %>% seize_selected()
 
-  env <- simmer() %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res") %>%
     add_generator("asdf", t0, at(0))
 
@@ -30,7 +30,7 @@ test_that("core selection algorithms work: shortest-queue", {
     select(c("o1", "r1", "o2", "r2", "r3"), policy = "shortest-queue") %>%
     seize_selected(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("o1", 0) %>%
     add_resource("o2", 0) %>%
     add_resource("r1", 2) %>%
@@ -52,7 +52,7 @@ test_that("core selection algorithms work: shortest-queue-available", {
     select(c("o1", "r1", "o2", "r2", "r3"), policy = "shortest-queue-available") %>%
     seize_selected(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("o1", 0) %>%
     add_resource("o2", 0) %>%
     add_resource("r1", 2) %>%
@@ -77,7 +77,7 @@ test_that("core selection algorithms work: round-robin", {
     select(c("r1", "r2", "r3"), policy = "round-robin") %>%
     seize_selected(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("r1", 2) %>%
     add_resource("r2", 3) %>%
     add_resource("r3", 1) %>%
@@ -105,7 +105,7 @@ test_that("core selection algorithms work: round-robin-available", {
     select(c("o1", "r1", "o2", "r2", "r3"), policy = "round-robin-available") %>%
     seize_selected(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("o1", 0) %>%
     add_resource("o2", 0) %>%
     add_resource("r1", 2) %>%
@@ -135,7 +135,7 @@ test_that("core selection algorithms work: first-available", {
     select(c("o1", "r1", "o2", "r2", "r3"), policy = "first-available") %>%
     seize_selected(1)
 
-  env <- simmer(ver = T) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("o1", 0) %>%
     add_resource("o2", 0) %>%
     add_resource("r1", 2, 1) %>%
@@ -164,7 +164,7 @@ test_that("core selection algorithms work: random", {
     select(c("r1", "r2", "r3"), policy = "random") %>%
     seize_selected(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("r1", 2) %>%
     add_resource("r2", 3) %>%
     add_resource("r3", 1) %>%
@@ -183,25 +183,25 @@ test_that("core '-available' algorithms fail if no resource is available", {
     select("r1", policy = policy)
 
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_resource("r1", 0) %>%
       add_generator("dummy", t("shortest-queue-available"), at(0)) %>%
       run()
   )
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_resource("r1", 0) %>%
       add_generator("dummy", t("round-robin-available"), at(0)) %>%
       run()
   )
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_resource("r1", 0) %>%
       add_generator("dummy", t("first-available"), at(0)) %>%
       run()
   )
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_resource("r1", 0) %>%
       add_generator("dummy", t("random-available"), at(0)) %>%
       run()
@@ -226,7 +226,7 @@ test_that("custom selection algorithms work", {
     select(reverse_rr()) %>%
     seize_selected(1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("r1", 2) %>%
     add_resource("r2", 3) %>%
     add_resource("r3", 1) %>%
@@ -251,7 +251,7 @@ test_that("selections can be retrieved", {
     select("res1", id=1) %>%
     timeout(function() stop())  # break the execution
 
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res0") %>%
     add_resource("res1") %>%
     add_generator("dummy", t, at(0))

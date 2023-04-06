@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2022 Iñaki Ucar
+# Copyright (C) 2016-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -16,7 +16,7 @@
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
 test_that("a schedule name conflicts with a generator name", {
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("asdf", trajectory(), at(0)) %>%
     add_generator("fdsa_capacity", trajectory(), at(0)) %>%
     add_generator("fdsa_queue_size", trajectory(), at(0))
@@ -40,7 +40,7 @@ test_that("capacity & queue size change", {
   inf_sch <- schedule(c(8, 16, 24), c(1, 2, 3), Inf)
   fin_sch <- schedule(c(8, 16, 24), c(1, 2, 3), 24)
 
-  limits <- simmer(verbose = TRUE) %>%
+  limits <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", inf_sch) %>%
     run(17) %>% reset() %>% run(49) %>%
     get_mon_resources()
@@ -48,7 +48,7 @@ test_that("capacity & queue size change", {
   expect_equal(limits$time, c(0, 8, 16, 24))
   expect_equal(limits$capacity, c(0, 1, 2, 3))
 
-  limits <- simmer(verbose = TRUE) %>%
+  limits <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", fin_sch) %>%
     run(17) %>% reset() %>% run(49) %>%
     get_mon_resources()
@@ -61,7 +61,7 @@ test_that("queue size changes", {
   inf_sch <- schedule(c(8, 16, 24), c(1, 2, 3), Inf)
   fin_sch <- schedule(c(8, 16, 24), c(1, 2, 3), 24)
 
-  limits <- simmer(verbose = TRUE) %>%
+  limits <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, inf_sch) %>%
     run(17) %>% reset() %>% run(49) %>%
     get_mon_resources()
@@ -69,7 +69,7 @@ test_that("queue size changes", {
   expect_equal(limits$time, c(0, 8, 16, 24))
   expect_equal(limits$queue_size, c(0, 1, 2, 3))
 
-  limits <- simmer(verbose = TRUE) %>%
+  limits <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 1, fin_sch) %>%
     run(17) %>% reset() %>% run(49) %>%
     get_mon_resources()
@@ -82,7 +82,7 @@ test_that("initial value is restored when the environment is reset", {
   inf_sch <- schedule(c(8, 16, 24), c(1, 2, 3), Inf)
   fin_sch <- schedule(c(8, 16, 24), c(1, 2, 3), 24)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", inf_sch)
 
   expect_equal(get_capacity(env, "dummy"), 0)
@@ -91,7 +91,7 @@ test_that("initial value is restored when the environment is reset", {
   reset(env)
   expect_equal(get_capacity(env, "dummy"), 0)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", fin_sch)
 
   expect_equal(get_capacity(env, "dummy"), 3)
@@ -110,7 +110,7 @@ test_that("arrivals 1) are dequeued when resource's capacity increases and
 
   inf_sch <- schedule(c(0, 1, 2), c(1, 3, 1), Inf)
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", inf_sch) %>%
     add_generator("asdf", t, at(0, 0, 0)) %>%
     run() %>%
@@ -129,7 +129,7 @@ test_that("arrivals 1) are dequeued when resource's capacity increases and
 
   inf_sch <- schedule(c(0, 1, 2), c(1, 3, 1), Inf)
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", inf_sch) %>%
     add_generator("asdf", t, at(0, 0, 0)) %>%
     run() %>%
@@ -147,7 +147,7 @@ test_that("arrivals are preempted when resource's capacity decreases", {
 
   inf_sch <- schedule(c(0, 1, 2), c(1, 3, 1), Inf)
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", inf_sch, preemptive = TRUE) %>%
     add_generator("asdf", t, at(0, 0, 0), restart = TRUE) %>%
     run() %>%
@@ -163,7 +163,7 @@ test_that("resource's capacity decreases before post-release tasks", {
     timeout(5) %>%
     release("t-rex")
 
-  arrivals <- simmer(verbose = TRUE) %>%
+  arrivals <- simmer(verbose = env_verbose) %>%
     add_resource("t-rex", capacity = schedule(timetable = c(5, 10, 15),
                                               period = Inf,
                                               values = c(1, 0, 1))) %>%
@@ -181,7 +181,7 @@ test_that("capacity decrease on a non-released preemptive resource does not cras
 
   sched <- schedule(c(0, 1), c(1, 0), period = Inf)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", sched, preemptive = TRUE) %>%
     add_generator("arrival", t, at(0))
 

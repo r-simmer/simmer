@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2016,2018 Iñaki Ucar
+# Copyright (C) 2015-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -31,7 +31,7 @@ test_that("an index equal to 0 skips the branch", {
     ) %>%
     timeout(2)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("entity", t0, at(0)) %>%
     run()
   expect_equal(env %>% now(), 2)
@@ -47,11 +47,11 @@ test_that("an index out of range fails", {
       trajectory() %>% timeout(1)
     )
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("entity", t2, at(0))
   expect_error(env %>% run())
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("entity", t1, at(0)) %>%
     run()
   expect_equal(env %>% now(), 1)
@@ -88,7 +88,7 @@ test_that("the continue argument works as expected", {
     ) %>%
     timeout(1)
 
-  arr <- simmer(verbose = TRUE) %>%
+  arr <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0:3)) %>%
     run() %>%
     get_mon_arrivals()

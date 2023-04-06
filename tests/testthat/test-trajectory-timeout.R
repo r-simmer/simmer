@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2015-2018,2020 Iñaki Ucar
+# Copyright (C) 2015-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -25,7 +25,7 @@ test_that("a task function that returns a non-numeric value fails", {
   t0 <- trajectory() %>%
     timeout(function() {})
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("entity", t0, function() 1)
 
   expect_error(run(env))
@@ -37,9 +37,9 @@ test_that("a missing value fails", {
   t1 <- trajectory() %>%
     timeout_from_attribute("asdf")
 
-  env0 <- simmer(verbose = TRUE) %>%
+  env0 <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t0, at(0))
-  env1 <- simmer(verbose = TRUE) %>%
+  env1 <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t1, at(0))
 
   expect_error(trajectory() %>% timeout(NA))
@@ -59,7 +59,7 @@ test_that("a timeout is correctly monitored", {
     timeout_from_global("minusthree") %>%
     release("dummy")
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("entity", t, at(0)) %>%
     add_resource("dummy") %>%
     run()
@@ -103,7 +103,7 @@ test_that("a null timeout is processed in the last place", {
     timeout(0) %>%
     release("resource")
 
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("resource") %>%
     add_generator("dummy", custom, at(0:4))
 

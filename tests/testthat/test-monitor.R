@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2022 Iñaki Ucar
+# Copyright (C) 2018-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -72,13 +72,13 @@ test_that("delim monitors collect the same values as in-memory monitors", {
 
   arrivals <- cumsum(rexp(10))
 
-  env_mem <- simmer(verbose=TRUE, mon=monitor_mem()) %>%
+  env_mem <- simmer(verbose = env_verbose, mon=monitor_mem()) %>%
     add_resource("res", 1, 10) %>%
     add_generator("dummy", t, at(arrivals), mon=2) %>%
     run()
 
   mon <- monitor_csv()
-  env_csv <- simmer(verbose=TRUE, mon=mon) %>%
+  env_csv <- simmer(verbose = env_verbose, mon=mon) %>%
     add_resource("res", 1, 10) %>%
     add_generator("dummy", t, at(arrivals), mon=2) %>%
     run()

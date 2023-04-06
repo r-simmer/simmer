@@ -1,4 +1,4 @@
-# Copyright (C) 2018 Iñaki Ucar
+# Copyright (C) 2018-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -23,7 +23,7 @@ test_that("we can set a new trajectory", {
     set_trajectory("dummy_gen", trajectory()) %>%
     set_trajectory("dummy_df", trajectory())
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy_gen", t, function() 1) %>%
     add_dataframe("dummy_df", t, data.frame(time=rep(1, 20)), batch=1) %>%
     run(10)
@@ -39,7 +39,7 @@ test_that("we can set a new source", {
     set_source("dummy_gen", function() 2) %>%
     set_source("dummy_df", data.frame(time=rep(2, 20)))
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy_gen", t, function() 1) %>%
     add_dataframe("dummy_df", t, data.frame(time=rep(1, 20)), batch=1) %>%
     run(10)
@@ -67,13 +67,13 @@ test_that("other activities cannot modify the behaviour", {
     set_trajectory(function() "dummy_df", t1) %>%
     timeout(2)
 
-  arr2 <- simmer(verbose=TRUE) %>%
+  arr2 <- simmer(verbose = env_verbose) %>%
     add_generator("dummy_gen", t2, function() 2) %>%
     add_dataframe("dummy_df", t2, data.frame(time=rep(2, 20)), batch=1) %>%
     run(10) %>%
     get_mon_arrivals()
 
-  arr3 <- simmer(verbose=TRUE) %>%
+  arr3 <- simmer(verbose = env_verbose) %>%
     add_generator("dummy_gen", t3, function() 2) %>%
     add_dataframe("dummy_df", t3, data.frame(time=rep(2, 20)), batch=1) %>%
     run(10) %>%
@@ -87,7 +87,7 @@ test_that("setting the wrong source fails", {
     set_source("dummy", data.frame(time=rep(2, 20)))
 
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_generator("dummy", t, function() 1) %>%
       run(10)
   )
@@ -96,7 +96,7 @@ test_that("setting the wrong source fails", {
     set_source("dummy", function() 2)
 
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_dataframe("dummy", t, data.frame(time=rep(1, 20)), batch=1) %>%
       run(10)
   )
@@ -110,7 +110,7 @@ test_that("setting the wrong source fails", {
   )
 
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_dataframe(
         "dummy",
         trajectory() %>% set_source("dummy", DF[-1]),
@@ -120,7 +120,7 @@ test_that("setting the wrong source fails", {
   )
 
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_dataframe(
         "dummy",
         trajectory() %>% set_source("dummy", DF[-2]),
@@ -130,7 +130,7 @@ test_that("setting the wrong source fails", {
   )
 
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_dataframe(
         "dummy",
         trajectory() %>% set_source("dummy", DF[-3]),
@@ -140,7 +140,7 @@ test_that("setting the wrong source fails", {
   )
 
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_dataframe(
         "dummy",
         trajectory() %>% set_source("dummy", DF[-4]),
@@ -150,7 +150,7 @@ test_that("setting the wrong source fails", {
   )
 
   expect_error(
-    simmer(verbose = TRUE) %>%
+    simmer(verbose = env_verbose) %>%
       add_dataframe(
         "dummy",
         trajectory() %>% set_source("dummy", DF[-5]),

@@ -1,4 +1,4 @@
-# Copyright (C) 2018,2021 Iñaki Ucar
+# Copyright (C) 2018-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -34,7 +34,7 @@ test_that("unfinished arrivals follow the drop-out trajectory", {
     set_queue_size("res", 0) %>%
     set_capacity("res", 0)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", preemptive=TRUE, queue_size_strict=TRUE) %>%
     add_generator("dummy0", t0, at(0, 0)) %>%
     add_generator("dummy1", t1, at(0)) %>%
@@ -64,7 +64,7 @@ test_that("a dropout trajectory can be unset", {
     leave(1) %>%
     timeout(100)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy1", t1, at(0)) %>%
     run()
 
@@ -100,7 +100,7 @@ test_that("unfinished arrivals coming from a queue are restarted", {
     # open the server
     set_capacity("res", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 0, queue_size_strict=TRUE) %>%
     add_generator("dummy", t1, at(0, 0, 0)) %>%
     add_generator("trigger", t2, at(0)) %>%

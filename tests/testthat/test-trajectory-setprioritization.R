@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -22,7 +22,7 @@ test_that("the wrong number of parameters fails", {
   t <- trajectory() %>%
     set_prioritization(function() c(0, 0))
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t, at(0))
 
   expect_error(env %>% run)
@@ -37,7 +37,7 @@ test_that("prioritization values change", {
     set_prioritization(c(2, 3, 0), mod="*") %>%
     set_attribute(c("prio", "pree", "rest"), function() get_prioritization(env))
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("dummy", t0, at(0), mon=2)
 
   attr <- env %>% run() %>% get_mon_attributes()
@@ -60,7 +60,7 @@ test_that("priority queues are adhered to (2)", {
     timeout(2) %>%
     release("server", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("server", 1) %>%
     add_generator("__nonprior", t0, at(c(0, 0))) %>%
     add_generator("__prior", t1, at(1)) # should be served second
@@ -87,7 +87,7 @@ test_that("priority queues are adhered to (3)", {
     timeout(2) %>%
     release("server", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("server", 1) %>%
     add_generator("__nonprior", t0, at(c(0, 0))) %>%
     add_generator("__prior", t1, at(1))# should be served second

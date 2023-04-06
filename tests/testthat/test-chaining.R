@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2017 Iñaki Ucar
+# Copyright (C) 2015-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -31,7 +31,7 @@ test_that("simmer's method chaining works", {
   t0 <- trajectory() %>%
     timeout(function() 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("server") %>%
     add_generator("customer", t0, function() 1) %>%
     stepn() %>%

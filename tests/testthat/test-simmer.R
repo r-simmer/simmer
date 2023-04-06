@@ -1,6 +1,6 @@
 # Copyright (C) 2015-2016 Iñaki Ucar
 # Copyright (C) 2016 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2016-2019 Iñaki Ucar
+# Copyright (C) 2016-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -24,7 +24,7 @@ test_that("an empty environment behaves as expected", {
     ".*Resource: asdf | monitored: TRUE | server status: 0(1) | queue status: 0(Inf).*",
     ".*Source: dummy | monitored: 1 | n_generated: 0.*")
 
-  env <- simmer("SuperDuperSim", verbose = TRUE) %>%
+  env <- simmer("SuperDuperSim", verbose = env_verbose) %>%
     add_resource("asdf") %>%
     add_generator("dummy", trajectory() %>% timeout(1), at(0))
 
@@ -55,7 +55,7 @@ test_that("the simulator is reset (1)", {
 
   inf_sch <- schedule(c(0.5, 1), c(1, 1), Inf)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("server", inf_sch, queue_size = 1, preemptive = TRUE) %>%
     add_generator("entity0", t0, function() 0.5) %>%
     add_generator("entity1", t1, function() 0.5, mon = 2, preemptible = 10, priority = 10) %>%
@@ -78,7 +78,7 @@ test_that("the simulator is reset (2)", {
     timeout(5) %>%
     release("res")
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res") %>%
     add_generator("dummy", t1, at(0, 0)) %>%
     run(2)
@@ -105,7 +105,7 @@ test_that("the progress is reported", {
 })
 
 test_that("the simulator stops if there are no more events", {
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("server", 1) %>%
     add_generator("entity", t0, at(0)) %>%
     run(10)
@@ -114,7 +114,7 @@ test_that("the simulator stops if there are no more events", {
 })
 
 test_that("a negative simulation time is converted to positive", {
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("server", 1) %>%
     add_generator("entity", t0, at(10)) %>%
     run(-10)
@@ -123,7 +123,7 @@ test_that("a negative simulation time is converted to positive", {
 })
 
 test_that("a stopped simulation can be resumed", {
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("server", 1) %>%
     add_generator("entity", t0, function() 1) %>%
     run(10)
@@ -153,9 +153,9 @@ test_that("there is verbose output", {
 
 test_that("we can force some errors (just to complete coverage)", {
   expect_error(simmer(0))
-  expect_error(simmer(verbose = TRUE) %>% add_resource(0))
+  expect_error(simmer(verbose = env_verbose) %>% add_resource(0))
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy") %>%
     add_generator("dummy", trajectory(), function() 1, mon = 1000)
   env$sim_obj <- NULL
@@ -172,8 +172,8 @@ test_that("we can force some errors (just to complete coverage)", {
 
   sch <- schedule(c(1, 2), c(1, 2), Inf)
   sch$schedule$period <- "asdf"
-  expect_error(simmer(verbose = TRUE) %>% add_resource("dummy", sch))
+  expect_error(simmer(verbose = env_verbose) %>% add_resource("dummy", sch))
 
-  env <- simmer(verbose = TRUE)
+  env <- simmer(verbose = env_verbose)
   expect_equal(env %>% get_mon_resources() %>% nrow(), 0)
 })

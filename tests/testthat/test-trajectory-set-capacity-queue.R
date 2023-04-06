@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2018 Iñaki Ucar
+# Copyright (C) 2016-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -30,7 +30,7 @@ test_that("capacity and queue size change as expected (1)", {
     set_queue_size("dummy", 3, mod="*") %>%
     seize("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 5, 0) %>%
     add_generator("asdf", t, at(rep(0, 10)))
 
@@ -85,7 +85,7 @@ test_that("capacity and queue size change as expected (2)", {
     release("dummy0", 2) %>%
     release("dummy1", 3)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy0", 3, 0) %>%
     add_resource("dummy1", 3, 0) %>%
     add_generator("asdf", t, at(0))
@@ -112,7 +112,7 @@ t <- trajectory() %>%
   timeout(10)
 
 test_that("arrivals are preempted also when the last capacity was infinite", {
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", Inf, preemptive = TRUE) %>%
     add_generator("dummy", t, at(0)) %>%
     add_generator("drop", preempt, at(1))
@@ -123,7 +123,7 @@ test_that("arrivals are preempted also when the last capacity was infinite", {
 })
 
 test_that("queue is not dropped without queue_size_strict (1)", {
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 0, preemptive = FALSE, queue_size_strict = FALSE) %>%
     add_generator("dummy", t, at(rep(0, 3))) %>%
     add_generator("drop", drop, at(1))
@@ -133,7 +133,7 @@ test_that("queue is not dropped without queue_size_strict (1)", {
 })
 
 test_that("queue is not dropped without queue_size_strict (2)", {
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 0, preemptive = TRUE, queue_size_strict = FALSE) %>%
     add_generator("dummy", t, at(rep(0, 3))) %>%
     add_generator("drop", drop, at(1))
@@ -143,7 +143,7 @@ test_that("queue is not dropped without queue_size_strict (2)", {
 })
 
 test_that("queue is dropped with queue_size_strict (1)", {
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 0, preemptive = FALSE, queue_size_strict = TRUE) %>%
     add_generator("dummy", t, at(rep(0, 3))) %>%
     add_generator("drop", drop, at(1))
@@ -153,7 +153,7 @@ test_that("queue is dropped with queue_size_strict (1)", {
 })
 
 test_that("queue is dropped with queue_size_strict (2)", {
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", 0, preemptive = TRUE, queue_size_strict = TRUE) %>%
     add_generator("dummy", t, at(rep(0, 3))) %>%
     add_generator("drop", drop, at(1))
@@ -169,7 +169,7 @@ test_that("self-induced preemption works", {
     timeout(10) %>%
     release("res")
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("res", preemptive = TRUE) %>%
     add_generator("dummy", t, at(0)) %>%
     run(5)

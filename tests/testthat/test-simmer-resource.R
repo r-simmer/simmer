@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2015-2019 Iñaki Ucar
+# Copyright (C) 2015-2023 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -17,7 +17,7 @@
 # along with simmer. If not, see <http://www.gnu.org/licenses/>.
 
 test_that("resources are correctly created", {
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 5, Inf)
 
   expect_warning(env %>% add_resource("dummy"))
@@ -33,7 +33,7 @@ test_that("resources are correctly created", {
 })
 
 test_that("a negative capacity or queue_size is converted to positive", {
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", -4, -1)
 
   expect_equal(env %>% get_capacity("dummy"), 4)
@@ -45,7 +45,7 @@ test_that("a non-existent resource fails", {
     seize("dummy", 1) %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator("customer", t0, function() 1)
 
   expect_error(env %>% run())
@@ -56,7 +56,7 @@ test_that("resource slots are correctly filled", {
     seize("dummy", 1) %>%
     set_attribute("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 2, 2) %>%
     add_generator("customer", t0, at(1:5), mon = 2)
 
@@ -80,7 +80,7 @@ test_that("resources are correctly monitored 1", {
     timeout(1) %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 2) %>%
     add_generator("customer", t0, at(0)) %>%
     run()
@@ -104,7 +104,7 @@ test_that("resources are correctly monitored 2", {
     release("dummy", 1) %>%
     rollback(3, 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 2) %>%
     add_generator("customer", t0, at(0)) %>%
     run()
@@ -131,7 +131,7 @@ test_that("a big departure triggers more than one small seize from the queue", {
     timeout(10) %>%
     release("dummy", 1)
 
-  env <- simmer(verbose = TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource("dummy", 2) %>%
     add_generator("a", t0, at(0)) %>%
     add_generator("b", t1, at(1, 2)) %>%
