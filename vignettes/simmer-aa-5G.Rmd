@@ -1,6 +1,8 @@
 ---
 title: "Design and Analysis of 5G Scenarios"
 author: "Iñaki Ucar, José Alberto Hernández, Pablo Serrano, Arturo Azcorra"
+description: >
+  Advanced use cases and techniques for telecommunications.
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:

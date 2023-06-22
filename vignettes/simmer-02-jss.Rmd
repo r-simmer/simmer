@@ -30,6 +30,8 @@ abstract: >
   monitoring capabilities. It provides a rich and flexible \proglang{R} API that
   revolves around the concept of *trajectory*, a common path in the simulation model
   for entities of the same type.
+description: >
+  Technical description of the package, published in the Journal of Statistical Software.
 keywords:
   plain:     [R, Discrete-Event Simulation]
   formatted: ["\\proglang{R}", Discrete-Event Simulation]

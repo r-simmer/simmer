@@ -1,6 +1,8 @@
 ---
 title: "Queueing Systems"
 author: "Iñaki Ucar"
+description: >
+  Learn how to implement classical queueing models with simmer.
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:

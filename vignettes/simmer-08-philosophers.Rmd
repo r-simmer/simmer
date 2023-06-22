@@ -1,6 +1,8 @@
 ---
 title: "Dining Philosophers Problem"
 author: "Iñaki Ucar"
+description: >
+  Learn how to deal with concurrent models and synchronization issues.
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:

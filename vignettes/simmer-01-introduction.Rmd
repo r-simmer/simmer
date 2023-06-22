@@ -1,6 +1,8 @@
 ---
 title: "Introduction to simmer"
 author: "Bart Smeets, Iñaki Ucar"
+description: >
+  Learn how to get started with the basics of simmer.
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:

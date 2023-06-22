@@ -1,6 +1,8 @@
 ---
 title: "Other SimPy Examples"
 author: "Iñaki Ucar"
+description: >
+  Learn to translate several SimPy examples to simmer.
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:

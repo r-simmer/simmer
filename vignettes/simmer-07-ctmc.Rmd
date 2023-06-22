@@ -1,6 +1,8 @@
 ---
 title: "Continuous-Time Markov Chains"
 author: "Iñaki Ucar"
+description: >
+  Learn how to implement general continuous-time Markov chain models with simmer.
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:

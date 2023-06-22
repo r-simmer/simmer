@@ -1,6 +1,8 @@
 ---
 title: "Advanced Trajectory Usage"
 author: "Iñaki Ucar, Bart Smeets"
+description: >
+  Master the definition and manipulation of trajectories and activities.
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:

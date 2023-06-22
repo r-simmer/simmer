@@ -1,6 +1,8 @@
 ---
 title: "The Bank Tutorial: Part I"
 author: "Duncan Garmonsway"
+description: >
+  Learn a classical DES model with simmer.
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:

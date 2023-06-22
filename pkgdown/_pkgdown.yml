@@ -64,6 +64,24 @@ reference:
     - generators
     - schedule
 
+articles:
+  - title: "Introductory articles"
+    contents:
+    - simmer-01-introduction
+    - simmer-02-jss
+    - simmer-03-trajectories
+  - title: "Basic examples"
+    contents:
+    - simmer-04-bank-1
+    - simmer-04-bank-2
+    - simmer-05-simpy
+  - title: "Advanced models"
+    contents:
+    - simmer-06-queueing
+    - simmer-07-ctmc
+    - simmer-08-philosophers
+    - simmer-aa-5G
+
 navbar:
   bg: dark
   left:
@@ -72,27 +90,7 @@ navbar:
     href: reference/index.html
   - text: "Articles"
     icon: fa-graduation-cap
-    menu:
-    - text: "Introduction to simmer"
-      href: articles/simmer-01-introduction.html
-    - text: "JSS paper (PDF)"
-      href: articles/simmer-02-jss.pdf
-    - text: "Advanced Trajectory Usage"
-      href: articles/simmer-03-trajectories.html
-    - text: "The Bank Tutorial: Part I"
-      href: articles/simmer-04-bank-1.html
-    - text: "The Bank Tutorial: Part II"
-      href: articles/simmer-04-bank-2.html
-    - text: "Other SimPy Examples"
-      href: articles/simmer-05-simpy.html
-    - text: "Queueing Systems"
-      href: articles/simmer-06-queueing.html
-    - text: "Continuous-Time Markov Chains"
-      href: articles/simmer-07-ctmc.html
-    - text: "Dining Philosophers Problem"
-      href: articles/simmer-08-philosophers.html
-    - text: "Design and Analysis of 5G Scenarios"
-      href: articles/simmer-aa-5G.html
+    href: articles/index.html
   - text: "News"
     icon: fa-newspaper-o
     href: news/index.html
