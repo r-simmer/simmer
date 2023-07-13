@@ -13,7 +13,8 @@ set_capacity_selected(.trj, value, id = 0, mod = c(NA, "+", "*"), ..., tag)
 
 set_queue_size(.trj, resource, value, mod = c(NA, "+", "*"), ..., tag)
 
-set_queue_size_selected(.trj, value, id = 0, mod = c(NA, "+", "*"), ..., tag)
+set_queue_size_selected(.trj, value, id = 0, mod = c(NA, "+", "*"), ...,
+  tag)
 }
 \arguments{
 \item{.trj}{the trajectory object.}

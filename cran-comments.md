@@ -1,6 +1,7 @@
 ## Patch release
 
 - Minor improvements and fixes.
+- Switch to C++17, drop Boost usage.
 
 Regarding the package title, Uwe asked us in a past submission to remove
 "for R" because it is redundant. If it is not an issue, we would like to keep
@@ -12,7 +13,7 @@ written in Julia".
 
 ## Test environments
 
-- Fedora 36 + GCC (local), R 4.1.3
+- Up-to-date local R installation on Fedora + gcc
 - macOS-latest, windows-latest, ubuntu-latest (on GA), R devel, release, oldrel
 - win-builder, R devel
 

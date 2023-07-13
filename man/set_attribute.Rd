@@ -5,7 +5,8 @@
 \alias{set_global}
 \title{Set Attributes}
 \usage{
-set_attribute(.trj, keys, values, mod = c(NA, "+", "*"), init = 0, ..., tag)
+set_attribute(.trj, keys, values, mod = c(NA, "+", "*"), init = 0, ...,
+  tag)
 
 set_global(.trj, keys, values, mod = c(NA, "+", "*"), init = 0, ..., tag)
 }

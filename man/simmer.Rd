@@ -4,7 +4,8 @@
 \alias{simmer}
 \title{Create a Simulator}
 \usage{
-simmer(name = "anonymous", verbose = FALSE, mon = monitor_mem(), log_level = 0)
+simmer(name = "anonymous", verbose = FALSE, mon = monitor_mem(),
+  log_level = 0)
 }
 \arguments{
 \item{name}{the name of the simulator.}

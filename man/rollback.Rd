@@ -42,15 +42,25 @@ simmer() \%>\%
   add_generator("hello_sayer", traj, at(0)) \%>\%
   run() \%>\% invisible
 
+## same but with a tag as target
+traj <- trajectory() \%>\%
+  log_("hello!", tag="msg") \%>\%
+  timeout(1) \%>\%
+  rollback("msg", 3)
+
+simmer() \%>\%
+  add_generator("hello_sayer", traj, at(0)) \%>\%
+  run() \%>\% invisible
+
 ## custom check
 env <- simmer()
 
 traj <- trajectory() \%>\%
   set_attribute("var", 0) \%>\%
-  log_(function()
+  log_(tag="msg", function()
     paste("attribute level is at:", get_attribute(env, "var"))) \%>\%
   set_attribute("var", 25, mod="+") \%>\%
-  rollback(2, check=function() get_attribute(env, "var") < 100) \%>\%
+  rollback("msg", check=function() get_attribute(env, "var") < 100) \%>\%
   log_("done")
 
 env \%>\%
