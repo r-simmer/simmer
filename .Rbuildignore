@@ -19,3 +19,4 @@ working_dir
 .lintr
 ^docs$
 TODO
+^CRAN-SUBMISSION$

@@ -1,7 +1,6 @@
 ## Patch release
 
-- Minor improvements and fixes.
-- Switch to C++17, drop Boost usage.
+- Fix deprecated functionality in vignette.
 
 Regarding the package title, Uwe asked us in a past submission to remove
 "for R" because it is redundant. If it is not an issue, we would like to keep

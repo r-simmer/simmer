@@ -1,4 +1,4 @@
-# simmer 4.4.6
+# simmer 4.4.6.1
 
 ## New features
 
@@ -12,6 +12,7 @@
 
 - Fix call identification on error (#286).
 - Make tests less verbose by default.
+- Fix deprecated functionality in vignette.
 
 # simmer 4.4.5
 
