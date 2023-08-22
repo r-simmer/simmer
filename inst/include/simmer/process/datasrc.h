@@ -62,7 +62,7 @@ namespace simmer {
     void set_source(const std::any& new_source) {
       if (new_source.type() != typeid(RData))
         Rcpp::stop("data frame required");
-      RData df = std::any_cast<RData>(new_source);
+      RData df = STDANYCAST<RData>(new_source);
 
       if (!df.containsElementNamed(col_time.c_str()))
         Rcpp::stop("column '%s' not present", col_time);

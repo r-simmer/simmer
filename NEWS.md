@@ -14,6 +14,7 @@
 - Make tests less verbose by default.
 - Fix deprecated functionality in vignette.
 - Fix vignette to feed character input to `numeric_version`.
+- Fixes for Apple Clang 10.
 
 # simmer 4.4.5
 

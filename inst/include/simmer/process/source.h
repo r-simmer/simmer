@@ -24,6 +24,24 @@
 #include <simmer/activity.h>
 #include <any>
 
+#define STDANYCAST std::any_cast
+#if defined(__clang__) && defined(__apple_build_version__)
+#if __apple_build_version__ <= 10001045
+namespace simmer { namespace _std {
+
+  template <class T>
+  T any_cast(const std::any& operand) {
+    if (!operand.has_value() || typeid(T) != operand.type())
+      throw std::runtime_error("bad_any_cast");
+    return *std::any_cast<T>(&operand);
+  }
+
+}}
+#undef  STDANYCAST
+#define STDANYCAST simmer::_std::any_cast
+#endif
+#endif
+
 namespace simmer {
   /**
    * Abstract class for source processes.

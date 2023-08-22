@@ -42,7 +42,7 @@ namespace simmer {
     void set_source(const std::any& new_source) {
       if (new_source.type() != typeid(RFn))
         Rcpp::stop("function required");
-      source = std::any_cast<RFn>(new_source);
+      source = STDANYCAST<RFn>(new_source);
     }
 
     void run() {

@@ -21,6 +21,31 @@
 #include <simmer/monitor.h>
 #include <variant>
 
+#define STDGET std::get
+#if defined(__clang__) && defined(__apple_build_version__)
+#if __apple_build_version__ <= 10001045
+namespace simmer { namespace _std {
+
+  template <class T, class... Types>
+  constexpr T& get(std::variant<Types...>& v) {
+    T* x = std::get_if<T>(&v);
+    if (!x) throw std::runtime_error("bad_variant_access");
+    return *x;
+  }
+
+  template <class T, class... Types>
+  constexpr const T& get(const std::variant<Types...>& v) {
+    const T* x = std::get_if<T>(&v);
+    if (!x) throw std::runtime_error("bad_variant_access");
+    return *x;
+  }
+
+}}
+#undef  STDGET
+#define STDGET simmer::_std::get
+#endif
+#endif
+
 namespace simmer {
 
   namespace internal {
@@ -34,7 +59,7 @@ namespace simmer {
       VEC<T> get(const std::string& key) const {
         _map::const_iterator search = map.find(key);
         if (search != map.end())
-          return std::get< VEC<T> >(search->second);
+          return STDGET< VEC<T> >(search->second);
         return VEC<T>();
       }
 
@@ -42,7 +67,7 @@ namespace simmer {
       void push_back(const std::string& key, const T& value) {
         if (map.find(key) == map.end())
           map[key] = VEC<T>();
-        std::get< VEC<T> >(map[key]).push_back(value);
+        STDGET< VEC<T> >(map[key]).push_back(value);
       }
 
       void clear() { map.clear(); }
