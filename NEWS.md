@@ -1,4 +1,4 @@
-# simmer 4.4.6.2
+# simmer 4.4.6.3
 
 ## New features
 
@@ -15,6 +15,7 @@
 - Fix deprecated functionality in vignette.
 - Fix vignette to feed character input to `numeric_version`.
 - Fixes for Apple Clang 10.
+- Fix format-security warning.
 
 # simmer 4.4.5
 

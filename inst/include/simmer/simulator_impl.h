@@ -196,7 +196,7 @@ namespace simmer {
     }
     event_queue.erase(ev);
     if (stop_) {
-      Rf_warningcall_immediate(R_NilValue, format(
+      Rf_warningcall_immediate(R_NilValue, "%s", format(
           process_, "execution stopped by a breakpoint").c_str());
       return stop_ = false;
     }
