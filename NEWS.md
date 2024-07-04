@@ -1,4 +1,4 @@
-# simmer 4.4.6.3
+# simmer 4.4.6.4
 
 ## New features
 
@@ -16,6 +16,7 @@
 - Fix vignette to feed character input to `numeric_version`.
 - Fixes for Apple Clang 10.
 - Fix format-security warning.
+- Fix pandoc error in JSS vignette.
 
 # simmer 4.4.5
 
