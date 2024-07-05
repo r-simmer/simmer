@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Dispatch builds in dependent packages
-      uses: peter-evans/repository-dispatch@v1
+      uses: peter-evans/repository-dispatch@v3
       with:
         token: ${{ secrets.SIMMER_TOKEN }}
         repository: r-simmer/simmer.${{ matrix.repo }}
