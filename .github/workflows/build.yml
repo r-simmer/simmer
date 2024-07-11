@@ -14,15 +14,5 @@ jobs:
   dispatch:
     name: Dispatch extensions
     needs: build
-    if: ${{ github.ref == 'refs/heads/master' }}
-    strategy:
-      matrix:
-        repo: ['plot', 'bricks']
-    runs-on: ubuntu-latest
-    steps:
-    - name: Dispatch builds in dependent packages
-      uses: peter-evans/repository-dispatch@v3
-      with:
-        token: ${{ secrets.SIMMER_TOKEN }}
-        repository: r-simmer/simmer.${{ matrix.repo }}
-        event-type: simmer
+    uses: r-simmer/workflows/.github/workflows/dispatch.yml@main
+    secrets: inherit
