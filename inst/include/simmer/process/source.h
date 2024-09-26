@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2023 Iñaki Ucar
+// Copyright (C) 2018-2024 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -85,7 +85,11 @@ namespace simmer {
 
     REnv get_trajectory() const { return trj; }
 
-    virtual void set_source(const std::any& new_source) = 0;
+    void set_source(const std::any& new_source) {
+      bool ready = deactivate();
+      set_source_impl(new_source);
+      if (ready) activate();
+    }
 
     void set_trajectory(const REnv& new_trj) {
       trj = new_trj;
@@ -127,6 +131,8 @@ namespace simmer {
   private:
     REnv trj;
     ArrSet ahead;
+
+    virtual void set_source_impl(const std::any& new_source) = 0;
   };
 
 } // namespace simmer

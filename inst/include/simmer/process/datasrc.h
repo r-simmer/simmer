@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2023 Iñaki Ucar
+// Copyright (C) 2018-2024 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -59,7 +59,21 @@ namespace simmer {
       sim->schedule(delay, this, Source::priority);
     }
 
-    void set_source(const std::any& new_source) {
+  private:
+    RData source;
+    int batch;
+    std::string col_time;
+    VEC<std::string> col_attrs;
+    OPT<std::string> col_priority;
+    OPT<std::string> col_preemptible;
+    OPT<std::string> col_restart;
+    RNum time;
+    VEC<RNum> attrs;
+    RInt priority;
+    RInt preemptible;
+    RBool restart;
+
+    void set_source_impl(const std::any& new_source) {
       if (new_source.type() != typeid(RData))
         Rcpp::stop("data frame required");
       RData df = STDANYCAST<RData>(new_source);
@@ -86,20 +100,6 @@ namespace simmer {
       if (col_preemptible) preemptible = source[*col_preemptible];
       if (col_restart) restart = source[*col_restart];
     }
-
-  private:
-    RData source;
-    int batch;
-    std::string col_time;
-    VEC<std::string> col_attrs;
-    OPT<std::string> col_priority;
-    OPT<std::string> col_preemptible;
-    OPT<std::string> col_restart;
-    RNum time;
-    VEC<RNum> attrs;
-    RInt priority;
-    RInt preemptible;
-    RBool restart;
   };
 
 } // namespace simmer

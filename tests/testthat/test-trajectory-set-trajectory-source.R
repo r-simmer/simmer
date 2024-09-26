@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2023 Iñaki Ucar
+# Copyright (C) 2018-2024 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -35,17 +35,36 @@ test_that("we can set a new trajectory", {
 })
 
 test_that("we can set a new source", {
-  t <- trajectory() %>%
-    set_source("dummy_gen", function() 2) %>%
+  t_gen <- trajectory() %>%
+    set_source("dummy_gen", function() 2)
+
+  t_df <- trajectory() %>%
     set_source("dummy_df", data.frame(time=rep(2, 20)))
 
   env <- simmer(verbose = env_verbose) %>%
-    add_generator("dummy_gen", t, function() 1) %>%
-    add_dataframe("dummy_df", t, data.frame(time=rep(1, 20)), batch=1) %>%
+    add_generator("dummy_gen", t_gen, function() 1) %>%
+    add_dataframe("dummy_df", t_df, data.frame(time=rep(1, 20)), batch=1) %>%
     run(10)
   arr <- get_mon_arrivals(env)
 
   expect_equal(arr$start_time, rep(c(1, 3, 5, 7, 9), each=2))
+})
+
+test_that("setting a new source deactivates the old one first", {
+  traj1 <- trajectory() %>%
+    timeout(100)
+
+  traj2 <- trajectory() %>%
+    set_source("gen", function() -10)
+
+  env <- simmer(verbose = env_verbose) %>%
+    add_generator("gen", traj1, function() 1) %>%
+    add_generator("stopper", traj2, at(1.5))  %>%
+    run(600)
+  arr <- get_mon_arrivals(env)
+
+  expect_equal(arr$start_time, c(1.5, 1))
+  expect_equal(arr$end_time, c(1.5, 101))
 })
 
 test_that("other activities cannot modify the behaviour", {

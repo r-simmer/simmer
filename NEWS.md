@@ -1,3 +1,7 @@
+# simmer devel
+
+- Fix `set_source()` to avoid leaking arrivals from the old source (#322).
+
 # simmer 4.4.6.4
 
 ## New features

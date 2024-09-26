@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2023 Iñaki Ucar
+// Copyright (C) 2016-2024 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -39,12 +39,6 @@ namespace simmer {
       reset_fun();
     }
 
-    void set_source(const std::any& new_source) {
-      if (new_source.type() != typeid(RFn))
-        Rcpp::stop("function required");
-      source = STDANYCAST<RFn>(new_source);
-    }
-
     void run() {
       // get the delay for the next (n) arrival(s)
       RNum delays = source();
@@ -64,6 +58,12 @@ namespace simmer {
 
   private:
     RFn source;
+
+    void set_source_impl(const std::any& new_source) {
+      if (new_source.type() != typeid(RFn))
+        Rcpp::stop("function required");
+      source = STDANYCAST<RFn>(new_source);
+    }
   };
 
 } // namespace simmer
