@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2015 Bart Smeets
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2022 Iñaki Ucar
+# Copyright (C) 2016-2024 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -93,8 +93,8 @@
 trajectory <- function(name="anonymous", verbose=FALSE) {
   check_args(name="character", verbose="flag")
 
-  env <- list2env(list(
-    name=name, verbose=verbose, n_activities=0, names=NULL, ptrs=NULL))
+  env <- list2env(list(name=name, verbose=verbose, n_activities=0,
+                       names=NULL, tags=NULL, ptrs=NULL))
   env$head <- function() env$ptrs[[1]]
   env$tail <- function() env$ptrs[[length(env)]]
   env$clone <- function() subset.trajectory(env)
@@ -114,7 +114,7 @@ print.trajectory <- function(x, indent=0, verbose=x$verbose, ...) {
 
 add_activity <- function(x, activity, env.=parent.frame()) {
   tag <- env.$tag
-  if (!missing(tag)) {
+  if (missing(tag)) tag <- NA else {
     if (!is.character(tag))
       stop(get_caller(), ": 'tag' is not a valid character", call.=FALSE)
     activity_set_tag_(activity, tag)
@@ -123,6 +123,7 @@ add_activity <- function(x, activity, env.=parent.frame()) {
     activity_chain_(x$tail(), activity)
   x$ptrs <- c(x$ptrs, activity)
   x$names <- c(x$names, get_caller())
+  x$tags <- c(x$tags, tag)
   x$n_activities <- x$n_activities + activity_get_count_(activity)
   x
 }
@@ -136,7 +137,7 @@ get_parts <- function(x, i, double=FALSE) {
     if (is.logical(i)) {
       parts <- which(rep_len(i, length(x)))
     } else if (is.character(i)) {
-      parts <- which(x$names %in% i)
+      parts <- sort(unique(c(which(x$names %in% i), which(x$tags %in% i))))
       if (double) parts <- parts[[1]]
     } else if (is.numeric(i)) {
       i <- i[!is.na(i)]
@@ -163,6 +164,7 @@ subset.trajectory <- function(x, i, double=FALSE) {
     })
     mapply(activity_chain_, new$ptrs[-length(new$ptrs)], new$ptrs[-1])
     new$names <- x$names[parts]
+    new$tags <- x$tags[parts]
   }
   new
 }
@@ -195,8 +197,8 @@ replace.trajectory <- function(x, i, value, double=FALSE) {
 #' hence truncated towards zero). Negative integers indicate elements/slices to
 #' leave out the selection.
 #'
-#' Character vectors will be matched to the names of the activities in the
-#' trajectory as by \code{\link{\%in\%}}.
+#' Character vectors will be matched to the names and tags of the activities
+#' in the trajectory as by \code{\link{\%in\%}}.
 #'
 #' Logical vectors indicate elements/slices to select. Such vectors are recycled
 #' if necessary to match the corresponding extent.
@@ -328,6 +330,7 @@ join.trajectory <- function(...) {
 
     new$ptrs <- c(new$ptrs, i$ptrs)
     new$names <- c(new$names, i$names)
+    new$tags <- c(new$tags, i$tags)
     new$n_activities <- new$n_activities + i$n_activities
   }
   new

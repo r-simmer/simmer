@@ -1,5 +1,5 @@
 # Copyright (C) 2015-2016 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2016-2022 Iñaki Ucar
+# Copyright (C) 2016-2024 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -233,7 +233,7 @@ t0 <- trajectory(verbose = TRUE) %>%
 t1 <- trajectory(verbose = TRUE) %>%
   branch(function() 1, c(TRUE), t0) %>%
   join(t0) %>%
-  branch(function() 1, c(TRUE, TRUE, TRUE), t0, t0, t0) %>%
+  branch(function() 1, c(TRUE, TRUE, TRUE), t0, t0, t0, tag="foo") %>%
   join(t0) %>%
   branch(function() 1, c(TRUE, TRUE, TRUE, TRUE, TRUE), t0, t0, t0, t0, t0)
 
@@ -353,6 +353,9 @@ test_that("character subsetting with [ works as expected", {
   test <- t1["asdf"]
   expect_equal(length(test), 0)
   expect_equal(get_n_activities(test), 0)
+  test <- t1["foo"]
+  expect_equal(length(test), 1)
+  expect_equal(get_n_activities(test), 4)
 })
 
 test_that("character replacing with [ works as expected", {
@@ -364,6 +367,9 @@ test_that("character replacing with [ works as expected", {
   test["asdf"] <- t0
   expect_equal(length(test), 5)
   expect_equal(get_n_activities(test), 14)
+  test["foo"] <- t0
+  expect_equal(length(test), 5)
+  expect_equal(get_n_activities(test), 11)
 })
 
 test_that("integer subsetting with [[ works as expected", {

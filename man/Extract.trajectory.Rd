@@ -26,8 +26,8 @@ Numeric values are coerced to integer as by \code{\link{as.integer}} (and
 hence truncated towards zero). Negative integers indicate elements/slices to
 leave out the selection.
 
-Character vectors will be matched to the names of the activities in the
-trajectory as by \code{\link{\%in\%}}.
+Character vectors will be matched to the names and tags of the activities
+in the trajectory as by \code{\link{\%in\%}}.
 
 Logical vectors indicate elements/slices to select. Such vectors are recycled
 if necessary to match the corresponding extent.

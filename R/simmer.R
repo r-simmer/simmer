@@ -1,5 +1,5 @@
 # Copyright (C) 2014 Bart Smeets
-# Copyright (C) 2017-2019 Iñaki Ucar
+# Copyright (C) 2017-2024 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -53,12 +53,11 @@
 #' vignette(package = "simmer")
 #' }
 #'
-#' @docType package
 #' @name simmer-package
 #'
 #' @useDynLib simmer, .registration=TRUE
 #' @importFrom Rcpp evalCpp
-NULL
+"_PACKAGE"
 
 #' @importFrom magrittr %>%
 #' @export
