@@ -181,7 +181,7 @@ test_that("arrivals are correctly monitored", {
 })
 
 test_that("several generators can be attached at once", {
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_generator(letters[1:3], trajectory(), function() 1)
 
   expect_equal(get_sources(env), letters[1:3])

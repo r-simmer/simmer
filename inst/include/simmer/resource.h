@@ -1,6 +1,6 @@
 // Copyright (C) 2014-2015 Bart Smeets
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2019 Iñaki Ucar
+// Copyright (C) 2016-2024 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -41,10 +41,10 @@ namespace simmer {
     Resource(Simulator* sim, const std::string& name, int mon, int capacity,
              int queue_size, bool queue_size_strict, int queue_priority_min,
              int queue_priority_max)
-      : Entity(sim, name, mon), capacity(capacity), queue_size(queue_size),
-        server_count(0), queue_count(0), queue_size_strict(queue_size_strict),
+      : Entity(sim, name, mon), capacity_(capacity), queue_size_(queue_size),
+        queue_size_strict(queue_size_strict),
         queue_priority_min(queue_priority_min),
-        queue_priority_max(queue_priority_max) {}
+        queue_priority_max(queue_priority_max) { reset(); }
 
     /**
     * Reset the resource: server, queue
@@ -52,6 +52,8 @@ namespace simmer {
     void reset() {
       server_count = 0;
       queue_count = 0;
+      capacity = capacity_;
+      queue_size = queue_size_;
     }
 
     /**
@@ -169,8 +171,8 @@ namespace simmer {
     virtual bool is_waiting(Arrival* arrival) const = 0;
 
   protected:
-    int capacity;
-    int queue_size;
+    int capacity_, capacity;
+    int queue_size_, queue_size;
     int server_count;       /**< number of arrivals being served */
     int queue_count;        /**< number of arrivals waiting */
     bool queue_size_strict;

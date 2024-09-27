@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2015 Bart Smeets
 # Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-# Copyright (C) 2016-2022 Iñaki Ucar
+# Copyright (C) 2016-2024 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -317,12 +317,12 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
 
   if (inherits(capacity, "schedule")) {
     capacity_schedule <- capacity
-    capacity <- capacity_schedule$schedule$init
+    capacity <- NA
   } else capacity_schedule <- NA
 
   if (inherits(queue_size, "schedule")) {
     queue_size_schedule <- queue_size
-    queue_size <- queue_size_schedule$schedule$init
+    queue_size <- NA
   } else queue_size_schedule <- NA
 
   for (i in name) {
@@ -332,12 +332,14 @@ add_resource.simmer <- function(.env, name, capacity=1, queue_size=Inf, mon=TRUE
     if (ret) .env$resources[[i]] <- c(mon=mon, preemptive=preemptive)
 
     if (inherits(capacity_schedule, "schedule"))
-      add_resource_manager_(.env$sim_obj, i, "capacity", positive(capacity),
+      add_resource_manager_(.env$sim_obj, i, "capacity",
+                            positive(capacity_schedule$schedule$init),
                             capacity_schedule$schedule$intervals,
                             capacity_schedule$schedule$values,
                             capacity_schedule$schedule$period)
     if (inherits(queue_size_schedule, "schedule"))
-      add_resource_manager_(.env$sim_obj, i, "queue_size", positive(queue_size),
+      add_resource_manager_(.env$sim_obj, i, "queue_size",
+                            positive(queue_size_schedule$schedule$init),
                             queue_size_schedule$schedule$intervals,
                             queue_size_schedule$schedule$values,
                             queue_size_schedule$schedule$period)

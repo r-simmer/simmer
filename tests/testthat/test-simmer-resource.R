@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2015-2023 Iñaki Ucar
+# Copyright (C) 2015-2024 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -145,8 +145,31 @@ test_that("a big departure triggers more than one small seize from the queue", {
 })
 
 test_that("several resources can be attached at once", {
-  env <- simmer(verbose=TRUE) %>%
+  env <- simmer(verbose = env_verbose) %>%
     add_resource(letters[1:3])
 
   expect_equal(get_resources(env), letters[1:3])
+})
+
+test_that("resources are reset", {
+  t <- trajectory() %>%
+    set_capacity("res", 2) %>%
+    set_queue_size("res", 2)
+
+  env <- simmer(verbose = env_verbose) %>%
+    add_resource("res", 1, 1) %>%
+    add_generator("dummy", t, at(0))
+
+  expect_equal(get_capacity(env, "res"), 1)
+  expect_equal(get_queue_size(env, "res"), 1)
+
+  run(env)
+
+  expect_equal(get_capacity(env, "res"), 2)
+  expect_equal(get_queue_size(env, "res"), 2)
+
+  reset(env)
+
+  expect_equal(get_capacity(env, "res"), 1)
+  expect_equal(get_queue_size(env, "res"), 1)
 })
