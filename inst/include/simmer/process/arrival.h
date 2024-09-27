@@ -73,7 +73,8 @@ namespace simmer {
 
     Arrival(const Arrival& o)
       : Process(o), order(o.order), src(o.src), paused(o.paused), sync(o.sync),
-        clones(o.clones), activity(NULL), attributes(o.attributes), timer(NULL),
+        clones(o.clones), lifetime(o.lifetime), activity(NULL),
+        attributes(o.attributes), timer(NULL),
         dropout(NULL), batch(NULL), act_shd(o.act_shd)
     { init(); *sync = NULL; }
 

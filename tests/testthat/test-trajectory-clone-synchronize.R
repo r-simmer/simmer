@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2023 Iñaki Ucar
+# Copyright (C) 2016-2024 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -128,6 +128,29 @@ test_that("clones synchronize with the last (2)", {
 
   expect_equal(arrivals$activity_time, c(1, 2, 3.5))
   expect_equal(arrivals$finished, rep(TRUE, 3))
+})
+
+test_that("clones synchronize with the last (3)", {
+  t <- function(x, y) trajectory() %>%
+    batch(3) %>%
+    clone(n = 2,
+          trajectory("original") %>%
+            timeout(x),
+          trajectory("clone 1") %>%
+            timeout(y)) %>%
+    synchronize(wait = TRUE) %>%
+    separate()
+
+  arrivals1 <- simmer(verbose = env_verbose) %>%
+    add_generator("dummy" , t(4, 5), at(c(5, 10, 20))) %>%
+    run() %>%
+    get_mon_arrivals()
+  arrivals2 <- simmer(verbose = env_verbose) %>%
+    add_generator("dummy" , t(5, 4), at(c(5, 10, 20))) %>%
+    run() %>%
+    get_mon_arrivals()
+
+  expect_equal(arrivals1, arrivals2)
 })
 
 test_that("clones synchronize with the first (1)", {

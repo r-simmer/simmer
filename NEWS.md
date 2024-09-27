@@ -3,6 +3,7 @@
 - Fix `set_source()` to avoid leaking arrivals from the old source (#322).
 - Fix sources to properly reset distributions and trajectories (#324).
 - Fix resources to properly reset initial parameters (#325).
+- Fix start time of arrivals in cloned batches (#285).
 
 # simmer 4.4.6.4
 
