@@ -1,5 +1,5 @@
 // Copyright (C) 2015-2016 Bart Smeets and Iñaki Ucar
-// Copyright (C) 2016-2023 Iñaki Ucar
+// Copyright (C) 2016-2024 Iñaki Ucar
 //
 // This file is part of simmer.
 //
@@ -58,16 +58,16 @@ namespace simmer {
 
     /**
     * Constructor.
-    * @param sim             a pointer to the simulator
-    * @param name            the name
-    * @param mon             int that indicates whether this entity must be monitored
-    * @param order           priority, preemptible, restart
-    * @param first_activity  the first activity of a user-defined R trajectory
+    * @param sim    a pointer to the simulator
+    * @param name   the name
+    * @param mon    int that indicates whether this entity must be monitored
+    * @param order  priority, preemptible, restart
+    * @param head   the first activity of a user-defined R trajectory
     */
     Arrival(Simulator* sim, const std::string& name, int mon, Order order,
-            Activity* first_activity, int priority = 0, Source* src = NULL)
+            Activity* head, int priority = 0, Source* src = NULL)
       : Process(sim, name, mon, priority), order(order), src(src), paused(0),
-        sync(new Arrival*(NULL)), clones(new int(0)), activity(first_activity),
+        sync(new Arrival*(NULL)), clones(new int(0)), activity(head),
         timer(NULL), dropout(NULL), batch(NULL), act_shd(new ActVec())
     { init(); }
 

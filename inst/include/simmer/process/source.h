@@ -63,11 +63,12 @@ namespace simmer {
     */
     Source(Simulator* sim, const std::string& name_prefix, int mon,
            const REnv& trj, const Order& order)
-      : Process(sim, name_prefix, mon, PRIORITY_MIN), count(0), order(order),
-        first_activity(internal::head(trj)), trj(trj) {}
+      : Process(sim, name_prefix, mon, PRIORITY_MIN), order(order), trj_(trj) {}
 
     virtual void reset() {
       count = 0;
+      trj = trj_;
+      head = internal::head(trj);
       ahead.clear();
     }
 
@@ -81,7 +82,7 @@ namespace simmer {
       return Process::deactivate();
     }
 
-    int get_n_generated() const { return count; }
+    int get_count() const { return count; }
 
     REnv get_trajectory() const { return trj; }
 
@@ -93,27 +94,23 @@ namespace simmer {
 
     void set_trajectory(const REnv& new_trj) {
       trj = new_trj;
-      first_activity = internal::head(trj);
+      head = internal::head(trj);
     }
 
   protected:
-    int count;                /**< number of arrivals generated */
-    Order order;
-    Activity* first_activity;
-
     Arrival* new_arrival(double delay) {
       // format the name and create the next arrival
       std::string arr_name = MakeString() << name << count++;
       Arrival* arrival = new Arrival(
-        sim, arr_name, is_monitored(), order, first_activity, count, this);
+        sim, arr_name, is_monitored(), order, head, count, this);
       ahead.emplace(arrival);
 
       if (sim->verbose) sim->print("source", name, "new", arr_name,
           MakeString() << (sim->now() + delay));
 
       // schedule the arrival
-      sim->schedule(delay, arrival, first_activity && first_activity->priority ?
-                      first_activity->priority : count);
+      sim->schedule(delay, arrival, head && head->priority ?
+                      head->priority : count);
 
       return arrival;
     }
@@ -129,7 +126,10 @@ namespace simmer {
     }
 
   private:
-    REnv trj;
+    int count;                /**< number of arrivals generated */
+    Order order;
+    Activity* head;
+    REnv trj_, trj;
     ArrSet ahead;
 
     virtual void set_source_impl(const std::any& new_source) = 0;

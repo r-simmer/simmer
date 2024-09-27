@@ -1,5 +1,5 @@
 # Copyright (C) 2015 Iñaki Ucar and Bart Smeets
-# Copyright (C) 2015-2023 Iñaki Ucar
+# Copyright (C) 2015-2024 Iñaki Ucar
 #
 # This file is part of simmer.
 #
@@ -58,6 +58,23 @@ test_that("generators are reset", {
     run() %>% reset() %>% run() %>%
     get_mon_arrivals() %>% nrow()
   )
+
+  t <- trajectory() %>%
+    set_source("dummy", at(10)) %>%
+    set_trajectory("dummy", trajectory() %>% timeout(1))
+
+  env <- simmer(verbose = env_verbose) %>%
+    add_generator("dummy", t, at(0))
+
+  df1 <- env %>%
+    run() %>%
+    get_mon_arrivals()
+  df2 <- env %>%
+    reset() %>%
+    run() %>%
+    get_mon_arrivals()
+
+  expect_equal(df1, df2)
 })
 
 test_that("preemptible < priority shows a warning", {

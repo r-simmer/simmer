@@ -1,6 +1,7 @@
 # simmer devel
 
 - Fix `set_source()` to avoid leaking arrivals from the old source (#322).
+- Fix sources to properly restore distributions and trajectories (#324).
 
 # simmer 4.4.6.4
 
