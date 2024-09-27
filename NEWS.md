@@ -1,4 +1,4 @@
-# simmer devel
+# simmer 4.4.7
 
 ## New features
 

@@ -1,6 +1,6 @@
 ## Patch release
 
-- Fix pandocbounded error as requested by CRAN.
+- Minor improvements and fixes.
 
 Regarding the package title, Uwe asked us in a past submission to remove
 "for R" because it is redundant. If it is not an issue, we would like to keep
