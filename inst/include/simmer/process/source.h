@@ -86,9 +86,9 @@ namespace simmer {
     REnv get_trajectory() const { return trj; }
 
     void set_source(const std::any& new_source) {
-      bool ready = deactivate();
+      deactivate();
       set_source_impl(new_source);
-      if (ready) activate();
+      activate();
     }
 
     void set_trajectory(const REnv& new_trj) {

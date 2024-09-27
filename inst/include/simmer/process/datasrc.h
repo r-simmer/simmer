@@ -32,7 +32,7 @@ namespace simmer {
             const OPT<std::string>& col_preemptible, const OPT<std::string>& col_restart)
       : Source(sim, name_prefix, mon, trj, Order()), source(data), batch(batch),
         col_time(col_time), col_attrs(col_attrs), col_priority(col_priority),
-        col_preemptible(col_preemptible), col_restart(col_restart) { set_source(data); }
+        col_preemptible(col_preemptible), col_restart(col_restart) { set_source_impl(data); }
 
     void run() {
       double delay = 0;
