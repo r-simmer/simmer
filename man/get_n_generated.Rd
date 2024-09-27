@@ -4,6 +4,7 @@
 \alias{get_n_generated}
 \alias{get_trajectory}
 \alias{get_name}
+\alias{get_start_time}
 \alias{get_attribute}
 \alias{get_global}
 \alias{get_prioritization}
@@ -15,6 +16,8 @@ get_n_generated(.env, sources)
 get_trajectory(.env, sources)
 
 get_name(.env)
+
+get_start_time(.env)
 
 get_attribute(.env, keys)
 
@@ -42,13 +45,15 @@ in an active batch.
 the given sources. \code{get_trajectory} returns the trajectory to which they
 are attached (as a list).
 
-\code{get_name} returns the number of the running arrival. \code{get_attribute}
-returns a running arrival's attributes. If a provided key was not previously
-set, it returns a missing value. \code{get_global} returns a global attribute.
+\code{get_name} returns the number of the running arrival.
+\code{get_start_time} returns the start time of the running arrival.
+\code{get_attribute} returns a running arrival's attributes.
+If a provided key was not previously set, it returns a missing value.
+\code{get_global} returns a global attribute.
 \code{get_prioritization} returns a running arrival's prioritization values.
-\code{get_name}, \code{get_attribute} and \code{get_prioritization} are meant
-to be used inside a trajectory; otherwise, there will be no arrival running
-and these functions will throw an error.
+\code{get_name}, \code{get_start_time}, \code{get_attribute} and
+\code{get_prioritization} are meant to be used inside a trajectory; otherwise,
+there will be no arrival running and these functions will throw an error.
 }
 \seealso{
 \code{\link{get_sources}}, \code{\link{set_trajectory}},

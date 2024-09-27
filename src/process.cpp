@@ -49,6 +49,11 @@ std::string get_name_(SEXP sim_) {
 }
 
 //[[Rcpp::export]]
+double get_start_time_(SEXP sim_) {
+  return XPtr<Simulator>(sim_)->get_running_arrival()->get_start_time();
+}
+
+//[[Rcpp::export]]
 SEXP get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bool global) {
   XPtr<Simulator> sim(sim_);
   NumericVector attrs(keys.size());

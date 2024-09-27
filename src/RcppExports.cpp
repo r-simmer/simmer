@@ -1171,6 +1171,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_start_time_
+double get_start_time_(SEXP sim_);
+RcppExport SEXP _simmer_get_start_time_(SEXP sim_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type sim_(sim_SEXP);
+    rcpp_result_gen = Rcpp::wrap(get_start_time_(sim_));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_attribute_
 SEXP get_attribute_(SEXP sim_, const std::vector<std::string>& keys, bool global);
 RcppExport SEXP _simmer_get_attribute_(SEXP sim_SEXP, SEXP keysSEXP, SEXP globalSEXP) {
@@ -1631,6 +1642,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_simmer_get_n_generated_", (DL_FUNC) &_simmer_get_n_generated_, 2},
     {"_simmer_get_trajectory_", (DL_FUNC) &_simmer_get_trajectory_, 2},
     {"_simmer_get_name_", (DL_FUNC) &_simmer_get_name_, 1},
+    {"_simmer_get_start_time_", (DL_FUNC) &_simmer_get_start_time_, 1},
     {"_simmer_get_attribute_", (DL_FUNC) &_simmer_get_attribute_, 3},
     {"_simmer_get_prioritization_", (DL_FUNC) &_simmer_get_prioritization_, 1},
     {"_simmer_get_batch_size_", (DL_FUNC) &_simmer_get_batch_size_, 1},

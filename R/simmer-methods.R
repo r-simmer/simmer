@@ -48,8 +48,9 @@
 #' \code{\link{get_sources}}, \code{\link{get_n_generated}},
 #' \code{\link{get_trajectory}}
 #'
-#' \item Arrivals: \code{\link{get_name}}, \code{\link{get_attribute}},
-#' \code{\link{get_prioritization}}, \code{\link{get_batch_size}}
+#' \item Arrivals: \code{\link{get_name}}, \code{\link{get_start_time}},
+#' \code{\link{get_attribute}}, \code{\link{get_prioritization}},
+#' \code{\link{get_batch_size}}
 #'
 #' \item Globals: \code{\link{add_global}}, \code{\link{get_global}}
 #'
@@ -618,13 +619,15 @@ get_resources.simmer <- function(.env) names(.env$resources)
 #' the given sources. \code{get_trajectory} returns the trajectory to which they
 #' are attached (as a list).
 #'
-#' \code{get_name} returns the number of the running arrival. \code{get_attribute}
-#' returns a running arrival's attributes. If a provided key was not previously
-#' set, it returns a missing value. \code{get_global} returns a global attribute.
+#' \code{get_name} returns the number of the running arrival.
+#' \code{get_start_time} returns the start time of the running arrival.
+#' \code{get_attribute} returns a running arrival's attributes.
+#' If a provided key was not previously set, it returns a missing value.
+#' \code{get_global} returns a global attribute.
 #' \code{get_prioritization} returns a running arrival's prioritization values.
-#' \code{get_name}, \code{get_attribute} and \code{get_prioritization} are meant
-#' to be used inside a trajectory; otherwise, there will be no arrival running
-#' and these functions will throw an error.
+#' \code{get_name}, \code{get_start_time}, \code{get_attribute} and
+#' \code{get_prioritization} are meant to be used inside a trajectory; otherwise,
+#' there will be no arrival running and these functions will throw an error.
 #'
 #' @seealso \code{\link{get_sources}}, \code{\link{set_trajectory}},
 #' \code{\link{set_attribute}}, \code{\link{set_global}},
@@ -652,6 +655,13 @@ get_name <- function(.env) UseMethod("get_name")
 
 #' @export
 get_name.simmer <- function(.env) get_name_(.env$sim_obj)
+
+#' @rdname get_n_generated
+#' @export
+get_start_time <- function(.env) UseMethod("get_start_time")
+
+#' @export
+get_start_time.simmer <- function(.env) get_start_time_(.env$sim_obj)
 
 #' @param keys the attribute name(s).
 #' @inheritParams set_attribute

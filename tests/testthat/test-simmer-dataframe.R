@@ -161,16 +161,17 @@ test_that("attributes are set", {
   expect_equal(attr$value, c(1, 3, 2, 2, 3, 1))
 })
 
-test_that("arrival names are correctly retrieved", {
+test_that("arrival names and start times are correctly retrieved", {
   t <- trajectory() %>%
-    log_(function() get_name(env))
-  DF <- data.frame(time=0)
+    log_(function() paste(get_name(env), get_start_time(env)))
+  DF <- data.frame(time=1)
 
   env <- simmer() %>%
     add_dataframe("dummy", t, DF)
 
-  expect_output(run(env), "0: dummy0: dummy0")
+  expect_output(run(env), "1: dummy0: dummy0 1")
   expect_error(get_name(env))
+  expect_error(get_start_time(env))
 })
 
 test_that("arrivals are correctly monitored", {

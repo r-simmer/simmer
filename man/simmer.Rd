@@ -62,8 +62,9 @@ Available methods by category:
 \code{\link{get_sources}}, \code{\link{get_n_generated}},
 \code{\link{get_trajectory}}
 
-\item Arrivals: \code{\link{get_name}}, \code{\link{get_attribute}},
-\code{\link{get_prioritization}}, \code{\link{get_batch_size}}
+\item Arrivals: \code{\link{get_name}}, \code{\link{get_start_time}},
+\code{\link{get_attribute}}, \code{\link{get_prioritization}},
+\code{\link{get_batch_size}}
 
 \item Globals: \code{\link{add_global}}, \code{\link{get_global}}
 

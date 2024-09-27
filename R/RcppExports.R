@@ -377,6 +377,10 @@ get_name_ <- function(sim_) {
     .Call(`_simmer_get_name_`, sim_)
 }
 
+get_start_time_ <- function(sim_) {
+    .Call(`_simmer_get_start_time_`, sim_)
+}
+
 get_attribute_ <- function(sim_, keys, global) {
     .Call(`_simmer_get_attribute_`, sim_, keys, global)
 }

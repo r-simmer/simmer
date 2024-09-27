@@ -3,6 +3,7 @@
 ## New features
 
 - Add support for subsetting by activity tag (#305).
+- New getter `get_start_time()` returns the running arrival's start time (#304).
 
 ## Minor changes and fixes
 
