@@ -20,9 +20,10 @@ Package          | Description                                     | Status
 [**simmer.json**](https://github.com/r-simmer/simmer.json)  | Read / Load `simmer` Definitions in JSON Format | [![Status\_Badge](https://img.shields.io/badge/lifecycle-dormant-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [**simmer.mon**](https://github.com/r-simmer/simmer.mon)  | Monitoring Backends for `simmer` | [![Status\_Badge](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 
-## Mailing list
+## Help
 
-For bugs and/or issues, create a new issue on GitHub. For other questions or comments, please subscribe to the [simmer-devel mailing list](https://groups.google.com/forum/#!forum/simmer-devel). You must be a member to post messages, but anyone can read the archived discussions.
+For bugs and/or issues, create a new [issue](https://github.com/r-simmer/simmer/issues) on GitHub.
+For other questions or comments, please use the [Discussions](https://github.com/r-simmer/simmer/discussions) forum on GitHub.
 
 ## Documentation
 
