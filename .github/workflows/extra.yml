@@ -1,0 +1,31 @@
+name: additional checks
+
+on: [workflow_dispatch]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/r-hub/containers/${{ matrix.container }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        container:
+        - 'clang-asan'
+        - 'clang-ubsan'
+        # - 'rchk' yaml has issues as of 2026-07-17
+        - 'valgrind'
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Install dependencies
+      run: |
+        R -q -e 'pak::pkg_install(c("deps::.", "any::rcmdcheck"), dependencies = TRUE)'
+    - name: Check
+      uses: r-lib/actions/check-r-package@v2
+      with:
+        upload-snapshots: true
